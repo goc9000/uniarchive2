@@ -22,10 +22,14 @@ SOURCES += main.cpp \
     core/args.cpp \
     core/about.cpp \
     utils/fail.cpp \
-    utils/utils.cpp
+    utils/utils.cpp \
+    input/sources/RawConversationSource.cpp \
+    model/raw_conversation/RawConversation.cpp
 
 HEADERS += \
     core/args.h \
     core/about.h \
     utils/fail.h \
-    utils/utils.h
+    utils/utils.h \
+    input/sources/RawConversationSource.h \
+    model/raw_conversation/RawConversation.h
