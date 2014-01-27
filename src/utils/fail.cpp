@@ -17,6 +17,39 @@ void fail(const char* formatStr, ...)
     throw std::runtime_error(message);
 }
 
+void warn(const char* formatStr, ...)
+{
+    va_list vl;
+
+    va_start(vl, formatStr);
+    std::string message = vsprintfToStdString(formatStr, vl);
+    va_end(vl);
+
+    printLogMessage(LOG_MSG_WARNING, message);
+}
+
+void note(const char* formatStr, ...)
+{
+    va_list vl;
+
+    va_start(vl, formatStr);
+    std::string message = vsprintfToStdString(formatStr, vl);
+    va_end(vl);
+
+    printLogMessage(LOG_MSG_NOTICE, message);
+}
+
+void debug(const char* formatStr, ...)
+{
+    va_list vl;
+
+    va_start(vl, formatStr);
+    std::string message = vsprintfToStdString(formatStr, vl);
+    va_end(vl);
+
+    printLogMessage(LOG_MSG_DEBUG, message);
+}
+
 void printException(const std::exception& exception)
 {
     printLogMessage(LOG_MSG_ERROR, std::string(exception.what()));
