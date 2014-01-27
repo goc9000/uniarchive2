@@ -24,7 +24,11 @@ SOURCES += main.cpp \
     utils/fail.cpp \
     utils/utils.cpp \
     input/sources/RawConversationSource.cpp \
-    model/raw_conversation/RawConversation.cpp
+    model/raw_conversation/RawConversation.cpp \
+    input/sources/FileSystemRawConversationSource.cpp \
+    input/file_scanners/FileSystemScanner.cpp \
+    input/file_scanners/RawConversationFile.cpp \
+    input/file_scanners/RegularRawConversationFile.cpp
 
 HEADERS += \
     core/args.h \
@@ -32,4 +36,8 @@ HEADERS += \
     utils/fail.h \
     utils/utils.h \
     input/sources/RawConversationSource.h \
-    model/raw_conversation/RawConversation.h
+    model/raw_conversation/RawConversation.h \
+    input/sources/FileSystemRawConversationSource.h \
+    input/file_scanners/FileSystemScanner.h \
+    input/file_scanners/RawConversationFile.h \
+    input/file_scanners/RegularRawConversationFile.h

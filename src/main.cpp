@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QTextCodec>
+#include <QScopedPointer>
 #include <QDebug>
 
 #include "core/args.h"
@@ -15,10 +16,13 @@ int main(int argc, char *argv[])
     try {
         Args args(argc, argv);
 
-        for (auto sourceSpec : args.sources) {
+        for (const auto& sourceSpec : args.sources) {
             note("Processing source: %s", qPrintable(sourceSpec));
 
-            auto source = RawConversationSource::fromSpecification(sourceSpec);
+            QScopedPointer<RawConversationSource> source(
+                RawConversationSource::fromSpecification(sourceSpec));
+            for (const auto& rawConv : source->rawConversations()) {
+            }
         }
         //QCoreApplication a(argc, argv);
         //return a.exec();

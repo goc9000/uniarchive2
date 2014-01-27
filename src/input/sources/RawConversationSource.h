@@ -10,11 +10,13 @@
 class RawConversationSource
 {
 public:
+    virtual ~RawConversationSource();
+
     virtual QList<RawConversation> rawConversations() = 0;
 
     static RawConversationSource* fromSpecification(QString spec);
 protected:
-    RawConversationSource() {}
+    RawConversationSource();
 };
 
 #endif // RAWCONVERSATIONSOURCE_H
