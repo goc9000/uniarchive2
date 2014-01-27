@@ -4,5 +4,7 @@ Design Notes
 (work in progress)
 
 - requires:
-  libtclap-dev
+  - C++11
+  - Qt4
+  - libtclap-dev
 
