@@ -3,6 +3,7 @@
 #include <QScopedPointer>
 
 #include "input/file_scanners/FileSystemScanner.h"
+#include "decoders/RawConversationDecoder.h"
 #include "utils/fail.h"
 
 
@@ -19,11 +20,18 @@ QList<RawConversation> FileSystemRawConversationSource::rawConversations()
 
     bool anyFound = false;
     for (RawConversationFile *file : scanner->files()) {
-        // TODO: check if it can be decoded, set anyFound = true, instantiate
-        // decoder and extract conversations
+        if (!RawConversationDecoder::isSupportedFormat(file)) {
+            warn("File '%s' is not a conversation file in any supported format",
+                 qPrintable(file->description()));
+            continue;
+        } else {
+            anyFound = true;
 
-        warn("File '%s' is not a conversation file in any supported format",
-             qPrintable(file->description()));
+            QScopedPointer<RawConversationDecoder> decoder(
+                RawConversationDecoder::forRawConversationFile(file));
+
+            results.append(decoder->rawConversations());
+        }
 
         delete file;
     }

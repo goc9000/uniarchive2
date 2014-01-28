@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     input/sources/FileSystemRawConversationSource.cpp \
     input/file_scanners/FileSystemScanner.cpp \
     input/file_scanners/RawConversationFile.cpp \
-    input/file_scanners/RegularRawConversationFile.cpp
+    input/file_scanners/RegularRawConversationFile.cpp \
+    decoders/RawConversationDecoder.cpp
 
 HEADERS += \
     core/args.h \
@@ -40,4 +41,5 @@ HEADERS += \
     input/sources/FileSystemRawConversationSource.h \
     input/file_scanners/FileSystemScanner.h \
     input/file_scanners/RawConversationFile.h \
-    input/file_scanners/RegularRawConversationFile.h
+    input/file_scanners/RegularRawConversationFile.h \
+    decoders/RawConversationDecoder.h
