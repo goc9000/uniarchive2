@@ -16,12 +16,12 @@ int main(int argc, char *argv[])
     try {
         Args args(argc, argv);
 
-        for (const auto& sourceSpec : args.sources) {
+        for (const QString& sourceSpec : args.sources) {
             note("Processing source: %s", qPrintable(sourceSpec));
 
             QScopedPointer<RawConversationSource> source(
                 RawConversationSource::fromSpecification(sourceSpec));
-            for (const auto& rawConv : source->rawConversations()) {
+            for (const RawConversation& rawConv : source->rawConversations()) {
             }
         }
         //QCoreApplication a(argc, argv);
