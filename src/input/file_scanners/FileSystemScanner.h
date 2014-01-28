@@ -1,7 +1,8 @@
 #ifndef FILESYSTEMSCANNER_H
 #define FILESYSTEMSCANNER_H
 
-#include <QList>
+#include <vector>
+
 #include <QString>
 #include <QFileInfo>
 #include <QDir>
@@ -14,11 +15,11 @@ class FileSystemScanner
 public:
     FileSystemScanner(QString path);
 
-    QList<RawConversationFile*> files();
+    std::vector<RawConversationFile*> files();
 
 protected:
-    QList<RawConversationFile*> _scanItem(const QFileInfo& item);
-    QList<RawConversationFile*> _scanDir(const QDir& item);
+    std::vector<RawConversationFile*> _scanItem(const QFileInfo& item);
+    std::vector<RawConversationFile*> _scanDir(const QDir& item);
 
     QString path_;
 };

@@ -1,7 +1,8 @@
 #ifndef ARGS_H
 #define ARGS_H
 
-#include <QList>
+#include <vector>
+
 #include <QString>
 
 class Args
@@ -18,7 +19,7 @@ public:
     bool produceEpub;
     QString outArchiveFilename;
     QString outEpubFilename;
-    QList<QString> sources;
+    std::vector<QString> sources;
 };
 
 #endif // ARGS_H

@@ -2,6 +2,7 @@
 
 #include "input/file_scanners/RegularRawConversationFile.h"
 #include "utils/fail.h"
+#include "utils/utils.h"
 
 
 FileSystemScanner::FileSystemScanner(QString path)
@@ -9,7 +10,7 @@ FileSystemScanner::FileSystemScanner(QString path)
     path_ = path;
 }
 
-QList<RawConversationFile*> FileSystemScanner::files()
+std::vector<RawConversationFile*> FileSystemScanner::files()
 {
     QFileInfo item(path_);
     if (!item.exists()) {
@@ -19,7 +20,8 @@ QList<RawConversationFile*> FileSystemScanner::files()
     return _scanItem(item);
 }
 
-QList<RawConversationFile*> FileSystemScanner::_scanItem(const QFileInfo& item)
+std::vector<RawConversationFile*> FileSystemScanner::_scanItem(
+    const QFileInfo& item)
 {
     if (item.isDir()) {
         return _scanDir(QDir(item.filePath()));
@@ -29,26 +31,24 @@ QList<RawConversationFile*> FileSystemScanner::_scanItem(const QFileInfo& item)
         fail("Cannot open file '%s' for reading", qPrintable(item.filePath()));
     }
 
-    QList<RawConversationFile*> results;
-
     // TODO: check if it is an archive, instantiante ArchiveScanner for it
 
-    results.append(new RegularRawConversationFile(item.filePath()));
-
-    return results;
+    return std::vector<RawConversationFile*>{
+        new RegularRawConversationFile(item.filePath())
+    };
 }
 
-QList<RawConversationFile*> FileSystemScanner::_scanDir(const QDir& dir)
+std::vector<RawConversationFile*> FileSystemScanner::_scanDir(const QDir& dir)
 {
     if (!dir.isReadable()) {
         fail("Cannot open directory '%s' for reading", qPrintable(dir.path()));
     }
 
-    QList<RawConversationFile*> results;
+    std::vector<RawConversationFile*> results;
 
     for (const QFileInfo& subItem : dir.entryInfoList(
              QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden)) {
-        results.append(_scanItem(subItem));
+        appendByMoving(results, _scanItem(subItem));
     }
 
     return results;

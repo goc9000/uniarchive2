@@ -1,8 +1,9 @@
 #ifndef RAWCONVERSATIONSOURCE_H
 #define RAWCONVERSATIONSOURCE_H
 
+#include <vector>
+
 #include <QString>
-#include <QList>
 
 #include "model/raw_conversation/RawConversation.h"
 
@@ -12,7 +13,7 @@ class RawConversationSource
 public:
     virtual ~RawConversationSource();
 
-    virtual QList<RawConversation> rawConversations() = 0;
+    virtual std::vector<RawConversation> rawConversations() = 0;
 
     static RawConversationSource* fromSpecification(QString spec);
 protected:

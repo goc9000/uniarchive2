@@ -1,6 +1,8 @@
-#include <tclap/CmdLine.h>
-
 #include "args.h"
+
+#include <algorithm>
+
+#include <tclap/CmdLine.h>
 
 #include "core/about.h"
 #include "utils/fail.h"
@@ -61,7 +63,7 @@ Args::Args(int argc, char* argv[])
             produceEpub ? QString::fromStdString(outEpubArg.getValue()) : "";
 
         foreach (std::string rawValue, sourcesArg.getValue()) {
-            sources.append(QString::fromStdString(rawValue));
+            sources.push_back(QString::fromStdString(rawValue));
         }
 
         sanityCheck();

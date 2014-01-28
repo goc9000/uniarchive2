@@ -5,6 +5,7 @@
 #include "input/file_scanners/FileSystemScanner.h"
 #include "decoders/RawConversationDecoder.h"
 #include "utils/fail.h"
+#include "utils/utils.h"
 
 
 FileSystemRawConversationSource::FileSystemRawConversationSource(QString path)
@@ -12,9 +13,9 @@ FileSystemRawConversationSource::FileSystemRawConversationSource(QString path)
     path_ = path;
 }
 
-QList<RawConversation> FileSystemRawConversationSource::rawConversations()
+std::vector<RawConversation> FileSystemRawConversationSource::rawConversations()
 {
-    QList<RawConversation> results;
+    std::vector<RawConversation> results;
 
     FileSystemScanner scanner(path_);
 
@@ -23,14 +24,13 @@ QList<RawConversation> FileSystemRawConversationSource::rawConversations()
         if (!RawConversationDecoder::isSupportedFormat(file)) {
             warn("File '%s' is not a conversation file in any supported format",
                  qPrintable(file->description()));
-            continue;
         } else {
             anyFound = true;
 
             std::unique_ptr<RawConversationDecoder> decoder(
                 RawConversationDecoder::forRawConversationFile(file));
 
-            results.append(decoder->rawConversations());
+            appendByMoving(results, decoder->rawConversations());
         }
 
         delete file;
