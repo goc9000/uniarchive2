@@ -1,6 +1,7 @@
+#include <memory>
+
 #include <QCoreApplication>
 #include <QTextCodec>
-#include <QScopedPointer>
 #include <QDebug>
 
 #include "core/args.h"
@@ -19,8 +20,9 @@ int main(int argc, char *argv[])
         for (const QString& sourceSpec : args.sources) {
             note("Processing source: %s", qPrintable(sourceSpec));
 
-            QScopedPointer<RawConversationSource> source(
+            std::unique_ptr<RawConversationSource> source(
                 RawConversationSource::fromSpecification(sourceSpec));
+
             for (const RawConversation& rawConv : source->rawConversations()) {
             }
         }

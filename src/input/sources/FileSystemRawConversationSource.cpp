@@ -1,6 +1,6 @@
 #include "FileSystemRawConversationSource.h"
 
-#include <QScopedPointer>
+#include <memory>
 
 #include "input/file_scanners/FileSystemScanner.h"
 #include "decoders/RawConversationDecoder.h"
@@ -16,10 +16,10 @@ QList<RawConversation> FileSystemRawConversationSource::rawConversations()
 {
     QList<RawConversation> results;
 
-    QScopedPointer<FileSystemScanner> scanner(new FileSystemScanner(path_));
+    FileSystemScanner scanner(path_);
 
     bool anyFound = false;
-    for (RawConversationFile *file : scanner->files()) {
+    for (RawConversationFile *file : scanner.files()) {
         if (!RawConversationDecoder::isSupportedFormat(file)) {
             warn("File '%s' is not a conversation file in any supported format",
                  qPrintable(file->description()));
@@ -27,7 +27,7 @@ QList<RawConversation> FileSystemRawConversationSource::rawConversations()
         } else {
             anyFound = true;
 
-            QScopedPointer<RawConversationDecoder> decoder(
+            std::unique_ptr<RawConversationDecoder> decoder(
                 RawConversationDecoder::forRawConversationFile(file));
 
             results.append(decoder->rawConversations());
