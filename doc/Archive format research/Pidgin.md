@@ -51,7 +51,7 @@ Commonalities
   when they cross into a new day.
 - First message date may precede conversation date, if the conversation starts with offline
   messages
-- **Problem**: Sometimes on jabber you get a weird friend id like <random_chars>@public.talk.google.com.
+- **Problem**: Sometimes on jabber you get a weird friend id like (random_chars)@public.talk.google.com.
   It may not be possible to determine the real account if the friend's alias (or a "X is now known as Y"
   message) never appears.
 
@@ -60,37 +60,37 @@ Plaintext Variant
 
 - Sample:
 
-      Conversation with bob123 at Sun 23 Nov 2008 03:28:51 PM EET on alice456 (yahoo)
-      (03:28:57 PM) Alice Allison: Hi Bob
-      (03:29:34 PM) Bob Bundy: Oh hi Alice :)
-      (03:29:42 PM) Alice Allison: last night was great
-      (03:30:56 PM) Alice Allison: we should hang out again sometime
+        Conversation with bob123 at Sun 23 Nov 2008 03:28:51 PM EET on alice456 (yahoo)
+        (03:28:57 PM) Alice Allison: Hi Bob
+        (03:29:34 PM) Bob Bundy: Oh hi Alice :)
+        (03:29:42 PM) Alice Allison: last night was great
+        (03:30:56 PM) Alice Allison: we should hang out again sometime
 
 - Offline messages look like:
 
-      Conversation with bob123 at Mon 03 Dec 2007 09:28:39 PM EET on alice456 (yahoo)
-      (12/03/2007 03:59:34 PM) Bob Bundy: Alice you there?
-	  (12/03/2007 03:59:41 PM) Bob Bundy: helloooo
-	  (12/03/2007 03:59:42 PM) Bob Bundy: echo ... echo
-      (09:28:45 PM) Alice Allison: I am now
+        Conversation with bob123 at Mon 03 Dec 2007 09:28:39 PM EET on alice456 (yahoo)
+        (12/03/2007 03:59:34 PM) Bob Bundy: Alice you there?
+        (12/03/2007 03:59:41 PM) Bob Bundy: helloooo
+        (12/03/2007 03:59:42 PM) Bob Bundy: echo ... echo
+        (09:28:45 PM) Alice Allison: I am now
 
 - **Problem**: There is no quoting in effect for multi-line messages:
 
-      (10:24:00 PM) Alice Allison: Here is a haiku
-      This is the second like
-      And the Haiku has now come to an end
-      (10:24:34 PM) Bob Bundy: nice
+        (10:24:00 PM) Alice Allison: Here is a haiku
+        This is the second like
+        And the Haiku has now come to an end
+        (10:24:34 PM) Bob Bundy: nice
 
 - This is especially problematic when they contain copy-pasted replies:
 
-      (11:50:04 PM) Bob Bundy: This is what I was saying before the connection dropped:
-      (11:40:28 PM) Bob Bundy: helloooo
-      (11:40:32 PM) Bob Bundy: echo.. echo
+        (11:50:04 PM) Bob Bundy: This is what I was saying before the connection dropped:
+        (11:40:28 PM) Bob Bundy: helloooo
+        (11:40:32 PM) Bob Bundy: echo.. echo
 
 - Some lines are system messages, distinguished by the fact that they don't begin with
   "Alias:", e.g.:
 
-      (01:59:42 AM) Alice Allison has signed off.
+        (01:59:42 AM) Alice Allison has signed off.
 
   - The following types are known:
     - `ALIAS logged in.`
@@ -121,7 +121,7 @@ Plaintext Variant
     space at the end, so trimming is recommended.
   - **Quirk**: When you buzz someone, the system message looks like this:
 
-      (20:00:38) : Buzz!!
+          (20:00:38) : Buzz!!
 
 - **Problem**: Even after date rollover correction, message timestamps can
   still show temporal discontinuity. Sometimes this occurs due to offline
