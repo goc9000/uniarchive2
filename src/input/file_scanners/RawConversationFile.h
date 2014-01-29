@@ -9,15 +9,18 @@
 class RawConversationFile
 {
 public:
-    RawConversationFile(QString filename, QString fullPathInfo);
+    RawConversationFile(QString filePath, QString fullPathInfo);
 
+    QString filePath() const;
     QString filename() const;
+    QString basename() const;
+
     QString fullPathInfo() const;
 
     QString description() const;
 
 protected:
-    QString filename_;
+    QString filePath_;
     QString fullPathInfo_;
 };
 

@@ -2,6 +2,8 @@
 
 #include <QString>
 
+#include "decoders/PidginTextFormatDecoder.h"
+
 #include "utils/fail.h"
 
 
@@ -16,14 +18,19 @@ RawConversationDecoder::~RawConversationDecoder()
 
 bool RawConversationDecoder::isSupportedFormat(RawConversationFile* convFile)
 {
-    return false;
+    return PidginTextFormatDecoder::recognize(convFile);
 }
 
 RawConversationDecoderUqPtr RawConversationDecoder::forRawConversationFile(
     RawConversationFile* convFile)
 {
-    fail("Conversation file '%s' is not in a supported format",
-         qPrintable(convFile->description()));
+    if (PidginTextFormatDecoder::recognize(convFile)) {
+        return RawConversationDecoderUqPtr(
+            new PidginTextFormatDecoder(convFile));
+    } else {
+        fail("Conversation file '%s' is not in a supported format",
+             qPrintable(convFile->description()));
 
-    return RawConversationDecoderUqPtr(nullptr);
+        return RawConversationDecoderUqPtr(nullptr);
+    }
 }

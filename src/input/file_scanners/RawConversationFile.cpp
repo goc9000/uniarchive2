@@ -1,15 +1,27 @@
 #include "RawConversationFile.h"
 
+#include <QFileInfo>
 
-RawConversationFile::RawConversationFile(QString filename, QString fullPathInfo)
+
+RawConversationFile::RawConversationFile(QString filePath, QString fullPathInfo)
 {
-    filename_ = filename;
+    filePath_ = filePath;
     fullPathInfo_ = fullPathInfo;
+}
+
+QString RawConversationFile::filePath() const
+{
+    return filePath_;
 }
 
 QString RawConversationFile::filename() const
 {
-    return filename_;
+    return QFileInfo(filePath_).fileName();
+}
+
+QString RawConversationFile::basename() const
+{
+    return QFileInfo(filePath_).baseName();
 }
 
 QString RawConversationFile::fullPathInfo() const
@@ -19,5 +31,5 @@ QString RawConversationFile::fullPathInfo() const
 
 QString RawConversationFile::description() const
 {
-    return filename_;
+    return filePath_;
 }
