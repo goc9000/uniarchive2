@@ -62,7 +62,7 @@ Args::Args(int argc, char* argv[])
         outEpubFilename =
             produceEpub ? QString::fromStdString(outEpubArg.getValue()) : "";
 
-        foreach (std::string rawValue, sourcesArg.getValue()) {
+        for (const std::string& rawValue : sourcesArg.getValue()) {
             sources.push_back(QString::fromStdString(rawValue));
         }
 
