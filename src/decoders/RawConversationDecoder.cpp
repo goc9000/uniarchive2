@@ -14,13 +14,13 @@ RawConversationDecoder::~RawConversationDecoder()
 {
 }
 
-bool RawConversationDecoder::isSupportedFormat(RawConversationFile *convFile)
+bool RawConversationDecoder::isSupportedFormat(RawConversationFile* convFile)
 {
     return false;
 }
 
 RawConversationDecoderUqPtr RawConversationDecoder::forRawConversationFile(
-    RawConversationFile *convFile)
+    RawConversationFile* convFile)
 {
     fail("Conversation file '%s' is not in a supported format",
          qPrintable(convFile->description()));

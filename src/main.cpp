@@ -10,7 +10,7 @@
 #include "input/sources/RawConversationSource.h"
 
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 

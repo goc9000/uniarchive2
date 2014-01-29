@@ -23,6 +23,6 @@ void appendByMoving(std::vector<T>& destination, std::vector<T>&& source)
                        std::make_move_iterator(source.end()));
 }
 
-std::string vsprintfToStdString(const char * formatStr, va_list args);
+std::string vsprintfToStdString(const char* formatStr, va_list args);
 
 #endif // UTILS_H

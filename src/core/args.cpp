@@ -67,7 +67,7 @@ Args::Args(int argc, char* argv[])
         }
 
         sanityCheck();
-    } catch (TCLAP::ArgException &e) {
+    } catch (TCLAP::ArgException& e) {
         fail("Error processing argument %s: %s", e.argId().c_str(),
              e.error().c_str());
     }

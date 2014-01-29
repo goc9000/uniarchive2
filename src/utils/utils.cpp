@@ -4,7 +4,7 @@
 
 #define DEFAULT_STR_BUFFER_SIZE 512
 
-std::string vsprintfToStdString(const char * formatStr, va_list args)
+std::string vsprintfToStdString(const char* formatStr, va_list args)
 {
     char buf[DEFAULT_STR_BUFFER_SIZE];
 
@@ -17,7 +17,7 @@ std::string vsprintfToStdString(const char * formatStr, va_list args)
         return std::string(buf);
     }
 
-    char *largerBuf = new char[strSize + 1];
+    char* largerBuf = new char[strSize + 1];
 
     vsnprintf(largerBuf, strSize + 1, formatStr, argsCopy);
     va_end(argsCopy);
