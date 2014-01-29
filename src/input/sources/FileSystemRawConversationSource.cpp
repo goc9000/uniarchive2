@@ -20,20 +20,18 @@ std::vector<RawConversation> FileSystemRawConversationSource::rawConversations()
     FileSystemScanner scanner(path_);
 
     bool anyFound = false;
-    for (RawConversationFile *file : scanner.files()) {
-        if (!RawConversationDecoder::isSupportedFormat(file)) {
+    for (RawConversationFileUqPtr& file : scanner.files()) {
+        if (!RawConversationDecoder::isSupportedFormat(file.get())) {
             warn("File '%s' is not a conversation file in any supported format",
                  qPrintable(file->description()));
         } else {
             anyFound = true;
 
-            std::unique_ptr<RawConversationDecoder> decoder(
-                RawConversationDecoder::forRawConversationFile(file));
+            RawConversationDecoderUqPtr decoder =
+                RawConversationDecoder::forRawConversationFile(file.get());
 
             appendByMoving(results, decoder->rawConversations());
         }
-
-        delete file;
     }
 
     if (!anyFound) {

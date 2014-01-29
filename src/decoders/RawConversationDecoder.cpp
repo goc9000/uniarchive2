@@ -19,11 +19,11 @@ bool RawConversationDecoder::isSupportedFormat(RawConversationFile *convFile)
     return false;
 }
 
-RawConversationDecoder* RawConversationDecoder::forRawConversationFile(
+RawConversationDecoderUqPtr RawConversationDecoder::forRawConversationFile(
     RawConversationFile *convFile)
 {
     fail("Conversation file '%s' is not in a supported format",
          qPrintable(convFile->description()));
 
-    return nullptr;
+    return RawConversationDecoderUqPtr(nullptr);
 }

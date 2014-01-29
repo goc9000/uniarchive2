@@ -1,6 +1,8 @@
 #ifndef RAWCONVERSATIONFILE_H
 #define RAWCONVERSATIONFILE_H
 
+#include <memory>
+
 #include <QString>
 
 
@@ -18,5 +20,7 @@ protected:
     QString filename_;
     QString fullPathInfo_;
 };
+
+typedef std::unique_ptr<RawConversationFile> RawConversationFileUqPtr;
 
 #endif // RAWCONVERSATIONFILE_H

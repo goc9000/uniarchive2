@@ -12,12 +12,14 @@ RawConversationSource::~RawConversationSource()
 {
 }
 
-RawConversationSource* RawConversationSource::fromSpecification(QString spec)
+RawConversationSourceUqPtr
+RawConversationSource::fromSpecification(QString spec)
 {
-    return new FileSystemRawConversationSource(spec);
+    return
+        RawConversationSourceUqPtr(new FileSystemRawConversationSource(spec));
 
     fail("'%s' is not recognized as a valid source of conversations",
          qPrintable(spec));
 
-    return nullptr;
+    return RawConversationSourceUqPtr(nullptr);
 }

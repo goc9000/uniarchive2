@@ -15,11 +15,11 @@ class FileSystemScanner
 public:
     FileSystemScanner(QString path);
 
-    std::vector<RawConversationFile*> files();
+    std::vector<RawConversationFileUqPtr> files();
 
 protected:
-    std::vector<RawConversationFile*> _scanItem(const QFileInfo& item);
-    std::vector<RawConversationFile*> _scanDir(const QDir& item);
+    std::vector<RawConversationFileUqPtr> _scanItem(const QFileInfo& item);
+    std::vector<RawConversationFileUqPtr> _scanDir(const QDir& item);
 
     QString path_;
 };

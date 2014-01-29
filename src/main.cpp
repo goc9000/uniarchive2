@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
         for (const QString& sourceSpec : args.sources) {
             note("Processing source: %s", qPrintable(sourceSpec));
 
-            std::unique_ptr<RawConversationSource> source(
-                RawConversationSource::fromSpecification(sourceSpec));
+            RawConversationSourceUqPtr source =
+                RawConversationSource::fromSpecification(sourceSpec);
 
             for (const RawConversation& rawConv : source->rawConversations()) {
             }
