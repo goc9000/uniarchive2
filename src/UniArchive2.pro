@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     input/file_scanners/RawConversationFile.cpp \
     input/file_scanners/RegularRawConversationFile.cpp \
     decoders/RawConversationDecoder.cpp \
-    decoders/PidginTextFormatDecoder.cpp
+    decoders/PidginTextFormatDecoder.cpp \
+    utils/qt_utils.cpp
 
 HEADERS += \
     core/args.h \
@@ -44,4 +45,5 @@ HEADERS += \
     input/file_scanners/RawConversationFile.h \
     input/file_scanners/RegularRawConversationFile.h \
     decoders/RawConversationDecoder.h \
-    decoders/PidginTextFormatDecoder.h
+    decoders/PidginTextFormatDecoder.h \
+    utils/qt_utils.h

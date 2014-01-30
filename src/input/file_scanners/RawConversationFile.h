@@ -4,18 +4,29 @@
 #include <memory>
 
 #include <QString>
+#include <QIODevice>
+#include <QByteArray>
+
+#include "utils/qt_utils.h"
 
 
 class RawConversationFile
 {
 public:
     RawConversationFile(QString filePath, QString fullPathInfo);
+    virtual ~RawConversationFile();
 
     QString filePath() const;
     QString filename() const;
     QString basename() const;
 
     QString fullPathInfo() const;
+
+    virtual QIODeviceUqPtr openBinary() const = 0;
+    virtual QTextStreamUqPtr openUtf8();
+
+    virtual QByteArray allData();
+    virtual QString allUtf8Text();
 
     QString description() const;
 

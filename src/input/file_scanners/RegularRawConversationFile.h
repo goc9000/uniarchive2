@@ -9,6 +9,8 @@ class RegularRawConversationFile : public RawConversationFile
 public:
     RegularRawConversationFile(QString filename);
 
+    QIODeviceUqPtr openBinary() const;
+
     static QString getFullPathInfo(QString filename);
 };
 
