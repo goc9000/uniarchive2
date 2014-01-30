@@ -2,6 +2,8 @@
 
 #include <QRegExp>
 
+#include "utils/fail.h"
+
 
 static QRegExp PAT_PIDGIN_FILE(
     R"(^\d{4}-\d{2}-\d{2}\.\d{6}([+-]\d{4}\w*)?\.txt$)");
@@ -10,6 +12,8 @@ static QRegExp PAT_PIDGIN_FILE(
 std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 {
     std::vector<RawConversation> result;
+
+    ErrorContext context("Decoding as Pidgin Text Format");
 
     return result;
 }

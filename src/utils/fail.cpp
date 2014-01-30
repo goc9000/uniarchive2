@@ -6,47 +6,49 @@
 #include "utils/utils.h"
 
 
-void fail(const char* formatStr, ...)
-{
-    va_list vl;
+static std::vector<std::string> activeErrorContexts;
 
-    va_start(vl, formatStr);
-    std::string message = vsprintfToStdString(formatStr, vl);
+
+static void appendErrorContextInfo(std::string &message)
+{
+    for (int i = ((int)activeErrorContexts.size()) - 1; i >= 0; i--) {
+        message.append(std::string("\n  ") + activeErrorContexts[i]);
+    }
+}
+
+
+#define formatMessageInVarArgs(formatStr, message) \
+    va_list vl; \
+    va_start(vl, formatStr); \
+    std::string message = vsprintfToStdString(formatStr, vl); \
     va_end(vl);
 
+
+void fail(const char* formatStr, ...)
+{
+    formatMessageInVarArgs(formatStr, message);
+    appendErrorContextInfo(message);
     throw std::runtime_error(message);
 }
 
 void warn(const char* formatStr, ...)
 {
-    va_list vl;
-
-    va_start(vl, formatStr);
-    std::string message = vsprintfToStdString(formatStr, vl);
-    va_end(vl);
-
+    formatMessageInVarArgs(formatStr, message);
+    appendErrorContextInfo(message);
     printLogMessage(LogMessageType::WARNING, message);
 }
 
 void note(const char* formatStr, ...)
 {
-    va_list vl;
-
-    va_start(vl, formatStr);
-    std::string message = vsprintfToStdString(formatStr, vl);
-    va_end(vl);
-
+    formatMessageInVarArgs(formatStr, message);
+    appendErrorContextInfo(message);
     printLogMessage(LogMessageType::NOTICE, message);
 }
 
 void debug(const char* formatStr, ...)
 {
-    va_list vl;
-
-    va_start(vl, formatStr);
-    std::string message = vsprintfToStdString(formatStr, vl);
-    va_end(vl);
-
+    formatMessageInVarArgs(formatStr, message);
+    appendErrorContextInfo(message);
     printLogMessage(LogMessageType::DEBUG, message);
 }
 
@@ -81,4 +83,34 @@ void printLogMessage(LogMessageType messageType, const std::string& message)
     }
 
     std::cerr << std::endl;
+}
+
+
+ErrorContext::ErrorContext(const char* formatStr, ...)
+{
+    formatMessageInVarArgs(formatStr, message);
+
+    activeErrorContexts.push_back(message);
+    active_ = true;
+}
+
+ErrorContext::~ErrorContext()
+{
+    finish();
+}
+
+void ErrorContext::update(const char* formatStr, ...)
+{
+    formatMessageInVarArgs(formatStr, message);
+    finish();
+    activeErrorContexts.push_back(message);
+    active_ = true;
+}
+
+void ErrorContext::finish()
+{
+    if (active_) {
+        activeErrorContexts.pop_back();
+        active_ = false;
+    }
 }
