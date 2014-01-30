@@ -25,7 +25,7 @@ void warn(const char* formatStr, ...)
     std::string message = vsprintfToStdString(formatStr, vl);
     va_end(vl);
 
-    printLogMessage(LOG_MSG_WARNING, message);
+    printLogMessage(LogMessageType::WARNING, message);
 }
 
 void note(const char* formatStr, ...)
@@ -36,7 +36,7 @@ void note(const char* formatStr, ...)
     std::string message = vsprintfToStdString(formatStr, vl);
     va_end(vl);
 
-    printLogMessage(LOG_MSG_NOTICE, message);
+    printLogMessage(LogMessageType::NOTICE, message);
 }
 
 void debug(const char* formatStr, ...)
@@ -47,12 +47,12 @@ void debug(const char* formatStr, ...)
     std::string message = vsprintfToStdString(formatStr, vl);
     va_end(vl);
 
-    printLogMessage(LOG_MSG_DEBUG, message);
+    printLogMessage(LogMessageType::DEBUG, message);
 }
 
 void printException(const std::exception& exception)
 {
-    printLogMessage(LOG_MSG_ERROR, std::string(exception.what()));
+    printLogMessage(LogMessageType::ERROR, std::string(exception.what()));
 }
 
 void printLogMessage(LogMessageType messageType, const std::string& message)
@@ -63,11 +63,11 @@ void printLogMessage(LogMessageType messageType, const std::string& message)
 
     std::string prefix = "";
     std::string color = "";
-    switch (messageType) {//color = "31;1";
-    case LOG_MSG_ERROR:   prefix = "ERROR: ";   color = "31;1"; break;
-    case LOG_MSG_WARNING: prefix = "WARNING: "; color = "33;1"; break;
-    case LOG_MSG_NOTICE:  prefix = "NOTE: ";    color = "36;1"; break;
-    case LOG_MSG_DEBUG:   prefix = "DEBUG: ";   color = "37"; break;
+    switch (messageType) {
+    case LogMessageType::ERROR:   prefix = "ERROR: ";   color = "31;1"; break;
+    case LogMessageType::WARNING: prefix = "WARNING: "; color = "33;1"; break;
+    case LogMessageType::NOTICE:  prefix = "NOTE: ";    color = "36;1"; break;
+    case LogMessageType::DEBUG:   prefix = "DEBUG: ";   color = "37"; break;
     }
 
     if (useColors) {

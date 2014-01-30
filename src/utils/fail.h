@@ -3,11 +3,11 @@
 
 #include <stdexcept>
 
-enum LogMessageType {
-    LOG_MSG_ERROR,
-    LOG_MSG_WARNING,
-    LOG_MSG_NOTICE,
-    LOG_MSG_DEBUG
+enum class LogMessageType {
+    ERROR,
+    WARNING,
+    NOTICE,
+    DEBUG
 };
 
 void fail(const char* formatStr, ...);
