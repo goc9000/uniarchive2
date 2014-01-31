@@ -11,6 +11,10 @@ Design Notes
 - Caveats and surprises:
   - It is possible to have conversations between accounts that both belong to you
 
+- It is best to be able to store both the "local time" and "timezone" components of a date. The local time is useful
+  for display and semantics, while the time with respect to UTC is useful in correctly interleaving conversations and
+  replies
+
 - RawConversationSource = extracts any number of RawConversations from some source (filesystem, database, network etc.)
   Crucial to its definition:
     - does not attempt to infer missing data, only represent in a common format all the data in the convo

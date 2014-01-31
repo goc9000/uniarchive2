@@ -13,9 +13,9 @@ Commonalities
   
   `logs/jabber/alice@gmail.com/bob@gmail.com/2007-12-02.233301+0200EET.txt`
 
-  - Some old versions of Pidgin do not seem to attach timezone info
-    - **Problem**: Does this mean it automatically converts to UTC, or does it just omit TZ
-      info and we have to guess it?
+  - **Problem**: Some old versions of Pidgin omit the timezone info. The timestamp is *not* converted to
+    UTC - it represents the local time as seen at the time of the conversation.
+    - Perhaps we can guess the timezone by looking at the time of the last reply vs. the file modification date?
 
 - For conferences, the filename format is:
 
