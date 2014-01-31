@@ -13,7 +13,7 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 {
     std::vector<RawConversation> result;
 
-    ErrorContext context("Decoding as Pidgin Text Format");
+    ErrorContext context("while decoding as Pidgin Text Format");
 
     return result;
 }

@@ -27,6 +27,9 @@ std::vector<RawConversation> FileSystemRawConversationSource::rawConversations()
         } else {
             anyFound = true;
 
+            ErrorContext errContext("in file '%s'",
+                                    qPrintable(file->description()));
+
             RawConversationDecoderUqPtr decoder =
                 RawConversationDecoder::forRawConversationFile(file.get());
 
