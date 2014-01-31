@@ -3,6 +3,8 @@
 #include <QFileInfo>
 #include <QTextCodec>
 
+#include "utils/fail.h"
+
 
 RawConversationFile::RawConversationFile(QString filePath, QString fullPathInfo)
 {
@@ -50,7 +52,15 @@ QByteArray RawConversationFile::allData()
 
 QString RawConversationFile::allUtf8Text()
 {
-    return openUtf8()->readAll();
+    QTextStreamUqPtr reader = openUtf8();
+
+    QString text = reader->readAll();
+
+    if (reader->status() != QTextStream::Ok) {
+        fail("Cannot read file as UTF-8 text");
+    }
+
+    return text;
 }
 
 QString RawConversationFile::description() const
