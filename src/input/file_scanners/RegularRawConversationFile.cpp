@@ -6,9 +6,11 @@
 
 
 RegularRawConversationFile::RegularRawConversationFile(QString filename)
-    : RawConversationFile(filename,
-                          RegularRawConversationFile::getFullPathInfo(filename))
+    : RawConversationFile(filename)
 {
+    fullPathInfo_ = RegularRawConversationFile::getFullPathInfo(filename);
+    lastChangeDate_ =
+        TimeStamp::fromLocalTime(QFileInfo(filename).lastModified());
 }
 
 QIODeviceUqPtr RegularRawConversationFile::openBinary() const

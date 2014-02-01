@@ -15,7 +15,7 @@ public:
     TimeStamp(QDate date, QTime time=QTime(),
               TimeZoneInfo timeZone=TimeZoneInfo())
         : date(date), time(time), timeZone(timeZone) {}
-    TimeStamp(QTime time=QTime(), TimeZoneInfo timeZone=TimeZoneInfo())
+    TimeStamp(QTime time, TimeZoneInfo timeZone=TimeZoneInfo())
         : date(), time(time), timeZone(timeZone) {}
 
     bool isNull() const;
@@ -28,6 +28,8 @@ public:
     QDate date;
     QTime time;
     TimeZoneInfo timeZone;
+
+    static TimeStamp fromLocalTime(QDateTime localTime);
 };
 
 #endif // DATE_H

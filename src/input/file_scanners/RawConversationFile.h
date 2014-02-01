@@ -8,12 +8,15 @@
 #include <QByteArray>
 
 #include "utils/qt_utils.h"
+#include "model/time/TimeStamp.h"
 
 
 class RawConversationFile
 {
 public:
-    RawConversationFile(QString filePath, QString fullPathInfo);
+    RawConversationFile(QString filePath,
+                        QString fullPathInfo="",
+                        TimeStamp lastChangeDate=TimeStamp());
     virtual ~RawConversationFile();
 
     QString filePath() const;
@@ -21,6 +24,7 @@ public:
     QString basename() const;
 
     QString fullPathInfo() const;
+    TimeStamp lastChangeDate() const;
 
     virtual QIODeviceUqPtr openBinary() const = 0;
     virtual QTextStreamUqPtr openUtf8();
@@ -33,6 +37,7 @@ public:
 protected:
     QString filePath_;
     QString fullPathInfo_;
+    TimeStamp lastChangeDate_;
 };
 
 typedef std::unique_ptr<RawConversationFile> RawConversationFileUqPtr;

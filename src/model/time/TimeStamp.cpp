@@ -40,3 +40,12 @@ void TimeStamp::setNull()
     time = QTime();
     timeZone.setNull();
 }
+
+TimeStamp TimeStamp::fromLocalTime(QDateTime localTime)
+{
+    QDateTime absoluteTime = localTime.toUTC();
+
+    return TimeStamp(absoluteTime.date(),
+                     absoluteTime.time(),
+                     TimeZoneInfo::UTC());
+}

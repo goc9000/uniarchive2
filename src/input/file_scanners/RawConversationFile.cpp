@@ -6,10 +6,13 @@
 #include "utils/fail.h"
 
 
-RawConversationFile::RawConversationFile(QString filePath, QString fullPathInfo)
+RawConversationFile::RawConversationFile(QString filePath,
+                                         QString fullPathInfo,
+                                         TimeStamp lastChangeDate)
 {
     filePath_ = filePath;
     fullPathInfo_ = fullPathInfo;
+    lastChangeDate_ = lastChangeDate;
 }
 
 RawConversationFile::~RawConversationFile()
@@ -34,6 +37,11 @@ QString RawConversationFile::basename() const
 QString RawConversationFile::fullPathInfo() const
 {
     return fullPathInfo_;
+}
+
+TimeStamp RawConversationFile::lastChangeDate() const
+{
+    return lastChangeDate_;
 }
 
 QTextStreamUqPtr RawConversationFile::openUtf8()
