@@ -28,7 +28,7 @@ QString RawConversationFile::filename() const
 
 QString RawConversationFile::basename() const
 {
-    return QFileInfo(filePath_).baseName();
+    return QFileInfo(filePath_).completeBaseName();
 }
 
 QString RawConversationFile::fullPathInfo() const

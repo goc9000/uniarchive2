@@ -2,6 +2,7 @@
 
 #include <QRegExp>
 #include <QStringList>
+#include <QDateTime>
 
 #include "utils/fail.h"
 
@@ -22,13 +23,18 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
         return result;
     }
 
+    TimeStamp conversationDate = _parseConversationDate(convFile_->basename());
+    if (!conversationDate.hasTimeZoneInfo()) {
+        warn("Timezone information absent");
+    }
+
     return result;
 }
 
 bool PidginTextFormatDecoder::recognize(RawConversationFile *convFile)
 {
     static QRegExp PAT_PIDGIN_FILE(
-        R"(^\d{4}-\d{2}-\d{2}\.\d{6}([+-]\d{4}\w*)?\.txt$)");
+        R"(^\d{4}-\d\d-\d\d\.\d{6}([+-]\d{4}\w*)?\.txt$)");
 
     return PAT_PIDGIN_FILE.exactMatch(convFile->filename());
 }
@@ -88,3 +94,26 @@ IMProtocol PidginTextFormatDecoder::_parseProtocol(QString protoText)
     return IMProtocol::INVALID;
 }
 
+TimeStamp PidginTextFormatDecoder::_parseConversationDate(QString dateText)
+{
+    static QRegExp PAT_CONV_DATE(
+        R"(^(\d{4}-\d\d-\d\d)\.(\d{6})([+-]\d{4}\w*)?$)");
+
+    if (!PAT_CONV_DATE.exactMatch(dateText)) {
+        fail("Invalid conversation date format: '%s'", qPrintable(dateText));
+    }
+
+    QStringList parts = PAT_CONV_DATE.capturedTexts();
+
+    QDate date = QDate::fromString(parts[1], "yyyy-MM-dd");
+    if (!date.isValid()) {
+        fail("Invalid date specification: '%s'", qPrintable(parts[1]));
+    }
+    QTime time = QTime::fromString(parts[2], "hhmmss");
+    if (!time.isValid()) {
+        fail("Invalid time specification: '%s", qPrintable(parts[2]));
+    }
+    TimeZoneInfo timeZone = TimeZoneInfo::fromString(parts[3]);
+
+    return TimeStamp(date, time, timeZone);
+}

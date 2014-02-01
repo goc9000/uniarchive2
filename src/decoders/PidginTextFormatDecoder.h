@@ -3,6 +3,7 @@
 
 #include "decoders/TextBasedDecoder.h"
 #include "model/constants.h"
+#include "model/time/TimeStamp.h"
 
 
 class PidginTextFormatDecoder : public TextBasedDecoder
@@ -19,6 +20,7 @@ private:
     void _parseFriendId(QString idText, QString& outFriendId,
                         bool& outIsConference);
     IMProtocol _parseProtocol(QString protoText);
+    TimeStamp _parseConversationDate(QString dateText);
 };
 
 #endif // PIDGINTEXTFORMATDECODER_H
