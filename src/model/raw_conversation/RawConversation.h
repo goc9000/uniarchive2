@@ -24,6 +24,8 @@ public:
     std::vector<RawAccount> friendAccounts;
 
     bool isNull() const;
+
+    void dump() const;
 };
 
 #endif // RAWCONVERSATION_H

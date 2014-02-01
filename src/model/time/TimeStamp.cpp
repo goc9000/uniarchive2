@@ -15,6 +15,10 @@ QString TimeStamp::description() const
 {
     QString desc;
 
+    if (isNull()) {
+        return "<no date>";
+    }
+
     if (!date.isNull()) {
         desc.append(date.toString("yyyy-MM-dd"));
     }
