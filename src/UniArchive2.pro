@@ -33,7 +33,9 @@ SOURCES += main.cpp \
     decoders/PidginTextFormatDecoder.cpp \
     utils/qt_utils.cpp \
     decoders/TextBasedDecoder.cpp \
-    model/constants.cpp
+    model/constants.cpp \
+    model/time/TimeStamp.cpp \
+    model/time/TimeZoneInfo.cpp
 
 HEADERS += \
     core/args.h \
@@ -50,4 +52,6 @@ HEADERS += \
     decoders/PidginTextFormatDecoder.h \
     utils/qt_utils.h \
     decoders/TextBasedDecoder.h \
-    model/constants.h
+    model/constants.h \
+    model/time/TimeStamp.h \
+    model/time/TimeZoneInfo.h
