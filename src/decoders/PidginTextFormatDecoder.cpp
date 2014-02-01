@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QDateTime>
 
+#include "model/raw_conversation/RawAccount.h"
 #include "utils/fail.h"
 
 
@@ -11,24 +12,47 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 {
     ErrorContext context("while decoding as Pidgin Text Format");
 
+    RawConversation conversation = _getConversationBasics();
+
+    if (conversation.isNull()) {
+        warn("File is empty");
+        return std::vector<RawConversation>();
+    }
+
+    // TODO: read replies
+
+    if (!conversation.date.hasTimeZoneInfo()) {
+        // TODO: try to fix absent timezone info using convFile_->
+        // lastChangeDate() vs. last reply date
+        warn("Timezone information absent");
+    }
+
+    std::vector<RawConversation> result;
+    result.push_back(conversation);
+
+    return result;
+}
+
+RawConversation PidginTextFormatDecoder::_getConversationBasics()
+{
     _startReading();
 
     QString myId, friendId;
     IMProtocol protocol;
     bool isConference;
 
-    std::vector<RawConversation> result;
     if (!_readHeader(myId, friendId, protocol, isConference)) {
-        warn("File is empty");
-        return result;
+        return RawConversation();
     }
 
-    TimeStamp conversationDate = _parseConversationDate(convFile_->basename());
-    if (!conversationDate.hasTimeZoneInfo()) {
-        warn("Timezone information absent");
-    }
+    RawConversation conversation(_parseConversationDate(convFile_->basename()),
+                                 isConference ? ConversationKind::CONFERENCE
+                                              : ConversationKind::ONE_ON_ONE,
+                                 RawAccount(myId, protocol));
 
-    return result;
+    conversation.friendAccounts.emplace_back(RawAccount(friendId, protocol));
+
+    return conversation;
 }
 
 bool PidginTextFormatDecoder::recognize(RawConversationFile *convFile)

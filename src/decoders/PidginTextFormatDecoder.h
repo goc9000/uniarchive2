@@ -15,6 +15,7 @@ public:
 
     static bool recognize(RawConversationFile *convFile);
 private:
+    RawConversation _getConversationBasics();
     bool _readHeader(QString& outMyId, QString& outFriendId,
                      IMProtocol &outProtocol, bool& outIsConference);
     void _parseFriendId(QString idText, QString& outFriendId,

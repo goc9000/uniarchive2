@@ -1,5 +1,6 @@
 #include "RawConversation.h"
 
-RawConversation::RawConversation()
+bool RawConversation::isNull() const
 {
+    return date.isNull() && myAccount.isNull();
 }

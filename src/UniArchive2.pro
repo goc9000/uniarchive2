@@ -35,7 +35,8 @@ SOURCES += main.cpp \
     decoders/TextBasedDecoder.cpp \
     model/constants.cpp \
     model/time/TimeStamp.cpp \
-    model/time/TimeZoneInfo.cpp
+    model/time/TimeZoneInfo.cpp \
+    model/raw_conversation/RawAccount.cpp
 
 HEADERS += \
     core/args.h \
@@ -54,4 +55,5 @@ HEADERS += \
     decoders/TextBasedDecoder.h \
     model/constants.h \
     model/time/TimeStamp.h \
-    model/time/TimeZoneInfo.h
+    model/time/TimeZoneInfo.h \
+    model/raw_conversation/RawAccount.h
