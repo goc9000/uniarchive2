@@ -43,3 +43,31 @@ void RawConversation::dump() const
     std::cout << ":";
     std::cout << std::endl;
 }
+
+RawAccount* RawConversation::getAccount(QString id, IMProtocol protocol) const
+{
+    if ((myAccount->id == id) && (myAccount->protocol == protocol)) {
+        return myAccount.get();
+    }
+
+    for (const RawAccountUqPtr& frAccount : friendAccounts) {
+        if ((frAccount->id == id) && (frAccount->protocol == protocol)) {
+            return frAccount.get();
+        }
+    }
+
+    return nullptr;
+}
+
+RawAccount* RawConversation::addFriendAccount(QString id, IMProtocol protocol)
+{
+    RawAccount* account = getAccount(id, protocol);
+    if (account) {
+        return account;
+    }
+
+    account = new RawAccount(id, protocol);
+    friendAccounts.emplace_back(RawAccountUqPtr(account));
+
+    return account;
+}

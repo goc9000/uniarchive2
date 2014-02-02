@@ -26,6 +26,9 @@ public:
     bool isNull() const;
 
     void dump() const;
+
+    RawAccount* getAccount(QString id, IMProtocol protocol) const;
+    RawAccount* addFriendAccount(QString id, IMProtocol protocol);
 };
 
 #endif // RAWCONVERSATION_H

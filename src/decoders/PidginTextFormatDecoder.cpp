@@ -58,8 +58,7 @@ RawConversation PidginTextFormatDecoder::_getConversationBasics()
                                               : ConversationKind::ONE_ON_ONE,
                                  RawAccount(myId, protocol));
 
-    conversation.friendAccounts.emplace_back(
-        RawAccountUqPtr(new RawAccount(friendId, protocol)));
+    conversation.addFriendAccount(friendId, protocol);
 
     return conversation;
 }
