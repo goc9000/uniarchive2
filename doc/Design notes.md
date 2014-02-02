@@ -18,6 +18,7 @@ Design Notes
 - RawConversationSource = extracts any number of RawConversations from some source (filesystem, database, network etc.)
   Crucial to its definition:
     - does not attempt to infer missing data, only represent in a common format all the data in the convo
+      - Exception: decoders may apply corrections that are very specific to a particular archive format
     - does not attempt to integrate with other sources and/or compare
     - somewhat like the Map phase in MapReduce
 - RawConversation = conversation in a unified format, but with possibly incomplete, ambiguous or undetermined info.
