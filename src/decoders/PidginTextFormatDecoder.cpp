@@ -33,6 +33,14 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
     return result;
 }
 
+bool PidginTextFormatDecoder::recognize(RawConversationFile *convFile)
+{
+    static QRegExp PAT_PIDGIN_FILE(
+        R"(^\d{4}-\d\d-\d\d\.\d{6}([+-]\d{4}\w*)?\.txt$)");
+
+    return PAT_PIDGIN_FILE.exactMatch(convFile->filename());
+}
+
 RawConversation PidginTextFormatDecoder::_getConversationBasics()
 {
     _startReading();
@@ -55,16 +63,8 @@ RawConversation PidginTextFormatDecoder::_getConversationBasics()
     return conversation;
 }
 
-bool PidginTextFormatDecoder::recognize(RawConversationFile *convFile)
-{
-    static QRegExp PAT_PIDGIN_FILE(
-        R"(^\d{4}-\d\d-\d\d\.\d{6}([+-]\d{4}\w*)?\.txt$)");
-
-    return PAT_PIDGIN_FILE.exactMatch(convFile->filename());
-}
-
 bool PidginTextFormatDecoder::_readHeader(QString& outMyId,
-        QString& outFriendId, IMProtocol &outProtocol, bool& outIsConference)
+    QString& outFriendId, IMProtocol &outProtocol, bool& outIsConference)
 {
     static QRegExp PAT_HEADER_LINE(
         R"(^Conversation with ([^ ]+) at (.+) on ([^ ]+) \((\w+)\)$)");
