@@ -9,11 +9,13 @@ void TextBasedDecoder::_startReading()
 {
     reader_ = convFile_->openUtf8();
     nextLineNo_ = 1;
+    nextLineBuffered_ = false;
 }
 
 QString TextBasedDecoder::_readNextLine()
 {
-    QString line = reader_->readLine();
+    QString line = nextLineBuffered_ ? nextLine_ : reader_->readLine();
+    nextLineBuffered_ = false;
 
     switch (reader_->status()) {
     case QTextStream::Ok:
@@ -32,4 +34,14 @@ QString TextBasedDecoder::_readNextLine()
     }
 
     return QString::Null();
+}
+
+QString TextBasedDecoder::_peekNextLine()
+{
+    if (!nextLineBuffered_) {
+        nextLine_ = reader_->readLine();
+        nextLineBuffered_ = true;
+    }
+
+    return nextLine_;
 }

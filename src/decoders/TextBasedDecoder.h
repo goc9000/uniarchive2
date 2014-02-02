@@ -12,9 +12,13 @@ public:
 protected:
     void _startReading();
     QString _readNextLine();
+    QString _peekNextLine();
 
     QTextStreamUqPtr reader_;
     int nextLineNo_;
+
+    bool nextLineBuffered_;
+    QString nextLine_;
 };
 
 #endif // TEXTBASEDDECODER_H
