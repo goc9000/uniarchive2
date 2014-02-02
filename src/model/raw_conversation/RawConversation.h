@@ -12,16 +12,16 @@ class RawConversation
 {
 public:
     RawConversation()
-        : date(), kind(ConversationKind::INVALID), myAccount() {}
-    RawConversation(TimeStamp date, ConversationKind kind,
-                    RawAccount myAccount)
-        : date(date), kind(kind), myAccount(myAccount) {}
+        : date(), kind(ConversationKind::INVALID), myAccount(nullptr) {}
+    RawConversation(TimeStamp date, ConversationKind kind, RawAccount myAccount)
+        : date(date), kind(kind), myAccount(new RawAccount(myAccount)) {}
+    RawConversation(RawConversation&& other);
 
     TimeStamp date;
     ConversationKind kind;
 
-    RawAccount myAccount;
-    std::vector<RawAccount> friendAccounts;
+    RawAccountUqPtr myAccount;
+    std::vector<RawAccountUqPtr> friendAccounts;
 
     bool isNull() const;
 

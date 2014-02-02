@@ -28,7 +28,7 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
     }
 
     std::vector<RawConversation> result;
-    result.push_back(conversation);
+    result.push_back(std::move(conversation));
 
     return result;
 }
@@ -58,7 +58,8 @@ RawConversation PidginTextFormatDecoder::_getConversationBasics()
                                               : ConversationKind::ONE_ON_ONE,
                                  RawAccount(myId, protocol));
 
-    conversation.friendAccounts.emplace_back(RawAccount(friendId, protocol));
+    conversation.friendAccounts.emplace_back(
+        RawAccountUqPtr(new RawAccount(friendId, protocol)));
 
     return conversation;
 }

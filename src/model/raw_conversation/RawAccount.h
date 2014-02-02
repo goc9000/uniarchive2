@@ -3,8 +3,13 @@
 
 #include <QString>
 
+#include <memory>
+
 #include "model/constants.h"
 
+
+class RawAccount;
+typedef std::unique_ptr<RawAccount> RawAccountUqPtr;
 
 class RawAccount
 {
