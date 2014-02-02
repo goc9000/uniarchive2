@@ -14,7 +14,7 @@ protected:
     QString _readNextLine();
 
     QTextStreamUqPtr reader_;
-    int currentLineNo_;
+    int nextLineNo_;
 };
 
 #endif // TEXTBASEDDECODER_H

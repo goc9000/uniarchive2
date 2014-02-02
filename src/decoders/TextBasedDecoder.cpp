@@ -8,7 +8,7 @@
 void TextBasedDecoder::_startReading()
 {
     reader_ = convFile_->openUtf8();
-    currentLineNo_ = 0;
+    nextLineNo_ = 1;
 }
 
 QString TextBasedDecoder::_readNextLine()
@@ -17,6 +17,7 @@ QString TextBasedDecoder::_readNextLine()
 
     switch (reader_->status()) {
     case QTextStream::Ok:
+        nextLineNo_ += 1;
         return line;
     case QTextStream::ReadCorruptData:
         fail("Text file contains invalid characters for codec '%s'",
