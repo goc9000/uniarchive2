@@ -19,9 +19,9 @@ private:
     bool _readHeader(QString& outMyId, QString& outFriendId,
                      IMProtocol &outProtocol, bool& outIsConference);
     void _parseFriendId(QString idText, QString& outFriendId,
-                        bool& outIsConference);
-    IMProtocol _parseProtocol(QString protoText);
-    TimeStamp _parseConversationDate(QString dateText);
+                        bool& outIsConference) const;
+    IMProtocol _parseProtocol(QString protoText) const;
+    TimeStamp _parseConversationDate(QString dateText) const;
 };
 
 #endif // PIDGINTEXTFORMATDECODER_H

@@ -88,8 +88,8 @@ bool PidginTextFormatDecoder::_readHeader(QString& outMyId,
     return true;
 }
 
-void PidginTextFormatDecoder::_parseFriendId(QString idText,
-        QString& outFriendId, bool& outIsConference)
+void PidginTextFormatDecoder::_parseFriendId(
+    QString idText, QString& outFriendId, bool& outIsConference) const
 {
     static QRegExp PAT_CONFERENCE_ID(R"(^(.+)(-\d{6,})$)");
 
@@ -103,7 +103,7 @@ void PidginTextFormatDecoder::_parseFriendId(QString idText,
     outIsConference = true;
 }
 
-IMProtocol PidginTextFormatDecoder::_parseProtocol(QString protoText)
+IMProtocol PidginTextFormatDecoder::_parseProtocol(QString protoText) const
 {
     if (protoText == "yahoo") {
         return IMProtocol::YAHOO;
@@ -119,6 +119,7 @@ IMProtocol PidginTextFormatDecoder::_parseProtocol(QString protoText)
 }
 
 TimeStamp PidginTextFormatDecoder::_parseConversationDate(QString dateText)
+    const
 {
     static QRegExp PAT_CONV_DATE(
         R"(^(\d{4}-\d\d-\d\d)\.(\d{6})([+-]\d{4}\w*)?$)");
