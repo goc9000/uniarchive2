@@ -50,9 +50,9 @@ RawAccount* RawConversation::getAccount(QString id, IMProtocol protocol) const
         return myAccount.get();
     }
 
-    for (const RawAccountUqPtr& frAccount : friendAccounts) {
-        if ((frAccount->id == id) && (frAccount->protocol == protocol)) {
-            return frAccount.get();
+    for (const RawAccountUqPtr& account : friendAccounts) {
+        if ((account->id == id) && (account->protocol == protocol)) {
+            return account.get();
         }
     }
 
@@ -70,4 +70,55 @@ RawAccount* RawConversation::addFriendAccount(QString id, IMProtocol protocol)
     friendAccounts.emplace_back(RawAccountUqPtr(account));
 
     return account;
+}
+
+RawSpeaker* RawConversation::getSpeaker(
+    QString alias, RawAccount* account, bool isMeKnown, bool isMe) const
+{
+    for (const RawSpeakerUqPtr& speaker : speakers) {
+        if ((speaker->alias == alias) &&
+            (speaker->account == account) &&
+            (speaker->isMeKnown == isMeKnown) &&
+            (!isMeKnown || (speaker->isMe == isMe))) {
+            return speaker.get();
+        }
+    }
+
+    return nullptr;
+}
+
+RawSpeaker* RawConversation::getSpeaker(
+    RawAccount* account, bool isMeKnown, bool isMe) const
+{
+    return getSpeaker(QString::Null(), account, isMeKnown, isMe);
+}
+
+RawSpeaker* RawConversation::getSpeaker(bool isMe) const
+{
+    return getSpeaker(QString::Null(), nullptr, true, isMe);
+}
+
+RawSpeaker* RawConversation::addSpeaker(
+    QString alias, RawAccount* account, bool isMeKnown, bool isMe)
+{
+    RawSpeaker* speaker = getSpeaker(alias, account, isMeKnown, isMe);
+    if (speaker) {
+        return speaker;
+    }
+
+    speaker = new RawSpeaker(alias, account, isMeKnown, isMe);
+    speakers.emplace_back(RawSpeakerUqPtr(speaker));
+
+    return speaker;
+}
+
+RawSpeaker* RawConversation::addSpeaker(
+    RawAccount* account, bool isMeKnown, bool isMe)
+{
+    return addSpeaker(QString::Null(), account, isMeKnown, isMe);
+}
+
+RawSpeaker* RawConversation::addSpeaker(bool isMe)
+{
+    return addSpeaker(QString::Null(), nullptr, true, isMe);
 }

@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     model/constants.cpp \
     model/time/TimeStamp.cpp \
     model/time/TimeZoneInfo.cpp \
-    model/raw_conversation/RawAccount.cpp
+    model/raw_conversation/RawAccount.cpp \
+    model/raw_conversation/RawSpeaker.cpp
 
 HEADERS += \
     core/args.h \
@@ -56,4 +57,5 @@ HEADERS += \
     model/constants.h \
     model/time/TimeStamp.h \
     model/time/TimeZoneInfo.h \
-    model/raw_conversation/RawAccount.h
+    model/raw_conversation/RawAccount.h \
+    model/raw_conversation/RawSpeaker.h
