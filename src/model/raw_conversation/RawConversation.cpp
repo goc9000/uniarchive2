@@ -9,6 +9,7 @@ RawConversation::RawConversation(RawConversation&& other)
     : date(other.date), kind(other.kind), myAccount(std::move(other.myAccount))
 {
     appendByMoving(friendAccounts, other.friendAccounts);
+    appendByMoving(speakers, other.speakers);
 }
 
 bool RawConversation::isNull() const
