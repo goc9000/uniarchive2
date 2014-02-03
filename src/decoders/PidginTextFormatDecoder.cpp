@@ -82,6 +82,10 @@ bool PidginTextFormatDecoder::_readHeader(QString& outMyId,
     }
 
     outMyId = PAT_HEADER_LINE.cap(3);
+    if (outMyId.endsWith('/')) {
+        outMyId.chop(1);
+    }
+
     _parseFriendId(PAT_HEADER_LINE.cap(1), outFriendId, outIsConference);
     outProtocol = _parseProtocol(PAT_HEADER_LINE.cap(4));
 
