@@ -22,6 +22,18 @@ private:
                         bool& outIsConference) const;
     IMProtocol _parseProtocol(QString protoText) const;
     TimeStamp _parseConversationDate(QString dateText) const;
+
+    void _readMessages(RawConversation& conversation);
+    bool _readNextMessage(QString& outDateText, QString& outMessageText,
+                          int& outMsgStartLine, int& outMsgEndLine);
+    bool _isStartOfMessage(QString line) const;
+    bool _resemblesStartOfMessage(QString line) const;
+    TimeStamp _parseMessageDate(QString dateText) const;
+    void _extractSpeakerName(QString messageText, QString& outSpeakerName,
+                             QString& outMessageContent) const;
+    bool _isAliasDubious(QString alias) const;
+    RawMessageUqPtr _parseMessage(QString dateText, QString messageText,
+                                  RawConversation& conversation);
 };
 
 #endif // PIDGINTEXTFORMATDECODER_H
