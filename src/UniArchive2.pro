@@ -37,7 +37,11 @@ SOURCES += main.cpp \
     model/time/TimeStamp.cpp \
     model/time/TimeZoneInfo.cpp \
     model/raw_conversation/RawAccount.cpp \
-    model/raw_conversation/RawSpeaker.cpp
+    model/raw_conversation/RawSpeaker.cpp \
+    model/raw_conversation/messages/RawMessage.cpp \
+    model/raw_conversation/messages/RawReply.cpp \
+    model/raw_conversation/messages/RawSystemMessage.cpp \
+    model/raw_conversation/messages/RawOpaqueSystemMessage.cpp
 
 HEADERS += \
     core/args.h \
@@ -58,4 +62,8 @@ HEADERS += \
     model/time/TimeStamp.h \
     model/time/TimeZoneInfo.h \
     model/raw_conversation/RawAccount.h \
-    model/raw_conversation/RawSpeaker.h
+    model/raw_conversation/RawSpeaker.h \
+    model/raw_conversation/messages/RawMessage.h \
+    model/raw_conversation/messages/RawReply.h \
+    model/raw_conversation/messages/RawSystemMessage.h \
+    model/raw_conversation/messages/RawOpaqueSystemMessage.h

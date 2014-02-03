@@ -10,6 +10,7 @@ RawConversation::RawConversation(RawConversation&& other)
 {
     appendByMoving(friendAccounts, other.friendAccounts);
     appendByMoving(speakers, other.speakers);
+    appendByMoving(messages, other.messages);
 }
 
 bool RawConversation::isNull() const
@@ -17,7 +18,7 @@ bool RawConversation::isNull() const
     return date.isNull() && !myAccount;
 }
 
-void RawConversation::dump() const
+void RawConversation::dump(bool showMessages) const
 {
     if (isNull())  {
         std::cout << "<null conversation>" << std::endl;
@@ -41,8 +42,14 @@ void RawConversation::dump() const
         first = false;
     }
 
-    std::cout << ":";
     std::cout << std::endl;
+
+    if (showMessages) {
+        for (const RawMessageUqPtr& message : messages) {
+            std::cout << "    " << qPrintable(message->description())
+                      << std::endl;
+        }
+    }
 }
 
 RawAccount* RawConversation::getAccount(QString id, IMProtocol protocol) const
@@ -122,4 +129,9 @@ RawSpeaker* RawConversation::addSpeaker(
 RawSpeaker* RawConversation::addSpeaker(bool isMe)
 {
     return addSpeaker(QString::Null(), nullptr, true, isMe);
+}
+
+void RawConversation::addMessage(RawMessage* message)
+{
+    messages.emplace_back(RawMessageUqPtr(message));
 }

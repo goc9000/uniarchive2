@@ -6,6 +6,7 @@
 #include "model/time/TimeStamp.h"
 #include "model/raw_conversation/RawAccount.h"
 #include "model/raw_conversation/RawSpeaker.h"
+#include "model/raw_conversation/messages/RawMessage.h"
 #include "model/constants.h"
 
 
@@ -26,9 +27,11 @@ public:
 
     std::vector<RawSpeakerUqPtr> speakers;
 
+    std::vector<RawMessageUqPtr> messages;
+
     bool isNull() const;
 
-    void dump() const;
+    void dump(bool showMessages=true) const;
 
     RawAccount* getAccount(QString id, IMProtocol protocol) const;
     RawAccount* addFriendAccount(QString id, IMProtocol protocol);
@@ -44,6 +47,8 @@ public:
     RawSpeaker* addSpeaker(RawAccount* account, bool isMeKnown=false,
                            bool isMe=true);
     RawSpeaker* addSpeaker(bool isMe);
+
+    void addMessage(RawMessage* message);
 };
 
 #endif // RAWCONVERSATION_H
