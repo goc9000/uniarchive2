@@ -45,7 +45,7 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 bool PidginTextFormatDecoder::recognize(RawConversationFile *convFile)
 {
     static QRegExp PAT_PIDGIN_FILE(
-        R"(^\d{4}-\d\d-\d\d\.\d{6}([+-]\d{4}\w*)?\.txt$)");
+        R"(\d{4}-\d\d-\d\d\.\d{6}([+-]\d{4}\w*)?\.txt)");
 
     return PAT_PIDGIN_FILE.exactMatch(convFile->filename());
 }
@@ -76,7 +76,7 @@ bool PidginTextFormatDecoder::_readHeader(QString& outMyId,
     QString& outFriendId, IMProtocol &outProtocol, bool& outIsConference)
 {
     static QRegExp PAT_HEADER_LINE(
-        R"(^Conversation with ([^ ]+) at (.+) on ([^ ]+) \((\w+)\)$)");
+        R"(Conversation with ([^ ]+) at (.+) on ([^ ]+) \((\w+)\))");
 
     ErrorContext context("on first line");
 
@@ -104,7 +104,7 @@ bool PidginTextFormatDecoder::_readHeader(QString& outMyId,
 void PidginTextFormatDecoder::_parseFriendId(
     QString idText, QString& outFriendId, bool& outIsConference) const
 {
-    static QRegExp PAT_CONFERENCE_ID(R"(^(.+)(-\d{6,})$)");
+    static QRegExp PAT_CONFERENCE_ID(R"((.+)(-\d{6,}))");
 
     if (!PAT_CONFERENCE_ID.exactMatch(idText)) {
         outFriendId = idText;
@@ -135,7 +135,7 @@ TimeStamp PidginTextFormatDecoder::_parseConversationDate(QString dateText)
     const
 {
     static QRegExp PAT_CONV_DATE(
-        R"(^(\d{4}-\d\d-\d\d)\.(\d{6})([+-]\d{4}\w*)?$)");
+        R"((\d{4}-\d\d-\d\d)\.(\d{6})([+-]\d{4}\w*)?)");
 
     if (!PAT_CONV_DATE.exactMatch(dateText)) {
         fail("Invalid conversation date format: '%s'", qPrintable(dateText));
@@ -231,7 +231,7 @@ bool PidginTextFormatDecoder::_readNextMessage(
 bool PidginTextFormatDecoder::_isStartOfMessage(QString line) const
 {
     static QRegExp PAT_MESSAGE(
-        R"(^\((\d\d/\d\d/\d{4} )?\d+:\d\d:\d\d\s*(am|pm)?\).*$)",
+        R"(\((\d\d/\d\d/\d{4} )?\d+:\d\d:\d\d\s*(am|pm)?\).*)",
         Qt::CaseInsensitive);
 
     return PAT_MESSAGE.exactMatch(line);
@@ -239,7 +239,7 @@ bool PidginTextFormatDecoder::_isStartOfMessage(QString line) const
 
 bool PidginTextFormatDecoder::_resemblesStartOfMessage(QString line) const
 {
-    static QRegExp PAT_MESSAGE_LIKE(R"(^\((\d+[^)]*)\).*$)");
+    static QRegExp PAT_MESSAGE_LIKE(R"(\((\d+[^)]*)\).*)");
 
     if (PAT_MESSAGE_LIKE.exactMatch(line)) {
         int numDigits = 0;
@@ -261,7 +261,7 @@ bool PidginTextFormatDecoder::_resemblesStartOfMessage(QString line) const
 TimeStamp PidginTextFormatDecoder::_parseMessageDate(QString dateText) const
 {
     static QRegExp PAT_MESSAGE_DATE(
-        R"(^(\d\d/\d\d/\d{4} )?(\d+:\d\d:\d\d)\s*(am|pm)?$)",
+        R"((\d\d/\d\d/\d{4} )?(\d+:\d\d:\d\d)\s*(am|pm)?)",
         Qt::CaseInsensitive);
 
     if (!PAT_MESSAGE_DATE.exactMatch(dateText)) {

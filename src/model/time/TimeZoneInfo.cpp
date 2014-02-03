@@ -44,7 +44,7 @@ TimeZoneInfo TimeZoneInfo::UTC()
 
 TimeZoneInfo TimeZoneInfo::fromString(QString tzText)
 {
-    static QRegExp PAT_TIMEZONE(R"(^([+-])(\d\d)(\d\d)(\w+)$)");
+    static QRegExp PAT_TIMEZONE(R"(([+-])(\d\d)(\d\d)(\w+))");
 
     if (tzText == "") {
         return TimeZoneInfo();
