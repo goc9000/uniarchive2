@@ -8,6 +8,7 @@
 #include "model/raw_conversation/RawSpeaker.h"
 #include "model/raw_conversation/messages/RawReply.h"
 #include "model/raw_conversation/messages/RawOpaqueSystemMessage.h"
+#include "model/raw_conversation/messages/RawStructuredSystemMessage.h"
 #include "utils/fail.h"
 
 
@@ -342,7 +343,7 @@ bool PidginTextFormatDecoder::_isAliasDubious(QString alias) const
 }
 
 RawMessageUqPtr PidginTextFormatDecoder::_parseMessage(
-    QString dateText, QString messageText, RawConversation& conversation)
+    QString dateText, QString messageText, RawConversation& conversation) const
 {
     TimeStamp messageDate = _parseMessageDate(dateText);
     messageDate.timeZone = conversation.date.timeZone;
@@ -352,13 +353,108 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseMessage(
     QString speakerName;
     _extractSpeakerName(messageText, speakerName, messageText);
 
-    if (!speakerName.isNull()) {
-        RawSpeaker* speaker = conversation.addSpeaker(speakerName);
-
-        return RawMessageUqPtr(
-            new RawReply(messageDate, isOffline, speaker, messageText));
-    } else {
-        return RawMessageUqPtr(
-            new RawOpaqueSystemMessage(messageDate, isOffline, messageText));
+    if (speakerName.isNull()) {
+        return _parseSystemMessage(messageDate, isOffline, messageText,
+                                   conversation);
     }
+
+    RawSpeaker* speaker = conversation.addSpeaker(speakerName);
+
+    return RawMessageUqPtr(
+        new RawReply(messageDate, isOffline, speaker, messageText));
+}
+
+RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
+    TimeStamp messageDate, bool isOffline, QString messageText,
+    RawConversation& conversation) const
+{
+    struct ParsingCase {
+        ParsingCase(QString pattern, QString subjectSpec,
+                    SystemMessagePredicate predicate, QString objectSpec,
+                    QString auxSpec)
+            : regex(QRegExp(pattern)), subjectSpec(subjectSpec),
+              predicate(predicate), objectSpec(objectSpec), auxSpec(auxSpec) {}
+
+        RawStructuredSystemMessage::Param extractParam(
+            QString spec, RawConversation &conversation)
+        {
+            if (spec == "") {
+                return RawStructuredSystemMessage::Param();
+            }
+
+            QString typeSpec, sourceSpec;
+            parseSpec(spec, typeSpec, sourceSpec);
+
+            if (typeSpec == "speaker") {
+                RawSpeaker* speaker = conversation.addSpeaker(
+                    valueFromCapSpec(sourceSpec)
+                );
+                return RawStructuredSystemMessage::Param(speaker);
+            } else {
+                fail("Unsupported type spec: '%s", qPrintable(typeSpec));
+            }
+
+            return RawStructuredSystemMessage::Param();
+        }
+
+        void parseSpec(QString spec, QString& typeSpec, QString& sourceSpec)
+        {
+            int colonPos = spec.indexOf(':');
+            if (colonPos == -1) {
+                fail("Sanity check failed for param spec '%s'",
+                     qPrintable(spec));
+            }
+
+            typeSpec = spec.left(colonPos);
+            sourceSpec = spec.mid(colonPos + 1);
+        }
+
+        QString valueFromCapSpec(QString sourceSpec)
+        {
+            bool isOk = false;
+            int capNo = sourceSpec.toInt(&isOk);
+
+            if (!isOk) {
+                fail("Expected capture group number, got '%s'",
+                     qPrintable(sourceSpec));
+            }
+
+            if ((capNo < 0) || (capNo >= regex.captureCount())) {
+                fail("Invalid capture number '%d'", capNo);
+            }
+
+            return regex.cap(capNo);
+        }
+
+        QRegExp regex;
+        QString subjectSpec;
+        SystemMessagePredicate predicate;
+        QString objectSpec;
+        QString auxSpec;
+    };
+
+    static std::vector<ParsingCase> PARSING_CASES = {
+        ParsingCase(R"((.*) (has signed on|logged in)\.)",
+                    "speaker:1", SystemMessagePredicate::LOGGED_IN, "", ""),
+        ParsingCase(R"((.*) (has signed off|logged out)\.)",
+                    "speaker:1", SystemMessagePredicate::LOGGED_OUT, "", "")
+    };
+
+    for (ParsingCase& parseCase : PARSING_CASES) {
+        if (parseCase.regex.exactMatch(messageText)) {
+            return RawMessageUqPtr(
+                new RawStructuredSystemMessage(
+                    messageDate,
+                    isOffline,
+                    parseCase.extractParam(parseCase.subjectSpec, conversation),
+                    parseCase.predicate,
+                    parseCase.extractParam(parseCase.objectSpec, conversation),
+                    parseCase.extractParam(parseCase.auxSpec, conversation)
+                )
+            );
+        }
+    }
+
+    return RawMessageUqPtr(
+        new RawOpaqueSystemMessage(messageDate, isOffline, messageText));
 }

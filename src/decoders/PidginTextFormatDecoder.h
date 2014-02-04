@@ -33,7 +33,10 @@ private:
                              QString& outMessageContent) const;
     bool _isAliasDubious(QString alias) const;
     RawMessageUqPtr _parseMessage(QString dateText, QString messageText,
-                                  RawConversation& conversation);
+                                  RawConversation& conversation) const;
+    RawMessageUqPtr _parseSystemMessage(TimeStamp messageDate, bool isOffline,
+                                        QString messageText,
+                                        RawConversation& conversation) const;
 };
 
 #endif // PIDGINTEXTFORMATDECODER_H

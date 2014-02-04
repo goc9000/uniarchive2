@@ -26,4 +26,13 @@ enum class ConversationKind
 QString ConversationKind_description(ConversationKind value);
 
 
+enum class SystemMessagePredicate
+{
+    INVALID                   = 0,
+    LOGGED_IN                 = 1,
+    LOGGED_OUT                = 2
+};
+
+QString SystemMessagePredicate_description(SystemMessagePredicate value);
+
 #endif // CONSTANTS_H

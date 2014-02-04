@@ -24,3 +24,18 @@ QString ConversationKind_description(ConversationKind value)
 
     return QString::number((int)value) + "?";
 }
+
+QString SystemMessagePredicate_description(SystemMessagePredicate value)
+{
+    switch (value) {
+    case SystemMessagePredicate::INVALID:
+        return "INVALID!";
+    case SystemMessagePredicate::LOGGED_IN:
+        return "LoggedIn";
+    case SystemMessagePredicate::LOGGED_OUT:
+        return "LoggedOut";
+    }
+
+    return QString::number((int)value) + "?";
+}
+
