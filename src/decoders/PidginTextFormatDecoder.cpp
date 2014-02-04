@@ -419,7 +419,7 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                      qPrintable(sourceSpec));
             }
 
-            if ((capNo < 0) || (capNo >= regex.captureCount())) {
+            if ((capNo < 0) || (capNo > regex.captureCount())) {
                 fail("Invalid capture number '%d'", capNo);
             }
 
