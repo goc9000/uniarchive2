@@ -370,8 +370,8 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
 {
     struct ParsingCase {
         ParsingCase(QString pattern, QString subjectSpec,
-                    SystemMessagePredicate predicate, QString objectSpec,
-                    QString auxSpec)
+                    SystemMessagePredicate predicate, QString objectSpec="",
+                    QString auxSpec="")
             : regex(QRegExp(pattern)), subjectSpec(subjectSpec),
               predicate(predicate), objectSpec(objectSpec), auxSpec(auxSpec) {}
 
@@ -391,7 +391,7 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                 );
                 return RawStructuredSystemMessage::Param(speaker);
             } else {
-                fail("Unsupported type spec: '%s", qPrintable(typeSpec));
+                fail("Unsupported type spec: '%s'", qPrintable(typeSpec));
             }
 
             return RawStructuredSystemMessage::Param();
@@ -434,10 +434,10 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
     };
 
     static std::vector<ParsingCase> PARSING_CASES = {
-        ParsingCase(R"((.*) (has signed on|logged in)\.)",
-                    "speaker:1", SystemMessagePredicate::LOGGED_IN, "", ""),
-        ParsingCase(R"((.*) (has signed off|logged out)\.)",
-                    "speaker:1", SystemMessagePredicate::LOGGED_OUT, "", "")
+        ParsingCase(R"((.*) (?:has signed on|logged in)\.)",
+                    "speaker:1", SystemMessagePredicate::LOGGED_IN),
+        ParsingCase(R"((.*) (?:has signed off|logged out)\.)",
+                    "speaker:1", SystemMessagePredicate::LOGGED_OUT),
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {
