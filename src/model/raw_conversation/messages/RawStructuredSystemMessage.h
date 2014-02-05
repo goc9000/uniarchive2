@@ -12,11 +12,13 @@ public:
     class Param
     {
     public:
-        enum Type { EMPTY, SPEAKER };
+        enum Type { EMPTY, SPEAKER, PRESENCE };
 
         Param() : tag(EMPTY) {}
         Param(RawSpeaker* speaker)
             : tag(SPEAKER), speaker(speaker) {}
+        Param(PresenceState presence)
+            : tag(PRESENCE), presence(presence) {}
 
         bool isNull() const;
         Type type() const;
@@ -26,6 +28,7 @@ public:
         Type tag;
         union {
             RawSpeaker* speaker;
+            PresenceState presence;
         };
     };
 

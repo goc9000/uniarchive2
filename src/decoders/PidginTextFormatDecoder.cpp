@@ -375,6 +375,11 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                     valueFromCapSpec(sourceSpec)
                 );
                 return RawStructuredSystemMessage::Param(speaker);
+            } else if (typeSpec == "state") {
+                PresenceState state = PresenceState_parseOrFail(
+                    valueFromCapSpec(sourceSpec)
+                );
+                return RawStructuredSystemMessage::Param(state);
             } else {
                 fail("Unsupported type spec: '%s'", qPrintable(typeSpec));
             }
@@ -423,6 +428,11 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                     "speaker:1", SystemMessagePredicate::LOGGED_IN),
         ParsingCase(R"((.*) (?:has signed off|logged out)\.)",
                     "speaker:1", SystemMessagePredicate::LOGGED_OUT),
+        ParsingCase(R"((.*) has (?:gone|become) (away|idle)\.)",
+                    "speaker:1", SystemMessagePredicate::CHANGED_STATE,
+                    "state:2"),
+        ParsingCase(R"((.*) is no longer (away|idle)\.)",
+                    "speaker:1", SystemMessagePredicate::REVERTED_STATE),
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {

@@ -32,9 +32,25 @@ enum class SystemMessagePredicate
 {
     INVALID                   = 0,
     LOGGED_IN                 = 1,
-    LOGGED_OUT                = 2
+    LOGGED_OUT                = 2,
+    CHANGED_STATE             = 3,
+    REVERTED_STATE            = 4
 };
 
 QString SystemMessagePredicate_description(SystemMessagePredicate value);
+
+
+enum class PresenceState
+{
+    INVALID   = 0,
+    AVAILABLE = 1,
+    IDLE      = 2,
+    BUSY      = 3,
+    AWAY      = 4
+};
+
+QString PresenceState_description(PresenceState value);
+PresenceState PresenceState_parse(QString stateText);
+PresenceState PresenceState_parseOrFail(QString stateText);
 
 #endif // CONSTANTS_H

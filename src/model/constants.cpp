@@ -41,6 +41,7 @@ IMProtocol IMProtocol_parseOrFail(QString protoText)
     return value;
 }
 
+
 QString ConversationKind_description(ConversationKind value)
 {
     switch (value) {
@@ -53,6 +54,7 @@ QString ConversationKind_description(ConversationKind value)
     return QString::number((int)value) + "?";
 }
 
+
 QString SystemMessagePredicate_description(SystemMessagePredicate value)
 {
     switch (value) {
@@ -62,8 +64,53 @@ QString SystemMessagePredicate_description(SystemMessagePredicate value)
         return "LoggedIn";
     case SystemMessagePredicate::LOGGED_OUT:
         return "LoggedOut";
+    case SystemMessagePredicate::CHANGED_STATE:
+        return "ChangedState";
+    case SystemMessagePredicate::REVERTED_STATE:
+        return "RevertedState";
     }
 
     return QString::number((int)value) + "?";
 }
 
+
+QString PresenceState_description(PresenceState value)
+{
+    switch (value) {
+    case PresenceState::INVALID:   return "INVALID!";
+    case PresenceState::AVAILABLE: return "Available";
+    case PresenceState::IDLE:      return "Idle";
+    case PresenceState::BUSY:      return "Busy";
+    case PresenceState::AWAY:      return "Away";
+    }
+
+    return QString::number((int)value) + "?";
+}
+
+PresenceState PresenceState_parse(QString stateText)
+{
+    stateText = stateText.trimmed().toLower();
+
+    if (stateText == "available") {
+        return PresenceState::AVAILABLE;
+    } else if (stateText == "idle") {
+        return PresenceState::IDLE;
+    } else if (stateText == "busy") {
+        return PresenceState::BUSY;
+    } else if (stateText == "away") {
+        return PresenceState::AWAY;
+    }
+
+    return PresenceState::INVALID;
+}
+
+PresenceState PresenceState_parseOrFail(QString stateText)
+{
+    PresenceState value = PresenceState_parse(stateText);
+
+    if (value == PresenceState::INVALID) {
+        fail("Unrecognized presence state string '%s'", qPrintable(stateText));
+    }
+
+    return value;
+}

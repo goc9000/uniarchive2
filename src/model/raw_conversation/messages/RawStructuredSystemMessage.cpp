@@ -19,6 +19,8 @@ QString RawStructuredSystemMessage::Param::description() const
         return "<null>";
     case RawStructuredSystemMessage::Param::SPEAKER:
         return speaker->description();
+    case RawStructuredSystemMessage::Param::PRESENCE:
+        return PresenceState_description(presence);
     }
 
     return "???";
