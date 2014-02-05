@@ -13,6 +13,8 @@ enum class IMProtocol
 };
 
 QString IMProtocol_description(IMProtocol value);
+IMProtocol IMProtocol_parse(QString protoText);
+IMProtocol IMProtocol_parseOrFail(QString protoText);
 
 
 enum class ConversationKind

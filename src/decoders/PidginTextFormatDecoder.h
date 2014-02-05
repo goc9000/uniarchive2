@@ -20,7 +20,6 @@ private:
                      IMProtocol &outProtocol, bool& outIsConference);
     void _parseFriendId(QString idText, QString& outFriendId,
                         bool& outIsConference) const;
-    IMProtocol _parseProtocol(QString protoText) const;
     TimeStamp _parseConversationDate(QString dateText) const;
 
     void _readMessages(RawConversation& conversation);

@@ -97,7 +97,7 @@ bool PidginTextFormatDecoder::_readHeader(QString& outMyId,
     }
 
     _parseFriendId(PAT_HEADER_LINE.cap(1), outFriendId, outIsConference);
-    outProtocol = _parseProtocol(PAT_HEADER_LINE.cap(4));
+    outProtocol = IMProtocol_parseOrFail(PAT_HEADER_LINE.cap(4));
 
     return true;
 }
@@ -115,21 +115,6 @@ void PidginTextFormatDecoder::_parseFriendId(
 
     outFriendId = PAT_CONFERENCE_ID.cap(1);
     outIsConference = true;
-}
-
-IMProtocol PidginTextFormatDecoder::_parseProtocol(QString protoText) const
-{
-    if (protoText == "yahoo") {
-        return IMProtocol::YAHOO;
-    } else if (protoText == "jabber") {
-        return IMProtocol::XMPP;
-    } else if (protoText == "msn") {
-        return IMProtocol::MSN;
-    }
-
-    fail("Unrecognized protocol string '%s'", qPrintable(protoText));
-
-    return IMProtocol::INVALID;
 }
 
 TimeStamp PidginTextFormatDecoder::_parseConversationDate(QString dateText)
