@@ -361,59 +361,46 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
               predicate(predicate), objectSpec(objectSpec), auxSpec(auxSpec) {}
 
         RawStructuredSystemMessage::Param extractParam(
-            QString spec, RawConversation &conversation)
+            QString spec, RawConversation& conversation)
         {
+            static QRegExp PAT_FROM_CAPTURE_SPEC(R"((\d+):(\w+))");
+
             if (spec == "") {
                 return RawStructuredSystemMessage::Param();
-            }
+            } else if (PAT_FROM_CAPTURE_SPEC.exactMatch(spec)) {
+                int capNo = PAT_FROM_CAPTURE_SPEC.cap(1).toInt();
+                if ((capNo < 0) || (capNo > regex.captureCount())) {
+                    fail("Invalid capture number '%d'", capNo);
+                }
 
-            QString typeSpec, sourceSpec;
-            parseSpec(spec, typeSpec, sourceSpec);
-
-            if (typeSpec == "speaker") {
-                RawSpeaker* speaker = conversation.addSpeaker(
-                    valueFromCapSpec(sourceSpec)
-                );
-                return RawStructuredSystemMessage::Param(speaker);
-            } else if (typeSpec == "state") {
-                PresenceState state = PresenceState_parseOrFail(
-                    valueFromCapSpec(sourceSpec)
-                );
-                return RawStructuredSystemMessage::Param(state);
+                return parseParamFromCapture(regex.cap(capNo),
+                                             PAT_FROM_CAPTURE_SPEC.cap(2),
+                                             conversation);
             } else {
-                fail("Unsupported type spec: '%s'", qPrintable(typeSpec));
+                fail("Unsupported param spec: '%s'", qPrintable(spec));
             }
 
             return RawStructuredSystemMessage::Param();
         }
 
-        void parseSpec(QString spec, QString& typeSpec, QString& sourceSpec)
+        RawStructuredSystemMessage::Param parseParamFromCapture(
+            QString captureText, QString typeName,
+            RawConversation& conversation)
         {
-            int colonPos = spec.indexOf(':');
-            if (colonPos == -1) {
-                fail("Sanity check failed for param spec '%s'",
-                     qPrintable(spec));
+            if (typeName == "speaker") {
+                return RawStructuredSystemMessage::Param(
+                    conversation.addSpeaker(captureText)
+                );
+            } else if (typeName == "state") {
+                return RawStructuredSystemMessage::Param(
+                    PresenceState_parseOrFail(captureText)
+                );
+            } else {
+                fail("Unsupported param conversion: '%s'",
+                     qPrintable(typeName));
             }
 
-            typeSpec = spec.left(colonPos);
-            sourceSpec = spec.mid(colonPos + 1);
-        }
-
-        QString valueFromCapSpec(QString sourceSpec)
-        {
-            bool isOk = false;
-            int capNo = sourceSpec.toInt(&isOk);
-
-            if (!isOk) {
-                fail("Expected capture group number, got '%s'",
-                     qPrintable(sourceSpec));
-            }
-
-            if ((capNo < 0) || (capNo > regex.captureCount())) {
-                fail("Invalid capture number '%d'", capNo);
-            }
-
-            return regex.cap(capNo);
+            return RawStructuredSystemMessage::Param();
         }
 
         QRegExp regex;
@@ -425,14 +412,14 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
 
     static std::vector<ParsingCase> PARSING_CASES = {
         ParsingCase(R"((.*) (?:has signed on|logged in)\.)",
-                    "speaker:1", SystemMessagePredicate::LOGGED_IN),
+                    "1:speaker", SystemMessagePredicate::LOGGED_IN),
         ParsingCase(R"((.*) (?:has signed off|logged out)\.)",
-                    "speaker:1", SystemMessagePredicate::LOGGED_OUT),
+                    "1:speaker", SystemMessagePredicate::LOGGED_OUT),
         ParsingCase(R"((.*) has (?:gone|become) (away|idle)\.)",
-                    "speaker:1", SystemMessagePredicate::CHANGED_STATE,
-                    "state:2"),
+                    "1:speaker", SystemMessagePredicate::CHANGED_STATE,
+                    "2:state"),
         ParsingCase(R"((.*) is no longer (away|idle)\.)",
-                    "speaker:1", SystemMessagePredicate::REVERTED_STATE),
+                    "1:speaker", SystemMessagePredicate::REVERTED_STATE)
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {
