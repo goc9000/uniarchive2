@@ -19,14 +19,14 @@ QString RawSpeaker::description() const
     }
 
     if (account) {
-        if (desc.isEmpty()) {
+        if (!desc.isEmpty()) {
             desc.append(' ');
         }
         desc.append(QString("[") + account->description() + "]");
     }
 
     if (isMeKnown) {
-        if (desc.isEmpty()) {
+        if (!desc.isEmpty()) {
             desc.append(' ');
         }
         desc.append(isMe ? "(me)" : "(not me)");
