@@ -68,6 +68,8 @@ QString SystemMessagePredicate_description(SystemMessagePredicate value)
         return "ChangedState";
     case SystemMessagePredicate::REVERTED_STATE:
         return "RevertedState";
+    case SystemMessagePredicate::SENT_BUZZ:
+        return "SentBuzz";
     }
 
     return QString::number((int)value) + "?";

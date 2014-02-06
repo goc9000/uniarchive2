@@ -30,11 +30,12 @@ QString ConversationKind_description(ConversationKind value);
 
 enum class SystemMessagePredicate
 {
-    INVALID                   = 0,
-    LOGGED_IN                 = 1,
-    LOGGED_OUT                = 2,
-    CHANGED_STATE             = 3,
-    REVERTED_STATE            = 4
+    INVALID                        = 0,
+    LOGGED_IN                      = 1,
+    LOGGED_OUT                     = 2,
+    CHANGED_STATE                  = 3,
+    REVERTED_STATE                 = 4,
+    SENT_BUZZ                      = 10,
 };
 
 QString SystemMessagePredicate_description(SystemMessagePredicate value);

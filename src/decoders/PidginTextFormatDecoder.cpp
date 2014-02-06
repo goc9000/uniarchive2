@@ -367,6 +367,10 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
 
             if (spec == "") {
                 return RawStructuredSystemMessage::Param();
+            } else if (spec == "me") {
+                return RawStructuredSystemMessage::Param(
+                    conversation.addSpeaker(true)
+                );
             } else if (PAT_FROM_CAPTURE_SPEC.exactMatch(spec)) {
                 int capNo = PAT_FROM_CAPTURE_SPEC.cap(1).toInt();
                 if ((capNo < 0) || (capNo > regex.captureCount())) {
@@ -419,7 +423,11 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                     "1:speaker", SystemMessagePredicate::CHANGED_STATE,
                     "2:state"),
         ParsingCase(R"((.*) is no longer (away|idle)\.)",
-                    "1:speaker", SystemMessagePredicate::REVERTED_STATE)
+                    "1:speaker", SystemMessagePredicate::REVERTED_STATE),
+        ParsingCase(R"(Buzz!!)",
+                    "me", SystemMessagePredicate::SENT_BUZZ),
+        ParsingCase(R"((.*) just sent you a Buzz!)",
+                    "1:speaker", SystemMessagePredicate::SENT_BUZZ),
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {
