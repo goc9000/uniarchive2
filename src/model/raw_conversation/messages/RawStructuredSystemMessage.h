@@ -13,7 +13,7 @@ public:
     class Param
     {
     public:
-        enum Type { EMPTY, SPEAKER, PRESENCE, FILE };
+        enum Type { EMPTY, SPEAKER, PRESENCE, FILE, COUNT };
 
         Param() : tag(EMPTY) {}
         Param(RawSpeaker* speaker)
@@ -22,6 +22,8 @@ public:
             : tag(PRESENCE), presence(presence) {}
         Param(RawTransferredFileRef* file)
             : tag(FILE), file(file) {}
+        Param(unsigned int count)
+            : tag(COUNT), count(count) {}
 
         bool isNull() const;
         Type type() const;
@@ -33,6 +35,7 @@ public:
             RawSpeaker* speaker;
             PresenceState presence;
             RawTransferredFileRef* file;
+            unsigned int count;
         };
     };
 

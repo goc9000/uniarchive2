@@ -74,6 +74,16 @@ QString SystemMessagePredicate_description(SystemMessagePredicate value)
         return "JoinedConference";
     case SystemMessagePredicate::LEFT_CONFERENCE:
         return "LeftConference";
+    case SystemMessagePredicate::OFFERED_FILE:
+        return "OfferedFile";
+    case SystemMessagePredicate::OFFERED_FILE_GROUP:
+        return "OfferedFileGroup";
+    case SystemMessagePredicate::FILE_TRANSFER_STARTED:
+        return "FileTransferStarted";
+    case SystemMessagePredicate::FILE_TRANSFER_COMPLETE:
+        return "FileTransferComplete";
+    case SystemMessagePredicate::CANCELLED_FILE_TRANSFER:
+        return "CancelledFileTransfer";
     }
 
     return QString::number((int)value) + "?";

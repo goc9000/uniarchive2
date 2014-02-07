@@ -23,6 +23,8 @@ QString RawStructuredSystemMessage::Param::description() const
         return PresenceState_description(presence);
     case RawStructuredSystemMessage::Param::FILE:
         return file->description();
+    case RawStructuredSystemMessage::Param::COUNT:
+        return QString::number(count);
     }
 
     return "???";

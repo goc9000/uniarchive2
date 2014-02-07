@@ -38,6 +38,11 @@ enum class SystemMessagePredicate
     SENT_BUZZ                      = 10,
     JOINED_CONFERENCE              = 20,
     LEFT_CONFERENCE                = 21,
+    OFFERED_FILE                   = 30,
+    OFFERED_FILE_GROUP             = 31,
+    FILE_TRANSFER_STARTED          = 32,
+    FILE_TRANSFER_COMPLETE         = 33,
+    CANCELLED_FILE_TRANSFER        = 34,
 };
 
 QString SystemMessagePredicate_description(SystemMessagePredicate value);

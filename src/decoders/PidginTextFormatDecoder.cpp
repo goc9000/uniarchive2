@@ -399,6 +399,17 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                 return RawStructuredSystemMessage::Param(
                     PresenceState_parseOrFail(captureText)
                 );
+            } else if (typeName == "file") {
+                return RawStructuredSystemMessage::Param(
+                    conversation.addFile(captureText)
+                );
+            } else if (typeName == "count") {
+                bool ok = false;
+                unsigned int value = captureText.toUInt(&ok);
+                if (!ok) {
+                    fail("'%s' is not a valid count");
+                }
+                return RawStructuredSystemMessage::Param(value);
             } else {
                 fail("Unsupported param conversion: '%s'",
                      qPrintable(typeName));
@@ -432,6 +443,25 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                     "1:speaker", SystemMessagePredicate::JOINED_CONFERENCE),
         ParsingCase(R"((.*) left the room\.)",
                     "1:speaker", SystemMessagePredicate::LEFT_CONFERENCE),
+        ParsingCase(R"((.*) is offering to send file (.*))",
+                    "1:speaker", SystemMessagePredicate::OFFERED_FILE,
+                    "2:file"),
+        ParsingCase(R"(Offering to send (.*) to (.*))",
+                    "me", SystemMessagePredicate::OFFERED_FILE, "1:file",
+                    "2:speaker"),
+        ParsingCase(R"((.*) is trying to send you a group of (\d+) files\.)",
+                    "1:speaker", SystemMessagePredicate::OFFERED_FILE_GROUP,
+                    "", "2:count"),
+        ParsingCase(R"(Starting transfer of (.*) from (.*))",
+                    "", SystemMessagePredicate::FILE_TRANSFER_STARTED,
+                    "1:file", "2:speaker"),
+        ParsingCase(R"((.*) canceled the transfer of (.*))",
+                    "1:speaker",
+                    SystemMessagePredicate::CANCELLED_FILE_TRANSFER,
+                    "2:file"),
+        ParsingCase(R"(Transfer of file (.*) complete)",
+                    "", SystemMessagePredicate::FILE_TRANSFER_COMPLETE,
+                    "1:file"),
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {
