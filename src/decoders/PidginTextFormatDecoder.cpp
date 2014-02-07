@@ -164,8 +164,6 @@ void PidginTextFormatDecoder::_readMessages(RawConversation& conversation)
 
         conversation.addMessage(message.release());
 
-        // TODO: Replace with proper check when structured system messages
-        // are implemented
         if (messageText.startsWith("Message could not be sent")) {
             skipNextMessage = true;
         }
@@ -371,6 +369,18 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                 return RawStructuredSystemMessage::Param(
                     conversation.addSpeaker(true)
                 );
+            } else if (spec == "send_err_msg_too_large") {
+                return RawStructuredSystemMessage::Param(
+                    MessageSendFailedReason::MESSAGE_TOO_LARGE
+                );
+            } else if (spec == "send_err_peer_offline") {
+                return RawStructuredSystemMessage::Param(
+                    MessageSendFailedReason::PEER_IS_OFFLINE
+                );
+            }  else if (spec == "send_err_connection") {
+                return RawStructuredSystemMessage::Param(
+                    MessageSendFailedReason::CONNECTION_ERROR
+                );
             } else if (PAT_FROM_CAPTURE_SPEC.exactMatch(spec)) {
                 int capNo = PAT_FROM_CAPTURE_SPEC.cap(1).toInt();
                 if ((capNo < 0) || (capNo > regex.captureCount())) {
@@ -435,6 +445,9 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                     "2:state"),
         ParsingCase(R"((.*) is no longer (away|idle)\.)",
                     "1:speaker", SystemMessagePredicate::REVERTED_STATE),
+        ParsingCase(R"((.*) is now known as (.*)\.)",
+                    "1:speaker", SystemMessagePredicate::CHANGED_ALIAS,
+                    "2:speaker"),
         ParsingCase(R"(Buzz!!)",
                     "me", SystemMessagePredicate::SENT_BUZZ),
         ParsingCase(R"((.*) just sent you a Buzz!)",
@@ -462,6 +475,20 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
         ParsingCase(R"(Transfer of file (.*) complete)",
                     "", SystemMessagePredicate::FILE_TRANSFER_COMPLETE,
                     "1:file"),
+        ParsingCase(R"(Unable to send message: The message is too large\.)",
+                    "", SystemMessagePredicate::MESSAGE_SEND_FAILED,
+                    "", "send_err_msg_too_large"),
+        ParsingCase(R"(Message could not be sent because the user is offline:)",
+                    "", SystemMessagePredicate::MESSAGE_SEND_FAILED,
+                    "", "send_err_peer_offline"),
+        ParsingCase(R"(Message could not be sent because a connection )"
+                    R"(error occurred:)",
+                    "", SystemMessagePredicate::MESSAGE_SEND_FAILED,
+                    "", "send_err_connection"),
+        ParsingCase(R"((.*) has sent you a webcam invite, which is not )"
+                    R"(yet supported\.)",
+                    "1:speaker",
+                    SystemMessagePredicate::SENT_WEBCAM_INVITE_UNSUPPORTED),
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {
@@ -478,6 +505,9 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
             );
         }
     }
+
+    warn("Unrecognized system message format, storing as-is:\n\"%s\"",
+         qPrintable(messageText));
 
     return RawMessageUqPtr(
         new RawOpaqueSystemMessage(messageDate, isOffline, messageText));

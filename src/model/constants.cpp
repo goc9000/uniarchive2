@@ -68,6 +68,8 @@ QString SystemMessagePredicate_description(SystemMessagePredicate value)
         return "ChangedState";
     case SystemMessagePredicate::REVERTED_STATE:
         return "RevertedState";
+    case SystemMessagePredicate::CHANGED_ALIAS:
+        return "ChangedAlias";
     case SystemMessagePredicate::SENT_BUZZ:
         return "SentBuzz";
     case SystemMessagePredicate::JOINED_CONFERENCE:
@@ -84,6 +86,10 @@ QString SystemMessagePredicate_description(SystemMessagePredicate value)
         return "FileTransferComplete";
     case SystemMessagePredicate::CANCELLED_FILE_TRANSFER:
         return "CancelledFileTransfer";
+    case SystemMessagePredicate::MESSAGE_SEND_FAILED:
+        return "MessageSendFailed";
+    case SystemMessagePredicate::SENT_WEBCAM_INVITE_UNSUPPORTED:
+        return "SentWebcamInviteUnsupported";
     }
 
     return QString::number((int)value) + "?";
@@ -129,4 +135,21 @@ PresenceState PresenceState_parseOrFail(QString stateText)
     }
 
     return value;
+}
+
+
+QString MessageSendFailedReason_description(MessageSendFailedReason value)
+{
+    switch (value) {
+    case MessageSendFailedReason::INVALID:
+        return "INVALID!";
+    case MessageSendFailedReason::MESSAGE_TOO_LARGE:
+        return "Message too large";
+    case MessageSendFailedReason::PEER_IS_OFFLINE:
+        return "Peer is offline";
+    case MessageSendFailedReason::CONNECTION_ERROR:
+        return "Connection error";
+    }
+
+    return QString::number((int)value) + "?";
 }

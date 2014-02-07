@@ -35,6 +35,7 @@ enum class SystemMessagePredicate
     LOGGED_OUT                     = 2,
     CHANGED_STATE                  = 3,
     REVERTED_STATE                 = 4,
+    CHANGED_ALIAS                  = 5,
     SENT_BUZZ                      = 10,
     JOINED_CONFERENCE              = 20,
     LEFT_CONFERENCE                = 21,
@@ -43,6 +44,8 @@ enum class SystemMessagePredicate
     FILE_TRANSFER_STARTED          = 32,
     FILE_TRANSFER_COMPLETE         = 33,
     CANCELLED_FILE_TRANSFER        = 34,
+    MESSAGE_SEND_FAILED            = 50,
+    SENT_WEBCAM_INVITE_UNSUPPORTED = 100
 };
 
 QString SystemMessagePredicate_description(SystemMessagePredicate value);
@@ -60,5 +63,16 @@ enum class PresenceState
 QString PresenceState_description(PresenceState value);
 PresenceState PresenceState_parse(QString stateText);
 PresenceState PresenceState_parseOrFail(QString stateText);
+
+
+enum class MessageSendFailedReason
+{
+    INVALID           = 0,
+    MESSAGE_TOO_LARGE = 1,
+    PEER_IS_OFFLINE   = 2,
+    CONNECTION_ERROR  = 3
+};
+
+QString MessageSendFailedReason_description(MessageSendFailedReason value);
 
 #endif // CONSTANTS_H

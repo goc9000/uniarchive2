@@ -25,6 +25,8 @@ QString RawStructuredSystemMessage::Param::description() const
         return file->description();
     case RawStructuredSystemMessage::Param::COUNT:
         return QString::number(count);
+    case RawStructuredSystemMessage::Param::SEND_ERROR:
+        return MessageSendFailedReason_description(sendError);
     }
 
     return "???";
