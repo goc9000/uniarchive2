@@ -6,6 +6,7 @@
 #include "model/time/TimeStamp.h"
 #include "model/raw_conversation/RawAccount.h"
 #include "model/raw_conversation/RawSpeaker.h"
+#include "model/raw_conversation/RawTransferredFileRef.h"
 #include "model/raw_conversation/messages/RawMessage.h"
 #include "model/constants.h"
 
@@ -26,6 +27,7 @@ public:
     std::vector<RawAccountUqPtr> friendAccounts;
 
     std::vector<RawSpeakerUqPtr> speakers;
+    std::vector<RawTransferredFileRefUqPtr> files;
 
     std::vector<RawMessageUqPtr> messages;
 
@@ -47,6 +49,9 @@ public:
     RawSpeaker* addSpeaker(RawAccount* account, bool isMeKnown=false,
                            bool isMe=true);
     RawSpeaker* addSpeaker(bool isMe);
+
+    RawTransferredFileRef* getFile(QString filename) const;
+    RawTransferredFileRef* addFile(QString filename);
 
     void addMessage(RawMessage* message);
 };

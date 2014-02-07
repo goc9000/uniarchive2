@@ -21,6 +21,8 @@ QString RawStructuredSystemMessage::Param::description() const
         return speaker->description();
     case RawStructuredSystemMessage::Param::PRESENCE:
         return PresenceState_description(presence);
+    case RawStructuredSystemMessage::Param::FILE:
+        return file->description();
     }
 
     return "???";

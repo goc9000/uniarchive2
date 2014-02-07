@@ -10,6 +10,7 @@ RawConversation::RawConversation(RawConversation&& other)
 {
     appendByMoving(friendAccounts, other.friendAccounts);
     appendByMoving(speakers, other.speakers);
+    appendByMoving(files, other.files);
     appendByMoving(messages, other.messages);
 }
 
@@ -129,6 +130,30 @@ RawSpeaker* RawConversation::addSpeaker(
 RawSpeaker* RawConversation::addSpeaker(bool isMe)
 {
     return addSpeaker(QString::Null(), nullptr, true, isMe);
+}
+
+RawTransferredFileRef* RawConversation::getFile(QString filename) const
+{
+    for (const RawTransferredFileRefUqPtr& file : files) {
+        if (file->filename == filename) {
+            return file.get();
+        }
+    }
+
+    return nullptr;
+}
+
+RawTransferredFileRef* RawConversation::addFile(QString filename)
+{
+    RawTransferredFileRef* file = getFile(filename);
+    if (file) {
+        return file;
+    }
+
+    file = new RawTransferredFileRef(filename);
+    files.emplace_back(RawTransferredFileRefUqPtr(file));
+
+    return file;
 }
 
 void RawConversation::addMessage(RawMessage* message)

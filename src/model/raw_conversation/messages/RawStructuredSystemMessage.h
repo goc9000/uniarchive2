@@ -3,6 +3,7 @@
 
 #include "model/raw_conversation/messages/RawSystemMessage.h"
 #include "model/raw_conversation/RawSpeaker.h"
+#include "model/raw_conversation/RawTransferredFileRef.h"
 #include "model/constants.h"
 
 
@@ -12,13 +13,15 @@ public:
     class Param
     {
     public:
-        enum Type { EMPTY, SPEAKER, PRESENCE };
+        enum Type { EMPTY, SPEAKER, PRESENCE, FILE };
 
         Param() : tag(EMPTY) {}
         Param(RawSpeaker* speaker)
             : tag(SPEAKER), speaker(speaker) {}
         Param(PresenceState presence)
             : tag(PRESENCE), presence(presence) {}
+        Param(RawTransferredFileRef* file)
+            : tag(FILE), file(file) {}
 
         bool isNull() const;
         Type type() const;
@@ -29,6 +32,7 @@ public:
         union {
             RawSpeaker* speaker;
             PresenceState presence;
+            RawTransferredFileRef* file;
         };
     };
 
