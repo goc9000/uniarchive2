@@ -70,6 +70,10 @@ QString SystemMessagePredicate_description(SystemMessagePredicate value)
         return "RevertedState";
     case SystemMessagePredicate::SENT_BUZZ:
         return "SentBuzz";
+    case SystemMessagePredicate::JOINED_CONFERENCE:
+        return "JoinedConference";
+    case SystemMessagePredicate::LEFT_CONFERENCE:
+        return "LeftConference";
     }
 
     return QString::number((int)value) + "?";

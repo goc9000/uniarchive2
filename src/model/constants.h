@@ -36,6 +36,8 @@ enum class SystemMessagePredicate
     CHANGED_STATE                  = 3,
     REVERTED_STATE                 = 4,
     SENT_BUZZ                      = 10,
+    JOINED_CONFERENCE              = 20,
+    LEFT_CONFERENCE                = 21,
 };
 
 QString SystemMessagePredicate_description(SystemMessagePredicate value);

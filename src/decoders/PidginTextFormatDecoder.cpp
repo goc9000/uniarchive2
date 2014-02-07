@@ -428,6 +428,10 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
                     "me", SystemMessagePredicate::SENT_BUZZ),
         ParsingCase(R"((.*) just sent you a Buzz!)",
                     "1:speaker", SystemMessagePredicate::SENT_BUZZ),
+        ParsingCase(R"((.*) entered the room\.)",
+                    "1:speaker", SystemMessagePredicate::JOINED_CONFERENCE),
+        ParsingCase(R"((.*) left the room\.)",
+                    "1:speaker", SystemMessagePredicate::LEFT_CONFERENCE),
     };
 
     for (ParsingCase& parseCase : PARSING_CASES) {
