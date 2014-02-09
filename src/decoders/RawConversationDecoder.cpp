@@ -2,7 +2,7 @@
 
 #include <QString>
 
-#include "decoders/PidginTextFormatDecoder.h"
+#include "decoders/pidgin/PidginTextFormatDecoder.h"
 
 #include "utils/fail.h"
 
