@@ -36,6 +36,7 @@ private:
     RawMessageUqPtr _parseSystemMessage(TimeStamp messageDate, bool isOffline,
                                         QString messageText,
                                         RawConversation& conversation) const;
+    void _doLocalFixes(RawConversation& conversation);
 };
 
 #endif // PIDGINTEXTFORMATDECODER_H

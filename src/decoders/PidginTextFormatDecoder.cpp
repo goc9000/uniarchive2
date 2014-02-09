@@ -29,13 +29,7 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 
     _readMessages(conversation);
 
-    // TODO: fix 24-hour rollover and other date problems
-
-    if (!conversation.date.hasTimeZoneInfo()) {
-        // TODO: try to fix absent timezone info using convFile_->
-        // lastChangeDate() vs. last reply date
-        warn("Timezone information absent");
-    }
+    _doLocalFixes(conversation);
 
     std::vector<RawConversation> result;
     result.push_back(std::move(conversation));
@@ -511,4 +505,15 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseSystemMessage(
 
     return RawMessageUqPtr(
         new RawOpaqueSystemMessage(messageDate, isOffline, messageText));
+}
+
+void PidginTextFormatDecoder::_doLocalFixes(RawConversation &conversation)
+{
+    // TODO: fix 24-hour rollover and other date problems
+
+    if (!conversation.date.hasTimeZoneInfo()) {
+        // TODO: try to fix absent timezone info using convFile_->
+        // lastChangeDate() vs. last reply date
+        warn("Timezone information absent");
+    }
 }
