@@ -5,6 +5,7 @@
 #include <QDateTime>
 
 #include "decoders/pidgin/PidginSystemMessageParser.h"
+#include "decoders/pidgin/PidginLocalFixes.h"
 #include "model/raw_conversation/RawAccount.h"
 #include "model/raw_conversation/RawSpeaker.h"
 #include "model/raw_conversation/messages/RawReply.h"
@@ -29,7 +30,7 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 
     _readMessages(conversation);
 
-    _doLocalFixes(conversation);
+    PidginLocalFixes::fixConversation(conversation, convFile_);
 
     std::vector<RawConversation> result;
     result.push_back(std::move(conversation));
@@ -339,15 +340,4 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseMessage(
 
     return RawMessageUqPtr(
         new RawReply(messageDate, isOffline, speaker, messageText));
-}
-
-void PidginTextFormatDecoder::_doLocalFixes(RawConversation &conversation)
-{
-    // TODO: fix 24-hour rollover and other date problems
-
-    if (!conversation.date.hasTimeZoneInfo()) {
-        // TODO: try to fix absent timezone info using convFile_->
-        // lastChangeDate() vs. last reply date
-        warn("Timezone information absent");
-    }
 }
