@@ -33,9 +33,6 @@ private:
     bool _isAliasDubious(QString alias) const;
     RawMessageUqPtr _parseMessage(QString dateText, QString messageText,
                                   RawConversation& conversation) const;
-    RawMessageUqPtr _parseSystemMessage(TimeStamp messageDate, bool isOffline,
-                                        QString messageText,
-                                        RawConversation& conversation) const;
     void _doLocalFixes(RawConversation& conversation);
 };
 

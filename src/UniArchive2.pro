@@ -43,7 +43,8 @@ SOURCES += main.cpp \
     model/raw_conversation/messages/RawSystemMessage.cpp \
     model/raw_conversation/messages/RawOpaqueSystemMessage.cpp \
     model/raw_conversation/messages/RawStructuredSystemMessage.cpp \
-    model/raw_conversation/RawTransferredFileRef.cpp
+    model/raw_conversation/RawTransferredFileRef.cpp \
+    decoders/pidgin/PidginSystemMessageParser.cpp
 
 HEADERS += \
     core/args.h \
@@ -70,4 +71,5 @@ HEADERS += \
     model/raw_conversation/messages/RawSystemMessage.h \
     model/raw_conversation/messages/RawOpaqueSystemMessage.h \
     model/raw_conversation/messages/RawStructuredSystemMessage.h \
-    model/raw_conversation/RawTransferredFileRef.h
+    model/raw_conversation/RawTransferredFileRef.h \
+    decoders/pidgin/PidginSystemMessageParser.h
