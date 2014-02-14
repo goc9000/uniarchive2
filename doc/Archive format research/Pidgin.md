@@ -49,8 +49,9 @@ Commonalities
 - **Problem**: There is no explicit indication as to which of the speakers is you
 - **Problem**: Except for offline messages, message timestamps do not feature the date, not even
   when they cross into a new day.
-- First message date may precede conversation date, if the conversation starts with offline
-  messages
+- **Problem**: The conversation date seems to be the time at which you saw the first message, as opposed
+  to when it was actually sent. This means that the first non-offline message may precede the start date
+  by seconds, minutes or even hours.
 - **Problem**: Sometimes on jabber you get a weird friend id like (random_chars)@public.talk.google.com.
   It may not be possible to determine the real account if the friend's alias (or a "X is now known as Y"
   message) never appears.
