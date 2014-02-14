@@ -47,7 +47,7 @@ Commonalities
 
 - **Problem**: Replies use aliases, not accounts
 - **Problem**: There is no explicit indication as to which of the speakers is you
-- **Problem**: Except for offline messages, message timestamps do feature the date, not even
+- **Problem**: Except for offline messages, message timestamps do not feature the date, not even
   when they cross into a new day.
 - First message date may precede conversation date, if the conversation starts with offline
   messages
