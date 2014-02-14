@@ -8,9 +8,9 @@
 class RawReply : public RawMessage
 {
 public:
-    RawReply(TimeStamp date, bool isOffline, RawSpeaker* speaker,
+    RawReply(TimeStamp date, RawMessage::Flags flags, RawSpeaker* speaker,
              QString content)
-        : RawMessage(date, isOffline), speaker(speaker), content(content) {}
+        : RawMessage(date, flags), speaker(speaker), content(content) {}
 
     RawSpeaker* speaker;
     QString content;

@@ -328,16 +328,20 @@ RawMessageUqPtr PidginTextFormatDecoder::_parseMessage(
 
     bool isOffline = !messageDate.date.isNull();
 
+    RawMessage::Flags flags = (RawMessage::Flags)(
+        (isOffline ? (int)RawMessage::Flags::OFFLINE : 0)
+    );
+
     QString speakerName;
     _extractSpeakerName(messageText, speakerName, messageText);
 
     if (speakerName.isNull()) {
         return PidginSystemMessageParser::parseSystemMessage(
-            messageDate, isOffline, messageText, conversation);
+            messageDate, flags, messageText, conversation);
     }
 
     RawSpeaker* speaker = conversation.addSpeaker(speakerName);
 
     return RawMessageUqPtr(
-        new RawReply(messageDate, isOffline, speaker, messageText));
+        new RawReply(messageDate, flags, speaker, messageText));
 }

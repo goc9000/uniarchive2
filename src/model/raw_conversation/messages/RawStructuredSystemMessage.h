@@ -42,10 +42,10 @@ public:
         };
     };
 
-    RawStructuredSystemMessage(TimeStamp date, bool isOffline,
+    RawStructuredSystemMessage(TimeStamp date, RawMessage::Flags flags,
                                Param subject, SystemMessagePredicate predicate,
                                Param object=Param(), Param aux=Param())
-        : RawSystemMessage(date, isOffline), subject(subject),
+        : RawSystemMessage(date, flags), subject(subject),
           predicate(predicate), object(object), aux(aux) {}
 
     Param subject;

@@ -7,11 +7,16 @@ QString RawMessage::description() const
 
     desc.append("(").append(date.description()).append(") ");
 
-    if (isOffline) {
+    if (isOffline()) {
         desc.append("[offline] ");
     }
 
     desc.append(_bodyDescription());
 
     return desc;
+}
+
+bool RawMessage::isOffline() const
+{
+    return !!((int)flags & (int)Flags::OFFLINE);
 }

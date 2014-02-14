@@ -9,7 +9,7 @@ class PidginSystemMessageParser
 {
 public:
     static RawMessageUqPtr parseSystemMessage(
-        TimeStamp messageDate, bool isOffline, QString messageText,
+        TimeStamp messageDate, RawMessage::Flags flags, QString messageText,
         RawConversation& conversation);
 };
 

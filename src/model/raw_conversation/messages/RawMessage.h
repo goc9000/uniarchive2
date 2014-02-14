@@ -14,13 +14,20 @@ typedef std::unique_ptr<RawMessage> RawMessageUqPtr;
 class RawMessage
 {
 public:
-    RawMessage(TimeStamp date, bool isOffline)
-        : date(date), isOffline(isOffline) {}
+    enum class Flags
+    {
+        OFFLINE    = (1 << 0)
+    };
+
+    RawMessage(TimeStamp date, Flags flags)
+        : date(date), flags(flags) {}
+
+    bool isOffline() const;
 
     QString description() const;
 
     TimeStamp date;
-    bool isOffline;
+    Flags flags;
 protected:
     virtual QString _bodyDescription() const = 0;
 };

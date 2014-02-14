@@ -7,8 +7,9 @@
 class RawOpaqueSystemMessage : public RawSystemMessage
 {
 public:
-    RawOpaqueSystemMessage(TimeStamp date, bool isOffline, QString content)
-        : RawSystemMessage(date, isOffline), content(content) {}
+    RawOpaqueSystemMessage(TimeStamp date, RawMessage::Flags flags,
+                           QString content)
+        : RawSystemMessage(date, flags), content(content) {}
 
     QString content;
 protected:

@@ -153,7 +153,7 @@ static std::vector<ParsingCase> PARSING_CASES = {
 
 
 RawMessageUqPtr PidginSystemMessageParser::parseSystemMessage(
-    TimeStamp messageDate, bool isOffline, QString messageText,
+    TimeStamp messageDate, RawMessage::Flags flags, QString messageText,
     RawConversation& conversation)
 {
     for (ParsingCase& parseCase : PARSING_CASES) {
@@ -161,7 +161,7 @@ RawMessageUqPtr PidginSystemMessageParser::parseSystemMessage(
             return RawMessageUqPtr(
                 new RawStructuredSystemMessage(
                     messageDate,
-                    isOffline,
+                    flags,
                     parseCase.extractParam(parseCase.subjectSpec, conversation),
                     parseCase.predicate,
                     parseCase.extractParam(parseCase.objectSpec, conversation),
@@ -175,5 +175,5 @@ RawMessageUqPtr PidginSystemMessageParser::parseSystemMessage(
          qPrintable(messageText));
 
     return RawMessageUqPtr(
-        new RawOpaqueSystemMessage(messageDate, isOffline, messageText));
+        new RawOpaqueSystemMessage(messageDate, flags, messageText));
 }
