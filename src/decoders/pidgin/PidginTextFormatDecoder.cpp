@@ -5,7 +5,7 @@
 #include <QDateTime>
 
 #include "decoders/pidgin/PidginSystemMessageParser.h"
-#include "decoders/pidgin/PidginLocalFixes.h"
+#include "fixers/pidgin/PidginConversationFixer.h"
 #include "model/raw_conversation/RawAccount.h"
 #include "model/raw_conversation/RawSpeaker.h"
 #include "model/raw_conversation/messages/RawReply.h"
@@ -30,7 +30,7 @@ std::vector<RawConversation> PidginTextFormatDecoder::rawConversations()
 
     _readMessages(conversation);
 
-    PidginLocalFixes::fixConversation(conversation, convFile_);
+    PidginConversationFixer(&conversation, convFile_).fix();
 
     std::vector<RawConversation> result;
     result.push_back(std::move(conversation));
