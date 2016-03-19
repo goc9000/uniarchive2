@@ -1,2 +1,5 @@
+# JetBrains IDE projects
+.idea
+
 # OS X trash
 .DS_Store
