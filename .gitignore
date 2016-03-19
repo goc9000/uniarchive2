@@ -17,3 +17,7 @@ bin/
 
 # Qt local project settings
 *.pro.user
+
+# Tests folder
+tests/
+

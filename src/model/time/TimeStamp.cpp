@@ -11,6 +11,36 @@ bool TimeStamp::hasTimeZoneInfo() const
     return !timeZone.isNull();
 }
 
+bool TimeStamp::operator ==(const TimeStamp& other) const
+{
+    return (compare(other) == 0);
+}
+
+bool TimeStamp::operator <(const TimeStamp& other) const
+{
+    return (compare(other) < 0);
+}
+
+bool TimeStamp::operator <=(const TimeStamp& other) const
+{
+    return (compare(other) <= 0);
+}
+
+bool TimeStamp::operator >(const TimeStamp& other) const
+{
+    return (compare(other) > 0);
+}
+
+bool TimeStamp::operator >=(const TimeStamp& other) const
+{
+    return (compare(other) >= 0);
+}
+
+int TimeStamp::compare(const TimeStamp& other) const
+{
+    return
+}
+
 QString TimeStamp::description() const
 {
     QString desc;

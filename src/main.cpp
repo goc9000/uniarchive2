@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
                 RawConversationSource::fromSpecification(sourceSpec);
 
             for (const RawConversation& rawConv : source->rawConversations()) {
-                rawConv.dump();
+                //rawConv.dump();
             }
         }
         //QCoreApplication a(argc, argv);

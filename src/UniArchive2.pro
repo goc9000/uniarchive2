@@ -45,7 +45,8 @@ SOURCES += main.cpp \
     model/raw_conversation/messages/RawStructuredSystemMessage.cpp \
     model/raw_conversation/RawTransferredFileRef.cpp \
     decoders/pidgin/PidginSystemMessageParser.cpp \
-    fixers/pidgin/PidginConversationFixer.cpp
+    fixers/pidgin/PidginConversationFixer.cpp \
+    debug/conversations.cpp
 
 HEADERS += \
     core/args.h \
@@ -74,4 +75,5 @@ HEADERS += \
     model/raw_conversation/messages/RawStructuredSystemMessage.h \
     model/raw_conversation/RawTransferredFileRef.h \
     decoders/pidgin/PidginSystemMessageParser.h \
-    fixers/pidgin/PidginConversationFixer.h
+    fixers/pidgin/PidginConversationFixer.h \
+    debug/conversations.h

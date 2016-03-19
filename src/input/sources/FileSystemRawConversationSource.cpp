@@ -22,8 +22,8 @@ std::vector<RawConversation> FileSystemRawConversationSource::rawConversations()
     bool anyFound = false;
     for (RawConversationFileUqPtr& file : scanner.files()) {
         if (!RawConversationDecoder::isSupportedFormat(file.get())) {
-            warn("File '%s' is not a conversation file in any supported format",
-                 qPrintable(file->description()));
+            //warn("File '%s' is not a conversation file in any supported format",
+            //     qPrintable(file->description()));
         } else {
             anyFound = true;
 

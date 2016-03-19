@@ -15,6 +15,8 @@ public:
     RawConversation* fix();
 
 protected:
+    void _detectQuotedMessages();
+
     RawConversation* conversation_;
     RawConversationFile* sourceFile_;
 };

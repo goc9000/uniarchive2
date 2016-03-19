@@ -21,6 +21,14 @@ public:
     bool isNull() const;
     bool hasTimeZoneInfo() const;
 
+    bool operator ==(const TimeStamp& other) const;
+    bool operator <(const TimeStamp& other) const;
+    bool operator <=(const TimeStamp& other) const;
+    bool operator >(const TimeStamp& other) const;
+    bool operator >=(const TimeStamp& other) const;
+
+    int compare(const TimeStamp& other) const;
+
     QString description() const;
 
     void setNull();
