@@ -1,0 +1,18 @@
+/**
+ * utils/language/invariant.h
+ *
+ * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
+ *
+ * This file is part of UniArchive II.
+ *
+ * Licensed under the GPL-3
+ */
+
+#ifndef UNIARCHIVE2_UTILS_LANGUAGE_INVARIANT_H
+#define UNIARCHIVE2_UTILS_LANGUAGE_INVARIANT_H
+
+#include <QtDebug>
+
+#define invariant(condition, format, ...) if (!(condition)) qFatal(format, ##__VA_ARGS__)
+
+#endif //UNIARCHIVE2_UTILS_LANGUAGE_INVARIANT_H
