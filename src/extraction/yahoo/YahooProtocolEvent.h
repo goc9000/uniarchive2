@@ -37,7 +37,7 @@ struct YahooProtocolEvent {
     }
 };
 
-QDebug operator<< (QDebug stream, const uniarchive2::extraction::yahoo::YahooProtocolEvent &event);
+QDebug operator<< (QDebug stream, const YahooProtocolEvent& event);
 
 }}}
 

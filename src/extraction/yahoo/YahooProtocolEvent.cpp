@@ -15,7 +15,7 @@
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-QDebug operator<< (QDebug stream, const YahooProtocolEvent &event) {
+QDebug operator<< (QDebug stream, const YahooProtocolEvent& event) {
     QDebugStateSaver settings(stream);
     stream.nospace() << "YahooProtocolEvent(";
     stream << "timestamp=" << event.timestamp;
