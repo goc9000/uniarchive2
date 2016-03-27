@@ -20,11 +20,7 @@ ExtractYahooProtocolEventsIterator::ExtractYahooProtocolEventsIterator(
     const QByteArray &binary_data,
     const QString &local_account_name
 ) : reader(binary_data) {
-    invariant(
-        is_valid_yahoo_account_name(local_account_name),
-        "'%s' doesn't look like a valid Yahoo name",
-        qUtf8Printable(local_account_name)
-    );
+    assert_valid_yahoo_account_name(local_account_name);
     this->local_account_name = local_account_name.toUtf8();
     reader.setByteOrder(QDataStream::LittleEndian);
 }
