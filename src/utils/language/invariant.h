@@ -13,6 +13,7 @@
 
 #include <QtDebug>
 
-#define invariant(condition, format, ...) if (!(condition)) qFatal(format, ##__VA_ARGS__)
+#define invariant(condition, format, ...) if (!(condition)) invariant_violation(format, ##__VA_ARGS__)
+#define invariant_violation(format, ...) qFatal(format, ##__VA_ARGS__)
 
 #endif //UNIARCHIVE2_UTILS_LANGUAGE_INVARIANT_H
