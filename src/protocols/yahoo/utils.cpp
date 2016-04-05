@@ -31,4 +31,3 @@ void assert_valid_yahoo_account_name(const QString& account_name) {
 }
 
 }}}
-

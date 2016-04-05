@@ -14,6 +14,8 @@ set(SOURCE_FILES
         src/protocols/yahoo/utils.h
         src/protocols/ArchiveFormats.h
         src/protocols/ArchiveFormats.cpp
+        src/protocols/FullAccountName.h
+        src/protocols/FullAccountName.cpp
         src/protocols/IMProtocols.h
         src/protocols/IMProtocols.cpp
         src/utils/external_libs/optional.hpp
