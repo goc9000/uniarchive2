@@ -6,6 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 find_package(Qt5 REQUIRED COMPONENTS Core)
 
 set(SOURCE_FILES
+        src/extraction/yahoo/extract_yahoo_messenger_conversations.cpp
+        src/extraction/yahoo/extract_yahoo_messenger_conversations.h
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
