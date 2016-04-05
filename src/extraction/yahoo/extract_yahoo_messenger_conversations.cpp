@@ -24,6 +24,7 @@
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
 #include "intermediate_format/events/IFDeclineConferenceEvent.h"
 #include "intermediate_format/events/IFLeaveConferenceEvent.h"
+#include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormats.h"
 #include "protocols/FullAccountName.h"
@@ -171,7 +172,23 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 ((IFLeaveConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
             break;
-        default:
+        case YahooProtocolEvent::Type::CONVERSATION_MESSAGE:
+            invariant(proto_event.extra.isEmpty(), "CONVERSATION_MESSAGE events should have no 'extra' field");
+            // intentional fallthrough
+        case YahooProtocolEvent::Type::CONFERENCE_MESSAGE:
+            event = make_shared<IFMessageEvent>(
+                timestamp,
+                next_index,
+                parse_event_subject(proto_event, conversation),
+                parse_message_content(proto_event.text)
+            );
+
+            if ((proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) && !proto_event.extra.isEmpty()) {
+                ((IFMessageEvent*)event.get())->receiver = make_shared<SubjectGivenAsAccount>(
+                    parse_yahoo_account(QString::fromUtf8(proto_event.extra))
+                );
+            }
+            // TODO: offline messages
             break;
     }
 
@@ -201,7 +218,7 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
-    if (proto_event.extra.isEmpty()) {
+    if (proto_event.extra.isEmpty() || (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING)) {
         return implicit_subject(proto_event, conversation);
     }
 
