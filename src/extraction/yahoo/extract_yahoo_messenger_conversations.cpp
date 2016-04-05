@@ -18,6 +18,7 @@
 #include "extraction/yahoo/extract_yahoo_messenger_conversations.h"
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
 #include "intermediate_format/ApparentTime.h"
+#include "intermediate_format/content/IntermediateFormatMessageContent.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
@@ -49,6 +50,7 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
+IntermediateFormatMessageContent parse_message_content(const QByteArray& textData);
 
 QVector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
     QVector<IntermediateFormatConversation> conversations;
@@ -109,6 +111,8 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
 ) {
     QVector<shared_ptr<IntermediateFormatEvent>> events;
     shared_ptr<IntermediateFormatEvent> event;
+    shared_ptr<IntermediateFormatEvent> extra_event;
+    bool extra_event_after = true;
 
     ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
     unsigned int next_index = (unsigned int)conversation.events.length();
@@ -135,6 +139,9 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 next_index,
                 parse_event_subject(proto_event, conversation)
             );
+            if (!proto_event.text.isEmpty()) {
+                ((IFJoinConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
+            }
             break;
         case YahooProtocolEvent::Type::CONFERENCE_DECLINE:
             invariant(
@@ -146,6 +153,9 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 next_index,
                 parse_event_subject(proto_event, conversation)
             );
+            if (!proto_event.text.isEmpty()) {
+                ((IFDeclineConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
+            }
             break;
         case YahooProtocolEvent::Type::CONFERENCE_LEAVE:
             invariant(
@@ -157,6 +167,9 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 next_index,
                 parse_event_subject(proto_event, conversation)
             );
+            if (!proto_event.text.isEmpty()) {
+                ((IFLeaveConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
+            }
             break;
         default:
             break;
@@ -193,6 +206,14 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     }
 
     return make_shared<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
+}
+
+IntermediateFormatMessageContent parse_message_content(const QByteArray& textData) {
+    IntermediateFormatMessageContent content;
+
+    content.temporaryRawText = QString::fromUtf8(textData);
+
+    return content;
 }
 
 }}}

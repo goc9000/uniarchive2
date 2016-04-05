@@ -15,10 +15,14 @@
 
 #include <QtDebug>
 
+#include "utils/external_libs/optional.hpp"
+
+#include "intermediate_format/content/IntermediateFormatMessageContent.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 
 using namespace std;
+using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
@@ -26,6 +30,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 struct IFJoinConferenceEvent : IntermediateFormatEvent {
 public:
     shared_ptr<ApparentSubject> subject;
+    optional<IntermediateFormatMessageContent> message;
 
     IFJoinConferenceEvent(ApparentTime timestamp, unsigned int index, shared_ptr<ApparentSubject> subject);
 

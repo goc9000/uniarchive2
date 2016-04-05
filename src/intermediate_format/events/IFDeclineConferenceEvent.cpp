@@ -27,6 +27,9 @@ QString IFDeclineConferenceEvent::eventName() const {
 
 void IFDeclineConferenceEvent::writeDetailsToDebugStream(QDebug stream) const {
     stream << " subject=" << subject.get();
+    if (message) {
+        stream << " message=" << *message;
+    }
 }
 
 }}}
