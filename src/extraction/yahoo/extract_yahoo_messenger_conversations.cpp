@@ -69,9 +69,7 @@ IntermediateFormatConversation build_conversation_prototype(const QString& filen
     static QRegularExpression pattern("\\d{8}-(.+)[.]dat", QRegularExpression::CaseInsensitiveOption);
     auto match = pattern.match(filename.section(QDir::separator(), -1, -1));
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
-    QString local_account_name = match.captured(1);
-    assert_valid_yahoo_account_name(local_account_name);
-    FullAccountName local_account(IMProtocols::YAHOO, local_account_name);
+    auto local_account = parse_yahoo_account(match.captured(1));
 
     IntermediateFormatConversation prototype(ArchiveFormats::YAHOO_MESSENGER, local_account);
 
@@ -79,9 +77,7 @@ IntermediateFormatConversation build_conversation_prototype(const QString& filen
     prototype.fileLastModifiedTime =
         ApparentTime(file_info.lastModified().toTime_t(), ApparentTime::Reference::UNKNOWN);
 
-    QString remote_account_name = full_filename.section(QDir::separator(), -2, -2);
-    assert_valid_yahoo_account_name(remote_account_name);
-    FullAccountName remote_account(IMProtocols::YAHOO, remote_account_name);
+    auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
     prototype.declaredRemoteAccounts.push_back(remote_account);
 
     QString top_folder = full_filename.section(QDir::separator(), -3, -3);

@@ -13,6 +13,7 @@
 
 #include "utils/language/invariant.h"
 #include "protocols/yahoo/utils.h"
+#include "protocols/IMProtocols.h"
 
 namespace uniarchive2 { namespace protocols { namespace yahoo {
 
@@ -28,6 +29,11 @@ void assert_valid_yahoo_account_name(const QString& account_name) {
         "'%s' doesn't look like a valid Yahoo name",
         qUtf8Printable(account_name)
     );
+}
+
+FullAccountName parse_yahoo_account(const QString& account_name) {
+    assert_valid_yahoo_account_name(account_name);
+    return FullAccountName(IMProtocols::YAHOO, account_name);
 }
 
 }}}
