@@ -12,6 +12,10 @@ set(SOURCE_FILES
         src/extraction/yahoo/YahooProtocolEvent.h
         src/protocols/yahoo/utils.cpp
         src/protocols/yahoo/utils.h
+        src/protocols/ArchiveFormats.h
+        src/protocols/ArchiveFormats.cpp
+        src/protocols/IMProtocols.h
+        src/protocols/IMProtocols.cpp
         src/utils/external_libs/optional.hpp
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
