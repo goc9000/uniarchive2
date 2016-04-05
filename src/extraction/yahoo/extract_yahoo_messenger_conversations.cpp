@@ -20,6 +20,9 @@
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
+#include "intermediate_format/events/IFJoinConferenceEvent.h"
+#include "intermediate_format/events/IFDeclineConferenceEvent.h"
+#include "intermediate_format/events/IFLeaveConferenceEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormats.h"
 #include "protocols/FullAccountName.h"
@@ -35,6 +38,14 @@ namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 IntermediateFormatConversation build_conversation_prototype(const QString& filename);
 QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
+    const YahooProtocolEvent& proto_event,
+    const IntermediateFormatConversation& conversation
+);
+shared_ptr<SubjectGivenAsAccount> implicit_subject(
+    const YahooProtocolEvent& proto_event,
+    const IntermediateFormatConversation& conversation
+);
+shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
@@ -100,11 +111,7 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
     shared_ptr<IntermediateFormatEvent> event;
 
     ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
-    unsigned int nextIndex = (unsigned int)conversation.events.length();
-    auto implicitSubject = make_shared<SubjectGivenAsAccount>(
-        (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
-        conversation.localAccount : conversation.declaredRemoteAccounts.first()
-    );
+    unsigned int next_index = (unsigned int)conversation.events.length();
 
     switch (proto_event.type) {
         case YahooProtocolEvent::Type::START_CONVERSATION:
@@ -112,7 +119,44 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 proto_event.text.isEmpty() && proto_event.extra.isEmpty(),
                 "START_CONVERSATION events should have blank 'text' and 'extra' fields"
             );
-            event = make_shared<IFStartConversationEvent>(timestamp, nextIndex, implicitSubject);
+            event = make_shared<IFStartConversationEvent>(
+                timestamp,
+                next_index,
+                implicit_subject(proto_event, conversation)
+            );
+            break;
+        case YahooProtocolEvent::Type::CONFERENCE_JOIN:
+            invariant(
+                proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
+                "CONFERENCE_JOIN events can only be incoming"
+            );
+            event = make_shared<IFJoinConferenceEvent>(
+                timestamp,
+                next_index,
+                parse_event_subject(proto_event, conversation)
+            );
+            break;
+        case YahooProtocolEvent::Type::CONFERENCE_DECLINE:
+            invariant(
+                proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
+                "CONFERENCE_DECLINE events can only be incoming"
+            );
+            event = make_shared<IFDeclineConferenceEvent>(
+                timestamp,
+                next_index,
+                parse_event_subject(proto_event, conversation)
+            );
+            break;
+        case YahooProtocolEvent::Type::CONFERENCE_LEAVE:
+            invariant(
+                proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
+                "CONFERENCE_LEAVE events can only be incoming"
+            );
+            event = make_shared<IFLeaveConferenceEvent>(
+                timestamp,
+                next_index,
+                parse_event_subject(proto_event, conversation)
+            );
             break;
         default:
             break;
@@ -128,6 +172,27 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
     }
 
     return events;
+}
+
+shared_ptr<SubjectGivenAsAccount> implicit_subject(
+    const YahooProtocolEvent& proto_event,
+    const IntermediateFormatConversation& conversation
+) {
+    return make_shared<SubjectGivenAsAccount>(
+        (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
+        conversation.localAccount : conversation.declaredRemoteAccounts.first()
+    );
+}
+
+shared_ptr<SubjectGivenAsAccount> parse_event_subject(
+    const YahooProtocolEvent& proto_event,
+    const IntermediateFormatConversation& conversation
+) {
+    if (proto_event.extra.isEmpty()) {
+        return implicit_subject(proto_event, conversation);
+    }
+
+    return make_shared<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
 }}}
