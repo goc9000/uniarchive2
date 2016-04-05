@@ -10,20 +10,26 @@ set(SOURCE_FILES
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
         src/extraction/yahoo/YahooProtocolEvent.h
-        src/intermediate_format/subjects/ApparentSubject.h
+        src/intermediate_format/events/IFStartConversationEvent.cpp
+        src/intermediate_format/events/IFStartConversationEvent.h
+        src/intermediate_format/events/IntermediateFormatEvent.cpp
+        src/intermediate_format/events/IntermediateFormatEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp
+        src/intermediate_format/subjects/ApparentSubject.h
         src/intermediate_format/subjects/SubjectGivenAsAccount.cpp
         src/intermediate_format/subjects/SubjectGivenAsAccount.h
-        src/intermediate_format/ApparentTime.h
         src/intermediate_format/ApparentTime.cpp
+        src/intermediate_format/ApparentTime.h
+        src/intermediate_format/IntermediateFormatConversation.cpp
+        src/intermediate_format/IntermediateFormatConversation.h
         src/protocols/yahoo/utils.cpp
         src/protocols/yahoo/utils.h
-        src/protocols/ArchiveFormats.h
         src/protocols/ArchiveFormats.cpp
-        src/protocols/FullAccountName.h
+        src/protocols/ArchiveFormats.h
         src/protocols/FullAccountName.cpp
-        src/protocols/IMProtocols.h
+        src/protocols/FullAccountName.h
         src/protocols/IMProtocols.cpp
+        src/protocols/IMProtocols.h
         src/utils/external_libs/optional.hpp
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
