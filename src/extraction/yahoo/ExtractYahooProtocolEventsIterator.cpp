@@ -31,8 +31,8 @@ bool ExtractYahooProtocolEventsIterator::hasNext() const {
 
 YahooProtocolEvent ExtractYahooProtocolEventsIterator::next() {
     quint32 timestamp = readInt();
-    quint32 event_type = readInt();
-    quint32 direction = readInt();
+    YahooProtocolEvent::Type event_type = (YahooProtocolEvent::Type)readInt();
+    YahooProtocolEvent::Direction direction = (YahooProtocolEvent::Direction)readInt();
 
     QByteArray text = readRawString();
     QByteArray extra = readRawString();

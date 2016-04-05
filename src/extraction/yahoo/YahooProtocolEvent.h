@@ -17,7 +17,7 @@
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 struct YahooProtocolEvent {
-    enum EventType {
+    enum class Type {
         START_CONVERSATION = 0,
         CONVERSATION_MESSAGE = 6,
         CONFERENCE_JOIN = 25,
@@ -26,13 +26,19 @@ struct YahooProtocolEvent {
         CONFERENCE_MESSAGE = 29,
     };
 
+    enum class Direction {
+        OUTGOING = 0,
+        INCOMING = 1,
+        OFFLINE = 6,
+    };
+
     quint32 timestamp;
-    quint32 type;
-    quint32 direction;
+    Type type;
+    Direction direction;
     QByteArray text;
     QByteArray extra;
 
-    YahooProtocolEvent(quint32 timestamp, quint32 type, quint32 direction, QByteArray text, QByteArray extra)
+    YahooProtocolEvent(quint32 timestamp, Type type, Direction direction, QByteArray text, QByteArray extra)
         : timestamp(timestamp), type(type), direction(direction), text(text), extra(extra) {
     }
 };
