@@ -10,6 +10,10 @@ set(SOURCE_FILES
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
         src/extraction/yahoo/YahooProtocolEvent.h
+        src/intermediate_format/subjects/ApparentSubject.h
+        src/intermediate_format/subjects/ApparentSubject.cpp
+        src/intermediate_format/subjects/SubjectGivenAsAccount.cpp
+        src/intermediate_format/subjects/SubjectGivenAsAccount.h
         src/intermediate_format/ApparentTime.h
         src/intermediate_format/ApparentTime.cpp
         src/protocols/yahoo/utils.cpp
