@@ -30,9 +30,11 @@
 #include "protocols/FullAccountName.h"
 #include "protocols/yahoo/account_name.h"
 #include "utils/language/invariant.h"
+#include "utils/text/decoding.h"
 
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::protocols::yahoo;
+using namespace uniarchive2::utils::text;
 
 using namespace std;
 
@@ -51,7 +53,7 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
-IntermediateFormatMessageContent parse_message_content(const QByteArray& textData);
+IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data);
 
 QVector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
     QVector<IntermediateFormatConversation> conversations;
@@ -225,10 +227,10 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     return make_shared<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
-IntermediateFormatMessageContent parse_message_content(const QByteArray& textData) {
+IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data) {
     IntermediateFormatMessageContent content;
 
-    content.temporaryRawText = QString::fromUtf8(textData);
+    content.temporaryRawText = decode_utf8(text_data);
 
     return content;
 }

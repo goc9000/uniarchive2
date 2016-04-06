@@ -45,6 +45,8 @@ set(SOURCE_FILES
         src/utils/external_libs/optional.hpp
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
+        src/utils/text/decoding.cpp
+        src/utils/text/decoding.h
         src/main.cpp
         )
 
