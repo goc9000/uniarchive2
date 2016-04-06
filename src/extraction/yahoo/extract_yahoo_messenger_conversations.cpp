@@ -28,7 +28,7 @@
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormats.h"
 #include "protocols/FullAccountName.h"
-#include "protocols/yahoo/utils.h"
+#include "protocols/yahoo/account_name.h"
 #include "utils/language/invariant.h"
 
 using namespace uniarchive2::intermediate_format;

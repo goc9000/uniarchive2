@@ -1,5 +1,5 @@
 /**
- * protocols/yahoo/utils.cpp
+ * protocols/yahoo/account_name.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -12,7 +12,7 @@
 #include <QRegularExpression>
 
 #include "utils/language/invariant.h"
-#include "protocols/yahoo/utils.h"
+#include "protocols/yahoo/account_name.h"
 #include "protocols/IMProtocols.h"
 
 namespace uniarchive2 { namespace protocols { namespace yahoo {

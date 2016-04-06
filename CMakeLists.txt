@@ -34,8 +34,8 @@ set(SOURCE_FILES
         src/intermediate_format/ApparentTime.h
         src/intermediate_format/IntermediateFormatConversation.cpp
         src/intermediate_format/IntermediateFormatConversation.h
-        src/protocols/yahoo/utils.cpp
-        src/protocols/yahoo/utils.h
+        src/protocols/yahoo/account_name.cpp
+        src/protocols/yahoo/account_name.h
         src/protocols/ArchiveFormats.cpp
         src/protocols/ArchiveFormats.h
         src/protocols/FullAccountName.cpp
