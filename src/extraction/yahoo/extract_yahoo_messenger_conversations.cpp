@@ -19,6 +19,7 @@
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/content/IntermediateFormatMessageContent.h"
+#include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
@@ -230,7 +231,9 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
 IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data) {
     IntermediateFormatMessageContent content;
 
-    content.temporaryRawText = decode_utf8(text_data);
+    QString text = decode_utf8(text_data);
+
+    content.items.append(make_shared<TextSection>(text));
 
     return content;
 }

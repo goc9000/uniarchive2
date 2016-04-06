@@ -11,18 +11,26 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
 
+#include <memory>
+
 #include <QtDebug>
-#include <QString>
+#include <QVector>
+
+#include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+
+using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 struct IntermediateFormatMessageContent {
 public:
-    QString temporaryRawText; // TODO: will be refined later
+    IntermediateFormatMessageContent();
+
+    QVector<shared_ptr<IntermediateFormatMessageContentItem>> items;
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatMessageContent& content);
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_INTERMEDIATEFORMATMESSAGECONTENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H

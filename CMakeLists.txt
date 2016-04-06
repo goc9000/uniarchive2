@@ -14,6 +14,10 @@ set(SOURCE_FILES
         src/extraction/yahoo/YahooProtocolEvent.h
         src/intermediate_format/content/IntermediateFormatMessageContent.cpp
         src/intermediate_format/content/IntermediateFormatMessageContent.h
+        src/intermediate_format/content/IntermediateFormatMessageContentItem.cpp
+        src/intermediate_format/content/IntermediateFormatMessageContentItem.h
+        src/intermediate_format/content/TextSection.cpp
+        src/intermediate_format/content/TextSection.h
         src/intermediate_format/events/IFDeclineConferenceEvent.cpp
         src/intermediate_format/events/IFDeclineConferenceEvent.h
         src/intermediate_format/events/IFJoinConferenceEvent.cpp

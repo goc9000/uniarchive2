@@ -14,9 +14,18 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
+IntermediateFormatMessageContent::IntermediateFormatMessageContent() {
+}
+
 QDebug operator<< (QDebug stream, const IntermediateFormatMessageContent& content) {
     QDebugStateSaver saver(stream);
-    stream << content.temporaryRawText;
+    bool first = true;
+
+    for (auto& item : content.items) {
+        stream << (first ? "" : " ") << item.get();
+        first = false;
+    }
+
     return stream;
 }
 
