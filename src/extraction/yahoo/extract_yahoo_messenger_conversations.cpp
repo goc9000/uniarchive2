@@ -20,6 +20,9 @@
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/content/IntermediateFormatMessageContent.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/content/BoldTag.h"
+#include "intermediate_format/content/ItalicTag.h"
+#include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
@@ -55,6 +58,8 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     const IntermediateFormatConversation& conversation
 );
 IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data);
+shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match);
+shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code);
 
 QVector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
     QVector<IntermediateFormatConversation> conversations;
@@ -229,13 +234,79 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
 }
 
 IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data) {
+    static QRegularExpression markup_pattern(
+        "\\x1B\\[(?<pseudo_ansi_seq>[^m]+)m"
+    );
+
     IntermediateFormatMessageContent content;
 
     QString text = decode_utf8(text_data);
 
-    content.items.append(make_shared<TextSection>(text));
+    auto iterator = markup_pattern.globalMatch(text_data);
+    int last_text_pos = 0;
+
+    while (iterator.hasNext()) {
+        auto match = iterator.next();
+
+        if (match.capturedStart(0) > last_text_pos) {
+            content.items.append(
+                make_shared<TextSection>(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos))
+            );
+        }
+
+        auto markup_tag = parse_markup_tag(match);
+        if (markup_tag) {
+            content.items.append(markup_tag);
+        }
+
+        last_text_pos = match.capturedEnd(0);
+    }
+
+    if (text.length() > last_text_pos) {
+        content.items.append(make_shared<TextSection>(text.mid(last_text_pos, text.length() - last_text_pos)));
+    }
 
     return content;
+}
+
+shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match) {
+    if (match.capturedLength("pseudo_ansi_seq")) {
+        return parse_pseudo_ansi_seq(match.captured("pseudo_ansi_seq"));
+    }
+
+    invariant_violation("Tag not recognized: \"%s\"", qUtf8Printable(match.captured(0)));
+}
+
+shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code) {
+    static QRegularExpression pattern(
+        "^(?<closed>x)?("\
+        "(?<bold>1)|"\
+        "(?<italic>2)|"\
+        "(?<underline>4)|"\
+        ")$",
+        QRegularExpression::CaseInsensitiveOption
+    );
+
+    auto match = pattern.match(sgr_code);
+
+    // Temporary until everything is implemented
+    if (!match.hasMatch()) {
+        return shared_ptr<IntermediateFormatMessageContentItem>();
+    }
+
+    invariant(match.hasMatch(), "SGR code not recognized: \"%s\"", qUtf8Printable(sgr_code));
+
+    bool closed = match.capturedLength("closed") > 0;
+
+    if (match.capturedLength("bold")) {
+        return make_shared<BoldTag>(closed);
+    } else if (match.capturedLength("italic")) {
+        return make_shared<ItalicTag>(closed);
+    } else if (match.capturedLength("underline")) {
+        return make_shared<UnderlineTag>(closed);
+    }
+
+    never_reached();
 }
 
 }}}

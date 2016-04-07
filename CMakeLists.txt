@@ -12,12 +12,19 @@ set(SOURCE_FILES
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
         src/extraction/yahoo/YahooProtocolEvent.h
+        src/intermediate_format/content/BoldTag.cpp
+        src/intermediate_format/content/BoldTag.h
         src/intermediate_format/content/IntermediateFormatMessageContent.cpp
         src/intermediate_format/content/IntermediateFormatMessageContent.h
         src/intermediate_format/content/IntermediateFormatMessageContentItem.cpp
         src/intermediate_format/content/IntermediateFormatMessageContentItem.h
+        src/intermediate_format/content/ItalicTag.cpp
+        src/intermediate_format/content/ItalicTag.h
+        src/intermediate_format/content/Markup.h
         src/intermediate_format/content/TextSection.cpp
         src/intermediate_format/content/TextSection.h
+        src/intermediate_format/content/UnderlineTag.cpp
+        src/intermediate_format/content/UnderlineTag.h
         src/intermediate_format/events/IFDeclineConferenceEvent.cpp
         src/intermediate_format/events/IFDeclineConferenceEvent.h
         src/intermediate_format/events/IFJoinConferenceEvent.cpp

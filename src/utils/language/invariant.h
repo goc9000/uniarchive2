@@ -15,5 +15,6 @@
 
 #define invariant(condition, format, ...) if (!(condition)) invariant_violation(format, ##__VA_ARGS__)
 #define invariant_violation(format, ...) qFatal(format, ##__VA_ARGS__)
+#define never_reached() invariant_violation("This code should never be reached")
 
 #endif //UNIARCHIVE2_UTILS_LANGUAGE_INVARIANT_H
