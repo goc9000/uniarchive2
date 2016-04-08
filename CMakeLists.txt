@@ -39,6 +39,10 @@ set(SOURCE_FILES
         src/intermediate_format/content/TextSection.h
         src/intermediate_format/content/UnderlineTag.cpp
         src/intermediate_format/content/UnderlineTag.h
+        src/intermediate_format/content/YahooAltTag.cpp
+        src/intermediate_format/content/YahooAltTag.h
+        src/intermediate_format/content/YahooFadeTag.cpp
+        src/intermediate_format/content/YahooFadeTag.h
         src/intermediate_format/events/IFDeclineConferenceEvent.cpp
         src/intermediate_format/events/IFDeclineConferenceEvent.h
         src/intermediate_format/events/IFJoinConferenceEvent.cpp
