@@ -20,7 +20,10 @@ FontTag::FontTag(bool closed) : closed(closed) {
 void FontTag::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
 
-    stream.nospace() << "[" << (closed ? "/" : "") << "Font:";
+    stream.nospace() << "[" << (closed ? "/" : "") << "Font";
+    if (!faces.isEmpty() || size) {
+        stream << ":";
+    }
     if (faces.length() > 0) {
         stream << qUtf8Printable(faces[0]);
         if (faces.length() > 1) {
