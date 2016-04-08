@@ -22,6 +22,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/ANSIResetTag.h
         src/intermediate_format/content/BoldTag.cpp
         src/intermediate_format/content/BoldTag.h
+        src/intermediate_format/content/FontTag.cpp
+        src/intermediate_format/content/FontTag.h
         src/intermediate_format/content/IntermediateFormatMessageContent.cpp
         src/intermediate_format/content/IntermediateFormatMessageContent.h
         src/intermediate_format/content/IntermediateFormatMessageContentItem.cpp
@@ -66,6 +68,8 @@ set(SOURCE_FILES
         src/protocols/IMProtocols.cpp
         src/protocols/IMProtocols.h
         src/utils/external_libs/optional.hpp
+        src/utils/html/parse_html_tag_lenient.cpp
+        src/utils/html/parse_html_tag_lenient.h
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
         src/utils/text/decoding.cpp
