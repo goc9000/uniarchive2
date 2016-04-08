@@ -56,7 +56,7 @@ using namespace std;
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 IntermediateFormatConversation build_conversation_prototype(const QString& filename);
-QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
+shared_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
@@ -89,7 +89,7 @@ QVector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(co
     ExtractYahooProtocolEventsIterator proto_events(data, prototype.localAccount.accountName);
 
     while (proto_events.hasNext()) {
-        prototype.events += convert_event(proto_events.next(), prototype);
+        prototype.events.append(convert_event(proto_events.next(), prototype));
     }
 
     conversations.append(prototype);
@@ -129,14 +129,11 @@ IntermediateFormatConversation build_conversation_prototype(const QString& filen
     return prototype;
 }
 
-QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
+shared_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
-    QVector<shared_ptr<IntermediateFormatEvent>> events;
     shared_ptr<IntermediateFormatEvent> event;
-    shared_ptr<IntermediateFormatEvent> extra_event;
-    bool extra_event_after = true;
 
     ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
     unsigned int next_index = (unsigned int)conversation.events.length();
@@ -147,12 +144,11 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 proto_event.text.isEmpty() && proto_event.extra.isEmpty(),
                 "START_CONVERSATION events should have blank 'text' and 'extra' fields"
             );
-            event = make_shared<IFStartConversationEvent>(
+            return make_shared<IFStartConversationEvent>(
                 timestamp,
                 next_index,
                 implicit_subject(proto_event, conversation)
             );
-            break;
         case YahooProtocolEvent::Type::CONFERENCE_JOIN:
             invariant(
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
@@ -166,7 +162,7 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
             if (!proto_event.text.isEmpty()) {
                 ((IFJoinConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
-            break;
+            return event;
         case YahooProtocolEvent::Type::CONFERENCE_DECLINE:
             invariant(
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
@@ -180,7 +176,7 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
             if (!proto_event.text.isEmpty()) {
                 ((IFDeclineConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
-            break;
+            return event;
         case YahooProtocolEvent::Type::CONFERENCE_LEAVE:
             invariant(
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
@@ -194,7 +190,7 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
             if (!proto_event.text.isEmpty()) {
                 ((IFLeaveConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
-            break;
+            return event;
         case YahooProtocolEvent::Type::CONVERSATION_MESSAGE:
             invariant(proto_event.extra.isEmpty(), "CONVERSATION_MESSAGE events should have no 'extra' field");
             // intentional fallthrough
@@ -212,19 +208,11 @@ QVector<shared_ptr<IntermediateFormatEvent>> convert_event(
                 );
             }
             // TODO: offline messages
-            break;
+            return event;
     }
 
-    if (!event) {
-//        qDebug() << proto_event;
-//        invariant_violation("Event not converted");
-
-        return events;
-    } else {
-        events.append(event);
-    }
-
-    return events;
+    qDebug() << proto_event;
+    invariant_violation("Event not converted");
 }
 
 shared_ptr<SubjectGivenAsAccount> implicit_subject(
