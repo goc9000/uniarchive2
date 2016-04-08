@@ -15,6 +15,8 @@
 #include <QFile>
 #include <QRegularExpression>
 
+#include "graphics/Color.h"
+#include "graphics/ANSIColors.h"
 #include "extraction/yahoo/extract_yahoo_messenger_conversations.h"
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
 #include "intermediate_format/ApparentTime.h"
@@ -23,6 +25,8 @@
 #include "intermediate_format/content/BoldTag.h"
 #include "intermediate_format/content/ItalicTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
+#include "intermediate_format/content/ANSIColorTag.h"
+#include "intermediate_format/content/RGBColorTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
@@ -283,6 +287,8 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QSt
         "(?<bold>1)|"\
         "(?<italic>2)|"\
         "(?<underline>4)|"\
+        "3(?<ansi_color>[0-8])|"\
+        "(?<html_color>#[0-9a-f]{6})"\
         ")$",
         QRegularExpression::CaseInsensitiveOption
     );
@@ -304,6 +310,10 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QSt
         return make_shared<ItalicTag>(closed);
     } else if (match.capturedLength("underline")) {
         return make_shared<UnderlineTag>(closed);
+    } else if (match.capturedLength("ansi_color")) {
+        return make_shared<ANSIColorTag>((ANSIColors)match.captured("ansi_color").toInt(), closed);
+    } else if (match.capturedLength("html_color")) {
+        return make_shared<RGBColorTag>(Color::fromHTMLFormat(match.captured("html_color")), closed);
     }
 
     never_reached();

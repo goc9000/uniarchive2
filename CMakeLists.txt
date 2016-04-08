@@ -12,6 +12,12 @@ set(SOURCE_FILES
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
         src/extraction/yahoo/YahooProtocolEvent.h
+        src/graphics/ANSIColors.cpp
+        src/graphics/ANSIColors.h
+        src/graphics/Color.cpp
+        src/graphics/Color.h
+        src/intermediate_format/content/ANSIColorTag.cpp
+        src/intermediate_format/content/ANSIColorTag.h
         src/intermediate_format/content/BoldTag.cpp
         src/intermediate_format/content/BoldTag.h
         src/intermediate_format/content/IntermediateFormatMessageContent.cpp
@@ -21,6 +27,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/ItalicTag.cpp
         src/intermediate_format/content/ItalicTag.h
         src/intermediate_format/content/Markup.h
+        src/intermediate_format/content/RGBColorTag.cpp
+        src/intermediate_format/content/RGBColorTag.h
         src/intermediate_format/content/TextSection.cpp
         src/intermediate_format/content/TextSection.h
         src/intermediate_format/content/UnderlineTag.cpp
