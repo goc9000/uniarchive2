@@ -18,6 +18,8 @@ set(SOURCE_FILES
         src/graphics/Color.h
         src/intermediate_format/content/ANSIColorTag.cpp
         src/intermediate_format/content/ANSIColorTag.h
+        src/intermediate_format/content/ANSIResetTag.cpp
+        src/intermediate_format/content/ANSIResetTag.h
         src/intermediate_format/content/BoldTag.cpp
         src/intermediate_format/content/BoldTag.h
         src/intermediate_format/content/IntermediateFormatMessageContent.cpp
@@ -26,6 +28,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/IntermediateFormatMessageContentItem.h
         src/intermediate_format/content/ItalicTag.cpp
         src/intermediate_format/content/ItalicTag.h
+        src/intermediate_format/content/LinkTag.cpp
+        src/intermediate_format/content/LinkTag.h
         src/intermediate_format/content/Markup.h
         src/intermediate_format/content/RGBColorTag.cpp
         src/intermediate_format/content/RGBColorTag.h

@@ -25,8 +25,10 @@
 #include "intermediate_format/content/BoldTag.h"
 #include "intermediate_format/content/ItalicTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
+#include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/ANSIColorTag.h"
 #include "intermediate_format/content/RGBColorTag.h"
+#include "intermediate_format/content/ANSIResetTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
@@ -284,9 +286,11 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegular
 shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code) {
     static QRegularExpression pattern(
         "^(?<closed>x)?("\
+        "(?<reset>0)|"\
         "(?<bold>1)|"\
         "(?<italic>2)|"\
         "(?<underline>4)|"\
+        "(?<link>l)|"\
         "3(?<ansi_color>[0-8])|"\
         "(?<html_color>#[0-9a-f]{6})"\
         ")$",
@@ -294,22 +298,20 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QSt
     );
 
     auto match = pattern.match(sgr_code);
-
-    // Temporary until everything is implemented
-    if (!match.hasMatch()) {
-        return shared_ptr<IntermediateFormatMessageContentItem>();
-    }
-
     invariant(match.hasMatch(), "SGR code not recognized: \"%s\"", qUtf8Printable(sgr_code));
 
     bool closed = match.capturedLength("closed") > 0;
 
-    if (match.capturedLength("bold")) {
+    if (match.capturedLength("reset")) {
+        return make_shared<ANSIResetTag>();
+    } else if (match.capturedLength("bold")) {
         return make_shared<BoldTag>(closed);
     } else if (match.capturedLength("italic")) {
         return make_shared<ItalicTag>(closed);
     } else if (match.capturedLength("underline")) {
         return make_shared<UnderlineTag>(closed);
+    } else if (match.capturedLength("link")) {
+        return make_shared<LinkTag>(closed);
     } else if (match.capturedLength("ansi_color")) {
         return make_shared<ANSIColorTag>((ANSIColors)match.captured("ansi_color").toInt(), closed);
     } else if (match.capturedLength("html_color")) {
