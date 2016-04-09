@@ -25,6 +25,7 @@ IntermediateFormatConversation::IntermediateFormatConversation(
 }
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
+#define N_CONTEXT_LINES 3
     QDebugStateSaver settings(stream);
     stream.nospace() << "IntermediateFormatConversation {\n";
 
@@ -55,7 +56,11 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
     stream << "\t\n";
     stream << "\t" << convo.events.length() << " events:\n";
     for (const auto& event : convo.events) {
-        if ((event->indexInConversation >= 3) && (event->indexInConversation < convo.events.length() - 3)) {
+        if ((event->indexInConversation >= N_CONTEXT_LINES) &&
+            (event->indexInConversation < convo.events.length() - N_CONTEXT_LINES)) {
+            if (event->indexInConversation == N_CONTEXT_LINES) {
+                stream << "\t...\n";
+            }
             continue;
         }
         stream << "\t" << event.get() << "\n";
