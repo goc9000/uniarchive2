@@ -69,6 +69,7 @@ shared_ptr<SubjectGivenAsAccount> parse_event_subject(
     const IntermediateFormatConversation& conversation
 );
 IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data);
+shared_ptr<TextSection> make_text_section(const QString& text);
 shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match);
 shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code);
 shared_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text);
@@ -255,9 +256,7 @@ IntermediateFormatMessageContent parse_message_content(const QByteArray& text_da
         auto match = iterator.next();
 
         if (match.capturedStart(0) > last_text_pos) {
-            content.items.append(
-                make_shared<TextSection>(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos))
-            );
+            content.items.append(make_text_section(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos)));
         }
 
         auto markup_tag = parse_markup_tag(match);
@@ -269,11 +268,17 @@ IntermediateFormatMessageContent parse_message_content(const QByteArray& text_da
     }
 
     if (text.length() > last_text_pos) {
-        content.items.append(make_shared<TextSection>(text.mid(last_text_pos, text.length() - last_text_pos)));
+        content.items.append(make_text_section(text.mid(last_text_pos, text.length() - last_text_pos)));
     }
 
     return content;
 }
+
+shared_ptr<TextSection> make_text_section(const QString& text) {
+    invariant(!text.contains(0x1B), "Unprocessed ANSI-like sequence in text: \"%s\"", qUtf8Printable(text));
+
+    return make_shared<TextSection>(text);
+};
 
 shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match) {
     if (match.capturedLength("pseudo_ansi_seq")) {
