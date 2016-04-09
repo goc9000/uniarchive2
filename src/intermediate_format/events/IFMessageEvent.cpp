@@ -19,7 +19,7 @@ IFMessageEvent::IFMessageEvent(
     unsigned int index,
     shared_ptr<ApparentSubject> sender,
     IntermediateFormatMessageContent content
-): IntermediateFormatEvent(timestamp, index), sender(sender), content(content) {
+): IntermediateFormatEvent(timestamp, index), sender(sender), content(content), isOffline(false) {
 }
 
 QString IFMessageEvent::eventName() const {
@@ -27,6 +27,9 @@ QString IFMessageEvent::eventName() const {
 }
 
 void IFMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
+    if (isOffline) {
+        stream << " OFFLINE";
+    }
     stream << " sender=" << sender.get();
     if (receiver) {
         stream << " receiver=" << receiver.get();

@@ -208,7 +208,9 @@ shared_ptr<IntermediateFormatEvent> convert_event(
                     parse_yahoo_account(QString::fromUtf8(proto_event.extra))
                 );
             }
-            // TODO: offline messages
+            if (proto_event.direction == YahooProtocolEvent::Direction::OFFLINE) {
+                ((IFMessageEvent*)event.get())->isOffline = true;
+            }
             return event;
     }
 
