@@ -16,7 +16,7 @@
 
 #include <QDebug>
 #include <QString>
-#include <QVector>
+#include <QList>
 
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
@@ -36,14 +36,14 @@ public:
     // Mandatory metadata
     ArchiveFormats originalArchiveFormat;
     FullAccountName localAccount;
-    QVector<FullAccountName> declaredRemoteAccounts;
+    QList<FullAccountName> declaredRemoteAccounts;
 
     // Optional metadata
     optional<bool> isConference;
     optional<QString> originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
 
-    QVector<shared_ptr<IntermediateFormatEvent>> events;
+    QList<shared_ptr<IntermediateFormatEvent>> events;
 
     IntermediateFormatConversation();
     IntermediateFormatConversation(ArchiveFormats format, FullAccountName local_account);

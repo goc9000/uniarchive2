@@ -13,6 +13,7 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFile>
+#include <QList>
 #include <QRegularExpression>
 
 #include "graphics/Color.h"
@@ -77,8 +78,8 @@ shared_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& at
 shared_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text);
 
 
-QVector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
-    QVector<IntermediateFormatConversation> conversations;
+QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
+    QList<IntermediateFormatConversation> conversations;
     IntermediateFormatConversation prototype = build_conversation_prototype(filename);
 
     QFile file(filename);

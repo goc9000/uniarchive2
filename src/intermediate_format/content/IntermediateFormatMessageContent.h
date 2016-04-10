@@ -14,7 +14,7 @@
 #include <memory>
 
 #include <QtDebug>
-#include <QVector>
+#include <QList>
 
 #include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
 
@@ -26,7 +26,7 @@ struct IntermediateFormatMessageContent {
 public:
     IntermediateFormatMessageContent();
 
-    QVector<shared_ptr<IntermediateFormatMessageContentItem>> items;
+    QList<shared_ptr<IntermediateFormatMessageContentItem>> items;
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatMessageContent& content);

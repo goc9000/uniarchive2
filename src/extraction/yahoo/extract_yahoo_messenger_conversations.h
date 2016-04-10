@@ -12,7 +12,7 @@
 #define UNIARCHIVE2_EXTRACTION_YAHOO_EXTRACT_YAHOO_MESSENGER_CONVERSATIONS_H
 
 #include <QString>
-#include <QVector>
+#include <QList>
 
 #include "intermediate_format/IntermediateFormatConversation.h"
 
@@ -20,7 +20,7 @@ using namespace uniarchive2::intermediate_format;
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-QVector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename);
+QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename);
 
 }}}
 
