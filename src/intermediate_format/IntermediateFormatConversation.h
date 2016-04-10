@@ -42,6 +42,8 @@ public:
     optional<bool> isConference;
     optional<QString> originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
+    optional<unsigned int> numConversationInFile;
+    optional<unsigned int> conversationOffsetInFileEventBased;
 
     QList<shared_ptr<IntermediateFormatEvent>> events;
 

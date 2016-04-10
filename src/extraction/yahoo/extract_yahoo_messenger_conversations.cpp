@@ -56,7 +56,11 @@ using namespace std;
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-IntermediateFormatConversation build_conversation_prototype(const QString& filename);
+IntermediateFormatConversation init_conversation(
+    const QString& filename,
+    unsigned int num_conversation_in_file,
+    unsigned int conversation_offset_in_file
+);
 shared_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
@@ -80,7 +84,7 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& 
 
 QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
     QList<IntermediateFormatConversation> conversations;
-    IntermediateFormatConversation prototype = build_conversation_prototype(filename);
+    IntermediateFormatConversation conversation = init_conversation(filename, 1, 0);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -88,18 +92,32 @@ QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(cons
     }
     QByteArray data = file.readAll();
 
-    ExtractYahooProtocolEventsIterator proto_events(data, prototype.localAccount.accountName);
+    ExtractYahooProtocolEventsIterator proto_events(data, conversation.localAccount.accountName);
 
+    unsigned int event_index = 0;
     while (proto_events.hasNext()) {
-        prototype.events.append(convert_event(proto_events.next(), prototype));
+        auto proto_event = proto_events.next();
+        auto event = convert_event(proto_event, conversation);
+        if (proto_event.type == YahooProtocolEvent::Type::START_CONVERSATION) {
+            if (event_index > 0) {
+                conversations.append(conversation);
+            }
+            conversation = init_conversation(filename, (unsigned int)conversations.length() + 1, event_index);
+        }
+        conversation.events.append(event);
+        event_index++;
     }
 
-    conversations.append(prototype);
+    conversations.append(conversation);
 
     return conversations;
 }
 
-IntermediateFormatConversation build_conversation_prototype(const QString& filename) {
+IntermediateFormatConversation init_conversation(
+    const QString& filename,
+    unsigned int num_conversation_in_file,
+    unsigned int conversation_offset_in_file
+) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -110,25 +128,27 @@ IntermediateFormatConversation build_conversation_prototype(const QString& filen
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    IntermediateFormatConversation prototype(ArchiveFormats::YAHOO_MESSENGER, local_account);
+    IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER, local_account);
 
-    prototype.originalFilename = full_filename;
-    prototype.fileLastModifiedTime =
+    conversation.originalFilename = full_filename;
+    conversation.fileLastModifiedTime =
         ApparentTime(file_info.lastModified().toTime_t(), ApparentTime::Reference::UNKNOWN);
+    conversation.numConversationInFile = num_conversation_in_file;
+    conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
-    prototype.declaredRemoteAccounts.push_back(remote_account);
+    conversation.declaredRemoteAccounts.push_back(remote_account);
 
     QString top_folder = full_filename.section(QDir::separator(), -3, -3);
     if (top_folder == "Messages") {
-        prototype.isConference = false;
+        conversation.isConference = false;
     } else if (top_folder == "Conferences") {
-        prototype.isConference = true;
+        conversation.isConference = true;
     } else {
         invariant_violation("Yahoo Messenger archive file must be in a 'Messages' or 'Conferences' folder");
     }
 
-    return prototype;
+    return conversation;
 }
 
 shared_ptr<IntermediateFormatEvent> convert_event(

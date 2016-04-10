@@ -52,6 +52,12 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
     if ((bool)convo.fileLastModifiedTime) {
         stream << "\tFile last modified time: " << *convo.fileLastModifiedTime << "\n";
     }
+    if ((bool)convo.numConversationInFile) {
+        stream << "\tNb. conversation in file: " << *convo.numConversationInFile << "\n";
+    }
+    if ((bool)convo.conversationOffsetInFileEventBased) {
+        stream << "\tConversation starts at event: " << *convo.conversationOffsetInFileEventBased << "\n";
+    }
 
     stream << "\t\n";
     stream << "\t" << convo.events.length() << " events:\n";
