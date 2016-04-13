@@ -18,14 +18,8 @@ Filename Format
   where:
   
   - *remote_account_name* = YM account name for peer (the person we are talking to)
-  - *YYYYMMDD* = seems to be the date the conversation began
-    - In what timezone? UTC? Local?
+  - *YYYYMMDD* = the date the conversation began, in *local time* (see [Distribution of Conversations Across Files] (#distribution-of-conversations-across-files) section below)
   - *own_account_name* = YM account name for ourselves; probably included so as to ensure that the decrpytion key is available even if the file is separated from the archive
-
-  Notes:
-  
-  - What if there are multiple convos in the same date with the same peer?
-    - It seems they get appended to the same file
 
 - Conference:
 
@@ -38,6 +32,12 @@ Other File Properties
 ---------------------
 
 - Last modified date
-  - Is this date of last written event, or date of file creation (the latter would occur if convo is written all at once)
-    - Must check
-  - Could be useful to determine timezone of other dates in convo
+  - Nearly always corresponds to date of last event in file (indicating events are appended in real time as opposed to the whole file being written at once)
+  - Unreliable due to FAT timezone problem
+
+
+Distribution of Conversations Across Files
+------------------------------------------
+
+- A file contains all conversations with that peer for a day
+- When the date rolls over at midnight, *local time*, events start being written to a new file
