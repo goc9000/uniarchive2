@@ -41,3 +41,4 @@ Distribution of Conversations Across Files
 
 - A file contains all conversations with that peer for a day
 - When the date rolls over at midnight, *local time*, events start being written to a new file
+  - Therefore, conversations within a file need to be split, and conversations straddling files need to be reassembled
