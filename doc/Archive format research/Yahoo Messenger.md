@@ -74,6 +74,7 @@ File Format
     - 1: incoming
     - 6: offline message
   - **Message content**
+    - "Encrypted" (more like obfuscated) using local account name as a key
     - Definitely UTF-8
     - Mix of plain text and different markup styles
     - See dedicated section for details
