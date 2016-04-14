@@ -42,3 +42,41 @@ Distribution of Conversations Across Files
 - A file contains all conversations with that peer for a day
 - When the date rolls over at midnight, *local time*, events start being written to a new file
   - Therefore, conversations within a file need to be split, and conversations straddling files need to be reassembled
+
+
+File Format
+-----------
+
+- Pure binary format
+- No header
+- Consists solely of a series of *events*
+- Event format:
+
+  | Size                   | Base type                              | Significance    |
+  |------------------------|----------------------------------------|-----------------|
+  | 4 bytes                | integer (least significant byte first) | Timestamp       |
+  | 4 bytes                | integer                                | Event type      |
+  | 4 bytes                | integer                                | Direction       |
+  | 4 bytes                | integer                                | Message length  |
+  | *message length* bytes | UTF-8 character data                   | Message content |
+  | 4 bytes                | integer                                | Extra length    |
+  | *extra length* bytes   | character data                         | Extra content   |
+
+- About the fields:
+  - **Timestamp**
+    - Is definitely a Unix timestamp
+      - Evidence: I have a message where I explicitly state the local time. Translating to UTC given my timezone at the time, we get the exact same timestamp as in the field.
+    - What is the significance of the timestamp? When event sent? Received?
+      - It seems to be when the message was sent, given that offline messages appear with clearly separate times, not all bunched together
+  - **Event type**: See next section for the different types of events.
+  - **Direction**: This can be:
+    - 0: outgoing
+    - 1: incoming
+    - 6: offline message
+  - **Message content**
+    - Definitely UTF-8
+    - Mix of plain text and different markup styles
+    - See dedicated section for details
+  - **Extra**
+    - Only seen this used to specify the sender account name in a conference
+    - Assumed to be text
