@@ -81,3 +81,43 @@ File Format
   - **Extra**
     - Only seen this used to specify the sender account name in a conference
     - Assumed to be text
+
+
+Event Types
+-----------
+
+Note: the protocol likely supports more events, but Yahoo only logs a subset of these.
+
+### 0: Start Conversation ###
+
+- Appears at the beginning of a conversation (including conferences)
+- `message` and `extra` fields seem to be always empty
+- `direction` may be either incoming or outgoing depending on who initiated the conversation
+
+### 6: Conversation Message ###
+
+- Appears **only** in 1:1 conversations
+- `extra` field is always empty
+- Sender is implicit (local account for outgoing, remote account for incoming)
+
+### 29: Conference Message ###
+
+- Appears **only** in conferences
+- If the direction is incoming, `extra` field contains the sender's Yahoo account ID
+- If the direction is outgoing, the `extra` field does **not** contain the local account ID, but instead what seems to be the ID of the last remote peer that spoke; thus, it can be interpreted as the receiver. 
+
+### 25: Join Conference ###
+
+- Appears only in conferences and the direction is always incoming
+- The `extra` field contains the ID of the peer that joined
+
+### 26: Decline Conference ###
+
+- Appears only in conferences and the direction is always incoming
+- The `extra` field contains the ID of the peer that declined
+- The `message` field may not be empty, instead containing the reason the user gave for declining
+
+### 27: Leave Conference ###
+
+- Appears only in conferences and the direction is always incoming
+- The `extra` field contains the ID of the peer that left
