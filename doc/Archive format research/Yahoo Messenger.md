@@ -1,12 +1,6 @@
 Yahoo Messenger Archive Format Research
 =======================================
 
-----------------
-
-WORK IN PROGRESS
-
-----------------
-
 
 Filename Format
 ---------------
@@ -25,7 +19,7 @@ Filename Format
 
   `Conferences/` *peer_account_name* `/` *YYYYMMDD* `-` *own_account_name* `.dat`
 
-  - Not clear which user *peer_account_name* refers to (initiator? first peer?). Also, sometimes it doesn't look like a permanent YM account name. Maybe best not to rely on it.
+  - Not clear which user *peer_account_name* refers to (initiator? first peer?).
 
 
 Other File Properties
@@ -82,6 +76,11 @@ File Format
     - Only seen this used to specify the sender account name in a conference
     - Assumed to be text
 
+### Anomalies Observed ###
+
+- Timestamps may not be strictly in order
+- Needs more investigation; on first glance, temporal disruptions are minor and atributable to clock skew
+
 
 Event Types
 -----------
@@ -121,3 +120,95 @@ Note: the protocol likely supports more events, but Yahoo only logs a subset of 
 
 - Appears only in conferences and the direction is always incoming
 - The `extra` field contains the ID of the peer that left
+
+
+Message Content Format
+----------------------
+
+### Encryption / Obfuscation ###
+
+- This field (and only this field) is obfuscated by XOR-ing with a virtual string consisting of the *local account name* repeated endlessly
+- In short:
+
+  deobfuscated_content[i] = obfuscated_content[i] **xor** local_account_name[i **mod** len(local_account_name)]
+
+### Text Data ###
+
+- Encoding is UTF-8
+- Consists of plain text with an ecletic set of markup tags thrown in
+- Special characters appear as-is, there are no HTML entities
+- Text may contain newlines, carriage returns and tabs
+
+### Markup ###
+
+- Three kinds of markup observed:
+  - Pseudo-ANSI sequences
+  - The HTML `<font>` tag
+  - HTML-like `<FADE>` and `<ALT>` tags for Yahoo-specific coloring
+
+#### Pseudo-ANSI sequences ####
+
+- Similar to ANSI sequences described in: https://en.wikipedia.org/wiki/ANSI_escape_code
+  - However, they violate and extend the syntax, plus some meanings are different
+  - Only the `m` (Select Graphic Rendition) sequence seems to be used
+
+- Form: `ESC` `[` *format* `m`
+  - Where `ESC` is the control character with codepoint 27
+
+- Observed sequences:
+  - `ESC` `[` `0` `m` : ANSI defines it as "reset formatting". Presumably end the effects of all ANSI sequences before it.
+  - `ESC` `[` `1` `m` : Turns on **bold** formatting
+  - `ESC` `[` `x1` `m` : Turns off **bold** formatting
+    - This and other `x` sequences are Yahoo extensions to ANSI
+  - `ESC` `[` `2` `m` : ANSI defines this as turning on "faint" formatting. Yahoo seems to use this for **italics**.
+  - `ESC` `[` `x2` `m` : Turns off **italics**
+  - `ESC` `[` `4` `m` : Turns on **underline** formatting (`x4` turns it off, etc.)
+  - `ESC` `[` `l` `m` : Turns on **hyperlink** formatting (`xl` turns it off). Another Yahoo extension.
+  - `ESC` `[` `3` *color* `m` : Where *color* = 0 to 8. Applies the specified color to the text, according to the ANSI colors table:
+
+    | Index | Color      |
+    |-------|------------|
+    | 0     | Black      |
+    | 1     | Red        |
+    | 2     | Green      |
+    | 3     | Yellow     |
+    | 4     | Blue       |
+    | 5     | Magenta    |
+    | 6     | Cyan       |
+    | 7     | White      |
+    | 8     | "Extended" |
+    
+    - Not clear what "extended" actually means for Yahoo. In the ANSI standard, extra parameters follow it describing the color in terms of RGB or a palette index, but this does not occur in the data.
+    - Extended seems to occur more frequently when messages are quoted, around the acccount name. Maybe it means "default color"? (i.e. like ANSI SGR code `39`)
+  
+  - `ESC` `[` `#rrggbb` `m` : Applies the specified text color, as defined by its CSS-like hex representation. Another Yahoo extension.
+
+#### `<font>` tags ####
+
+- The only proper HTML tag observed
+- Has the attributes `face` and/or `size`
+  - `face` can actually be a comma-separated list of typefaces to try (as allowed by the HTML standard)
+  - `size` can include units, e.g. `12pt`
+- May or may not be closed by the end of the message
+
+#### `<FADE>` and `<ALT>` tags ####
+
+- Look somewhat like HTML, but violate the syntax
+- The `<ALT>` tag looks like:
+
+  `<ALT #123456,#7890ab>`
+  
+  i.e. two CSS colors are specified directly in the tag body (no attribute name).
+  
+  - The meaning is that the text color **alt**ernates between the two every letter
+  - There are always exactly 2 colors specified
+
+- The `<FADE>` tag looks like:
+
+  `<FADE #123456,#7890ab,#cdef01>`
+  
+  i.e. at least one CSS color is specified
+  
+  - Sets up a gradient between the specified text colors
+  - Not clear exactly how this works for just one color (fades between default color and this color?)
+  - Gradient geometry is unclear (at which point in the text do we switch to the second, third etc. color?)
