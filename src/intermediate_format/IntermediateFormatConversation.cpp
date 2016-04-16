@@ -20,11 +20,8 @@ IntermediateFormatConversation::IntermediateFormatConversation()
       localAccount(FullAccountName(IMProtocols::INVALID, "")) {
 }
 
-IntermediateFormatConversation::IntermediateFormatConversation(
-    ArchiveFormats format,
-    IMProtocols protocol,
-    FullAccountName local_account
-): originalArchiveFormat(format), protocol(protocol), localAccount(local_account) {
+IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol)
+    : originalArchiveFormat(format), protocol(protocol) {
 }
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
@@ -34,7 +31,14 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
 
     stream << "\tFormat: " << convo.originalArchiveFormat << "\n";
     stream << "\tProtocol: " << convo.protocol << "\n";
-    stream << "\tLocal account: " << convo.localAccount << "\n";
+
+    stream << "\tLocal account: ";
+    if (convo.localAccount) {
+        stream << *convo.localAccount;
+    } else {
+        stream << "(unspecified)";
+    }
+    stream << "\n";
 
     stream << "\tDeclared remote accounts: [";
     bool first = true;

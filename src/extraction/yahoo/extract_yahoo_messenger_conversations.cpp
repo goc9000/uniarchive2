@@ -92,7 +92,7 @@ QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(cons
     }
     QByteArray data = file.readAll();
 
-    ExtractYahooProtocolEventsIterator proto_events(data, conversation.localAccount.accountName);
+    ExtractYahooProtocolEventsIterator proto_events(data, conversation.localAccount->accountName);
 
     unsigned int event_index = 0;
     while (proto_events.hasNext()) {
@@ -128,11 +128,7 @@ IntermediateFormatConversation init_conversation(
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    IntermediateFormatConversation conversation(
-        ArchiveFormats::YAHOO_MESSENGER,
-        IMProtocols::YAHOO,
-        local_account
-    );
+    IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER, IMProtocols::YAHOO);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime =
@@ -140,6 +136,7 @@ IntermediateFormatConversation init_conversation(
     conversation.numConversationInFile = num_conversation_in_file;
     conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
+    conversation.localAccount = local_account;
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
     conversation.declaredRemoteAccounts.push_back(remote_account);
 
@@ -249,7 +246,7 @@ shared_ptr<SubjectGivenAsAccount> implicit_subject(
 ) {
     return make_shared<SubjectGivenAsAccount>(
         (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
-        conversation.localAccount : conversation.declaredRemoteAccounts.first()
+        *conversation.localAccount : conversation.declaredRemoteAccounts.first()
     );
 }
 

@@ -37,10 +37,10 @@ public:
     // Mandatory metadata
     ArchiveFormats originalArchiveFormat;
     IMProtocols protocol;
-    FullAccountName localAccount;
-    QList<FullAccountName> declaredRemoteAccounts;
 
     // Optional metadata
+    optional<FullAccountName> localAccount;
+    QList<FullAccountName> declaredRemoteAccounts;
     optional<bool> isConference;
     optional<QString> originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
@@ -50,7 +50,7 @@ public:
     QList<shared_ptr<IntermediateFormatEvent>> events;
 
     IntermediateFormatConversation();
-    IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol, FullAccountName local_account);
+    IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol);
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo);
