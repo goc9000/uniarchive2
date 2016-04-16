@@ -128,7 +128,11 @@ IntermediateFormatConversation init_conversation(
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER, local_account);
+    IntermediateFormatConversation conversation(
+        ArchiveFormats::YAHOO_MESSENGER,
+        IMProtocols::YAHOO,
+        local_account
+    );
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime =

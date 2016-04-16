@@ -21,6 +21,7 @@
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "protocols/ArchiveFormats.h"
+#include "protocols/IMProtocols.h"
 #include "protocols/FullAccountName.h"
 #include "utils/external_libs/optional.hpp"
 
@@ -35,6 +36,7 @@ struct IntermediateFormatConversation {
 public:
     // Mandatory metadata
     ArchiveFormats originalArchiveFormat;
+    IMProtocols protocol;
     FullAccountName localAccount;
     QList<FullAccountName> declaredRemoteAccounts;
 
@@ -48,7 +50,7 @@ public:
     QList<shared_ptr<IntermediateFormatEvent>> events;
 
     IntermediateFormatConversation();
-    IntermediateFormatConversation(ArchiveFormats format, FullAccountName local_account);
+    IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol, FullAccountName local_account);
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo);

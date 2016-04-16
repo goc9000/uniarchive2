@@ -15,13 +15,16 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 IntermediateFormatConversation::IntermediateFormatConversation()
-    : originalArchiveFormat(ArchiveFormats::INVALID), localAccount(FullAccountName(IMProtocols::INVALID, "")) {
+    : originalArchiveFormat(ArchiveFormats::INVALID),
+      protocol(IMProtocols::INVALID),
+      localAccount(FullAccountName(IMProtocols::INVALID, "")) {
 }
 
 IntermediateFormatConversation::IntermediateFormatConversation(
     ArchiveFormats format,
+    IMProtocols protocol,
     FullAccountName local_account
-): originalArchiveFormat(format), localAccount(local_account) {
+): originalArchiveFormat(format), protocol(protocol), localAccount(local_account) {
 }
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
@@ -30,6 +33,7 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
     stream.nospace() << "IntermediateFormatConversation {\n";
 
     stream << "\tFormat: " << convo.originalArchiveFormat << "\n";
+    stream << "\tProtocol: " << convo.protocol << "\n";
     stream << "\tLocal account: " << convo.localAccount << "\n";
 
     stream << "\tDeclared remote accounts: [";
