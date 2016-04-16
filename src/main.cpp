@@ -1,8 +1,8 @@
 #include <QDebug>
 #include <QDirIterator>
+#include <QList>
 #include <QRegularExpression>
 #include <QString>
-#include <QVector>
 
 #include "extraction/yahoo/extract_yahoo_messenger_conversations.h"
 
@@ -18,18 +18,20 @@ int main() {
         QDirIterator::Subdirectories
     );
 
-    QVector<IntermediateFormatConversation> convos;
+    QList<IntermediateFormatConversation> convos;
 
     while (yahoo_files.hasNext()) {
         QString filename = yahoo_files.next();
         convos += extract_yahoo_messenger_conversations(filename);
     }
 
-    int limit = 10;
+    int limit = 50;
     for (auto& convo : convos) {
-        qDebug() << convo;
-        if (!--limit) {
-            break;
+        if (!convo.events.isEmpty()) {
+            qDebug() << convo;
+            if (!--limit) {
+                break;
+            }
         }
     }
 
