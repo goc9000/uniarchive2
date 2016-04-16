@@ -17,6 +17,8 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 struct ApparentSubject {
 public:
+    virtual ApparentSubject* clone() const = 0;
+
     virtual void writeToDebugStream(QDebug stream) const = 0;
 };
 

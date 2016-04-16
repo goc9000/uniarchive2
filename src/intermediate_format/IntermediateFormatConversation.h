@@ -18,14 +18,15 @@
 #include <QString>
 #include <QList>
 
-#include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/ApparentTime.h"
 #include "protocols/ArchiveFormats.h"
 #include "protocols/IMProtocols.h"
-#include "protocols/FullAccountName.h"
 #include "utils/external_libs/optional.hpp"
 
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace std;
 using namespace std::experimental;
@@ -39,8 +40,8 @@ public:
     IMProtocols protocol;
 
     // Optional metadata
-    optional<FullAccountName> localAccount;
-    QList<FullAccountName> declaredRemoteAccounts;
+    shared_ptr<ApparentSubject> identity;
+    QList<shared_ptr<ApparentSubject>> declaredPeers;
     optional<bool> isConference;
     optional<QString> originalFilename;
     optional<ApparentTime> fileLastModifiedTime;

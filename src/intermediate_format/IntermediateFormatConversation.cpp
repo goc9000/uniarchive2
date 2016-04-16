@@ -15,9 +15,7 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 IntermediateFormatConversation::IntermediateFormatConversation()
-    : originalArchiveFormat(ArchiveFormats::INVALID),
-      protocol(IMProtocols::INVALID),
-      localAccount(FullAccountName(IMProtocols::INVALID, "")) {
+    : originalArchiveFormat(ArchiveFormats::INVALID),  protocol(IMProtocols::INVALID) {
 }
 
 IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol)
@@ -32,21 +30,21 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
     stream << "\tFormat: " << convo.originalArchiveFormat << "\n";
     stream << "\tProtocol: " << convo.protocol << "\n";
 
-    stream << "\tLocal account: ";
-    if (convo.localAccount) {
-        stream << *convo.localAccount;
+    stream << "\tIdentity: ";
+    if (convo.identity) {
+        stream << convo.identity.get();
     } else {
         stream << "(unspecified)";
     }
     stream << "\n";
 
-    stream << "\tDeclared remote accounts: [";
+    stream << "\tDeclared peers: [";
     bool first = true;
-    for (auto account : convo.declaredRemoteAccounts) {
+    for (const auto& account : convo.declaredPeers) {
         if (!first) {
             stream << ", ";
         }
-        stream << account;
+        stream << account.get();
         first = false;
     }
     stream << "]\n";

@@ -65,11 +65,11 @@ shared_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
-shared_ptr<SubjectGivenAsAccount> implicit_subject(
+shared_ptr<ApparentSubject> implicit_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
-shared_ptr<SubjectGivenAsAccount> parse_event_subject(
+shared_ptr<ApparentSubject> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
@@ -92,7 +92,8 @@ QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(cons
     }
     QByteArray data = file.readAll();
 
-    ExtractYahooProtocolEventsIterator proto_events(data, conversation.localAccount->accountName);
+    QString local_account_name = static_cast<SubjectGivenAsAccount*>(conversation.identity.get())->account.accountName;
+    ExtractYahooProtocolEventsIterator proto_events(data, local_account_name);
 
     unsigned int event_index = 0;
     while (proto_events.hasNext()) {
@@ -136,9 +137,9 @@ IntermediateFormatConversation init_conversation(
     conversation.numConversationInFile = num_conversation_in_file;
     conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
-    conversation.localAccount = local_account;
+    conversation.identity = make_shared<SubjectGivenAsAccount>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
-    conversation.declaredRemoteAccounts.push_back(remote_account);
+    conversation.declaredPeers.push_back(make_shared<SubjectGivenAsAccount>(remote_account));
 
     QString top_folder = full_filename.section(QDir::separator(), -3, -3);
     if (top_folder == "Messages") {
@@ -240,17 +241,17 @@ shared_ptr<IntermediateFormatEvent> convert_event(
     invariant_violation("Event not converted");
 }
 
-shared_ptr<SubjectGivenAsAccount> implicit_subject(
+shared_ptr<ApparentSubject> implicit_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
-    return make_shared<SubjectGivenAsAccount>(
+    return shared_ptr<ApparentSubject>(
         (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
-        *conversation.localAccount : conversation.declaredRemoteAccounts.first()
+        conversation.identity->clone() : conversation.declaredPeers.first()->clone()
     );
 }
 
-shared_ptr<SubjectGivenAsAccount> parse_event_subject(
+shared_ptr<ApparentSubject> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {

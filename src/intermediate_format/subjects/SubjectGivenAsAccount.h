@@ -26,6 +26,8 @@ public:
 
     SubjectGivenAsAccount(FullAccountName account);
 
+    virtual SubjectGivenAsAccount* clone() const;
+
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
