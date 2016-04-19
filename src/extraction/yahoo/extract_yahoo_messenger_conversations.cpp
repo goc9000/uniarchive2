@@ -13,7 +13,6 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFile>
-#include <QList>
 #include <QRegularExpression>
 
 #include "graphics/Color.h"
@@ -82,9 +81,9 @@ shared_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& at
 shared_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text);
 
 
-QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
-    QList<IntermediateFormatConversation> conversations;
-    IntermediateFormatConversation conversation = init_conversation(filename, 1, 0);
+vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
+    vector<IntermediateFormatConversation> conversations;
+    IntermediateFormatConversation conversation = move(init_conversation(filename, 1, 0));
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -101,15 +100,15 @@ QList<IntermediateFormatConversation> extract_yahoo_messenger_conversations(cons
         auto event = convert_event(proto_event, conversation);
         if (proto_event.type == YahooProtocolEvent::Type::START_CONVERSATION) {
             if (event_index > 0) {
-                conversations.append(conversation);
+                conversations.push_back(move(conversation));
             }
-            conversation = init_conversation(filename, (unsigned int)conversations.length() + 1, event_index);
+            conversation = move(init_conversation(filename, (unsigned int)conversations.size() + 1, event_index));
         }
         conversation.events.append(event);
         event_index++;
     }
 
-    conversations.append(conversation);
+    conversations.push_back(move(conversation));
 
     return conversations;
 }

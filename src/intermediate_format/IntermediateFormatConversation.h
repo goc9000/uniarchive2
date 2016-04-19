@@ -52,6 +52,11 @@ public:
 
     IntermediateFormatConversation();
     IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol);
+
+    IntermediateFormatConversation(const IntermediateFormatConversation& to_copy) = delete;
+
+    IntermediateFormatConversation(IntermediateFormatConversation&& to_move) = default;
+    IntermediateFormatConversation& operator= (IntermediateFormatConversation&& to_move) = default;
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo);
