@@ -71,6 +71,7 @@ set(SOURCE_FILES
         src/protocols/FullAccountName.h
         src/protocols/IMProtocols.cpp
         src/protocols/IMProtocols.h
+        src/utils/external_libs/make_unique.hpp
         src/utils/external_libs/optional.hpp
         src/utils/html/parse_html_tag_lenient.cpp
         src/utils/html/parse_html_tag_lenient.h
