@@ -3,7 +3,7 @@ project(uniarchive2)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt5 REQUIRED COMPONENTS Core Xml)
 
 set(SOURCE_FILES
         src/extraction/msn/extract_msn_messenger_conversations.h
@@ -86,6 +86,6 @@ set(SOURCE_FILES
 
 add_executable(uniarchive2 ${SOURCE_FILES})
 
-target_link_libraries(uniarchive2 Qt5::Core)
+target_link_libraries(uniarchive2 Qt5::Core Qt5::Xml)
 target_include_directories(uniarchive2 PRIVATE src)
 target_compile_definitions(uniarchive2 PRIVATE TEST_DATA_DIR=${TEST_DATA_DIR})
