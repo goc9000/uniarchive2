@@ -16,7 +16,6 @@
 
 #include <QDebug>
 #include <QString>
-#include <QList>
 
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
@@ -33,30 +32,25 @@ using namespace std::experimental;
 
 namespace uniarchive2 { namespace intermediate_format {
 
-struct IntermediateFormatConversation {
+class IntermediateFormatConversation {
 public:
     // Mandatory metadata
     ArchiveFormats originalArchiveFormat;
     IMProtocols protocol;
 
     // Optional metadata
-    shared_ptr<ApparentSubject> identity;
-    QList<shared_ptr<ApparentSubject>> declaredPeers;
+    unique_ptr<ApparentSubject> identity;
+    vector<unique_ptr<ApparentSubject>> declaredPeers;
     optional<bool> isConference;
     optional<QString> originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
     optional<unsigned int> numConversationInFile;
     optional<unsigned int> conversationOffsetInFileEventBased;
 
-    QList<shared_ptr<IntermediateFormatEvent>> events;
+    vector<unique_ptr<IntermediateFormatEvent>> events;
 
     IntermediateFormatConversation();
     IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol);
-
-    IntermediateFormatConversation(const IntermediateFormatConversation& to_copy) = delete;
-
-    IntermediateFormatConversation(IntermediateFormatConversation&& to_move) = default;
-    IntermediateFormatConversation& operator= (IntermediateFormatConversation&& to_move) = default;
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo);

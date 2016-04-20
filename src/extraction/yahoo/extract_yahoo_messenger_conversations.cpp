@@ -42,6 +42,7 @@
 #include "protocols/ArchiveFormats.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/yahoo/account_name.h"
+#include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
 #include "utils/html/parse_html_tag_lenient.h"
 #include "utils/text/decoding.h"
@@ -60,7 +61,7 @@ IntermediateFormatConversation init_conversation(
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 );
-shared_ptr<IntermediateFormatEvent> convert_event(
+unique_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
@@ -104,7 +105,7 @@ vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(con
             }
             conversation = move(init_conversation(filename, (unsigned int)conversations.size() + 1, event_index));
         }
-        conversation.events.append(event);
+        conversation.events.push_back(move(event));
         event_index++;
     }
 
@@ -136,9 +137,9 @@ IntermediateFormatConversation init_conversation(
     conversation.numConversationInFile = num_conversation_in_file;
     conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
-    conversation.identity = make_shared<SubjectGivenAsAccount>(local_account);
+    conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
-    conversation.declaredPeers.push_back(make_shared<SubjectGivenAsAccount>(remote_account));
+    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
 
     QString top_folder = full_filename.section(QDir::separator(), -3, -3);
     if (top_folder == "Messages") {
@@ -152,14 +153,14 @@ IntermediateFormatConversation init_conversation(
     return conversation;
 }
 
-shared_ptr<IntermediateFormatEvent> convert_event(
+unique_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
-    shared_ptr<IntermediateFormatEvent> event;
+    unique_ptr<IntermediateFormatEvent> event;
 
     ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
-    unsigned int next_index = (unsigned int)conversation.events.length();
+    unsigned int next_index = (unsigned int)conversation.events.size();
 
     switch (proto_event.type) {
         case YahooProtocolEvent::Type::START_CONVERSATION:
@@ -167,7 +168,7 @@ shared_ptr<IntermediateFormatEvent> convert_event(
                 proto_event.text.isEmpty() && proto_event.extra.isEmpty(),
                 "START_CONVERSATION events should have blank 'text' and 'extra' fields"
             );
-            return make_shared<IFStartConversationEvent>(
+            return make_unique<IFStartConversationEvent>(
                 timestamp,
                 next_index,
                 implicit_subject(proto_event, conversation)
@@ -177,7 +178,7 @@ shared_ptr<IntermediateFormatEvent> convert_event(
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
                 "CONFERENCE_JOIN events can only be incoming"
             );
-            event = make_shared<IFJoinConferenceEvent>(
+            event = make_unique<IFJoinConferenceEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation)
@@ -191,7 +192,7 @@ shared_ptr<IntermediateFormatEvent> convert_event(
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
                 "CONFERENCE_DECLINE events can only be incoming"
             );
-            event = make_shared<IFDeclineConferenceEvent>(
+            event = make_unique<IFDeclineConferenceEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation)
@@ -205,7 +206,7 @@ shared_ptr<IntermediateFormatEvent> convert_event(
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
                 "CONFERENCE_LEAVE events can only be incoming"
             );
-            event = make_shared<IFLeaveConferenceEvent>(
+            event = make_unique<IFLeaveConferenceEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation)
@@ -218,7 +219,7 @@ shared_ptr<IntermediateFormatEvent> convert_event(
             invariant(proto_event.extra.isEmpty(), "CONVERSATION_MESSAGE events should have no 'extra' field");
             // intentional fallthrough
         case YahooProtocolEvent::Type::CONFERENCE_MESSAGE:
-            event = make_shared<IFMessageEvent>(
+            event = make_unique<IFMessageEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation),
@@ -246,7 +247,7 @@ shared_ptr<ApparentSubject> implicit_subject(
 ) {
     return shared_ptr<ApparentSubject>(
         (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
-        conversation.identity->clone() : conversation.declaredPeers.first()->clone()
+        conversation.identity->clone() : conversation.declaredPeers.front()->clone()
     );
 }
 

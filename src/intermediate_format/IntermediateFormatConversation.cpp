@@ -66,10 +66,10 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
     }
 
     stream << "\t\n";
-    stream << "\t" << convo.events.length() << " events:\n";
+    stream << "\t" << convo.events.size() << " events:\n";
     for (const auto& event : convo.events) {
         if ((event->indexInConversation >= N_CONTEXT_LINES) &&
-            (event->indexInConversation < convo.events.length() - N_CONTEXT_LINES)) {
+            (event->indexInConversation < convo.events.size() - N_CONTEXT_LINES)) {
             if (event->indexInConversation == N_CONTEXT_LINES) {
                 stream << "\t...\n";
             }
