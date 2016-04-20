@@ -74,12 +74,12 @@ unique_ptr<ApparentSubject> parse_event_subject(
     const IntermediateFormatConversation& conversation
 );
 IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data);
-shared_ptr<TextSection> make_text_section(const QString& text);
-shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match);
-shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code);
-shared_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text);
-shared_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& attributes);
-shared_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text);
+unique_ptr<TextSection> make_text_section(const QString& text);
+unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match);
+unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code);
+unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text);
+unique_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& attributes);
+unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text);
 
 
 vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
@@ -225,7 +225,6 @@ unique_ptr<IntermediateFormatEvent> convert_event(
                 parse_event_subject(proto_event, conversation),
                 parse_message_content(proto_event.text)
             );
-
             if ((proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) && !proto_event.extra.isEmpty()) {
                 ((IFMessageEvent*)event.get())->receiver = make_unique<SubjectGivenAsAccount>(
                     parse_yahoo_account(QString::fromUtf8(proto_event.extra))
@@ -281,31 +280,31 @@ IntermediateFormatMessageContent parse_message_content(const QByteArray& text_da
         auto match = iterator.next();
 
         if (match.capturedStart(0) > last_text_pos) {
-            content.items.append(make_text_section(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos)));
+            content.items.push_back(make_text_section(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos)));
         }
 
         auto markup_tag = parse_markup_tag(match);
         if (markup_tag) {
-            content.items.append(markup_tag);
+            content.items.push_back(move(markup_tag));
         }
 
         last_text_pos = match.capturedEnd(0);
     }
 
     if (text.length() > last_text_pos) {
-        content.items.append(make_text_section(text.mid(last_text_pos, text.length() - last_text_pos)));
+        content.items.push_back(make_text_section(text.mid(last_text_pos, text.length() - last_text_pos)));
     }
 
     return content;
 }
 
-shared_ptr<TextSection> make_text_section(const QString& text) {
+unique_ptr<TextSection> make_text_section(const QString& text) {
     invariant(!text.contains(0x1B), "Unprocessed ANSI-like sequence in text: \"%s\"", qUtf8Printable(text));
 
-    return make_shared<TextSection>(text);
+    return make_unique<TextSection>(text);
 };
 
-shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match) {
     if (match.capturedLength("pseudo_ansi_seq")) {
         return parse_pseudo_ansi_seq(match.captured("pseudo_ansi_seq"));
     } else if (match.capturedLength("html_tag")) {
@@ -317,7 +316,7 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegular
     invariant_violation("Tag not recognized: \"%s\"", qUtf8Printable(match.captured(0)));
 }
 
-shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code) {
     static QRegularExpression pattern(
         "^(?<closed>x)?("\
         "(?<reset>0)|"\
@@ -337,25 +336,25 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QSt
     bool closed = match.capturedLength("closed") > 0;
 
     if (match.capturedLength("reset")) {
-        return make_shared<ANSIResetTag>();
+        return make_unique<ANSIResetTag>();
     } else if (match.capturedLength("bold")) {
-        return make_shared<BoldTag>(closed);
+        return make_unique<BoldTag>(closed);
     } else if (match.capturedLength("italic")) {
-        return make_shared<ItalicTag>(closed);
+        return make_unique<ItalicTag>(closed);
     } else if (match.capturedLength("underline")) {
-        return make_shared<UnderlineTag>(closed);
+        return make_unique<UnderlineTag>(closed);
     } else if (match.capturedLength("link")) {
-        return make_shared<LinkTag>(closed);
+        return make_unique<LinkTag>(closed);
     } else if (match.capturedLength("ansi_color")) {
-        return make_shared<ANSIColorTag>((ANSIColors)match.captured("ansi_color").toInt(), closed);
+        return make_unique<ANSIColorTag>((ANSIColors)match.captured("ansi_color").toInt(), closed);
     } else if (match.capturedLength("html_color")) {
-        return make_shared<RGBColorTag>(Color::fromHTMLFormat(match.captured("html_color")), closed);
+        return make_unique<RGBColorTag>(Color::fromHTMLFormat(match.captured("html_color")), closed);
     }
 
     never_reached();
 }
 
-shared_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text) {
     QString tag_name;
     bool open;
     bool closed;
@@ -377,9 +376,8 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& t
     invariant_violation("HTML tag not supported: \"%s\"", qUtf8Printable(tag_name));
 }
 
-shared_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& attributes) {
-    auto tag = make_shared<FontTag>(closed);
-    bool ok = false;
+unique_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& attributes) {
+    auto tag = make_unique<FontTag>(closed);
 
     for (const auto& key : attributes.keys()) {
         QString norm_key = key.toLower();
@@ -397,7 +395,7 @@ shared_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& at
     return tag;
 }
 
-shared_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text) {
 #define PAT_COLOR "#[0-9a-f]{6}"
     static QRegularExpression pattern(
         "^<(?<closed>/)?(?<tag_name>[a-z._-][a-z0-9._-]*)\\b\\s*(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$",
@@ -419,12 +417,12 @@ shared_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& 
 
     if (tag_name == "fade") {
         invariant(closed || (colors.length() > 0), "<fade> tag must have at least one color specified");
-        return make_shared<YahooFadeTag>(closed, colors);
+        return make_unique<YahooFadeTag>(closed, colors);
     } else if (tag_name == "alt") {
         invariant(closed || (colors.length() == 2), "<alt> tag must have exactly 2 colors specified");
         return closed ?
-               make_shared<YahooAltTag>(true) :
-               make_shared<YahooAltTag>(false, colors[0], colors[1]);
+               make_unique<YahooAltTag>(true) :
+               make_unique<YahooAltTag>(false, colors[0], colors[1]);
     }
 
     invariant_violation("Yahoo markup tag not supported: \"%s\"", qUtf8Printable(tag_name));

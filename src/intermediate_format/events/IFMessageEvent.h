@@ -38,7 +38,7 @@ public:
         ApparentTime timestamp,
         unsigned int index,
         unique_ptr<ApparentSubject> sender,
-        IntermediateFormatMessageContent content
+        IntermediateFormatMessageContent&& content
     );
 
     virtual QString eventName() const;

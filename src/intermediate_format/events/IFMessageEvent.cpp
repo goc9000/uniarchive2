@@ -18,8 +18,8 @@ IFMessageEvent::IFMessageEvent(
     ApparentTime timestamp,
     unsigned int index,
     unique_ptr<ApparentSubject> sender,
-    IntermediateFormatMessageContent content
-): IntermediateFormatEvent(timestamp, index), sender(move(sender)), content(content), isOffline(false) {
+    IntermediateFormatMessageContent&& content
+): IntermediateFormatEvent(timestamp, index), sender(move(sender)), content(move(content)), isOffline(false) {
 }
 
 QString IFMessageEvent::eventName() const {

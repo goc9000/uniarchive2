@@ -11,10 +11,10 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
 
+#include <vector>
 #include <memory>
 
 #include <QtDebug>
-#include <QList>
 
 #include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
 
@@ -22,11 +22,11 @@ using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct IntermediateFormatMessageContent {
+class IntermediateFormatMessageContent {
 public:
     IntermediateFormatMessageContent();
 
-    QList<shared_ptr<IntermediateFormatMessageContentItem>> items;
+    vector<unique_ptr<IntermediateFormatMessageContentItem>> items;
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatMessageContent& content);
