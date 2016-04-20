@@ -29,15 +29,15 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 struct IFMessageEvent : IntermediateFormatEvent {
 public:
-    shared_ptr<ApparentSubject> sender;
-    shared_ptr<ApparentSubject> receiver;
+    unique_ptr<ApparentSubject> sender;
+    unique_ptr<ApparentSubject> receiver;
     IntermediateFormatMessageContent content;
     bool isOffline;
 
     IFMessageEvent(
         ApparentTime timestamp,
         unsigned int index,
-        shared_ptr<ApparentSubject> sender,
+        unique_ptr<ApparentSubject> sender,
         IntermediateFormatMessageContent content
     );
 

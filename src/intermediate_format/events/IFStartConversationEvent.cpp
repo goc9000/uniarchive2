@@ -21,8 +21,8 @@ IFStartConversationEvent::IFStartConversationEvent(ApparentTime timestamp, unsig
 IFStartConversationEvent::IFStartConversationEvent(
     ApparentTime timestamp,
     unsigned int index,
-    shared_ptr<ApparentSubject> initiator
-): IntermediateFormatEvent(timestamp, index), initiator(initiator) {
+    unique_ptr<ApparentSubject> initiator
+): IntermediateFormatEvent(timestamp, index), initiator(move(initiator)) {
 }
 
 QString IFStartConversationEvent::eventName() const {

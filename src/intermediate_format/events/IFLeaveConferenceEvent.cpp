@@ -17,8 +17,8 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 IFLeaveConferenceEvent::IFLeaveConferenceEvent(
     ApparentTime timestamp,
     unsigned int index,
-    shared_ptr<ApparentSubject> subject
-): IntermediateFormatEvent(timestamp, index), subject(subject) {
+    unique_ptr<ApparentSubject> subject
+): IntermediateFormatEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString IFLeaveConferenceEvent::eventName() const {

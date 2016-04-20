@@ -29,10 +29,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 struct IFJoinConferenceEvent : IntermediateFormatEvent {
 public:
-    shared_ptr<ApparentSubject> subject;
+    unique_ptr<ApparentSubject> subject;
     optional<IntermediateFormatMessageContent> message;
 
-    IFJoinConferenceEvent(ApparentTime timestamp, unsigned int index, shared_ptr<ApparentSubject> subject);
+    IFJoinConferenceEvent(ApparentTime timestamp, unsigned int index, unique_ptr<ApparentSubject> subject);
 
     virtual QString eventName() const;
 

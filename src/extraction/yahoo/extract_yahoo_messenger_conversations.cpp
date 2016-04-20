@@ -65,11 +65,11 @@ unique_ptr<IntermediateFormatEvent> convert_event(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
-shared_ptr<ApparentSubject> implicit_subject(
+unique_ptr<ApparentSubject> implicit_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
-shared_ptr<ApparentSubject> parse_event_subject(
+unique_ptr<ApparentSubject> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 );
@@ -227,7 +227,7 @@ unique_ptr<IntermediateFormatEvent> convert_event(
             );
 
             if ((proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) && !proto_event.extra.isEmpty()) {
-                ((IFMessageEvent*)event.get())->receiver = make_shared<SubjectGivenAsAccount>(
+                ((IFMessageEvent*)event.get())->receiver = make_unique<SubjectGivenAsAccount>(
                     parse_yahoo_account(QString::fromUtf8(proto_event.extra))
                 );
             }
@@ -241,17 +241,17 @@ unique_ptr<IntermediateFormatEvent> convert_event(
     invariant_violation("Event not converted");
 }
 
-shared_ptr<ApparentSubject> implicit_subject(
+unique_ptr<ApparentSubject> implicit_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
-    return shared_ptr<ApparentSubject>(
+    return unique_ptr<ApparentSubject>(
         (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
         conversation.identity->clone() : conversation.declaredPeers.front()->clone()
     );
 }
 
-shared_ptr<ApparentSubject> parse_event_subject(
+unique_ptr<ApparentSubject> parse_event_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
@@ -259,7 +259,7 @@ shared_ptr<ApparentSubject> parse_event_subject(
         return implicit_subject(proto_event, conversation);
     }
 
-    return make_shared<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
+    return make_unique<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
 IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data) {

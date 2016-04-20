@@ -17,9 +17,9 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 IFMessageEvent::IFMessageEvent(
     ApparentTime timestamp,
     unsigned int index,
-    shared_ptr<ApparentSubject> sender,
+    unique_ptr<ApparentSubject> sender,
     IntermediateFormatMessageContent content
-): IntermediateFormatEvent(timestamp, index), sender(sender), content(content), isOffline(false) {
+): IntermediateFormatEvent(timestamp, index), sender(move(sender)), content(content), isOffline(false) {
 }
 
 QString IFMessageEvent::eventName() const {

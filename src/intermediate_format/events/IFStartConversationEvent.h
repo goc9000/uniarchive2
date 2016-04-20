@@ -25,10 +25,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 struct IFStartConversationEvent : IntermediateFormatEvent {
 public:
-    shared_ptr<ApparentSubject> initiator;
+    unique_ptr<ApparentSubject> initiator;
 
     IFStartConversationEvent(ApparentTime timestamp, unsigned int index);
-    IFStartConversationEvent(ApparentTime timestamp, unsigned int index, shared_ptr<ApparentSubject> initiator);
+    IFStartConversationEvent(ApparentTime timestamp, unsigned int index, unique_ptr<ApparentSubject> initiator);
 
     virtual QString eventName() const;
 
