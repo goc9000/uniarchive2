@@ -56,8 +56,9 @@ using namespace std;
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
+IntermediateFormatConversation init_prototype(const QString& filename);
 IntermediateFormatConversation init_conversation(
-    const QString& filename,
+    const IntermediateFormatConversation& prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 );
@@ -84,7 +85,8 @@ unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& 
 
 vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
     vector<IntermediateFormatConversation> conversations;
-    IntermediateFormatConversation conversation = move(init_conversation(filename, 1, 0));
+    IntermediateFormatConversation prototype = init_prototype(filename);
+    IntermediateFormatConversation conversation = init_conversation(prototype, 1, 0);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -103,7 +105,7 @@ vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(con
             if (event_index > 0) {
                 conversations.push_back(move(conversation));
             }
-            conversation = move(init_conversation(filename, (unsigned int)conversations.size() + 1, event_index));
+            conversation = init_conversation(prototype, (unsigned int)conversations.size() + 1, event_index);
         }
         conversation.events.push_back(move(event));
         event_index++;
@@ -114,11 +116,7 @@ vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(con
     return conversations;
 }
 
-IntermediateFormatConversation init_conversation(
-    const QString& filename,
-    unsigned int num_conversation_in_file,
-    unsigned int conversation_offset_in_file
-) {
+IntermediateFormatConversation init_prototype(const QString& filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -132,11 +130,10 @@ IntermediateFormatConversation init_conversation(
     IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER, IMProtocols::YAHOO);
 
     conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime =
-        ApparentTime(file_info.lastModified().toTime_t(), ApparentTime::Reference::UNKNOWN);
-    conversation.numConversationInFile = num_conversation_in_file;
-    conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
-
+    conversation.fileLastModifiedTime = ApparentTime(
+        file_info.lastModified().toTime_t(),
+        ApparentTime::Reference::UNKNOWN
+    );
     conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
@@ -149,6 +146,18 @@ IntermediateFormatConversation init_conversation(
     } else {
         invariant_violation("Yahoo Messenger archive file must be in a 'Messages' or 'Conferences' folder");
     }
+
+    return conversation;
+}
+
+IntermediateFormatConversation init_conversation(
+    const IntermediateFormatConversation& prototype,
+    unsigned int num_conversation_in_file,
+    unsigned int conversation_offset_in_file
+) {
+    auto conversation = IntermediateFormatConversation::fromPrototype(prototype);
+    conversation.numConversationInFile = num_conversation_in_file;
+    conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
     return conversation;
 }

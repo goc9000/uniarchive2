@@ -51,6 +51,8 @@ public:
 
     IntermediateFormatConversation();
     IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol);
+
+    static IntermediateFormatConversation fromPrototype(const IntermediateFormatConversation& prototype);
 };
 
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo);

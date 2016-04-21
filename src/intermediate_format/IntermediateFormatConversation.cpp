@@ -22,6 +22,25 @@ IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormats fo
     : originalArchiveFormat(format), protocol(protocol) {
 }
 
+IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
+    const IntermediateFormatConversation &prototype
+) {
+    IntermediateFormatConversation convo(prototype.originalArchiveFormat, prototype.protocol);
+
+    convo.identity = prototype.identity->clone();
+    for (const auto& subject : prototype.declaredPeers) {
+        convo.declaredPeers.push_back(subject->clone());
+    }
+
+    convo.isConference = prototype.isConference;
+    convo.originalFilename = prototype.originalFilename;
+    convo.fileLastModifiedTime = prototype.fileLastModifiedTime;
+    convo.numConversationInFile = prototype.numConversationInFile;
+    convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
+
+    return convo;
+}
+
 QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
 #define N_CONTEXT_LINES 3
     QDebugStateSaver settings(stream);
