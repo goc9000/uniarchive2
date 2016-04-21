@@ -30,11 +30,9 @@ int main() {
 
     int limit = 50;
     for (const auto& convo : convos) {
-        if (!convo.events.empty()) {
-            qDebug() << convo;
-            if (!--limit) {
-                break;
-            }
+        qDebug() << convo;
+        if (!--limit) {
+            break;
         }
     }
 
