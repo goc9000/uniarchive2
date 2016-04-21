@@ -11,22 +11,25 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
 
+#include <memory>
+
 #include <QtDebug>
 
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "protocols/FullAccountName.h"
 
+using namespace std;
 using namespace uniarchive2::protocols;
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-struct SubjectGivenAsAccount : ApparentSubject {
+class SubjectGivenAsAccount : public ApparentSubject {
 public:
     FullAccountName account;
 
     SubjectGivenAsAccount(FullAccountName account);
 
-    virtual SubjectGivenAsAccount* clone() const;
+    virtual unique_ptr<ApparentSubject> clone() const;
 
     virtual void writeToDebugStream(QDebug stream) const;
 };

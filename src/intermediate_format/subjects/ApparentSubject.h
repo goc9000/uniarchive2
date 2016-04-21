@@ -11,13 +11,17 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 
+#include <memory>
+
 #include <QtDebug>
+
+using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-struct ApparentSubject {
+class ApparentSubject {
 public:
-    virtual ApparentSubject* clone() const = 0;
+    virtual unique_ptr<ApparentSubject> clone() const = 0;
 
     virtual void writeToDebugStream(QDebug stream) const = 0;
 };

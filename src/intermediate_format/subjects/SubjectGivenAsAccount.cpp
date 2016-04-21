@@ -11,14 +11,15 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "utils/external_libs/make_unique.hpp"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 SubjectGivenAsAccount::SubjectGivenAsAccount(FullAccountName account) : account(account) {
 }
 
-SubjectGivenAsAccount* SubjectGivenAsAccount::clone() const {
-    return new SubjectGivenAsAccount(account);
+unique_ptr<ApparentSubject> SubjectGivenAsAccount::clone() const {
+    return make_unique<SubjectGivenAsAccount>(account);
 }
 
 void SubjectGivenAsAccount::writeToDebugStream(QDebug stream) const {

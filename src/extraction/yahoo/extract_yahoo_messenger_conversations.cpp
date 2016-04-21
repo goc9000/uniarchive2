@@ -244,10 +244,8 @@ unique_ptr<ApparentSubject> implicit_subject(
     const YahooProtocolEvent& proto_event,
     const IntermediateFormatConversation& conversation
 ) {
-    return unique_ptr<ApparentSubject>(
-        (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
-        conversation.identity->clone() : conversation.declaredPeers.front()->clone()
-    );
+    return (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
+           conversation.identity->clone() : conversation.declaredPeers.front()->clone();
 }
 
 unique_ptr<ApparentSubject> parse_event_subject(
