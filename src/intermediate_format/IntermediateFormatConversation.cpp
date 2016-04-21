@@ -27,7 +27,9 @@ IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
 ) {
     IntermediateFormatConversation convo(prototype.originalArchiveFormat, prototype.protocol);
 
-    convo.identity = prototype.identity->clone();
+    if (prototype.identity) {
+        convo.identity = prototype.identity->clone();
+    }
     for (const auto& subject : prototype.declaredPeers) {
         convo.declaredPeers.push_back(subject->clone());
     }
