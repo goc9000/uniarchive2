@@ -1,5 +1,5 @@
 /**
- * extraction/yahoo/extract_msn_messenger_conversations.cpp
+ * extraction/yahoo/extract_msn_messenger_xml_conversations.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -14,7 +14,7 @@
 #include <QFile>
 #include <QIODevice>
 
-#include "extraction/msn/extract_msn_messenger_conversations.h"
+#include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "utils/language/invariant.h"
 
 using namespace uniarchive2::intermediate_format;
@@ -25,7 +25,7 @@ namespace uniarchive2 { namespace extraction { namespace msn {
 
 QDomDocument load_xml_file(const QString& filename);
 
-vector<IntermediateFormatConversation> extract_msn_messenger_conversations(const QString &filename) {
+vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(const QString &filename) {
     vector<IntermediateFormatConversation> conversations;
 
     QDomDocument xml = load_xml_file(filename);

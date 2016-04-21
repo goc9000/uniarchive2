@@ -6,8 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 find_package(Qt5 REQUIRED COMPONENTS Core Xml)
 
 set(SOURCE_FILES
-        src/extraction/msn/extract_msn_messenger_conversations.h
-        src/extraction/msn/extract_msn_messenger_conversations.cpp
+        src/extraction/msn/extract_msn_messenger_xml_conversations.h
+        src/extraction/msn/extract_msn_messenger_xml_conversations.cpp
         src/extraction/yahoo/extract_yahoo_messenger_conversations.cpp
         src/extraction/yahoo/extract_yahoo_messenger_conversations.h
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp
