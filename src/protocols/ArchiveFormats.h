@@ -18,6 +18,7 @@ namespace uniarchive2 { namespace protocols {
 enum class ArchiveFormats {
     INVALID = 0,
     YAHOO_MESSENGER,
+    MSN_MESSENGER_XML,
 };
 
 QDebug operator<< (QDebug stream, const ArchiveFormats& format);

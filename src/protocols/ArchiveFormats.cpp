@@ -20,6 +20,8 @@ QString name_for_archive_format(const ArchiveFormats& protocol) {
             return "(invalid)";
         case ArchiveFormats::YAHOO_MESSENGER:
             return "Yahoo Messenger";
+        case ArchiveFormats::MSN_MESSENGER_XML:
+            return "MSN Messenger (XML format)";
     }
 }
 

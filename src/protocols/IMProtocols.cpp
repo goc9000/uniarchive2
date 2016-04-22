@@ -20,6 +20,8 @@ QString name_for_protocol(const IMProtocols& protocol) {
             return "(invalid)";
         case IMProtocols::YAHOO:
             return "Yahoo";
+        case IMProtocols::MSN:
+            return "MSN";
     }
 }
 
