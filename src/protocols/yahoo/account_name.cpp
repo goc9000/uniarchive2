@@ -18,7 +18,7 @@
 namespace uniarchive2 { namespace protocols { namespace yahoo {
 
 bool is_valid_yahoo_account_name(const QString& account_name) {
-    static QRegularExpression pattern("[a-z][a-z0-9_.]*", QRegularExpression::CaseInsensitiveOption);
+    static QRegularExpression pattern("^[a-z][a-z0-9_.]*$", QRegularExpression::CaseInsensitiveOption);
 
     return pattern.match(account_name).hasMatch();
 }
@@ -26,7 +26,7 @@ bool is_valid_yahoo_account_name(const QString& account_name) {
 void assert_valid_yahoo_account_name(const QString& account_name) {
     invariant(
         is_valid_yahoo_account_name(account_name),
-        "'%s' doesn't look like a valid Yahoo name",
+        "'%s' doesn't look like a valid Yahoo account name",
         qUtf8Printable(account_name)
     );
 }
