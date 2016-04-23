@@ -9,16 +9,20 @@
  */
 
 #include <QtDebug>
+#include <QDir>
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFile>
+#include <QFileInfo>
 #include <QIODevice>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
+#include "protocols/msn/account_name.h"
 #include "utils/language/invariant.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::protocols::msn;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
@@ -66,6 +70,26 @@ vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(c
 }
 
 IntermediateFormatConversation init_prototype(const QString& filename) {
+    QFileInfo file_info(filename);
+    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+
+    QString full_filename = file_info.absoluteFilePath();
+    QString grand_parent = full_filename.section(QDir::separator(), -3, -3);
+    QString parent = full_filename.section(QDir::separator(), -2, -2);
+    QString base_name = file_info.completeBaseName();
+
+    invariant(
+        (
+            is_likely_valid_optionally_encoded_msn_account_name(grand_parent) &&
+            (parent == "History") &&
+            is_likely_valid_optionally_encoded_msn_account_name(base_name) &&
+            (file_info.suffix().toLower() == "xml")
+        ),
+        "MSN archive filename should have the form <local account name>/History/<remote account name>.xml, instead "
+            "it looks like: %s",
+        qUtf8Printable(filename.section(QDir::separator(), -3, -1))
+    );
+
     IntermediateFormatConversation conversation(ArchiveFormats::MSN_MESSENGER_XML, IMProtocols::MSN);
 
     // TODO: fill in stub
