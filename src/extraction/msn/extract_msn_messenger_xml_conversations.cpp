@@ -17,6 +17,8 @@
 #include <QIODevice>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
+#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/msn/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
@@ -37,6 +39,7 @@ IntermediateFormatConversation extract_conversation_for_session(
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 );
+unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index);
 QDomDocument load_xml_file(const QString& filename);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
 
@@ -129,11 +132,20 @@ IntermediateFormatConversation extract_conversation_for_session(
     conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
     while (!mut_next_element.isNull() && (read_int_attr(mut_next_element, "SessionID") == session_id)) {
-        // TODO: create events in conversation
+        conversation.events.push_back(parse_event(mut_next_element, (unsigned int)conversation.events.size()));
         mut_next_element = mut_next_element.nextSiblingElement();
     }
 
     return conversation;
+}
+
+unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index) {
+    QByteArray raw_data;
+    QTextStream stream(&raw_data);
+
+    event_element.save(stream, 0);
+
+    return make_unique<IFUninterpretedEvent>(ApparentTime(), event_index, raw_data);
 }
 
 QDomDocument load_xml_file(const QString& filename) {
