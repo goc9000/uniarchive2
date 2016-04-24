@@ -17,11 +17,14 @@
 #include <QIODevice>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
+#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/msn/account_name.h"
+#include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::msn;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
@@ -92,7 +95,17 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
 
     IntermediateFormatConversation conversation(ArchiveFormats::MSN_MESSENGER_XML, IMProtocols::MSN);
 
-    // TODO: fill in stub
+    conversation.originalFilename = full_filename;
+    conversation.fileLastModifiedTime = ApparentTime(
+        file_info.lastModified().toTime_t(),
+        ApparentTime::Reference::UNKNOWN
+    );
+
+    auto local_account = parse_optionally_encoded_msn_account(grand_parent);
+    auto remote_account = parse_optionally_encoded_msn_account(base_name);
+
+    conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
+    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
 
     return conversation;
 }
