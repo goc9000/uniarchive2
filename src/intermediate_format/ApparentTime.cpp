@@ -32,6 +32,28 @@ ApparentTime::ApparentTime(quint32 unix_timestamp, Reference reference)
     time = timestamp.time();
 }
 
+ApparentTime::ApparentTime(const QDateTime& datetime): secondsSpecified(true) {
+    date = datetime.date();
+    time = datetime.time();
+
+    switch (datetime.timeSpec()) {
+        case Qt::LocalTime:
+            invariant_violation("Cannot initialize equivalent ApparentTime for QDateTime defined on local timespec");
+        case Qt::UTC:
+            reference = Reference::UTC;
+            break;
+        case Qt::OffsetFromUTC:
+            reference = Reference::OFFSET_FROM_UTC;
+            invariant(abs(datetime.offsetFromUtc()) % 900 == 0, "UTC offset must be a multiple of 15 minutes");
+            utcOffsetQuarters = datetime.offsetFromUtc() / 900;
+            break;
+        case Qt::TimeZone:
+            reference = Reference::TIMEZONE;
+            timeZoneID = datetime.timeZone().id();
+            break;
+    }
+}
+
 bool ApparentTime::isSpecified() const {
     return hasSpecifiedDate() || hasSpecifiedTime();
 }

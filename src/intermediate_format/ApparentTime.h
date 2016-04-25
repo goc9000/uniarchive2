@@ -16,6 +16,7 @@
 #include <QDate>
 #include <QString>
 #include <QTime>
+#include <QDateTime>
 
 #include "utils/external_libs/optional.hpp"
 
@@ -42,6 +43,7 @@ public:
 
     ApparentTime();
     ApparentTime(quint32 unix_timestamp, Reference reference = Reference::UTC);
+    ApparentTime(const QDateTime& datetime);
 
     bool isSpecified() const;
     bool hasSpecifiedDate() const;
