@@ -45,6 +45,8 @@ IntermediateFormatConversation extract_conversation_for_session(
 unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index);
 ApparentTime parse_event_time(const QDomElement& event_element);
 QDomDocument load_xml_file(const QString& filename);
+QDomElement child_elem(const QDomElement& node, const QString& child_name);
+QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
 QString read_string_attr(const QDomElement& node, const QString& attr_name);
 QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name);
@@ -201,6 +203,30 @@ QDomDocument load_xml_file(const QString& filename) {
     }
 
     return xml;
+}
+
+QDomElement child_elem(const QDomElement& node, const QString& child_name) {
+    QDomElement child_node = node.firstChildElement(child_name);
+    invariant(
+        !child_node.isNull(),
+        "Expected to find <%s> node under <%s>",
+        qUtf8Printable(child_name),
+        qUtf8Printable(node.tagName())
+    );
+
+    return child_node;
+}
+
+QDomElement only_child_elem(const QDomElement& node, const QString& child_name) {
+    QDomElement child_node = node.firstChildElement();
+    invariant(
+        (child_node.tagName() == child_name) && child_node.nextSiblingElement().isNull(),
+        "Expected to find only a <%s> node under <%s>",
+        qUtf8Printable(child_name),
+        qUtf8Printable(node.tagName())
+    );
+
+    return child_node;
 }
 
 int read_int_attr(const QDomElement& node, const QString& attr_name) {
