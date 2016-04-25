@@ -8,6 +8,8 @@
  * Licensed under the GPL-3
  */
 
+#include <cmath>
+
 #include <QtDebug>
 #include <QDateTime>
 #include <QDir>
@@ -41,6 +43,7 @@ IntermediateFormatConversation extract_conversation_for_session(
     unsigned int conversation_offset_in_file
 );
 unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index);
+ApparentTime parse_event_time(const QDomElement& event_element);
 QDomDocument load_xml_file(const QString& filename);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
 QString read_string_attr(const QDomElement& node, const QString& attr_name);
@@ -143,12 +146,38 @@ IntermediateFormatConversation extract_conversation_for_session(
 }
 
 unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index) {
+    ApparentTime event_time = parse_event_time(event_element);
+
     QByteArray raw_data;
     QTextStream stream(&raw_data);
 
     event_element.save(stream, 0);
 
-    return make_unique<IFUninterpretedEvent>(ApparentTime(), event_index, raw_data);
+    return make_unique<IFUninterpretedEvent>(event_time, event_index, raw_data);
+}
+
+ApparentTime parse_event_time(const QDomElement& event_element) {
+    QDateTime absolute_time = read_iso_date_attr(event_element, "DateTime");
+    invariant(absolute_time.timeSpec() == Qt::UTC, "Expected MSN message datetime to be UTC");
+
+    QString local_time_str =
+        read_string_attr(event_element, "Date").append(" ").append(read_string_attr(event_element, "Time"));
+
+    QDateTime local_time = QDateTime::fromString(local_time_str, "dd/MM/yyyy HH:mm:ss");
+    invariant(local_time.isValid(), "Failed to parse local Date/Time");
+
+    local_time.setTimeSpec(Qt::UTC);
+
+    qint64 offsetMsecs = absolute_time.msecsTo(local_time);
+    int offsetQuarters = (int)lround(offsetMsecs / 900000.0);
+    qint64 difference = abs(offsetQuarters * 900000 - (int)offsetMsecs);
+
+    invariant(abs(offsetQuarters) < 14*4, "Local and absolute time too far apart (>14h)");
+    invariant(difference < 2000, "Local and absolute time not offset by a whole number of quarter-hours");
+
+    absolute_time = absolute_time.toOffsetFromUtc(900 * offsetQuarters);
+
+    return ApparentTime(absolute_time);
 }
 
 QDomDocument load_xml_file(const QString& filename) {
