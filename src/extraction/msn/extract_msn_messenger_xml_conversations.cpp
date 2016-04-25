@@ -13,8 +13,6 @@
 #include <QtDebug>
 #include <QDateTime>
 #include <QDir>
-#include <QDomDocument>
-#include <QDomElement>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
@@ -30,12 +28,14 @@
 #include "protocols/msn/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/xml/qdom_utils.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::msn;
+using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
@@ -62,15 +62,6 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
 ApparentTime parse_event_time(const QDomElement& event_element);
 unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
 IntermediateFormatMessageContent parse_event_text(const QDomElement& event_element);
-
-QDomDocument load_xml_file(const QString& filename);
-QDomElement child_elem(const QDomElement& node, const QString& child_name);
-QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
-int read_int_attr(const QDomElement& node, const QString& attr_name);
-QString read_string_attr(const QDomElement& node, const QString& attr_name);
-QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name);
-QString xml_to_string(const QDomNode& node);
-QByteArray xml_to_raw_data(const QDomNode& node);
 
 vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(const QString &filename) {
     vector<IntermediateFormatConversation> conversations;
@@ -250,96 +241,6 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
     unsigned int event_index
 ) {
     return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
-}
-
-QDomDocument load_xml_file(const QString& filename) {
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", qUtf8Printable(filename));
-    }
-
-    QDomDocument xml;
-    QString error_message;
-    int error_line, error_column;
-
-    if (!xml.setContent(&file, false, &error_message, &error_line, &error_column)) {
-        qFatal(
-            "Error reading XML file '%s': %s (at line %d, column %d)",
-            qUtf8Printable(filename),
-            qUtf8Printable(error_message),
-            error_line,
-            error_column
-        );
-    }
-
-    return xml;
-}
-
-QDomElement child_elem(const QDomElement& node, const QString& child_name) {
-    QDomElement child_node = node.firstChildElement(child_name);
-    invariant(
-        !child_node.isNull(),
-        "Expected to find <%s> node under <%s>",
-        qUtf8Printable(child_name),
-        qUtf8Printable(node.tagName())
-    );
-
-    return child_node;
-}
-
-QDomElement only_child_elem(const QDomElement& node, const QString& child_name) {
-    QDomElement child_node = node.firstChildElement();
-    invariant(
-        (child_node.tagName() == child_name) && child_node.nextSiblingElement().isNull(),
-        "Expected to find only a <%s> node under <%s>",
-        qUtf8Printable(child_name),
-        qUtf8Printable(node.tagName())
-    );
-
-    return child_node;
-}
-
-int read_int_attr(const QDomElement& node, const QString& attr_name) {
-    QString value_text = read_string_attr(node, attr_name);
-    bool ok = false;
-    int value = value_text.toInt(&ok);
-
-    invariant(ok, "Invalid integer attribute value: '%s'", qUtf8Printable(value_text));
-
-    return value;
-}
-
-QString read_string_attr(const QDomElement& node, const QString& attr_name) {
-    invariant(node.hasAttribute(attr_name), "Node is missing attribute '%s'", qUtf8Printable(attr_name));
-
-    return node.attribute(attr_name);
-}
-
-QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name) {
-    QString value_text = read_string_attr(node, attr_name);
-
-    QDateTime value = QDateTime::fromString(value_text, Qt::ISODate);
-    invariant(value.isValid(), "Invalid ISO datetime attribute value: '%s'", qUtf8Printable(value_text));
-
-    return value;
-}
-
-QString xml_to_string(const QDomNode& node) {
-    QString text;
-    QTextStream stream(&text);
-
-    node.save(stream, 0);
-
-    return text;
-}
-
-QByteArray xml_to_raw_data(const QDomNode& node) {
-    QByteArray raw_data;
-    QTextStream stream(&raw_data);
-
-    node.save(stream, 0);
-
-    return raw_data;
 }
 
 }}}
