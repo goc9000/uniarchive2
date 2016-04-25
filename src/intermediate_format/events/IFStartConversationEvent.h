@@ -27,8 +27,8 @@ struct IFStartConversationEvent : IntermediateFormatEvent {
 public:
     unique_ptr<ApparentSubject> initiator;
 
-    IFStartConversationEvent(ApparentTime timestamp, unsigned int index);
-    IFStartConversationEvent(ApparentTime timestamp, unsigned int index, unique_ptr<ApparentSubject> initiator);
+    IFStartConversationEvent(const ApparentTime& timestamp, unsigned int index);
+    IFStartConversationEvent(const ApparentTime& timestamp, unsigned int index, unique_ptr<ApparentSubject> initiator);
 
     virtual QString eventName() const;
 

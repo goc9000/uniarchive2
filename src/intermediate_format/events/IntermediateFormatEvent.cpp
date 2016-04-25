@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-IntermediateFormatEvent::IntermediateFormatEvent(ApparentTime timestamp, unsigned int index)
+IntermediateFormatEvent::IntermediateFormatEvent(const ApparentTime& timestamp, unsigned int index)
     : timestamp(timestamp), indexInConversation(index) {
 };
 

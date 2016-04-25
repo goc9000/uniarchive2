@@ -35,7 +35,7 @@ public:
     bool isOffline;
 
     IFMessageEvent(
-        ApparentTime timestamp,
+        const ApparentTime& timestamp,
         unsigned int index,
         unique_ptr<ApparentSubject> sender,
         IntermediateFormatMessageContent&& content

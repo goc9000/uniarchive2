@@ -26,7 +26,7 @@ struct IFUninterpretedEvent : IntermediateFormatEvent {
 public:
     QByteArray rawData;
 
-    IFUninterpretedEvent(ApparentTime timestamp, unsigned int index, const QByteArray& raw_data);
+    IFUninterpretedEvent(const ApparentTime& timestamp, unsigned int index, const QByteArray& raw_data);
 
     virtual QString eventName() const;
 

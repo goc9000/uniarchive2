@@ -14,12 +14,12 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-IFStartConversationEvent::IFStartConversationEvent(ApparentTime timestamp, unsigned int index)
+IFStartConversationEvent::IFStartConversationEvent(const ApparentTime& timestamp, unsigned int index)
     : IntermediateFormatEvent(timestamp, index) {
 }
 
 IFStartConversationEvent::IFStartConversationEvent(
-    ApparentTime timestamp,
+    const ApparentTime& timestamp,
     unsigned int index,
     unique_ptr<ApparentSubject> initiator
 ): IntermediateFormatEvent(timestamp, index), initiator(move(initiator)) {

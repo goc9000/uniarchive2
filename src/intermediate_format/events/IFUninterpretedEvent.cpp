@@ -15,7 +15,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFUninterpretedEvent::IFUninterpretedEvent(
-    ApparentTime timestamp,
+    const ApparentTime& timestamp,
     unsigned int index,
     const QByteArray& raw_data
 ): IntermediateFormatEvent(timestamp, index), rawData(raw_data) {
