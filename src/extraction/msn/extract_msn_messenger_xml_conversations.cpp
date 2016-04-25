@@ -9,6 +9,7 @@
  */
 
 #include <QtDebug>
+#include <QDateTime>
 #include <QDir>
 #include <QDomDocument>
 #include <QDomElement>
@@ -42,6 +43,8 @@ IntermediateFormatConversation extract_conversation_for_session(
 unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index);
 QDomDocument load_xml_file(const QString& filename);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
+QString read_string_attr(const QDomElement& node, const QString& attr_name);
+QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name);
 
 vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(const QString &filename) {
     vector<IntermediateFormatConversation> conversations;
@@ -172,15 +175,28 @@ QDomDocument load_xml_file(const QString& filename) {
 }
 
 int read_int_attr(const QDomElement& node, const QString& attr_name) {
+    QString value_text = read_string_attr(node, attr_name);
+    bool ok = false;
+    int value = value_text.toInt(&ok);
+
+    invariant(ok, "Invalid integer attribute value: '%s'", qUtf8Printable(value_text));
+
+    return value;
+}
+
+QString read_string_attr(const QDomElement& node, const QString& attr_name) {
     invariant(node.hasAttribute(attr_name), "Node is missing attribute '%s'", qUtf8Printable(attr_name));
 
-    QString value = node.attribute(attr_name);
-    bool ok = false;
-    int int_value = value.toInt(&ok);
+    return node.attribute(attr_name);
+}
 
-    invariant(ok, "Invalid integer attribute value: '%s'", qUtf8Printable(value));
+QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name) {
+    QString value_text = read_string_attr(node, attr_name);
 
-    return int_value;
+    QDateTime value = QDateTime::fromString(value_text, Qt::ISODate);
+    invariant(value.isValid(), "Invalid ISO datetime attribute value: '%s'", qUtf8Printable(value_text));
+
+    return value;
 }
 
 }}}
