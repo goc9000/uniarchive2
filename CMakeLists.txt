@@ -63,6 +63,8 @@ set(SOURCE_FILES
         src/intermediate_format/subjects/ApparentSubject.h
         src/intermediate_format/subjects/SubjectGivenAsAccount.cpp
         src/intermediate_format/subjects/SubjectGivenAsAccount.h
+        src/intermediate_format/subjects/SubjectGivenAsScreenName.cpp
+        src/intermediate_format/subjects/SubjectGivenAsScreenName.h
         src/intermediate_format/ApparentTime.cpp
         src/intermediate_format/ApparentTime.h
         src/intermediate_format/IntermediateFormatConversation.cpp
