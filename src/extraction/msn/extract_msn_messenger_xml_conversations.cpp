@@ -33,6 +33,7 @@
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::msn;
 
@@ -52,6 +53,12 @@ unique_ptr<IntermediateFormatEvent> parse_message_event(
     const ApparentTime& event_time,
     unsigned int event_index
 );
+unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
+    const QDomElement& event_element,
+    bool is_response,
+    const ApparentTime& event_time,
+    unsigned int event_index
+);
 ApparentTime parse_event_time(const QDomElement& event_element);
 unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
 IntermediateFormatMessageContent parse_event_text(const QDomElement& event_element);
@@ -62,6 +69,8 @@ QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
 QString read_string_attr(const QDomElement& node, const QString& attr_name);
 QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name);
+QString xml_to_string(const QDomNode& node);
+QByteArray xml_to_raw_data(const QDomNode& node);
 
 vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(const QString &filename) {
     vector<IntermediateFormatConversation> conversations;
@@ -164,14 +173,13 @@ unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element
 
     if (event_element.tagName() == "Message") {
         return parse_message_event(event_element, event_time, event_index);
+    } else if (event_element.tagName() == "Invitation") {
+        return parse_invitation_or_response_event(event_element, false, event_time, event_index);
+    } else if (event_element.tagName() == "InvitationResponse") {
+        return parse_invitation_or_response_event(event_element, true, event_time, event_index);
     }
 
-    QByteArray raw_data;
-    QTextStream stream(&raw_data);
-
-    event_element.save(stream, 0);
-
-    return make_unique<IFUninterpretedEvent>(event_time, event_index, raw_data);
+    invariant_violation("Can't handle MSN event node of type %s", qUtf8Printable(event_element.tagName()));
 }
 
 ApparentTime parse_event_time(const QDomElement& event_element) {
@@ -233,6 +241,15 @@ unique_ptr<IntermediateFormatEvent> parse_message_event(
     static_cast<IFMessageEvent*>(event.get())->receiver = parse_event_actor(event_element, "To");
 
     return event;
+}
+
+unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
+    const QDomElement& event_element,
+    bool is_response,
+    const ApparentTime& event_time,
+    unsigned int event_index
+) {
+    return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
 }
 
 QDomDocument load_xml_file(const QString& filename) {
@@ -305,6 +322,24 @@ QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name) 
     invariant(value.isValid(), "Invalid ISO datetime attribute value: '%s'", qUtf8Printable(value_text));
 
     return value;
+}
+
+QString xml_to_string(const QDomNode& node) {
+    QString text;
+    QTextStream stream(&text);
+
+    node.save(stream, 0);
+
+    return text;
+}
+
+QByteArray xml_to_raw_data(const QDomNode& node) {
+    QByteArray raw_data;
+    QTextStream stream(&raw_data);
+
+    node.save(stream, 0);
+
+    return raw_data;
 }
 
 }}}
