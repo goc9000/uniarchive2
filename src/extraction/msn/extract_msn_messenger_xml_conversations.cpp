@@ -20,9 +20,13 @@
 #include <QIODevice>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
+#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/msn/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
@@ -43,7 +47,15 @@ IntermediateFormatConversation extract_conversation_for_session(
     unsigned int conversation_offset_in_file
 );
 unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index);
+unique_ptr<IntermediateFormatEvent> parse_message_event(
+    const QDomElement& event_element,
+    const ApparentTime& event_time,
+    unsigned int event_index
+);
 ApparentTime parse_event_time(const QDomElement& event_element);
+unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
+IntermediateFormatMessageContent parse_event_text(const QDomElement& event_element);
+
 QDomDocument load_xml_file(const QString& filename);
 QDomElement child_elem(const QDomElement& node, const QString& child_name);
 QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
@@ -150,6 +162,10 @@ IntermediateFormatConversation extract_conversation_for_session(
 unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index) {
     ApparentTime event_time = parse_event_time(event_element);
 
+    if (event_element.tagName() == "Message") {
+        return parse_message_event(event_element, event_time, event_index);
+    }
+
     QByteArray raw_data;
     QTextStream stream(&raw_data);
 
@@ -180,6 +196,43 @@ ApparentTime parse_event_time(const QDomElement& event_element) {
     absolute_time = absolute_time.toOffsetFromUtc(900 * offsetQuarters);
 
     return ApparentTime(absolute_time);
+}
+
+unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name) {
+    auto actor_element = child_elem(event_element, node_name);
+    auto user_element = only_child_elem(actor_element, "User");
+
+    return make_unique<SubjectGivenAsScreenName>(read_string_attr(user_element, "FriendlyName"));
+}
+
+IntermediateFormatMessageContent parse_event_text(const QDomElement& event_element) {
+    IntermediateFormatMessageContent content;
+
+    auto text_element = child_elem(event_element, "Text");
+    invariant(text_element.firstChildElement().isNull(), "Not expecting <Text> node to have sub-elements");
+
+    if (text_element.hasAttribute("Style")) {
+        content.items.push_back(make_unique<CSSStyleTag>(read_string_attr(text_element, "Style")));
+    }
+    content.items.push_back(make_unique<TextSection>(text_element.text()));
+
+    return content;
+}
+
+unique_ptr<IntermediateFormatEvent> parse_message_event(
+    const QDomElement& event_element,
+    const ApparentTime& event_time,
+    unsigned int event_index
+) {
+    unique_ptr<IntermediateFormatEvent> event = make_unique<IFMessageEvent>(
+        event_time,
+        event_index,
+        parse_event_actor(event_element, "From"),
+        parse_event_text(event_element)
+    );
+    static_cast<IFMessageEvent*>(event.get())->receiver = parse_event_actor(event_element, "To");
+
+    return event;
 }
 
 QDomDocument load_xml_file(const QString& filename) {
