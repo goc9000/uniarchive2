@@ -24,6 +24,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/ANSIResetTag.h
         src/intermediate_format/content/BoldTag.cpp
         src/intermediate_format/content/BoldTag.h
+        src/intermediate_format/content/CSSStyleTag.cpp
+        src/intermediate_format/content/CSSStyleTag.h
         src/intermediate_format/content/FontTag.cpp
         src/intermediate_format/content/FontTag.h
         src/intermediate_format/content/IntermediateFormatMessageContent.cpp
