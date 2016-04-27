@@ -87,6 +87,16 @@ QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name) 
     return value;
 }
 
+QString read_text_only_content(const QDomElement& node) {
+    invariant(
+        node.firstChildElement().isNull(),
+        "Not expecting <%s> node to have sub-elements",
+        qUtf8Printable(node.tagName())
+    );
+
+    return node.text();
+}
+
 QString xml_to_string(const QDomNode& node) {
     QString text;
     QTextStream stream(&text);

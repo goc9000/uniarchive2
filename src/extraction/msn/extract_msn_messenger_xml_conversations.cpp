@@ -55,9 +55,9 @@ unique_ptr<IntermediateFormatEvent> parse_message_event(
 );
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
     const QDomElement& event_element,
-    bool is_response,
     const ApparentTime& event_time,
-    unsigned int event_index
+    unsigned int event_index,
+    bool is_response
 );
 ApparentTime parse_event_time(const QDomElement& event_element);
 unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
@@ -165,9 +165,9 @@ unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element
     if (event_element.tagName() == "Message") {
         return parse_message_event(event_element, event_time, event_index);
     } else if (event_element.tagName() == "Invitation") {
-        return parse_invitation_or_response_event(event_element, false, event_time, event_index);
+        return parse_invitation_or_response_event(event_element, event_time, event_index, false);
     } else if (event_element.tagName() == "InvitationResponse") {
-        return parse_invitation_or_response_event(event_element, true, event_time, event_index);
+        return parse_invitation_or_response_event(event_element, event_time, event_index, true);
     }
 
     invariant_violation("Can't handle MSN event node of type %s", qUtf8Printable(event_element.tagName()));
@@ -208,12 +208,11 @@ IntermediateFormatMessageContent parse_event_text(const QDomElement& event_eleme
     IntermediateFormatMessageContent content;
 
     auto text_element = child_elem(event_element, "Text");
-    invariant(text_element.firstChildElement().isNull(), "Not expecting <Text> node to have sub-elements");
-
     if (text_element.hasAttribute("Style")) {
         content.items.push_back(make_unique<CSSStyleTag>(read_string_attr(text_element, "Style")));
     }
-    content.items.push_back(make_unique<TextSection>(text_element.text()));
+
+    content.items.push_back(make_unique<TextSection>(read_text_only_content(text_element)));
 
     return content;
 }
@@ -236,9 +235,9 @@ unique_ptr<IntermediateFormatEvent> parse_message_event(
 
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
     const QDomElement& event_element,
-    bool is_response,
     const ApparentTime& event_time,
-    unsigned int event_index
+    unsigned int event_index,
+    bool is_response
 ) {
     return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
 }

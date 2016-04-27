@@ -25,6 +25,7 @@ QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
 QString read_string_attr(const QDomElement& node, const QString& attr_name);
 QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name);
+QString read_text_only_content(const QDomElement& node);
 QString xml_to_string(const QDomNode& node);
 QByteArray xml_to_raw_data(const QDomNode& node);
 
