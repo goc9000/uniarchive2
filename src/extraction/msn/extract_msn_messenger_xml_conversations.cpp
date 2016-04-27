@@ -16,13 +16,17 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QRegularExpression>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/IFOfferFileEvent.h"
+#include "intermediate_format/events/IFReceiveFileEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
+#include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/msn/account_name.h"
@@ -58,6 +62,15 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
     const ApparentTime& event_time,
     unsigned int event_index,
     bool is_response
+);
+unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
+    const QDomElement& event_element,
+    const ApparentTime& event_time,
+    unsigned int event_index,
+    bool is_response,
+    unique_ptr<ApparentSubject> subject,
+    const QString& text,
+    const QString& filename
 );
 ApparentTime parse_event_time(const QDomElement& event_element);
 unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
@@ -239,7 +252,52 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
     unsigned int event_index,
     bool is_response
 ) {
+    unique_ptr<ApparentSubject> subject = parse_event_actor(event_element, "From");
+    QString text = read_text_only_content(child_elem(event_element, "Text"));
+
+    QDomElement file_element = event_element.firstChildElement("File");
+    if (!file_element.isNull()) {
+        QString filename = read_text_only_content(file_element);
+        return parse_invitation_or_response_event_with_file(
+            event_element, event_time, event_index, is_response, move(subject), text, filename
+        );
+    }
+
     return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
+}
+
+unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
+    const QDomElement& event_element,
+    const ApparentTime& event_time,
+    unsigned int event_index,
+    bool is_response,
+    unique_ptr<ApparentSubject> subject,
+    const QString& text,
+    const QString& filename
+) {
+    static QRegularExpression pat_transfer_complete("^Transfer of .* is complete[.]$");
+
+    if (!is_response) {
+        if (text.contains(" sends ")) {
+            return make_unique<IFOfferFileEvent>(event_time, event_index, move(subject), filename);
+        }
+    } else {
+        if (text.contains("You have successfully received ")) {
+            unique_ptr<IntermediateFormatEvent> event = make_unique<IFReceiveFileEvent>(
+                event_time,
+                event_index,
+                make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+                filename
+            );
+            static_cast<IFReceiveFileEvent*>(event.get())->sender = move(subject);
+
+            return event;
+        } else if (pat_transfer_complete.match(text).hasMatch()) {
+            return make_unique<IFReceiveFileEvent>(event_time, event_index, move(subject), filename);
+        }
+    }
+
+    invariant_violation("Unhandled file transfer event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
 }}}

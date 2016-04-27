@@ -55,6 +55,10 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFLeaveConferenceEvent.h
         src/intermediate_format/events/IFMessageEvent.cpp
         src/intermediate_format/events/IFMessageEvent.h
+        src/intermediate_format/events/IFOfferFileEvent.cpp
+        src/intermediate_format/events/IFOfferFileEvent.h
+        src/intermediate_format/events/IFReceiveFileEvent.cpp
+        src/intermediate_format/events/IFReceiveFileEvent.h
         src/intermediate_format/events/IFStartConversationEvent.cpp
         src/intermediate_format/events/IFStartConversationEvent.h
         src/intermediate_format/events/IFUninterpretedEvent.cpp
@@ -63,6 +67,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IntermediateFormatEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp
         src/intermediate_format/subjects/ApparentSubject.h
+        src/intermediate_format/subjects/ImplicitSubject.cpp
+        src/intermediate_format/subjects/ImplicitSubject.h
         src/intermediate_format/subjects/SubjectGivenAsAccount.cpp
         src/intermediate_format/subjects/SubjectGivenAsAccount.h
         src/intermediate_format/subjects/SubjectGivenAsScreenName.cpp
