@@ -1,5 +1,5 @@
-Yahoo Messenger Archive Format Research
-=======================================
+Archive Format Research: Yahoo Messenger (.DAT) 
+===============================================
 
 
 Filename Format
