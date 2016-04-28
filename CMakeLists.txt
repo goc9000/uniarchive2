@@ -47,6 +47,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooAltTag.h
         src/intermediate_format/content/YahooFadeTag.cpp
         src/intermediate_format/content/YahooFadeTag.h
+        src/intermediate_format/events/IFAnswerCallEvent.cpp
+        src/intermediate_format/events/IFAnswerCallEvent.h
         src/intermediate_format/events/IFDeclineConferenceEvent.cpp
         src/intermediate_format/events/IFDeclineConferenceEvent.h
         src/intermediate_format/events/IFJoinConferenceEvent.cpp
@@ -55,6 +57,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFLeaveConferenceEvent.h
         src/intermediate_format/events/IFMessageEvent.cpp
         src/intermediate_format/events/IFMessageEvent.h
+        src/intermediate_format/events/IFOfferCallEvent.cpp
+        src/intermediate_format/events/IFOfferCallEvent.h
         src/intermediate_format/events/IFOfferFileEvent.cpp
         src/intermediate_format/events/IFOfferFileEvent.h
         src/intermediate_format/events/IFReceiveFileEvent.cpp

@@ -24,8 +24,9 @@
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFOfferFileEvent.h"
 #include "intermediate_format/events/IFReceiveFileEvent.h"
+#include "intermediate_format/events/IFOfferCallEvent.h"
+#include "intermediate_format/events/IFAnswerCallEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
-#include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -71,6 +72,15 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file
     unique_ptr<ApparentSubject> subject,
     const QString& text,
     const QString& filename
+);
+unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_application(
+    const QDomElement& event_element,
+    const ApparentTime& event_time,
+    unsigned int event_index,
+    bool is_response,
+    unique_ptr<ApparentSubject> subject,
+    const QString& text,
+    const QString& application
 );
 ApparentTime parse_event_time(const QDomElement& event_element);
 unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
@@ -262,8 +272,15 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
             event_element, event_time, event_index, is_response, move(subject), text, filename
         );
     }
+    QDomElement app_element = event_element.firstChildElement("Application");
+    if (!app_element.isNull()) {
+        QString application = read_text_only_content(app_element);
+        return parse_invitation_or_response_event_with_application(
+            event_element, event_time, event_index, is_response, move(subject), text, application
+        );
+    }
 
-    return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
+    invariant_violation("Unhandled invitation event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
@@ -298,6 +315,35 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file
     }
 
     invariant_violation("Unhandled file transfer event: %s", qUtf8Printable(xml_to_string(event_element)));
+}
+
+unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_application(
+    const QDomElement& event_element,
+    const ApparentTime& event_time,
+    unsigned int event_index,
+    bool is_response,
+    unique_ptr<ApparentSubject> subject,
+    const QString& text,
+    const QString& application
+) {
+    if (!is_response) {
+        if (text.contains(" is calling you") && (application == "a Computer Call")) {
+            return make_unique<IFOfferCallEvent>(event_time, event_index, move(subject));
+        }
+    } else {
+        if (text.contains("You have answered") && (application == "a Computer Call")) {
+            unique_ptr<IntermediateFormatEvent> event = make_unique<IFAnswerCallEvent>(
+                event_time,
+                event_index,
+                make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+            );
+            static_cast<IFAnswerCallEvent*>(event.get())->caller = move(subject);
+
+            return event;
+        }
+    }
+
+    invariant_violation("Unhandled application invite event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
 }}}
