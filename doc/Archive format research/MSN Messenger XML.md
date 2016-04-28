@@ -64,7 +64,7 @@ File Format
 
 ### Anomalies Observed ###
 
-- The `LastSessionID` is not reliable, I have observed files containing seessions with higher numbers than specified
+- The `LastSessionID` is not reliable, I have observed files containing sessions with higher numbers than specified
 
 
 General Format of an Event Node
@@ -82,15 +82,90 @@ General Format of an Event Node
 - `DateTime`, conversely, expresses the absolute UTC time. It is expressed in the standard XML/ISO 8601 date format as described here: http://books.xmlschemata.org/relaxng/ch19-77049.html . The `nnn` here stand for milliseconds and the `Z` signifies that the time is UTC.
 - The `FriendlyName` is the screen name of the user (not the account, which complicates matters)
   - No other form of specifying the user has been observed
-  - The exact significance depends on the event (it is not always the sender)
+- The exact significance of `From` depends on the event (it is not necessarily the person to which the event applies, nor always the sender)
 
-----------------
 
-WORK IN PROGRESS
+Specific Events
+---------------
 
-----------------
+### Message ###
+
+```xml
+<Message Date="dd/mm/yyyy" Time="hh:mm:dd" DateTime="yyyy-mm-ddThh:mm:ss.nnnZ" SessionID="...">
+  <From><User FriendlyName="Sender Name"/></From>
+  <To><User FriendlyName="Receiver Name"/></To>
+  <Text Style="color:#545454; ">Hello</Text>
+</Message>
+```
+
+- `From` and `To` are always present
+- There seems to never be any additional formatting (via tags) within the `Text`
+- Emoticons are represented via their equivalent text
+
+### Offering a File ###
+
+```xml
+<Invitation Date="dd/mm/yyyy" Time="hh:mm:dd" DateTime="yyyy-mm-ddThh:mm:ss.nnnZ" SessionID="...">
+  <From><User FriendlyName="Sender Name"/></From>
+  <File>filename.ext</File>
+  <Text Style="...">Sender Name sends filename.ext</Text>
+</Invitation>
+```
+
+- `From` always represents the party offering the file
+- This format is used both when you or the other party send a file
+
+### Receive a File From the Other Party ###
+
+```xml
+<InvitationResponse Date="dd/mm/yyyy" Time="hh:mm:dd" DateTime="yyyy-mm-ddThh:mm:ss.nnnZ" SessionID="...">
+  <From><User FriendlyName="Sender Name"/></From>
+  <File>C:\local\path\filename.ext</File>
+  <Text Style="...">You have successfully received C:\local\path\filename.ext from Sender Name.</Text>
+</InvitationResponse>
+```
+
+- `From` still represents the party offering the file (the receiver is implicitly your own account)
+- Note that the filename now also includes the local path
+
+### Other Party Receives a File From You ###
+
+```xml
+<InvitationResponse Date="dd/mm/yyyy" Time="hh:mm:dd" DateTime="yyyy-mm-ddThh:mm:ss.nnnZ" SessionID="...">
+  <From><User FriendlyName="Receiver Name"/></From>
+  <File>C:\local\path\filename.ext</File>
+  <Text Style="...">Transfer of "filename.ext" is complete.</Text>
+</InvitationResponse>
+```
+
+- `From` now represents the receiver
+- The filename under `<File>` includes the local path, but the text doesn't
+
+### Other Party Offers a Call ###
+
+```xml
+<Invitation Date="dd/mm/yyyy" Time="hh:mm:dd" DateTime="yyyy-mm-ddThh:mm:ss.nnnZ" SessionID="...">
+  <From><User FriendlyName="Caller Name"/></From>
+  <Application>a Computer Call</Applicaiton>
+  <Text Style="...">Caller Name is calling you. Answer (Alt+C) Decline (Alt+D)</Text>
+</Invitation>
+```
+
+### You Answer a Call ###
+
+```xml
+<InvitationResponse Date="dd/mm/yyyy" Time="hh:mm:dd" DateTime="yyyy-mm-ddThh:mm:ss.nnnZ" SessionID="...">
+  <From><User FriendlyName="Caller Name"/></From>
+  <Application>a Computer Call</Applicaiton>
+  <Text Style="...">You have answered the call. Hang up (Alt+Q).</Text>
+</InvitationResponse>
+```
+
+- Note that `From` is still the caller
+
 
 Open Questions
 --------------
 
 - What do conferences look like?
+- Format for other events (file transfer failures, declines, own account offering a call etc.)
