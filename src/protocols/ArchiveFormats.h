@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace protocols {
 
 enum class ArchiveFormats {
     INVALID = 0,
-    YAHOO_MESSENGER,
+    YAHOO_MESSENGER_DAT,
     MSN_MESSENGER_XML,
 };
 

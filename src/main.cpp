@@ -5,7 +5,7 @@
 #include <QString>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
-#include "extraction/yahoo/extract_yahoo_messenger_conversations.h"
+#include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 
 using namespace std;
 using namespace uniarchive2::extraction::msn;
@@ -18,7 +18,7 @@ int main() {
 
     QDirIterator yahoo_files(QT_STRINGIFY(TEST_DATA_DIR) "/yahoo", QStringList() << "*.dat", QDir::Files, QDirIterator::Subdirectories);
     while (yahoo_files.hasNext()) {
-        auto file_convos = extract_yahoo_messenger_conversations(yahoo_files.next());
+        auto file_convos = extract_yahoo_messenger_dat_conversations(yahoo_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
 

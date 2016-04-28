@@ -8,8 +8,8 @@ find_package(Qt5 REQUIRED COMPONENTS Core Xml)
 set(SOURCE_FILES
         src/extraction/msn/extract_msn_messenger_xml_conversations.h
         src/extraction/msn/extract_msn_messenger_xml_conversations.cpp
-        src/extraction/yahoo/extract_yahoo_messenger_conversations.cpp
-        src/extraction/yahoo/extract_yahoo_messenger_conversations.h
+        src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp
+        src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.h
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp

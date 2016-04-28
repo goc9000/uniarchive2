@@ -1,5 +1,5 @@
 /**
- * extraction/yahoo/extract_yahoo_messenger_conversations.cpp
+ * extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -17,7 +17,7 @@
 
 #include "graphics/Color.h"
 #include "graphics/ANSIColors.h"
-#include "extraction/yahoo/extract_yahoo_messenger_conversations.h"
+#include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/content/IntermediateFormatMessageContent.h"
@@ -83,7 +83,7 @@ unique_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& at
 unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text);
 
 
-vector<IntermediateFormatConversation> extract_yahoo_messenger_conversations(const QString& filename) {
+vector<IntermediateFormatConversation> extract_yahoo_messenger_dat_conversations(const QString& filename) {
     vector<IntermediateFormatConversation> conversations;
     IntermediateFormatConversation prototype = init_prototype(filename);
     IntermediateFormatConversation conversation = init_conversation(prototype, 1, 0);
@@ -127,7 +127,7 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER, IMProtocols::YAHOO);
+    IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER_DAT, IMProtocols::YAHOO);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
@@ -144,7 +144,7 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
     } else if (top_folder == "Conferences") {
         conversation.isConference = true;
     } else {
-        invariant_violation("Yahoo Messenger archive file must be in a 'Messages' or 'Conferences' folder");
+        invariant_violation("Yahoo Messenger DAT archive file must be in a 'Messages' or 'Conferences' folder");
     }
 
     return conversation;
