@@ -1,5 +1,5 @@
 /**
- * extraction/yahoo/extract_msn_messenger_xml_conversations.cpp
+ * extraction/msn/extract_msn_messenger_xml_conversations.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -91,8 +91,7 @@ vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(c
     IntermediateFormatConversation prototype = init_prototype(filename);
 
     QDomDocument xml = load_xml_file(filename);
-    QDomElement root_element = xml.documentElement();
-    invariant(root_element.tagName() == "Log", "MSN archive root node should be <Log>");
+    QDomElement root_element = get_dom_root(xml, "Log");
 
     int first_session_id = read_int_attr(root_element, "FirstSessionID");
     int last_session_id = read_int_attr(root_element, "LastSessionID");

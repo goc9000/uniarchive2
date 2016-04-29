@@ -38,6 +38,18 @@ QDomDocument load_xml_file(const QString& filename) {
     return xml;
 }
 
+QDomElement get_dom_root(const QDomDocument& document, const QString& expected_root_name) {
+    QDomElement root_node = document.documentElement();
+    invariant(
+        root_node.tagName() == expected_root_name,
+        "Expected root node to be <%s>, found <%s>",
+        qUtf8Printable(expected_root_name),
+        qUtf8Printable(root_node.tagName())
+    );
+
+    return root_node;
+}
+
 QDomElement child_elem(const QDomElement& node, const QString& child_name) {
     QDomElement child_node = node.firstChildElement(child_name);
     invariant(

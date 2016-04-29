@@ -20,6 +20,7 @@
 namespace uniarchive2 { namespace utils { namespace xml {
 
 QDomDocument load_xml_file(const QString& filename);
+QDomElement get_dom_root(const QDomDocument& document, const QString& expected_root_name);
 QDomElement child_elem(const QDomElement& node, const QString& child_name);
 QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
 int read_int_attr(const QDomElement& node, const QString& attr_name);
