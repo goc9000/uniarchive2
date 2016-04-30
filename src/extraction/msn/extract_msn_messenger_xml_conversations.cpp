@@ -150,7 +150,9 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
     auto remote_account = parse_optionally_encoded_msn_account(base_name);
 
     conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
-    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
+    if (remote_account.accountName != local_account.accountName) {
+        conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
+    }
 
     return conversation;
 }
