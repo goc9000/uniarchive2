@@ -19,6 +19,7 @@ enum class ArchiveFormats {
     INVALID = 0,
     YAHOO_MESSENGER_DAT,
     MSN_MESSENGER_XML,
+    FACEBOOK_DYI,
 };
 
 QDebug operator<< (QDebug stream, const ArchiveFormats& format);

@@ -22,6 +22,8 @@ QString name_for_archive_format(const ArchiveFormats& protocol) {
             return "Yahoo Messenger (DAT format)";
         case ArchiveFormats::MSN_MESSENGER_XML:
             return "MSN Messenger (XML format)";
+        case ArchiveFormats::FACEBOOK_DYI:
+            return "Facebook (DYI archive)";
     }
 }
 

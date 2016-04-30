@@ -19,6 +19,7 @@ enum class IMProtocols {
     INVALID = 0,
     YAHOO,
     MSN,
+    FACEBOOK,
 };
 
 QDebug operator<< (QDebug stream, const IMProtocols& protocol);

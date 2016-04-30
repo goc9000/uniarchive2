@@ -22,6 +22,8 @@ QString name_for_protocol(const IMProtocols& protocol) {
             return "Yahoo";
         case IMProtocols::MSN:
             return "MSN";
+        case IMProtocols::FACEBOOK:
+            return "Facebook";
     }
 }
 
