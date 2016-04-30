@@ -14,7 +14,10 @@
 #include <QRegularExpression>
 
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "protocols/facebook/account_name.h"
 #include "utils/xml/qdom_utils.h"
 #include "utils/language/invariant.h"
 #include "utils/external_libs/make_unique.hpp"
@@ -22,6 +25,7 @@
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::subjects;
+using namespace uniarchive2::protocols::facebook;
 using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
@@ -131,6 +135,21 @@ IntermediateFormatConversation extract_thread(
     );
 
     IntermediateFormatConversation conversation = IntermediateFormatConversation::fromPrototype(prototype);
+
+    auto participants_text_node = thread_element.firstChild();
+    invariant(
+        participants_text_node.isText(),
+        "Expected thread node to start with text listing participants"
+    );
+    foreach (IMM(QString) name, participants_text_node.nodeValue().split(", ")) {
+        if (is_valid_facebook_account_name(name)) {
+            conversation.declaredPeers.push_back(
+                make_unique<SubjectGivenAsAccount>(parse_facebook_account(name))
+            );
+        } else if (name != static_cast<SubjectGivenAsScreenName*>(prototype.identity.get())->screenName) {
+            conversation.declaredPeers.push_back(make_unique<SubjectGivenAsScreenName>(name));
+        }
+    }
 
     return conversation;
 }
