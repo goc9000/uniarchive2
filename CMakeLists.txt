@@ -99,6 +99,7 @@ set(SOURCE_FILES
         src/utils/html/parse_html_tag_lenient.h
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
+        src/utils/language/shortcuts.h
         src/utils/text/decoding.cpp
         src/utils/text/decoding.h
         src/utils/xml/qdom_utils.cpp
