@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "intermediate_format/ApparentTime.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
@@ -23,7 +24,7 @@ public:
     ApparentTime timestamp;
     unsigned int indexInConversation;
 
-    IntermediateFormatEvent(const ApparentTime& timestamp, unsigned int index);
+    IntermediateFormatEvent(IMM(ApparentTime) timestamp, unsigned int index);
 
     virtual QString eventName() const = 0;
     void writeToDebugStream(QDebug stream) const;

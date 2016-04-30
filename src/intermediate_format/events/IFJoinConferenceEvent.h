@@ -20,6 +20,7 @@
 #include "intermediate_format/content/IntermediateFormatMessageContent.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format::content;
@@ -32,7 +33,7 @@ public:
     unique_ptr<ApparentSubject> subject;
     optional<IntermediateFormatMessageContent> message;
 
-    IFJoinConferenceEvent(const ApparentTime& timestamp, unsigned int index, unique_ptr<ApparentSubject> subject);
+    IFJoinConferenceEvent(IMM(ApparentTime) timestamp, unsigned int index, unique_ptr<ApparentSubject> subject);
 
     virtual QString eventName() const;
 

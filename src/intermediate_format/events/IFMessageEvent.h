@@ -20,6 +20,7 @@
 #include "intermediate_format/content/IntermediateFormatMessageContent.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format::content;
@@ -35,7 +36,7 @@ public:
     bool isOffline;
 
     IFMessageEvent(
-        const ApparentTime& timestamp,
+        IMM(ApparentTime) timestamp,
         unsigned int index,
         unique_ptr<ApparentSubject> sender,
         IntermediateFormatMessageContent&& content

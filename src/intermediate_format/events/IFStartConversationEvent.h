@@ -17,6 +17,7 @@
 
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format::subjects;
@@ -27,8 +28,8 @@ struct IFStartConversationEvent : IntermediateFormatEvent {
 public:
     unique_ptr<ApparentSubject> initiator;
 
-    IFStartConversationEvent(const ApparentTime& timestamp, unsigned int index);
-    IFStartConversationEvent(const ApparentTime& timestamp, unsigned int index, unique_ptr<ApparentSubject> initiator);
+    IFStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    IFStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index, unique_ptr<ApparentSubject> initiator);
 
     virtual QString eventName() const;
 

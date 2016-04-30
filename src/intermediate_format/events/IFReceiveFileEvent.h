@@ -18,6 +18,7 @@
 
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format::subjects;
@@ -31,10 +32,10 @@ public:
     QString filename;
 
     IFReceiveFileEvent(
-        const ApparentTime& timestamp,
+        IMM(ApparentTime) timestamp,
         unsigned int index,
         unique_ptr<ApparentSubject> receiver,
-        const QString& filename
+        IMM(QString) filename
     );
 
     virtual QString eventName() const;

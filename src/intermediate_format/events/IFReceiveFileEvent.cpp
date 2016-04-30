@@ -15,10 +15,10 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFReceiveFileEvent::IFReceiveFileEvent(
-    const ApparentTime& timestamp,
+    IMM(ApparentTime) timestamp,
     unsigned int index,
     unique_ptr<ApparentSubject> receiver,
-    const QString& filename
+    IMM(QString) filename
 ): IntermediateFormatEvent(timestamp, index), receiver(move(receiver)), filename(filename) {
 }
 

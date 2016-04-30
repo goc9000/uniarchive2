@@ -15,7 +15,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFAnswerCallEvent::IFAnswerCallEvent(
-    const ApparentTime& timestamp,
+    IMM(ApparentTime) timestamp,
     unsigned int index,
     unique_ptr<ApparentSubject> receiver
 ): IntermediateFormatEvent(timestamp, index), receiver(move(receiver)) {

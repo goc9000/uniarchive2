@@ -17,6 +17,7 @@
 #include <QByteArray>
 
 #include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ struct IFUninterpretedEvent : IntermediateFormatEvent {
 public:
     QByteArray rawData;
 
-    IFUninterpretedEvent(const ApparentTime& timestamp, unsigned int index, const QByteArray& raw_data);
+    IFUninterpretedEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QByteArray) raw_data);
 
     virtual QString eventName() const;
 

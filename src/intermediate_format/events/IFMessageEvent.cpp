@@ -15,7 +15,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFMessageEvent::IFMessageEvent(
-    const ApparentTime& timestamp,
+    IMM(ApparentTime) timestamp,
     unsigned int index,
     unique_ptr<ApparentSubject> sender,
     IntermediateFormatMessageContent&& content
