@@ -17,8 +17,8 @@ using namespace uniarchive2::protocols::yahoo;
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 ExtractYahooProtocolEventsIterator::ExtractYahooProtocolEventsIterator(
-    const QByteArray &binary_data,
-    const QString &local_account_name
+    IMM(QByteArray) binary_data,
+    IMM(QString) local_account_name
 ) : reader(binary_data) {
     assert_valid_yahoo_account_name(local_account_name);
     this->local_account_name = local_account_name.toUtf8();

@@ -23,6 +23,7 @@
 #include "protocols/ArchiveFormats.h"
 #include "protocols/IMProtocols.h"
 #include "utils/external_libs/optional.hpp"
+#include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
@@ -52,10 +53,10 @@ public:
     IntermediateFormatConversation();
     IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol);
 
-    static IntermediateFormatConversation fromPrototype(const IntermediateFormatConversation& prototype);
+    static IntermediateFormatConversation fromPrototype(IMM(IntermediateFormatConversation) prototype);
 };
 
-QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo);
+QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo);
 
 }}
 

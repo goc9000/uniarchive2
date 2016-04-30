@@ -14,10 +14,12 @@
 #include <QMap>
 #include <QString>
 
+#include "utils/language/shortcuts.h"
+
 namespace uniarchive2 { namespace utils { namespace html {
 
 bool parse_html_tag_lenient(
-    const QString& tag_text,
+    IMM(QString) tag_text,
     QString& out_tag_name,
     bool& out_open,
     bool& out_closed,

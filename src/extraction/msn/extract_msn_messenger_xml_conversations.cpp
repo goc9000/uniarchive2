@@ -44,49 +44,49 @@ using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
-IntermediateFormatConversation init_prototype(const QString& filename);
+IntermediateFormatConversation init_prototype(IMM(QString) filename);
 IntermediateFormatConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int session_id,
-    const IntermediateFormatConversation& prototype,
+    IMM(IntermediateFormatConversation) prototype,
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 );
-unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index);
+unique_ptr<IntermediateFormatEvent> parse_event(IMM(QDomElement) event_element, unsigned int event_index);
 unique_ptr<IntermediateFormatEvent> parse_message_event(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index
 );
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response
 );
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
     unique_ptr<ApparentSubject> subject,
-    const QString& text,
-    const QString& filename
+    IMM(QString) text,
+    IMM(QString) filename
 );
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_application(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
     unique_ptr<ApparentSubject> subject,
-    const QString& text,
-    const QString& application
+    IMM(QString) text,
+    IMM(QString) application
 );
-ApparentTime parse_event_time(const QDomElement& event_element);
-unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name);
-IntermediateFormatMessageContent parse_event_text(const QDomElement& event_element);
+ApparentTime parse_event_time(IMM(QDomElement) event_element);
+unique_ptr<ApparentSubject> parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
+IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element);
 
-vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(const QString &filename) {
+vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
     vector<IntermediateFormatConversation> conversations;
     IntermediateFormatConversation prototype = init_prototype(filename);
 
@@ -117,7 +117,7 @@ vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(c
     return conversations;
 }
 
-IntermediateFormatConversation init_prototype(const QString& filename) {
+IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -160,7 +160,7 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
 IntermediateFormatConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int expected_session_id,
-    const IntermediateFormatConversation& prototype,
+    IMM(IntermediateFormatConversation) prototype,
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 ) {
@@ -183,7 +183,7 @@ IntermediateFormatConversation extract_conversation_for_session(
     return conversation;
 }
 
-unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element, unsigned int event_index) {
+unique_ptr<IntermediateFormatEvent> parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
     ApparentTime event_time = parse_event_time(event_element);
 
     if (event_element.tagName() == "Message") {
@@ -197,7 +197,7 @@ unique_ptr<IntermediateFormatEvent> parse_event(const QDomElement& event_element
     invariant_violation("Can't handle MSN event node of type %s", qUtf8Printable(event_element.tagName()));
 }
 
-ApparentTime parse_event_time(const QDomElement& event_element) {
+ApparentTime parse_event_time(IMM(QDomElement) event_element) {
     QDateTime absolute_time = read_iso_date_attr(event_element, "DateTime");
     invariant(absolute_time.timeSpec() == Qt::UTC, "Expected MSN message datetime to be UTC");
 
@@ -221,14 +221,14 @@ ApparentTime parse_event_time(const QDomElement& event_element) {
     return ApparentTime(absolute_time);
 }
 
-unique_ptr<ApparentSubject> parse_event_actor(const QDomElement& event_element, const QString& node_name) {
+unique_ptr<ApparentSubject> parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name) {
     auto actor_element = child_elem(event_element, node_name);
     auto user_element = only_child_elem(actor_element, "User");
 
     return make_unique<SubjectGivenAsScreenName>(read_string_attr(user_element, "FriendlyName"));
 }
 
-IntermediateFormatMessageContent parse_event_text(const QDomElement& event_element) {
+IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element) {
     IntermediateFormatMessageContent content;
 
     auto text_element = child_elem(event_element, "Text");
@@ -242,8 +242,8 @@ IntermediateFormatMessageContent parse_event_text(const QDomElement& event_eleme
 }
 
 unique_ptr<IntermediateFormatEvent> parse_message_event(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index
 ) {
     unique_ptr<IntermediateFormatEvent> event = make_unique<IFMessageEvent>(
@@ -258,8 +258,8 @@ unique_ptr<IntermediateFormatEvent> parse_message_event(
 }
 
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response
 ) {
@@ -285,13 +285,13 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
 }
 
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
     unique_ptr<ApparentSubject> subject,
-    const QString& text,
-    const QString& filename
+    IMM(QString) text,
+    IMM(QString) filename
 ) {
     static QRegularExpression pat_transfer_complete("^Transfer of .* is complete[.]$");
 
@@ -319,13 +319,13 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file
 }
 
 unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_application(
-    const QDomElement& event_element,
-    const ApparentTime& event_time,
+    IMM(QDomElement) event_element,
+    IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
     unique_ptr<ApparentSubject> subject,
-    const QString& text,
-    const QString& application
+    IMM(QString) text,
+    IMM(QString) application
 ) {
     if (!is_response) {
         if (text.contains(" is calling you") && (application == "a Computer Call")) {

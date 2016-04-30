@@ -15,7 +15,7 @@
 
 namespace uniarchive2 { namespace utils { namespace xml {
 
-QDomDocument load_xml_file(const QString& filename) {
+QDomDocument load_xml_file(IMM(QString) filename) {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         qFatal("Can't open file: %s", qUtf8Printable(filename));
@@ -38,7 +38,7 @@ QDomDocument load_xml_file(const QString& filename) {
     return xml;
 }
 
-QDomElement get_dom_root(const QDomDocument& document, const QString& expected_root_name) {
+QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_name) {
     QDomElement root_node = document.documentElement();
     invariant(
         root_node.tagName() == expected_root_name,
@@ -50,7 +50,7 @@ QDomElement get_dom_root(const QDomDocument& document, const QString& expected_r
     return root_node;
 }
 
-QDomElement child_elem(const QDomElement& node, const QString& child_name) {
+QDomElement child_elem(IMM(QDomElement) node, IMM(QString) child_name) {
     QDomElement child_node = node.firstChildElement(child_name);
     invariant(
         !child_node.isNull(),
@@ -62,7 +62,7 @@ QDomElement child_elem(const QDomElement& node, const QString& child_name) {
     return child_node;
 }
 
-QDomElement only_child_elem(const QDomElement& node, const QString& child_name) {
+QDomElement only_child_elem(IMM(QDomElement) node, IMM(QString) child_name) {
     QDomElement child_node = node.firstChildElement();
     invariant(
         (child_node.tagName() == child_name) && child_node.nextSiblingElement().isNull(),
@@ -74,7 +74,7 @@ QDomElement only_child_elem(const QDomElement& node, const QString& child_name) 
     return child_node;
 }
 
-QDomElement child_elem_with_class(const QDomElement& node, const QString& child_name, const QString& class_name) {
+QDomElement child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name, IMM(QString) class_name) {
     for (
         auto child_node = node.firstChildElement(child_name);
         !child_node.isNull();
@@ -92,7 +92,7 @@ QDomElement child_elem_with_class(const QDomElement& node, const QString& child_
     );
 }
 
-QDomElement only_child_elem_with_class(const QDomElement& node, const QString& child_name, const QString& class_name) {
+QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name, IMM(QString) class_name) {
     QDomElement found_node;
 
     for (
@@ -122,7 +122,7 @@ QDomElement only_child_elem_with_class(const QDomElement& node, const QString& c
     return found_node;
 }
 
-int read_int_attr(const QDomElement& node, const QString& attr_name) {
+int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     QString value_text = read_string_attr(node, attr_name);
     bool ok = false;
     int value = value_text.toInt(&ok);
@@ -132,13 +132,13 @@ int read_int_attr(const QDomElement& node, const QString& attr_name) {
     return value;
 }
 
-QString read_string_attr(const QDomElement& node, const QString& attr_name) {
+QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     invariant(node.hasAttribute(attr_name), "Node is missing attribute '%s'", qUtf8Printable(attr_name));
 
     return node.attribute(attr_name);
 }
 
-QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name) {
+QDateTime read_iso_date_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     QString value_text = read_string_attr(node, attr_name);
 
     QDateTime value = QDateTime::fromString(value_text, Qt::ISODate);
@@ -147,7 +147,7 @@ QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name) 
     return value;
 }
 
-QString read_text_only_content(const QDomElement& node) {
+QString read_text_only_content(IMM(QDomElement) node) {
     invariant(
         node.firstChildElement().isNull(),
         "Not expecting <%s> node to have sub-elements",
@@ -157,7 +157,7 @@ QString read_text_only_content(const QDomElement& node) {
     return node.text();
 }
 
-QString xml_to_string(const QDomNode& node) {
+QString xml_to_string(IMM(QDomNode) node) {
     QString text;
     QTextStream stream(&text);
 
@@ -166,7 +166,7 @@ QString xml_to_string(const QDomNode& node) {
     return text;
 }
 
-QByteArray xml_to_raw_data(const QDomNode& node) {
+QByteArray xml_to_raw_data(IMM(QDomNode) node) {
     QByteArray raw_data;
     QTextStream stream(&raw_data);
 

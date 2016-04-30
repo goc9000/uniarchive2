@@ -7,6 +7,7 @@
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::extraction::facebook;
@@ -36,7 +37,7 @@ int main() {
     }
 
     int limit = 50;
-    for (const auto& convo : convos) {
+    for (IMM(auto) convo : convos) {
         qDebug() << convo;
         if (!--limit) {
             break;

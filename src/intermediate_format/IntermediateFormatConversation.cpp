@@ -23,14 +23,14 @@ IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormats fo
 }
 
 IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
-    const IntermediateFormatConversation &prototype
+    IMM(IntermediateFormatConversation) prototype
 ) {
     IntermediateFormatConversation convo(prototype.originalArchiveFormat, prototype.protocol);
 
     if (prototype.identity) {
         convo.identity = prototype.identity->clone();
     }
-    for (const auto& subject : prototype.declaredPeers) {
+    for (IMM(auto) subject : prototype.declaredPeers) {
         convo.declaredPeers.push_back(subject->clone());
     }
 
@@ -43,7 +43,7 @@ IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
     return convo;
 }
 
-QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
+QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo) {
 #define N_CONTEXT_LINES 3
     QDebugStateSaver settings(stream);
     stream.nospace() << "IntermediateFormatConversation {\n";
@@ -61,7 +61,7 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
 
     stream << "\tDeclared peers: [";
     bool first = true;
-    for (const auto& account : convo.declaredPeers) {
+    for (IMM(auto) account : convo.declaredPeers) {
         if (!first) {
             stream << ", ";
         }
@@ -88,7 +88,7 @@ QDebug operator<< (QDebug stream, const IntermediateFormatConversation& convo) {
 
     stream << "\t\n";
     stream << "\t" << convo.events.size() << " events:\n";
-    for (const auto& event : convo.events) {
+    for (IMM(auto) event : convo.events) {
         if ((event->indexInConversation >= N_CONTEXT_LINES) &&
             (event->indexInConversation < convo.events.size() - N_CONTEXT_LINES)) {
             if (event->indexInConversation == N_CONTEXT_LINES) {

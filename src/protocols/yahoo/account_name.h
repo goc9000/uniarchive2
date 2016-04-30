@@ -14,12 +14,13 @@
 #include <QString>
 
 #include "protocols/FullAccountName.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols { namespace yahoo {
 
-bool is_valid_yahoo_account_name(const QString& account_name);
-void assert_valid_yahoo_account_name(const QString& account_name);
-FullAccountName parse_yahoo_account(const QString& account_name);
+bool is_valid_yahoo_account_name(IMM(QString) account_name);
+void assert_valid_yahoo_account_name(IMM(QString) account_name);
+FullAccountName parse_yahoo_account(IMM(QString) account_name);
 
 }}}
 

@@ -16,13 +16,14 @@
 #include <QString>
 
 #include "intermediate_format/IntermediateFormatConversation.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
-vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(const QString& filename);
+vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename);
 
 }}}
 

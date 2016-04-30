@@ -56,34 +56,34 @@ using namespace std;
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-IntermediateFormatConversation init_prototype(const QString& filename);
+IntermediateFormatConversation init_prototype(IMM(QString) filename);
 IntermediateFormatConversation init_conversation(
-    const IntermediateFormatConversation& prototype,
+    IMM(IntermediateFormatConversation) prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 );
 unique_ptr<IntermediateFormatEvent> convert_event(
-    const YahooProtocolEvent& proto_event,
-    const IntermediateFormatConversation& conversation
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(IntermediateFormatConversation) conversation
 );
 unique_ptr<ApparentSubject> implicit_subject(
-    const YahooProtocolEvent& proto_event,
-    const IntermediateFormatConversation& conversation
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(IntermediateFormatConversation) conversation
 );
 unique_ptr<ApparentSubject> parse_event_subject(
-    const YahooProtocolEvent& proto_event,
-    const IntermediateFormatConversation& conversation
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(IntermediateFormatConversation) conversation
 );
-IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data);
-unique_ptr<TextSection> make_text_section(const QString& text);
-unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match);
-unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code);
-unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text);
+IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data);
+unique_ptr<TextSection> make_text_section(IMM(QString) text);
+unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(IMM(QRegularExpressionMatch) match);
+unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(IMM(QString) sgr_code);
+unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(IMM(QString) tag_text);
 unique_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& attributes);
-unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text);
+unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(IMM(QString) tag_text);
 
 
-vector<IntermediateFormatConversation> extract_yahoo_messenger_dat_conversations(const QString& filename) {
+vector<IntermediateFormatConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
     vector<IntermediateFormatConversation> conversations;
     IntermediateFormatConversation prototype = init_prototype(filename);
     IntermediateFormatConversation conversation = init_conversation(prototype, 1, 0);
@@ -116,7 +116,7 @@ vector<IntermediateFormatConversation> extract_yahoo_messenger_dat_conversations
     return conversations;
 }
 
-IntermediateFormatConversation init_prototype(const QString& filename) {
+IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -151,7 +151,7 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
 }
 
 IntermediateFormatConversation init_conversation(
-    const IntermediateFormatConversation& prototype,
+    IMM(IntermediateFormatConversation) prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 ) {
@@ -163,8 +163,8 @@ IntermediateFormatConversation init_conversation(
 }
 
 unique_ptr<IntermediateFormatEvent> convert_event(
-    const YahooProtocolEvent& proto_event,
-    const IntermediateFormatConversation& conversation
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(IntermediateFormatConversation) conversation
 ) {
     unique_ptr<IntermediateFormatEvent> event;
 
@@ -250,16 +250,16 @@ unique_ptr<IntermediateFormatEvent> convert_event(
 }
 
 unique_ptr<ApparentSubject> implicit_subject(
-    const YahooProtocolEvent& proto_event,
-    const IntermediateFormatConversation& conversation
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(IntermediateFormatConversation) conversation
 ) {
     return (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
            conversation.identity->clone() : conversation.declaredPeers.front()->clone();
 }
 
 unique_ptr<ApparentSubject> parse_event_subject(
-    const YahooProtocolEvent& proto_event,
-    const IntermediateFormatConversation& conversation
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(IntermediateFormatConversation) conversation
 ) {
     if (proto_event.extra.isEmpty() || (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING)) {
         return implicit_subject(proto_event, conversation);
@@ -268,7 +268,7 @@ unique_ptr<ApparentSubject> parse_event_subject(
     return make_unique<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
-IntermediateFormatMessageContent parse_message_content(const QByteArray& text_data) {
+IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data) {
     static QRegularExpression markup_pattern(
         "\\x1B\\[(?<pseudo_ansi_seq>[^m]+)m|"\
         "(?<html_tag></?(font)\\b[^>]*>)|"\
@@ -305,13 +305,13 @@ IntermediateFormatMessageContent parse_message_content(const QByteArray& text_da
     return content;
 }
 
-unique_ptr<TextSection> make_text_section(const QString& text) {
+unique_ptr<TextSection> make_text_section(IMM(QString) text) {
     invariant(!text.contains(0x1B), "Unprocessed ANSI-like sequence in text: \"%s\"", qUtf8Printable(text));
 
     return make_unique<TextSection>(text);
 };
 
-unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegularExpressionMatch& match) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(IMM(QRegularExpressionMatch) match) {
     if (match.capturedLength("pseudo_ansi_seq")) {
         return parse_pseudo_ansi_seq(match.captured("pseudo_ansi_seq"));
     } else if (match.capturedLength("html_tag")) {
@@ -323,7 +323,7 @@ unique_ptr<IntermediateFormatMessageContentItem> parse_markup_tag(const QRegular
     invariant_violation("Tag not recognized: \"%s\"", qUtf8Printable(match.captured(0)));
 }
 
-unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QString& sgr_code) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
     static QRegularExpression pattern(
         "^(?<closed>x)?("\
         "(?<reset>0)|"\
@@ -361,7 +361,7 @@ unique_ptr<IntermediateFormatMessageContentItem> parse_pseudo_ansi_seq(const QSt
     never_reached();
 }
 
-unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& tag_text) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(IMM(QString) tag_text) {
     QString tag_name;
     bool open;
     bool closed;
@@ -386,7 +386,7 @@ unique_ptr<IntermediateFormatMessageContentItem> parse_html_tag(const QString& t
 unique_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& attributes) {
     auto tag = make_unique<FontTag>(closed);
 
-    for (const auto& key : attributes.keys()) {
+    for (IMM(auto) key : attributes.keys()) {
         QString norm_key = key.toLower();
         QString value = attributes[key].trimmed();
 
@@ -402,7 +402,7 @@ unique_ptr<FontTag> parse_font_tag(bool closed, const QMap<QString, QString>& at
     return tag;
 }
 
-unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& tag_text) {
+unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(IMM(QString) tag_text) {
 #define PAT_COLOR "#[0-9a-f]{6}"
     static QRegularExpression pattern(
         "^<(?<closed>/)?(?<tag_name>[a-z._-][a-z0-9._-]*)\\b\\s*(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$",
@@ -417,7 +417,7 @@ unique_ptr<IntermediateFormatMessageContentItem> parse_yahoo_tag(const QString& 
 
     QList<Color> colors;
     if (match.capturedLength("colors")) {
-        for (const auto& color_str : match.captured("colors").split(',')) {
+        for (IMM(auto) color_str : match.captured("colors").split(',')) {
             colors.append(Color::fromHTMLFormat(color_str));
         }
     }

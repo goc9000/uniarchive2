@@ -14,20 +14,21 @@
 #include <QString>
 
 #include "protocols/FullAccountName.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols { namespace msn {
 
-bool is_valid_msn_account_name(const QString& account_name);
-void assert_valid_msn_account_name(const QString& account_name);
-FullAccountName parse_msn_account(const QString& account_name);
+bool is_valid_msn_account_name(IMM(QString) account_name);
+void assert_valid_msn_account_name(IMM(QString) account_name);
+FullAccountName parse_msn_account(IMM(QString) account_name);
 
-bool is_likely_valid_encoded_msn_account_name(const QString& account_name);
-void assert_likely_valid_encoded_msn_account_name(const QString& account_name);
-FullAccountName parse_encoded_msn_account(const QString& account_name);
+bool is_likely_valid_encoded_msn_account_name(IMM(QString) account_name);
+void assert_likely_valid_encoded_msn_account_name(IMM(QString) account_name);
+FullAccountName parse_encoded_msn_account(IMM(QString) account_name);
 
-bool is_likely_valid_optionally_encoded_msn_account_name(const QString& account_name);
-void assert_likely_valid_optionally_encoded_msn_account_name(const QString& account_name);
-FullAccountName parse_optionally_encoded_msn_account(const QString& account_name);
+bool is_likely_valid_optionally_encoded_msn_account_name(IMM(QString) account_name);
+void assert_likely_valid_optionally_encoded_msn_account_name(IMM(QString) account_name);
+FullAccountName parse_optionally_encoded_msn_account(IMM(QString) account_name);
 
 }}}
 

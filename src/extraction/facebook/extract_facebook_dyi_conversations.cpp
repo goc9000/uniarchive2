@@ -26,19 +26,19 @@ using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
 
-IntermediateFormatConversation init_prototype(const QString& filename);
-QString read_identity_screen_name(const QDomElement& root_element);
+IntermediateFormatConversation init_prototype(IMM(QString) filename);
+QString read_identity_screen_name(IMM(QDomElement) root_element);
 void extract_conversations_in_section(
     QDomElement& mut_next_element,
     vector<IntermediateFormatConversation>& mut_conversations,
-    const IntermediateFormatConversation& prototype
+    IMM(IntermediateFormatConversation) prototype
 );
 IntermediateFormatConversation extract_thread(
-    const QDomElement& thread_element,
-    const IntermediateFormatConversation& prototype
+    IMM(QDomElement) thread_element,
+    IMM(IntermediateFormatConversation) prototype
 );
 
-vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(const QString &filename) {
+vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(IMM(QString) filename) {
     vector<IntermediateFormatConversation> conversations;
     IntermediateFormatConversation prototype = init_prototype(filename);
 
@@ -62,7 +62,7 @@ vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(const 
     return conversations;
 }
 
-IntermediateFormatConversation init_prototype(const QString& filename) {
+IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -87,7 +87,7 @@ IntermediateFormatConversation init_prototype(const QString& filename) {
     return conversation;
 }
 
-QString read_identity_screen_name(const QDomElement& root_element) {
+QString read_identity_screen_name(IMM(QDomElement) root_element) {
     auto head_element = child_elem(root_element, "head");
     auto title_element = child_elem(head_element, "title");
 
@@ -108,7 +108,7 @@ QString read_identity_screen_name(const QDomElement& root_element) {
 void extract_conversations_in_section(
     QDomElement& mut_next_element,
     vector<IntermediateFormatConversation>& mut_conversations,
-    const IntermediateFormatConversation& prototype
+    IMM(IntermediateFormatConversation) prototype
 ) {
     invariant(mut_next_element.tagName() == "div", "Expected section <div> to follow");
 
@@ -122,8 +122,8 @@ void extract_conversations_in_section(
 }
 
 IntermediateFormatConversation extract_thread(
-    const QDomElement& thread_element,
-    const IntermediateFormatConversation& prototype
+    IMM(QDomElement) thread_element,
+    IMM(IntermediateFormatConversation) prototype
 ) {
     invariant(
         (thread_element.tagName() == "div") && (thread_element.attribute("class", "") == "thread"),

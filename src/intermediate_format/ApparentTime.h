@@ -19,6 +19,7 @@
 #include <QDateTime>
 
 #include "utils/external_libs/optional.hpp"
+#include "utils/language/shortcuts.h"
 
 using namespace std::experimental;
 
@@ -43,7 +44,7 @@ public:
 
     ApparentTime();
     ApparentTime(quint32 unix_timestamp, Reference reference = Reference::UTC);
-    ApparentTime(const QDateTime& datetime);
+    ApparentTime(IMM(QDateTime) datetime);
 
     bool isSpecified() const;
     bool hasSpecifiedDate() const;
@@ -53,7 +54,7 @@ public:
     QString timeZoneName() const;
 };
 
-QDebug operator<< (QDebug stream, const ApparentTime& time);
+QDebug operator<< (QDebug stream, IMM(ApparentTime) time);
 
 }}
 

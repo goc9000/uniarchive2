@@ -32,7 +32,7 @@ ApparentTime::ApparentTime(quint32 unix_timestamp, Reference reference)
     time = timestamp.time();
 }
 
-ApparentTime::ApparentTime(const QDateTime& datetime): secondsSpecified(true) {
+ApparentTime::ApparentTime(IMM(QDateTime) datetime): secondsSpecified(true) {
     date = datetime.date();
     time = datetime.time();
 
@@ -80,7 +80,7 @@ QString ApparentTime::timeZoneName() const {
     return timeZone.displayName(datetime, QTimeZone::ShortName);
 }
 
-QDebug operator<< (QDebug stream, const ApparentTime& time) {
+QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
     QDebugStateSaver settings(stream);
     stream.nospace();
 

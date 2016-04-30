@@ -17,24 +17,26 @@
 #include <QDomElement>
 #include <QString>
 
+#include "utils/language/shortcuts.h"
+
 namespace uniarchive2 { namespace utils { namespace xml {
 
-QDomDocument load_xml_file(const QString& filename);
+QDomDocument load_xml_file(IMM(QString) filename);
 
-QDomElement get_dom_root(const QDomDocument& document, const QString& expected_root_name);
+QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_name);
 
-QDomElement child_elem(const QDomElement& node, const QString& child_name);
-QDomElement only_child_elem(const QDomElement& node, const QString& child_name);
-QDomElement child_elem_with_class(const QDomElement& node, const QString& child_name, const QString& class_name);
-QDomElement only_child_elem_with_class(const QDomElement& node, const QString& child_name, const QString& class_name);
+QDomElement child_elem(IMM(QDomElement) node, IMM(QString) child_name);
+QDomElement only_child_elem(IMM(QDomElement) node, IMM(QString) child_name);
+QDomElement child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name, IMM(QString) class_name);
+QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name, IMM(QString) class_name);
 
-int read_int_attr(const QDomElement& node, const QString& attr_name);
-QString read_string_attr(const QDomElement& node, const QString& attr_name);
-QDateTime read_iso_date_attr(const QDomElement& node, const QString& attr_name);
-QString read_text_only_content(const QDomElement& node);
+int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+QDateTime read_iso_date_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+QString read_text_only_content(IMM(QDomElement) node);
 
-QString xml_to_string(const QDomNode& node);
-QByteArray xml_to_raw_data(const QDomNode& node);
+QString xml_to_string(IMM(QDomNode) node);
+QByteArray xml_to_raw_data(IMM(QDomNode) node);
 
 }}}
 

@@ -18,6 +18,7 @@
 
 #include "extraction/yahoo/YahooProtocolEvent.h"
 #include "utils/language/JavaStyleIterator.h"
+#include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::utils::language;
 
@@ -25,7 +26,7 @@ namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 class ExtractYahooProtocolEventsIterator : JavaStyleIterator<YahooProtocolEvent> {
 public:
-    ExtractYahooProtocolEventsIterator(const QByteArray &binary_data, const QString &local_account_name);
+    ExtractYahooProtocolEventsIterator(IMM(QByteArray) binary_data, IMM(QString) local_account_name);
     bool hasNext() const;
     YahooProtocolEvent next();
 

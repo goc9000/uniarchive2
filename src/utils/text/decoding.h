@@ -14,9 +14,11 @@
 #include <QByteArray>
 #include <QString>
 
+#include "utils/language/shortcuts.h"
+
 namespace uniarchive2 { namespace utils { namespace text {
 
-QString decode_utf8(const QByteArray& utf8_encoded_text);
+QString decode_utf8(IMM(QByteArray) utf8_encoded_text);
 
 }}}
 
