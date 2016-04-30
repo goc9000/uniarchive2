@@ -15,7 +15,7 @@
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-QString name_for_event_type(const YahooProtocolEvent::Type& type) {
+QString name_for_event_type(YahooProtocolEvent::Type type) {
     switch (type) {
         case YahooProtocolEvent::Type::START_CONVERSATION:
             return "StartConversation";
@@ -32,7 +32,7 @@ QString name_for_event_type(const YahooProtocolEvent::Type& type) {
     }
 }
 
-QString name_for_event_direction(const YahooProtocolEvent::Direction& direction) {
+QString name_for_event_direction(YahooProtocolEvent::Direction direction) {
     switch (direction) {
         case YahooProtocolEvent::Direction::OUTGOING:
             return "outgoing";

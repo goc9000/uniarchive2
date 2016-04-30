@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace protocols {
 
-QString name_for_archive_format(const ArchiveFormats& protocol) {
+QString name_for_archive_format(ArchiveFormats protocol) {
     switch (protocol) {
         case ArchiveFormats::INVALID:
             return "(invalid)";
@@ -27,7 +27,7 @@ QString name_for_archive_format(const ArchiveFormats& protocol) {
     }
 }
 
-QDebug operator<< (QDebug stream, const ArchiveFormats& format) {
+QDebug operator<< (QDebug stream, ArchiveFormats format) {
     stream << qPrintable(name_for_archive_format(format));
 
     return stream;

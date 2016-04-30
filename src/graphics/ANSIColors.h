@@ -27,7 +27,7 @@ enum class ANSIColors {
     EXTENDED = 8
 };
 
-QDebug operator<< (QDebug stream, const ANSIColors& color);
+QDebug operator<< (QDebug stream, ANSIColors color);
 
 }}
 

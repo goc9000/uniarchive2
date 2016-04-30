@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace graphics {
 
-QString name_for_color(const ANSIColors& color) {
+QString name_for_color(ANSIColors color) {
     switch (color) {
         case ANSIColors::BLACK:
             return "black";
@@ -37,7 +37,7 @@ QString name_for_color(const ANSIColors& color) {
     }
 }
 
-QDebug operator<< (QDebug stream, const ANSIColors& color) {
+QDebug operator<< (QDebug stream, ANSIColors color) {
     stream << qPrintable(name_for_color(color));
 
     return stream;

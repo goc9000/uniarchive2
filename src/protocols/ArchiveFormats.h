@@ -22,7 +22,7 @@ enum class ArchiveFormats {
     FACEBOOK_DYI,
 };
 
-QDebug operator<< (QDebug stream, const ArchiveFormats& format);
+QDebug operator<< (QDebug stream, ArchiveFormats format);
 
 }}
 

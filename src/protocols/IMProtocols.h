@@ -22,7 +22,7 @@ enum class IMProtocols {
     FACEBOOK,
 };
 
-QDebug operator<< (QDebug stream, const IMProtocols& protocol);
+QDebug operator<< (QDebug stream, IMProtocols protocol);
 
 }}
 
