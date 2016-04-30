@@ -28,11 +28,7 @@ struct IFOfferCallEvent : IntermediateFormatEvent {
 public:
     unique_ptr<ApparentSubject> caller;
 
-    IFOfferCallEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        unique_ptr<ApparentSubject> caller
-    );
+    IFOfferCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) caller);
 
     virtual QString eventName() const;
 

@@ -33,7 +33,7 @@ public:
     unique_ptr<ApparentSubject> subject;
     optional<IntermediateFormatMessageContent> message;
 
-    IFJoinConferenceEvent(IMM(ApparentTime) timestamp, unsigned int index, unique_ptr<ApparentSubject> subject);
+    IFJoinConferenceEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

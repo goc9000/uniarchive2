@@ -30,7 +30,7 @@ public:
 
     SubjectGivenAsAccount(IMM(FullAccountName) account);
 
-    virtual unique_ptr<ApparentSubject> clone() const;
+    virtual CEDE(ApparentSubject) clone() const;
 
     virtual void writeToDebugStream(QDebug stream) const;
 };

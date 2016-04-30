@@ -29,7 +29,7 @@ public:
     unique_ptr<ApparentSubject> initiator;
 
     IFStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index);
-    IFStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index, unique_ptr<ApparentSubject> initiator);
+    IFStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) initiator);
 
     virtual QString eventName() const;
 

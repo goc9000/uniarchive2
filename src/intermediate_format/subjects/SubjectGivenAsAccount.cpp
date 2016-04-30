@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 SubjectGivenAsAccount::SubjectGivenAsAccount(IMM(FullAccountName) account) : account(account) {
 }
 
-unique_ptr<ApparentSubject> SubjectGivenAsAccount::clone() const {
+CEDE(ApparentSubject) SubjectGivenAsAccount::clone() const {
     return make_unique<SubjectGivenAsAccount>(account);
 }
 

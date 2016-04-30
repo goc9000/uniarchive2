@@ -34,7 +34,7 @@ public:
     IFReceiveFileEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
-        unique_ptr<ApparentSubject> receiver,
+        TAKE(ApparentSubject) receiver,
         IMM(QString) filename
     );
 

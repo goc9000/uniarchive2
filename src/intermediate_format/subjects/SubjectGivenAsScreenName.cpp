@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 SubjectGivenAsScreenName::SubjectGivenAsScreenName(IMM(QString) screen_name) : screenName(screen_name) {
 }
 
-unique_ptr<ApparentSubject> SubjectGivenAsScreenName::clone() const {
+CEDE(ApparentSubject) SubjectGivenAsScreenName::clone() const {
     return make_unique<SubjectGivenAsScreenName>(screenName);
 }
 

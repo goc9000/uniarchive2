@@ -29,11 +29,7 @@ public:
     unique_ptr<ApparentSubject> receiver;
     unique_ptr<ApparentSubject> caller;
 
-    IFAnswerCallEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        unique_ptr<ApparentSubject> receiver
-    );
+    IFAnswerCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) receiver);
 
     virtual QString eventName() const;
 

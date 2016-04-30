@@ -33,7 +33,7 @@ public:
     IFOfferFileEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
-        unique_ptr<ApparentSubject> sender,
+        TAKE(ApparentSubject) sender,
         IMM(QString) filename
     );
 

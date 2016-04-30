@@ -52,38 +52,38 @@ IntermediateFormatConversation extract_conversation_for_session(
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 );
-unique_ptr<IntermediateFormatEvent> parse_event(IMM(QDomElement) event_element, unsigned int event_index);
-unique_ptr<IntermediateFormatEvent> parse_message_event(
+CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
+CEDE(IntermediateFormatEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index
 );
-unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
+CEDE(IntermediateFormatEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response
 );
-unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
+CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
-    unique_ptr<ApparentSubject> subject,
+    TAKE(ApparentSubject) subject,
     IMM(QString) text,
     IMM(QString) filename
 );
-unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_application(
+CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
-    unique_ptr<ApparentSubject> subject,
+    TAKE(ApparentSubject) subject,
     IMM(QString) text,
     IMM(QString) application
 );
 ApparentTime parse_event_time(IMM(QDomElement) event_element);
-unique_ptr<ApparentSubject> parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
+CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
 IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element);
 
 vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
@@ -183,7 +183,7 @@ IntermediateFormatConversation extract_conversation_for_session(
     return conversation;
 }
 
-unique_ptr<IntermediateFormatEvent> parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
+CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
     ApparentTime event_time = parse_event_time(event_element);
 
     if (event_element.tagName() == "Message") {
@@ -221,7 +221,7 @@ ApparentTime parse_event_time(IMM(QDomElement) event_element) {
     return ApparentTime(absolute_time);
 }
 
-unique_ptr<ApparentSubject> parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name) {
+CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name) {
     auto actor_element = child_elem(event_element, node_name);
     auto user_element = only_child_elem(actor_element, "User");
 
@@ -241,7 +241,7 @@ IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element
     return content;
 }
 
-unique_ptr<IntermediateFormatEvent> parse_message_event(
+CEDE(IntermediateFormatEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index
@@ -257,7 +257,7 @@ unique_ptr<IntermediateFormatEvent> parse_message_event(
     return event;
 }
 
-unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
+CEDE(IntermediateFormatEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -284,12 +284,12 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event(
     invariant_violation("Unhandled invitation event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
-unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file(
+CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
-    unique_ptr<ApparentSubject> subject,
+    TAKE(ApparentSubject) subject,
     IMM(QString) text,
     IMM(QString) filename
 ) {
@@ -318,12 +318,12 @@ unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_file
     invariant_violation("Unhandled file transfer event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
-unique_ptr<IntermediateFormatEvent> parse_invitation_or_response_event_with_application(
+CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response,
-    unique_ptr<ApparentSubject> subject,
+    TAKE(ApparentSubject) subject,
     IMM(QString) text,
     IMM(QString) application
 ) {

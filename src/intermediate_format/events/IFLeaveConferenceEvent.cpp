@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 IFLeaveConferenceEvent::IFLeaveConferenceEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
-    unique_ptr<ApparentSubject> subject
+    TAKE(ApparentSubject) subject
 ): IntermediateFormatEvent(timestamp, index), subject(move(subject)) {
 }
 

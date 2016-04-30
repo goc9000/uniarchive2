@@ -21,7 +21,7 @@ IFStartConversationEvent::IFStartConversationEvent(IMM(ApparentTime) timestamp, 
 IFStartConversationEvent::IFStartConversationEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
-    unique_ptr<ApparentSubject> initiator
+    TAKE(ApparentSubject) initiator
 ): IntermediateFormatEvent(timestamp, index), initiator(move(initiator)) {
 }
 

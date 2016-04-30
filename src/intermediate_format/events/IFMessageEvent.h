@@ -38,7 +38,7 @@ public:
     IFMessageEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
-        unique_ptr<ApparentSubject> sender,
+        TAKE(ApparentSubject) sender,
         IntermediateFormatMessageContent&& content
     );
 

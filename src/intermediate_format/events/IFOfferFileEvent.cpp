@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 IFOfferFileEvent::IFOfferFileEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
-    unique_ptr<ApparentSubject> sender,
+    TAKE(ApparentSubject) sender,
     IMM(QString) filename
 ): IntermediateFormatEvent(timestamp, index), sender(move(sender)), filename(filename) {
 }
