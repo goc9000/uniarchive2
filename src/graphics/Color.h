@@ -14,6 +14,8 @@
 #include <QDebug>
 #include <QString>
 
+#include "utils/language/shortcuts.h"
+
 namespace uniarchive2 { namespace graphics {
 
 struct Color {
@@ -26,10 +28,10 @@ public:
 
     QString toHTMLFormat() const;
 
-    static Color fromHTMLFormat(QString text);
+    static Color fromHTMLFormat(IMM(QString) text);
 };
 
-QDebug operator<< (QDebug stream, const Color& color);
+QDebug operator<< (QDebug stream, IMM(Color) color);
 
 }}
 

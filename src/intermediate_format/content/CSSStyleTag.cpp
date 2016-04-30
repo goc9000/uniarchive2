@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-CSSStyleTag::CSSStyleTag(const QString& css) : css(css), closed(false) {
+CSSStyleTag::CSSStyleTag(IMM(QString) css) : css(css), closed(false) {
 }
 
 CSSStyleTag::CSSStyleTag(bool closed) : closed(closed) {

@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "intermediate_format/content/Markup.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
@@ -23,7 +24,7 @@ public:
     QString css;
     bool closed;
 
-    CSSStyleTag(const QString& css);
+    CSSStyleTag(IMM(QString) css);
     CSSStyleTag(bool closed);
     virtual void writeToDebugStream(QDebug stream) const;
 };

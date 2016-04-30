@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-RGBColorTag::RGBColorTag(const Color& color, bool closed) : color(color), closed(closed) {
+RGBColorTag::RGBColorTag(IMM(Color) color, bool closed) : color(color), closed(closed) {
 }
 
 void RGBColorTag::writeToDebugStream(QDebug stream) const {

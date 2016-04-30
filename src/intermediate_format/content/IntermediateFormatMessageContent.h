@@ -17,6 +17,7 @@
 #include <QtDebug>
 
 #include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ public:
     vector<unique_ptr<IntermediateFormatMessageContentItem>> items;
 };
 
-QDebug operator<< (QDebug stream, const IntermediateFormatMessageContent& content);
+QDebug operator<< (QDebug stream, IMM(IntermediateFormatMessageContent) content);
 
 }}}
 

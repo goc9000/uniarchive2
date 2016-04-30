@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 IntermediateFormatMessageContent::IntermediateFormatMessageContent() {
 }
 
-QDebug operator<< (QDebug stream, const IntermediateFormatMessageContent& content) {
+QDebug operator<< (QDebug stream, IMM(IntermediateFormatMessageContent) content) {
     QDebugStateSaver saver(stream);
     bool first = true;
 

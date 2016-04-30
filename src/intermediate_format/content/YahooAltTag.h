@@ -16,6 +16,7 @@
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
 #include "utils/external_libs/optional.hpp"
+#include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::graphics;
 using namespace std::experimental;
@@ -28,7 +29,7 @@ public:
     optional<Color> color2;
     bool closed;
 
-    YahooAltTag(bool closed, const Color& color1, const Color& color2);
+    YahooAltTag(bool closed, IMM(Color) color1, IMM(Color) color2);
     YahooAltTag(bool closed);
     virtual void writeToDebugStream(QDebug stream) const;
 };

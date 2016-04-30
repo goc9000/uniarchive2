@@ -16,6 +16,7 @@
 
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
+#include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::graphics;
 
@@ -26,7 +27,7 @@ public:
     QList<Color> colors;
     bool closed;
 
-    YahooFadeTag(bool closed, const QList<Color>& colors = QList<Color>());
+    YahooFadeTag(bool closed, IMM(QList<Color>) colors = QList<Color>());
     virtual void writeToDebugStream(QDebug stream) const;
 };
 

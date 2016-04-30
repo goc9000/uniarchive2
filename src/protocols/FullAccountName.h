@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "protocols/IMProtocols.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
@@ -24,10 +25,10 @@ public:
     QString accountName;
 
     FullAccountName();
-    FullAccountName(IMProtocols protocol, QString account_name);
+    FullAccountName(IMProtocols protocol, IMM(QString) account_name);
 };
 
-QDebug operator<< (QDebug stream, const FullAccountName& account_name);
+QDebug operator<< (QDebug stream, IMM(FullAccountName) account_name);
 
 }}
 

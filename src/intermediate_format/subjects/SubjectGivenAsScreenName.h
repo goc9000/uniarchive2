@@ -17,6 +17,7 @@
 #include <QString>
 
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ class SubjectGivenAsScreenName : public ApparentSubject {
 public:
     QString screenName;
 
-    SubjectGivenAsScreenName(const QString& screen_name);
+    SubjectGivenAsScreenName(IMM(QString) screen_name);
 
     virtual unique_ptr<ApparentSubject> clone() const;
 

@@ -43,7 +43,7 @@ QString name_for_event_direction(YahooProtocolEvent::Direction direction) {
     }
 }
 
-QDebug operator<< (QDebug stream, const YahooProtocolEvent& event) {
+QDebug operator<< (QDebug stream, IMM(YahooProtocolEvent) event) {
     QDebugStateSaver settings(stream);
     stream.nospace() << "YahooProtocolEvent(";
     stream << "timestamp=" << event.timestamp;

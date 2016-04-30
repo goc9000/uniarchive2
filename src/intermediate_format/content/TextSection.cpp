@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-TextSection::TextSection(QString text) : text(text) {
+TextSection::TextSection(IMM(QString) text) : text(text) {
 }
 
 void TextSection::writeToDebugStream(QDebug stream) const {

@@ -17,6 +17,7 @@
 
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "protocols/FullAccountName.h"
+#include "utils/language/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::protocols;
@@ -27,7 +28,7 @@ class SubjectGivenAsAccount : public ApparentSubject {
 public:
     FullAccountName account;
 
-    SubjectGivenAsAccount(FullAccountName account);
+    SubjectGivenAsAccount(IMM(FullAccountName) account);
 
     virtual unique_ptr<ApparentSubject> clone() const;
 

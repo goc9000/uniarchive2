@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
@@ -22,7 +23,7 @@ struct TextSection : IntermediateFormatMessageContentItem {
 public:
     QString text;
 
-    TextSection(QString text);
+    TextSection(IMM(QString) text);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 

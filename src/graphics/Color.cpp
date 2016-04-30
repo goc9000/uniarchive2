@@ -24,7 +24,7 @@ QString Color::toHTMLFormat() const {
     return QString("#%1%2%3").arg(r, 2, 16, QChar('0')).arg(g, 2, 16, QChar('0')).arg(b, 2, 16, QChar('0'));
 }
 
-Color Color::fromHTMLFormat(QString text) {
+Color Color::fromHTMLFormat(IMM(QString) text) {
     static QRegularExpression pattern(
         "^\\s*#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})\\s*$",
         QRegularExpression::CaseInsensitiveOption
@@ -40,7 +40,7 @@ Color Color::fromHTMLFormat(QString text) {
     );
 }
 
-QDebug operator<< (QDebug stream, const Color& color) {
+QDebug operator<< (QDebug stream, IMM(Color) color) {
     QDebugStateSaver saver(stream);
 
     stream << qPrintable(color.toHTMLFormat());

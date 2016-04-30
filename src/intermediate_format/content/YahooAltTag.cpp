@@ -15,7 +15,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-YahooAltTag::YahooAltTag(bool closed, const Color& color1, const Color& color2)
+YahooAltTag::YahooAltTag(bool closed, IMM(Color) color1, IMM(Color) color2)
     : closed(closed), color1(color1), color2(color2) {
 }
 

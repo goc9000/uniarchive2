@@ -15,7 +15,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-YahooFadeTag::YahooFadeTag(bool closed, const QList<Color>& colors)
+YahooFadeTag::YahooFadeTag(bool closed, IMM(QList<Color>) colors)
     : closed(closed), colors(colors) {
     invariant(closed || !colors.isEmpty(), "Can't instantiate FADE tag without any colors");
 }

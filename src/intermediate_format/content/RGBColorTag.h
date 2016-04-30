@@ -15,6 +15,7 @@
 
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
+#include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::graphics;
 
@@ -25,7 +26,7 @@ public:
     Color color;
     bool closed;
 
-    RGBColorTag(const Color& color, bool closed = false);
+    RGBColorTag(IMM(Color) color, bool closed = false);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
