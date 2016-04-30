@@ -28,6 +28,15 @@ namespace uniarchive2 { namespace extraction { namespace facebook {
 
 IntermediateFormatConversation init_prototype(const QString& filename);
 QString read_identity_screen_name(const QDomElement& root_element);
+void extract_conversations_in_section(
+    QDomElement& mut_next_element,
+    vector<IntermediateFormatConversation>& mut_conversations,
+    const IntermediateFormatConversation& prototype
+);
+IntermediateFormatConversation extract_thread(
+    const QDomElement& thread_element,
+    const IntermediateFormatConversation& prototype
+);
 
 vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(const QString &filename) {
     vector<IntermediateFormatConversation> conversations;
@@ -38,6 +47,17 @@ vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(const 
 
     QString identity_screen_name = read_identity_screen_name(root_element);
     prototype.identity = make_unique<SubjectGivenAsScreenName>(identity_screen_name);
+
+    auto body_element = child_elem(root_element, "body");
+    auto contents_div = only_child_elem_with_class(body_element, "div", "contents");
+
+    auto element = contents_div.firstChildElement();
+    invariant(element.tagName() == "h1", "Expected first element in contents div to be <h1>");
+
+    element = element.nextSiblingElement();
+    while (!element.isNull()) {
+        extract_conversations_in_section(element, conversations, prototype);
+    }
 
     return conversations;
 }
@@ -83,6 +103,36 @@ QString read_identity_screen_name(const QDomElement& root_element) {
     );
 
     return match.captured(1);
+}
+
+void extract_conversations_in_section(
+    QDomElement& mut_next_element,
+    vector<IntermediateFormatConversation>& mut_conversations,
+    const IntermediateFormatConversation& prototype
+) {
+    invariant(mut_next_element.tagName() == "div", "Expected section <div> to follow");
+
+    auto thread_element = mut_next_element.firstChildElement();
+    while (!thread_element.isNull()) {
+        mut_conversations.push_back(extract_thread(thread_element, prototype));
+        thread_element = thread_element.nextSiblingElement();
+    }
+
+    mut_next_element = mut_next_element.nextSiblingElement();
+}
+
+IntermediateFormatConversation extract_thread(
+    const QDomElement& thread_element,
+    const IntermediateFormatConversation& prototype
+) {
+    invariant(
+        (thread_element.tagName() == "div") && (thread_element.attribute("class", "") == "thread"),
+        "Expected thread to be defined by a <div class=\"thread\">"
+    );
+
+    IntermediateFormatConversation conversation = IntermediateFormatConversation::fromPrototype(prototype);
+
+    return conversation;
 }
 
 }}}

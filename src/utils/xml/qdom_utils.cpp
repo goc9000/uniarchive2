@@ -74,6 +74,54 @@ QDomElement only_child_elem(const QDomElement& node, const QString& child_name) 
     return child_node;
 }
 
+QDomElement child_elem_with_class(const QDomElement& node, const QString& child_name, const QString& class_name) {
+    for (
+        auto child_node = node.firstChildElement(child_name);
+        !child_node.isNull();
+        child_node = child_node.nextSiblingElement(child_name)
+        ) {
+        if (child_node.attribute("class", "") == class_name) {
+            return child_node;
+        }
+    }
+
+    invariant_violation(
+        "Could not find a child node of type <%s> and class \"%s\"",
+        qUtf8Printable(child_name),
+        qUtf8Printable(class_name)
+    );
+}
+
+QDomElement only_child_elem_with_class(const QDomElement& node, const QString& child_name, const QString& class_name) {
+    QDomElement found_node;
+
+    for (
+        auto child_node = node.firstChildElement(child_name);
+        !child_node.isNull();
+        child_node = child_node.nextSiblingElement(child_name)
+        ) {
+        if (child_node.attribute("class", "") == class_name) {
+            invariant(
+                found_node.isNull(),
+                "Expected to find only one node of type <%s> and class \"%s\"",
+                qUtf8Printable(child_name),
+                qUtf8Printable(class_name)
+            );
+
+            found_node = child_node;
+        }
+    }
+
+    invariant(
+        !found_node.isNull(),
+        "Could not find a child node of type <%s> and class \"%s\"",
+        qUtf8Printable(child_name),
+        qUtf8Printable(class_name)
+    );
+
+    return found_node;
+}
+
 int read_int_attr(const QDomElement& node, const QString& attr_name) {
     QString value_text = read_string_attr(node, attr_name);
     bool ok = false;
