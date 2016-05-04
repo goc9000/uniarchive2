@@ -83,6 +83,8 @@ set(SOURCE_FILES
         src/intermediate_format/ApparentTime.h
         src/intermediate_format/IntermediateFormatConversation.cpp
         src/intermediate_format/IntermediateFormatConversation.h
+        src/protocols/facebook/account_name.cpp
+        src/protocols/facebook/account_name.h
         src/protocols/msn/account_name.cpp
         src/protocols/msn/account_name.h
         src/protocols/yahoo/account_name.cpp
