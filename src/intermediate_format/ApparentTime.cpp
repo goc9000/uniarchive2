@@ -67,7 +67,7 @@ bool ApparentTime::hasSpecifiedTime() const {
 }
 
 bool ApparentTime::hasSpecifiedSeconds() const {
-    return hasSpecifiedTime() || secondsSpecified;
+    return hasSpecifiedTime() && secondsSpecified;
 }
 
 QString ApparentTime::timeZoneName() const {
