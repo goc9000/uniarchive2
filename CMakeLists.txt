@@ -104,6 +104,8 @@ set(SOURCE_FILES
         src/utils/language/shortcuts.h
         src/utils/text/decoding.cpp
         src/utils/text/decoding.h
+        src/utils/time/parse_date_parts.cpp
+        src/utils/time/parse_date_parts.h
         src/utils/xml/qdom_utils.cpp
         src/utils/xml/qdom_utils.h
         src/main.cpp
