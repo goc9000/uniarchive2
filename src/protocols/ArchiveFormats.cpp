@@ -18,12 +18,14 @@ QString name_for_archive_format(ArchiveFormats protocol) {
     switch (protocol) {
         case ArchiveFormats::INVALID:
             return "(invalid)";
-        case ArchiveFormats::YAHOO_MESSENGER_DAT:
-            return "Yahoo Messenger (DAT format)";
-        case ArchiveFormats::MSN_MESSENGER_XML:
-            return "MSN Messenger (XML format)";
+        case ArchiveFormats::DIGSBY:
+            return "Digsby";
         case ArchiveFormats::FACEBOOK_DYI:
             return "Facebook (DYI archive)";
+        case ArchiveFormats::MSN_MESSENGER_XML:
+            return "MSN Messenger (XML format)";
+        case ArchiveFormats::YAHOO_MESSENGER_DAT:
+            return "Yahoo Messenger (DAT format)";
     }
 }
 
