@@ -26,6 +26,8 @@ enum class IMProtocols {
     YAHOO,
 };
 
+QString name_for_im_protocol(IMProtocols protocol);
+
 QDebug operator<< (QDebug stream, IMProtocols protocol);
 
 }}

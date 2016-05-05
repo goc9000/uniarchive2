@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace protocols {
 
-QString name_for_protocol(IMProtocols protocol) {
+QString name_for_im_protocol(IMProtocols protocol) {
     switch (protocol) {
         case IMProtocols::INVALID:
             return "(invalid)";
@@ -36,7 +36,7 @@ QString name_for_protocol(IMProtocols protocol) {
 }
 
 QDebug operator<< (QDebug stream, IMProtocols protocol) {
-    stream << qPrintable(name_for_protocol(protocol));
+    stream << qPrintable(name_for_im_protocol(protocol));
 
     return stream;
 }
