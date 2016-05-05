@@ -153,6 +153,7 @@ Message Format
       - Therefore, one can expect the date format to stay the same and be in English unless FB messes up
 
 - There seems to always be only one `<p>` with the message content
+- The content may contain significant newlines
 - No formatting tags were observed in the content
 - No system messages were observed
 - **Problem**: No method of specifying attachments was observed. Seems they are not saved in the archive.
