@@ -9,6 +9,7 @@
  */
 
 #include <QtDebug>
+#include <QDir>
 #include <QFileInfo>
 
 #include "extraction/digsby/extract_digsby_conversations.h"
@@ -21,7 +22,11 @@ using namespace uniarchive2::protocols;
 
 namespace uniarchive2 { namespace extraction { namespace digsby {
 
+struct InfoFromFilename {
+};
+
 IntermediateFormatConversation init_conversation(IMM(QString) filename);
+InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 
 
 IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename) {
@@ -35,6 +40,7 @@ IntermediateFormatConversation init_conversation(IMM(QString) filename) {
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
     QString full_filename = file_info.absoluteFilePath();
+    auto info = analyze_conversation_filename(full_filename);
 
     IntermediateFormatConversation conversation(ArchiveFormats::DIGSBY, IMProtocols::INVALID);
 
@@ -45,6 +51,23 @@ IntermediateFormatConversation init_conversation(IMM(QString) filename) {
     );
 
     return conversation;
+}
+
+InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+    InfoFromFilename info;
+
+    QString logs_folder = full_filename.section(QDir::separator(), -6, -6);
+    QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
+    QString identity_folder = full_filename.section(QDir::separator(), -3, -3);
+    QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
+    QString base_name = full_filename.section(QDir::separator(), -1, -1);
+
+    invariant(
+        logs_folder == "Digsby Logs",
+        "Digsby archive file should be 5 levels deep under a \"Digsby Logs\" folder"
+    );
+
+    return info;
 }
 
 }}}
