@@ -6,6 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 find_package(Qt5 REQUIRED COMPONENTS Core Xml)
 
 set(SOURCE_FILES
+        src/extraction/digsby/extract_digsby_conversations.cpp
+        src/extraction/digsby/extract_digsby_conversations.h
         src/extraction/facebook/extract_facebook_dyi_conversations.cpp
         src/extraction/facebook/extract_facebook_dyi_conversations.h
         src/extraction/msn/extract_msn_messenger_xml_conversations.cpp

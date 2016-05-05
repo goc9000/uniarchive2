@@ -4,12 +4,14 @@
 #include <QDirIterator>
 #include <QString>
 
+#include "extraction/digsby/extract_digsby_conversations.h"
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "utils/language/shortcuts.h"
 
 using namespace std;
+using namespace uniarchive2::extraction::digsby;
 using namespace uniarchive2::extraction::facebook;
 using namespace uniarchive2::extraction::msn;
 using namespace uniarchive2::extraction::yahoo;
@@ -18,6 +20,12 @@ int main() {
     // Temporary test harness
 
     vector<IntermediateFormatConversation> convos;
+
+    QDirIterator digsby_files(QT_STRINGIFY(TEST_DATA_DIR) "/digsby", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
+    while (digsby_files.hasNext()) {
+        auto file_convos = extract_digsby_conversations(digsby_files.next());
+        move(file_convos.begin(), file_convos.end(), back_inserter(convos));
+    }
 
     QDirIterator fb_files(QT_STRINGIFY(TEST_DATA_DIR) "/facebook", QStringList() << "messages.htm", QDir::Files, QDirIterator::Subdirectories);
     while (fb_files.hasNext()) {
