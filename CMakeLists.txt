@@ -89,6 +89,8 @@ set(SOURCE_FILES
         src/protocols/digsby/account_name.h
         src/protocols/facebook/account_name.cpp
         src/protocols/facebook/account_name.h
+        src/protocols/jabber/account_name.cpp
+        src/protocols/jabber/account_name.h
         src/protocols/msn/account_name.cpp
         src/protocols/msn/account_name.h
         src/protocols/yahoo/account_name.cpp
