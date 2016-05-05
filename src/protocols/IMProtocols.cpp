@@ -26,6 +26,8 @@ QString name_for_protocol(IMProtocols protocol) {
             return "Jabber";
         case IMProtocols::MSN:
             return "MSN";
+        case IMProtocols::SKYPE:
+            return "Skype";
         case IMProtocols::WHATSAPP:
             return "WhatsApp";
         case IMProtocols::YAHOO:

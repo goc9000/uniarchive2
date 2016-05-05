@@ -21,6 +21,7 @@ enum class IMProtocols {
     FACEBOOK,
     JABBER,
     MSN,
+    SKYPE,
     WHATSAPP,
     YAHOO,
 };
