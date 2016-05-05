@@ -18,12 +18,18 @@ QString name_for_protocol(IMProtocols protocol) {
     switch (protocol) {
         case IMProtocols::INVALID:
             return "(invalid)";
-        case IMProtocols::YAHOO:
-            return "Yahoo";
-        case IMProtocols::MSN:
-            return "MSN";
+        case IMProtocols::DIGSBY:
+            return "Digsby";
         case IMProtocols::FACEBOOK:
             return "Facebook";
+        case IMProtocols::JABBER:
+            return "Jabber";
+        case IMProtocols::MSN:
+            return "MSN";
+        case IMProtocols::WHATSAPP:
+            return "WhatsApp";
+        case IMProtocols::YAHOO:
+            return "Yahoo";
     }
 }
 

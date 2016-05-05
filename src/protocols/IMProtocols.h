@@ -17,9 +17,12 @@ namespace uniarchive2 { namespace protocols {
 
 enum class IMProtocols {
     INVALID = 0,
-    YAHOO,
-    MSN,
+    DIGSBY,
     FACEBOOK,
+    JABBER,
+    MSN,
+    WHATSAPP,
+    YAHOO,
 };
 
 QDebug operator<< (QDebug stream, IMProtocols protocol);
