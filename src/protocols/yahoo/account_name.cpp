@@ -18,7 +18,10 @@
 namespace uniarchive2 { namespace protocols { namespace yahoo {
 
 bool is_valid_yahoo_account_name(IMM(QString) account_name) {
-    static QRegularExpression pattern("^[a-z][a-z0-9_.]*$", QRegularExpression::CaseInsensitiveOption);
+    static QRegularExpression pattern(
+        "^[a-z][a-z0-9_.]*(@(ymail|yahoo)[.].*)?$",
+        QRegularExpression::CaseInsensitiveOption
+    );
 
     return pattern.match(account_name).hasMatch();
 }
@@ -33,7 +36,7 @@ void assert_valid_yahoo_account_name(IMM(QString) account_name) {
 
 FullAccountName parse_yahoo_account(IMM(QString) account_name) {
     assert_valid_yahoo_account_name(account_name);
-    return FullAccountName(IMProtocols::YAHOO, account_name);
+    return FullAccountName(IMProtocols::YAHOO, account_name.section(QChar('@'), 0));
 }
 
 }}}

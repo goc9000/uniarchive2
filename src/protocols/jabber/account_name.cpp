@@ -19,7 +19,7 @@ namespace uniarchive2 { namespace protocols { namespace jabber {
 
 bool is_valid_jabber_account_name(IMM(QString) account_name) {
     static QRegularExpression pattern(
-        "^[a-z][a-z0-9_.]*@([a-z][a-z0-9_.]*[.])+[a-z][a-z0-9_.]*$",
+        "^[a-z0-9_.]+@[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)*$",
         QRegularExpression::CaseInsensitiveOption
     );
 
