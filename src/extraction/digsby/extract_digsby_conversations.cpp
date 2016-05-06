@@ -37,6 +37,8 @@ namespace uniarchive2 { namespace extraction { namespace digsby {
 
 struct InfoFromFilename {
     FullAccountName identity;
+    FullAccountName peer;
+    bool isConference;
 };
 
 IntermediateFormatConversation init_conversation(IMM(QString) filename);
@@ -65,8 +67,9 @@ IntermediateFormatConversation init_conversation(IMM(QString) filename) {
         file_info.lastModified().toTime_t(),
         ApparentTime::Reference::UNKNOWN
     );
-
+    conversation.isConference = info.isConference;
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
+    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
 
     return conversation;
 }
@@ -87,6 +90,45 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
 
     IMProtocols protocol = parse_protocol(protocol_folder);
     info.identity = parse_account(protocol, identity_folder);
+
+    if (peer_folder == "Group Chats") {
+        info.isConference = true;
+        static QRegularExpression pat_group_chat(
+            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}[.]\\d{2}[.]\\d{2} - (.*)-\\d+[.]html$",
+            QRegularExpression::CaseInsensitiveOption
+        );
+        auto group_chat_match = pat_group_chat.match(base_name);
+        invariant(
+            group_chat_match.hasMatch(),
+            "Digsby conference archive file must have a filename like "
+                "YYYY-mm-ddThh.mm.ss - account_name-<timestamp>.html, it is actually \"%s\"",
+            qUtf8Printable(base_name)
+        );
+
+        info.peer = parse_account(protocol, group_chat_match.captured(1));
+    } else {
+        info.isConference = false;
+        static QRegularExpression pat_base_name(
+            "^\\d{4}-\\d{2}-\\d{2}.html$",
+            QRegularExpression::CaseInsensitiveOption
+        );
+        invariant(
+            pat_base_name.match(base_name).hasMatch(),
+            "Digsby archive file must have a filename like YYYY-mm-dd.html, it is actually \"%s\"",
+            qUtf8Printable(base_name)
+        );
+
+        static QRegularExpression pat_remote_peer("^(.*)_([a-z]+)$", QRegularExpression::CaseInsensitiveOption);
+        auto remote_peer_match = pat_remote_peer.match(peer_folder);
+        invariant(
+            remote_peer_match.hasMatch(),
+            "Digsby peer folder must look like <account>_<protocol>, it is actually \"%s\"",
+            qUtf8Printable(peer_folder)
+        );
+
+        IMProtocols peer_protocol = parse_protocol(remote_peer_match.captured(2));
+        info.peer = parse_account(peer_protocol, remote_peer_match.captured(1));
+    }
 
     return info;
 }
