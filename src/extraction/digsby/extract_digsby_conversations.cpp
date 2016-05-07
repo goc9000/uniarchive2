@@ -11,7 +11,11 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QIODevice>
 #include <QRegularExpression>
+#include <QStringList>
+#include <QTextCodec>
+#include <QTextStream>
 
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
@@ -23,6 +27,7 @@
 #include "protocols/IMProtocols.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/text/decoding.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
@@ -32,6 +37,7 @@ using namespace uniarchive2::protocols::digsby;
 using namespace uniarchive2::protocols::jabber;
 using namespace uniarchive2::protocols::msn;
 using namespace uniarchive2::protocols::yahoo;
+using namespace uniarchive2::utils::text;
 
 namespace uniarchive2 { namespace extraction { namespace digsby {
 
@@ -46,9 +52,25 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocols parse_protocol(IMM(QString) protocol_name);
 FullAccountName parse_account(IMProtocols protocol, IMM(QString) account_name);
 
+void verify_xml_header(QTextStream& mut_stream);
+void seek_start_of_events(QTextStream& mut_stream);
+QStringList partially_parse_events(QTextStream& mut_stream);
+
 
 IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename) {
     IntermediateFormatConversation conversation = init_conversation(filename);
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qFatal("Can't open file: %s", qUtf8Printable(filename));
+    }
+
+    // Unfortunately we are reduced to manual text processing as the HTML produced by Digsby is occasionally damaged
+    QTextStream stream(&file);
+
+    verify_xml_header(stream);
+    seek_start_of_events(stream);
+    QStringList event_htmls = partially_parse_events(stream);
 
     return conversation;
 }
@@ -158,6 +180,65 @@ FullAccountName parse_account(IMProtocols protocol, IMM(QString) account_name) {
                 qUtf8Printable(name_for_im_protocol(protocol))
             );
     }
+}
+
+void verify_xml_header(QTextStream& mut_stream) {
+    QString xml_header = mut_stream.readLine();
+    invariant(
+        xml_header.startsWith("<?xml ") && xml_header.contains("encoding=\"UTF-8\""),
+        "Expected Digsby archive to be a UTF-8 encoded XML file, but header is \"%s\"",
+        qUtf8Printable(xml_header)
+    );
+
+    mut_stream.setCodec(QTextCodec::codecForName("UTF-8"));
+}
+
+void seek_start_of_events(QTextStream& mut_stream) {
+    while (!mut_stream.atEnd()) {
+        QString line = mut_stream.readLine();
+
+        if (line.trimmed() == "<BODY onload=\"utc_to_local()\">") {
+            return;
+        }
+    }
+
+    invariant_violation(
+        "Could not find the <BODY onload=\"utc_to_local()\"> sequence that marks the start of messages"
+    );
+}
+
+QStringList partially_parse_events(QTextStream& mut_stream) {
+    QStringList event_htmls;
+    QString current_event_html;
+    bool event_open = false;
+
+    while (!mut_stream.atEnd()) {
+        QString line = mut_stream.readLine();
+
+        if (line.startsWith("<div class=\"")) {
+            if (event_open) {
+                event_htmls << current_event_html;
+            }
+            current_event_html = line;
+            event_open = true;
+        } else if (event_open) {
+            current_event_html.append("\n").append(line);
+        } else {
+            event_htmls << line;
+            continue;
+        }
+
+        if (line.endsWith("</span></div>")) {
+            event_htmls << current_event_html;
+            event_open = false;
+        }
+    }
+
+    if (event_open) {
+        event_htmls << current_event_html;
+    }
+
+    return event_htmls;
 }
 
 }}}
