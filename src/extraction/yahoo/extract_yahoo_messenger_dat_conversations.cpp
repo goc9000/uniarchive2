@@ -44,7 +44,7 @@
 #include "protocols/yahoo/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
-#include "utils/html/parse_html_tag_lenient.h"
+#include "utils/html/parse_html_lenient.h"
 #include "utils/text/decoding.h"
 
 using namespace uniarchive2::intermediate_format;

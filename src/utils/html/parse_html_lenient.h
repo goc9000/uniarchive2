@@ -1,5 +1,5 @@
 /**
- * utils/html/parse_html_tag_lenient.h
+ * utils/html/parse_html_lenient.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_UTILS_HTML_PARSE_HTML_TAG_LENIENT_H
-#define UNIARCHIVE2_UTILS_HTML_PARSE_HTML_TAG_LENIENT_H
+#ifndef UNIARCHIVE2_UTILS_HTML_PARSE_HTML_LENIENT_H
+#define UNIARCHIVE2_UTILS_HTML_PARSE_HTML_LENIENT_H
 
 #include <vector>
 
@@ -36,4 +36,4 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text);
 
 }}}
 
-#endif //UNIARCHIVE2_UTILS_HTML_PARSE_HTML_TAG_LENIENT_H
+#endif //UNIARCHIVE2_UTILS_HTML_PARSE_HTML_LENIENT_H

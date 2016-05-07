@@ -1,5 +1,5 @@
 /**
- * utils/html/parse_html_tag_lenient.cpp
+ * utils/html/parse_html_lenient.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -11,7 +11,7 @@
 #include <QRegularExpression>
 
 #include "utils/language/invariant.h"
-#include "utils/html/parse_html_tag_lenient.h"
+#include "utils/html/parse_html_lenient.h"
 
 namespace uniarchive2 { namespace utils { namespace html {
 
