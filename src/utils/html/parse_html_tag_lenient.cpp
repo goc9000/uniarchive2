@@ -15,13 +15,7 @@
 
 namespace uniarchive2 { namespace utils { namespace html {
 
-bool parse_html_tag_lenient(
-    IMM(QString) tag_text,
-    QString& out_tag_name,
-    bool& out_open,
-    bool& out_closed,
-    QMap<QString, QString>& out_attributes
-) {
+ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
 #define TAG_NAME "[a-z._-][a-z0-9._-]*"
 #define VALUE_PATTERN "((?<dblq_value>\"[^\"]*\")|(?<quot_value>'[^']*')|(?<raw_value>(.(?! |/>|>))*))"
 #define ATTR_PATTERN "\\s+(?<attr_name>" TAG_NAME ")(?<has_value>=" VALUE_PATTERN ")?"
@@ -36,16 +30,20 @@ bool parse_html_tag_lenient(
     );
     static QRegularExpression attr_pattern(ATTR_PATTERN);
 
+    ParsedHTMLTagInfo tag_info;
+    tag_info.valid = false;
+
     auto match = tag_pattern.match(tag_text);
     if (!match.hasMatch()) {
-        return false;
+        return tag_info;
     }
 
-    out_tag_name = match.captured("tag_name");
-    out_open = !match.capturedLength("closed1");
-    out_closed = (match.capturedLength("closed1") > 0) || (match.capturedLength("closed2") > 0);
+    tag_info.valid = true;
+    tag_info.tagName = match.captured("tag_name");
+    tag_info.open = !match.capturedLength("closed1");
+    tag_info.closed = (match.capturedLength("closed1") > 0) || (match.capturedLength("closed2") > 0);
 
-    out_attributes = QMap<QString, QString>();
+    tag_info.attributes = QMap<QString, QString>();
 
     auto iter_matches = attr_pattern.globalMatch(match.captured("attributes"));
     while (iter_matches.hasNext()) {
@@ -68,10 +66,10 @@ bool parse_html_tag_lenient(
             invariant(!value.contains("&"), "Decoding HTML entities in values is not yet supported");
         }
 
-        out_attributes.insert(key, value);
+        tag_info.attributes.insert(key, value);
     }
 
-    return true;
+    return tag_info;
 #undef ATTR_PATTERN
 #undef VALUE_PATTERN
 #undef TAG_NAME

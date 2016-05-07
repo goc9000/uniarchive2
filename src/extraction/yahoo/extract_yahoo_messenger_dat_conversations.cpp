@@ -79,7 +79,7 @@ CEDE(TextSection) make_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
 CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code);
 CEDE(IntermediateFormatMessageContentItem) parse_html_tag(IMM(QString) tag_text);
-CEDE(FontTag) parse_font_tag(bool closed, const QMap<QString, QString>& attributes);
+CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo));
 CEDE(IntermediateFormatMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
 
 
@@ -362,33 +362,28 @@ CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sg
 }
 
 CEDE(IntermediateFormatMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
-    QString tag_name;
-    bool open;
-    bool closed;
-    QMap<QString, QString> attributes;
+    ParsedHTMLTagInfo tag_info = parse_html_tag_lenient(tag_text);
 
+    invariant(tag_info.valid, "Failed to parse tag: \"%s\"", qUtf8Printable(tag_text));
     invariant(
-        parse_html_tag_lenient(tag_text, tag_name, open, closed, attributes),
-        "Failed to parse tag: \"%s\"",
+        !tag_info.open || !tag_info.closed,
+        "Encountered unexpected self-closed tag: \"%s\"",
         qUtf8Printable(tag_text)
     );
-    invariant(!open || !closed, "Encountered unexpected self-closed tag: \"%s\"", qUtf8Printable(tag_text));
 
-    tag_name = tag_name.toLower();
-
-    if (tag_name == "font") {
-        return parse_font_tag(closed, attributes);
+    if (tag_info.tagName.toLower() == "font") {
+        return parse_font_tag(tag_info);
     }
 
-    invariant_violation("HTML tag not supported: \"%s\"", qUtf8Printable(tag_name));
+    invariant_violation("HTML tag not supported: \"%s\"", qUtf8Printable(tag_info.tagName));
 }
 
-CEDE(FontTag) parse_font_tag(bool closed, const QMap<QString, QString>& attributes) {
-    auto tag = make_unique<FontTag>(closed);
+CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    auto tag = make_unique<FontTag>(tag_info.closed);
 
-    for (IMM(auto) key : attributes.keys()) {
+    for (IMM(auto) key : tag_info.attributes.keys()) {
         QString norm_key = key.toLower();
-        QString value = attributes[key].trimmed();
+        QString value = tag_info.attributes[key].trimmed();
 
         if (norm_key == "face") {
             tag->faces = value.split(QRegularExpression("\\s*,\\s*"), QString::SkipEmptyParts);

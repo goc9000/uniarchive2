@@ -18,13 +18,15 @@
 
 namespace uniarchive2 { namespace utils { namespace html {
 
-bool parse_html_tag_lenient(
-    IMM(QString) tag_text,
-    QString& out_tag_name,
-    bool& out_open,
-    bool& out_closed,
-    QMap<QString, QString>& out_attributes
-);
+struct ParsedHTMLTagInfo {
+    bool valid;
+    QString tagName;
+    bool open;
+    bool closed;
+    QMap<QString, QString> attributes;
+};
+
+ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text);
 
 }}}
 
