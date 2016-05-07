@@ -38,6 +38,23 @@ QDomDocument load_xml_file(IMM(QString) filename) {
     return xml;
 }
 
+QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data) {
+    QDomDocument xml;
+    QString error_message;
+    int error_line, error_column;
+
+    if (!xml.setContent(raw_data, false, &error_message, &error_line, &error_column)) {
+        qFatal(
+            "Error parsing XML: %s (at line %d, column %d)",
+            qUtf8Printable(error_message),
+            error_line,
+            error_column
+        );
+    }
+
+    return xml;
+}
+
 QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_name) {
     QDomElement root_node = document.documentElement();
     invariant(

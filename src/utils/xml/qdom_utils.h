@@ -22,6 +22,7 @@
 namespace uniarchive2 { namespace utils { namespace xml {
 
 QDomDocument load_xml_file(IMM(QString) filename);
+QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data);
 
 QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_name);
 
