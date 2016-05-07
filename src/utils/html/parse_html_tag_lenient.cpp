@@ -20,18 +20,19 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
 #define VALUE_PATTERN "((?<dblq_value>\"[^\"]*\")|(?<quot_value>'[^']*')|(?<raw_value>(.(?! |/>|>))*))"
 #define ATTR_PATTERN "\\s+(?<attr_name>" TAG_NAME ")(?<has_value>=" VALUE_PATTERN ")?"
     static QRegularExpression tag_pattern(
-        "^\\s*<"\
+        "^<"\
         "(?<closed1>/)?"\
         "(?<tag_name>" TAG_NAME ")"\
         "(?<attributes>(" ATTR_PATTERN ")*)\\s*"\
         "(?<closed2>/)?"\
-        ">\\s*$",
+        ">$",
         QRegularExpression::CaseInsensitiveOption
     );
     static QRegularExpression attr_pattern(ATTR_PATTERN);
 
     ParsedHTMLTagInfo tag_info;
     tag_info.valid = false;
+    tag_info.originalText = tag_text;
 
     auto match = tag_pattern.match(tag_text);
     if (!match.hasMatch()) {
@@ -43,16 +44,15 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
     tag_info.open = !match.capturedLength("closed1");
     tag_info.closed = (match.capturedLength("closed1") > 0) || (match.capturedLength("closed2") > 0);
 
-    tag_info.attributes = QMap<QString, QString>();
-
     auto iter_matches = attr_pattern.globalMatch(match.captured("attributes"));
     while (iter_matches.hasNext()) {
         auto attr_match = iter_matches.next();
 
         QString key = attr_match.captured("attr_name");
-        QString value = "";
 
         if (attr_match.capturedLength("has_value")) {
+            QString value = "";
+
             if (attr_match.capturedLength("dblq_value")) {
                 value = attr_match.captured("dblq_value");
                 value = value.mid(1, value.length() - 2);
@@ -64,9 +64,11 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
             }
 
             invariant(!value.contains("&"), "Decoding HTML entities in values is not yet supported");
-        }
 
-        tag_info.attributes.insert(key, value);
+            tag_info.attributes.insert(key, value);
+        } else {
+            tag_info.noValueAttributes.push_back(key);
+        }
     }
 
     return tag_info;

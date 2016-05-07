@@ -11,10 +11,14 @@
 #ifndef UNIARCHIVE2_UTILS_HTML_PARSE_HTML_TAG_LENIENT_H
 #define UNIARCHIVE2_UTILS_HTML_PARSE_HTML_TAG_LENIENT_H
 
+#include <vector>
+
 #include <QMap>
 #include <QString>
 
 #include "utils/language/shortcuts.h"
+
+using namespace std;
 
 namespace uniarchive2 { namespace utils { namespace html {
 
@@ -24,6 +28,8 @@ struct ParsedHTMLTagInfo {
     bool open;
     bool closed;
     QMap<QString, QString> attributes;
+    vector<QString> noValueAttributes;
+    QString originalText;
 };
 
 ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text);
