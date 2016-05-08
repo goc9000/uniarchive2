@@ -5,7 +5,7 @@ Supported Formats Status
 | Archive Format  | Format Variant | Protocol                   | Status      |
 |-----------------|----------------|----------------------------|-------------|
 | Adium           |                | Jabber, Yahoo              | Planned     |
-| Digsby          | HTML           | Digsby, Jabber, MSN, Yahoo | In Progress |
+| Digsby          | HTML           | Digsby, Jabber, MSN, Yahoo | Implemented |
 | Empathy         |                | Empathy                    | Planned     |
 | Facebook        | DYI            | Facebook                   | Implemented |
 | MSN Messenger   | XML            | MSN Messenger              | Implemented |
