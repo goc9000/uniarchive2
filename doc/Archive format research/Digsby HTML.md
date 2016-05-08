@@ -58,6 +58,74 @@ Distribution of Conversations Across Files
 - This is the same system used by Yahoo Messenger
 
 
+File Format
+-----------
+
+- Malformed XHTML file
+- General form:
+
+  ```xhtml
+  <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+      "http://www.w3.org/TR/html4/strict.dtd">
+  <HTML>
+     <HEAD>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <TITLE>IM Logs with remote_peer on YYYY-MM-DD</TITLE>
+     <style>
+       .buddy { font-weight: bold; }
+       .buddy:after { content: ":" }
+  
+       .time {
+          color: #a0a0a0;
+          font-family: monaco, courier new, monospace;
+          font-size: 75%;
+       }
+       .time:hover { color: black; }
+  
+       .outgoing { background-color: #efefef; }
+       .incoming { background-color: #ffffff; }
+     </style>
+     <script type="text/javascript">
+  //<![CDATA[
+      function convert_time(datetime){
+          var dt = datetime.split(" ");
+          var date = dt[0].split("-");
+          var time = dt[1].split(":");
+          var t = new Date;
+          t.setUTCFullYear(date[0],date[1]-1,date[2]);
+          t.setUTCHours(time[0],time[1],time[2]);
+          return t.toLocaleTimeString();
+      }
+  
+      function utc_to_local(){
+          var node;
+          for (var i=0; i<document.body.childNodes.length; i++){
+              node = document.body.childNodes[i];
+              if(node.nodeType == 1 && node.className.match("message")){
+                  var showtime = convert_time(node.getAttribute('timestamp'));
+                  var newspan = '<span class="time">(' + showtime + ') </span>';
+                  var msgnode = node;
+                  msgnode.innerHTML = newspan + msgnode.innerHTML;
+              }
+          }
+      }
+  //]]>
+     </script>
+     </HEAD>
+     <BODY onload="utc_to_local()">
+  <div class="outgoing message" ...>...</div>
+  <div class="incoming message" ...>...</div>
+  <div class="incoming message" ...>...</div>
+  ...
+  <div class="incoming message" ...>...</div>
+  ```
+
+- For conferences, the `<title>` changes to " `Chat in ` *peer_name* `-` *unix_timestamp* ` on ` *YYYY-mm-dd* "
+- **Anomaly**: **There is never a closing `</BODY></HTML>` sequence** (thus the file is always malformed)
+  - Explanation: note how the event `<div>`s are unaligned. Very likely, a fixed HTML header (ending at `<BODY onload="utc_to_local()">`) is written when the archive is created, and, subsequently, event `<div>`s are simply appended to the file without re-reading the structure.
+
+
 ---
 
 WORK IN PROGRESS
