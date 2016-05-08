@@ -15,9 +15,11 @@
 #include <QString>
 #include <QList>
 
+#include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
-
 #include "utils/external_libs/optional.hpp"
+
+using namespace uniarchive2::graphics;
 
 using namespace std::experimental;
 
@@ -26,7 +28,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 struct FontTag : Markup {
 public:
     QList<QString> faces;
-    optional<QString> size;
+    QString size;
+    optional<Color> color;
+    QString css;
+
     bool closed;
 
     FontTag(bool closed = false);

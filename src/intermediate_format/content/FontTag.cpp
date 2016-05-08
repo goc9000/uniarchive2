@@ -21,20 +21,22 @@ void FontTag::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
 
     stream.nospace() << "[" << (closed ? "/" : "") << "Font";
-    if (!faces.isEmpty() || size) {
-        stream << ":";
-    }
+
+    int any = 0;
     if (faces.length() > 0) {
-        stream << qUtf8Printable(faces[0]);
+        stream << (any++ ? ":" : ",") << qUtf8Printable(faces[0]);
         if (faces.length() > 1) {
             stream << "+";
         }
-        if (size) {
-            stream << ',';
-        }
     }
-    if (size) {
-        stream << qUtf8Printable(*size);
+    if (!size.isEmpty()) {
+        stream << (any++ ? ":" : ",") << qUtf8Printable(size);
+    }
+    if (color) {
+        stream << (any++ ? ":" : ",") << *color;
+    }
+    if (!css.isEmpty()) {
+        stream << (any++ ? ":" : ",") << "CSS";
     }
     stream << "]";
 }

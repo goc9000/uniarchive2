@@ -21,6 +21,7 @@
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/content/BoldTag.h"
 #include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/FontTag.h"
 #include "intermediate_format/content/ItalicTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
@@ -71,6 +72,7 @@ QStringList partially_parse_events(QTextStream& mut_stream);
 CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
+CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
 IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename) {
@@ -335,10 +337,33 @@ CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInf
             );
             return make_unique<CSSStyleTag>(tag_info.attributes["style"]);
         }
+    } else if (tag_info.tagName == "font") {
+        return parse_font_tag(tag_info);
     }
 
     // If the tag is not recognized, return it as unparsed text
     return make_unique<TextSection>(tag_info.originalText);
+}
+
+CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    invariant(tag_info.tagName == "font", "This function should be run on <font> tags only");
+
+    auto font_tag = make_unique<FontTag>(tag_info.closed);
+
+    for (IMM(QString) key : tag_info.attributes.keys()) {
+        QString value = tag_info.attributes[key].trimmed();
+        if (key == "color") {
+            font_tag->color = Color::fromHTMLFormat(value);
+        } else if (key == "face") {
+            font_tag->faces = value.split(QRegularExpression("\\s*,\\s*"), QString::SkipEmptyParts);
+        } else if (key == "style") {
+            font_tag->css = value;
+        } else {
+            invariant_violation("Unhandled <font> attribute \"%s\"", qUtf8Printable(key));
+        }
+    }
+
+    return font_tag;
 }
 
 }}}
