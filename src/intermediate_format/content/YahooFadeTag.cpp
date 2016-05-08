@@ -17,14 +17,13 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 YahooFadeTag::YahooFadeTag(bool closed, IMM(QList<Color>) colors)
     : closed(closed), colors(colors) {
-    invariant(closed || !colors.isEmpty(), "Can't instantiate FADE tag without any colors");
 }
 
 void YahooFadeTag::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
 
     stream.nospace() << "[" << (closed ? "/" : "") << "Fade";
-    if (!closed) {
+    if (!closed && !colors.isEmpty()) {
         stream << ":" << colors[0];
         if (colors.length() > 1) {
             stream << "," << colors[1];

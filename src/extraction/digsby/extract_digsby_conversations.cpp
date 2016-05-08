@@ -27,6 +27,7 @@
 #include "intermediate_format/content/LineBreakTag.h"
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
+#include "intermediate_format/content/YahooFadeTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFCorruptedMessageEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
@@ -367,6 +368,8 @@ CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInf
         } else {
             return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
         }
+    } else if (tag_info.tagName == "fade") {
+        return make_unique<YahooFadeTag>(tag_info.closed);
     }
 
     // If the tag is not recognized, return it as unparsed text
