@@ -372,6 +372,11 @@ CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInf
         return make_unique<YahooFadeTag>(tag_info.closed);
     }
 
+    if (tag_info.closed) {
+        // Skip unrecognized closing tags (these are added by Digsby incorrectly)
+        return unique_ptr<IntermediateFormatMessageContentItem>();
+    }
+
     // If the tag is not recognized, return it as unparsed text
     return make_unique<TextSection>(tag_info.originalText);
 }
