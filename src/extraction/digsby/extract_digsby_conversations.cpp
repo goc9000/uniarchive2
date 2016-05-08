@@ -16,6 +16,7 @@
 #include <QStringList>
 #include <QTextCodec>
 #include <QTextStream>
+#include <QUrl>
 
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "intermediate_format/content/TextSection.h"
@@ -23,6 +24,7 @@
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/FontTag.h"
 #include "intermediate_format/content/ItalicTag.h"
+#include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFCorruptedMessageEvent.h"
@@ -336,7 +338,7 @@ CEDE(TextSection) parse_text_section(IMM(QString) text) {
 
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     invariant(!tag_info.open || !tag_info.closed, "Did not expect self-closing tags in Digsby archives");
-    
+
     if (tag_info.tagName == "b") {
         return make_unique<BoldTag>(tag_info.closed);
     } else if (tag_info.tagName == "i") {
@@ -356,6 +358,12 @@ CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInf
         }
     } else if (tag_info.tagName == "font") {
         return parse_font_tag(tag_info);
+    } else if (tag_info.tagName == "a") {
+        if (tag_info.closed) {
+            return make_unique<LinkTag>(true);
+        } else {
+            return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
+        }
     }
 
     // If the tag is not recognized, return it as unparsed text
