@@ -30,6 +30,7 @@
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocols.h"
 #include "utils/external_libs/make_unique.hpp"
+#include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
 #include "utils/text/decoding.h"
 
@@ -43,6 +44,7 @@ using namespace uniarchive2::protocols::digsby;
 using namespace uniarchive2::protocols::jabber;
 using namespace uniarchive2::protocols::msn;
 using namespace uniarchive2::protocols::yahoo;
+using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
 
 namespace uniarchive2 { namespace extraction { namespace digsby {
@@ -64,6 +66,7 @@ QStringList partially_parse_events(QTextStream& mut_stream);
 
 CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
+CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
 IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename) {
@@ -292,10 +295,27 @@ CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(Intermedi
 IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html) {
     IntermediateFormatMessageContent content;
 
-    // Temporary hack
-    content.items.push_back(make_unique<TextSection>(content_html));
+    auto lenient_parse_result = parse_html_lenient(content_html);
+
+    for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
+        if (i > 0) {
+            auto tag = parse_markup_tag(lenient_parse_result.tags[i-1]);
+            if (tag) {
+                content.items.push_back(move(tag));
+            }
+        }
+        if (!lenient_parse_result.textSections[i].isEmpty()) {
+            content.items.push_back(make_unique<TextSection>(lenient_parse_result.textSections[i]));
+        }
+    }
+
 
     return content;
+}
+
+CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    // If the tag is not recognized, return it as unparsed text
+    return make_unique<TextSection>(tag_info.originalText);
 }
 
 }}}
