@@ -39,3 +39,34 @@ Filename Format
     - Note that the remote protocol is not specified
   - *unix_timestamp* is the conference start date in Unix timestamp format (thus UTC)
     - **Note**: thus, conference time offset can be obtained
+
+
+Other File Properties
+---------------------
+
+- Last modified date
+  - Nearly always corresponds to date of last event in file (indicating events are appended in real time as opposed to the whole file being written at once; file structure also confirms it)
+  - Unreliable due to FAT timezone problem
+
+
+Distribution of Conversations Across Files
+------------------------------------------
+
+- A file contains all conversations with that peer for a day
+- When the date rolls over at midnight, *local time*, events start being written to a new file
+  - Therefore, conversations within a file need to be split, and conversations straddling files need to be reassembled
+- This is the same system used by Yahoo Messenger
+
+
+---
+
+WORK IN PROGRESS
+
+---
+
+
+General Notes
+-------------
+
+- A very problematic format due to bugs that cause corruption and ambiguity
+- Seems to draw inspiration from the Yahoo archive format (same distribution algorithm, senders always specified as accounts)
