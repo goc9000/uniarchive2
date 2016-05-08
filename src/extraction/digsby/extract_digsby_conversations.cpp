@@ -71,6 +71,7 @@ QStringList partially_parse_events(QTextStream& mut_stream);
 
 CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
+CEDE(TextSection) parse_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
@@ -310,13 +311,27 @@ IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html
                 content.items.push_back(move(tag));
             }
         }
-        if (!lenient_parse_result.textSections[i].isEmpty()) {
-            content.items.push_back(make_unique<TextSection>(lenient_parse_result.textSections[i]));
+        auto section = parse_text_section(lenient_parse_result.textSections[i]);
+        if (section) {
+            content.items.push_back(move(section));
         }
     }
 
-
     return content;
+}
+
+CEDE(TextSection) parse_text_section(IMM(QString) text) {
+    // Remove \n's because whenever these appear, <br>'s are also present
+    static QRegularExpression trim_pattern("^\n*(.*?)\n*$");
+    auto match = trim_pattern.match(text);
+    invariant(match.hasMatch(), "Expected to always get match here");
+
+    QString trimmed = match.captured(1);
+    if (trimmed.isEmpty()) {
+        return unique_ptr<TextSection>();
+    }
+
+    return make_unique<TextSection>(trimmed);
 }
 
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
