@@ -335,6 +335,8 @@ CEDE(TextSection) parse_text_section(IMM(QString) text) {
 }
 
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    invariant(!tag_info.open || !tag_info.closed, "Did not expect self-closing tags in Digsby archives");
+    
     if (tag_info.tagName == "b") {
         return make_unique<BoldTag>(tag_info.closed);
     } else if (tag_info.tagName == "i") {
