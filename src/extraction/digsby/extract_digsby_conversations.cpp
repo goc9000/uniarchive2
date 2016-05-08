@@ -18,6 +18,10 @@
 #include <QTextStream>
 
 #include "extraction/digsby/extract_digsby_conversations.h"
+#include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/IFCorruptedMessageEvent.h"
+#include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/digsby/account_name.h"
 #include "protocols/jabber/account_name.h"
@@ -31,6 +35,8 @@
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::content;
+using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::digsby;
@@ -56,6 +62,9 @@ void verify_xml_header(QTextStream& mut_stream);
 void seek_start_of_events(QTextStream& mut_stream);
 QStringList partially_parse_events(QTextStream& mut_stream);
 
+CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation);
+IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
+
 
 IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename) {
     IntermediateFormatConversation conversation = init_conversation(filename);
@@ -71,6 +80,10 @@ IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename
     verify_xml_header(stream);
     seek_start_of_events(stream);
     QStringList event_htmls = partially_parse_events(stream);
+
+    for (IMM(QString) event_html : event_htmls) {
+        conversation.events.push_back(parse_event(event_html, conversation));
+    }
 
     return conversation;
 }
@@ -239,6 +252,50 @@ QStringList partially_parse_events(QTextStream& mut_stream) {
     }
 
     return event_htmls;
+}
+
+CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation) {
+    static QRegularExpression pat_message_html(
+        "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"
+            "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$",
+        QRegularExpression::DotMatchesEverythingOption
+    );
+
+    auto match = pat_message_html.match(event_html);
+    if (!match.hasMatch()) {
+        return make_unique<IFCorruptedMessageEvent>(ApparentTime(), conversation.events.size(), event_html.toUtf8());
+    }
+
+    QStringList classes = match.captured(1).trimmed().split(QChar(' '), QString::SkipEmptyParts);
+    invariant(
+        classes.contains("message"),
+        "Event of unsupported type (is not message): %s", qUtf8Printable(event_html)
+    );
+    invariant(classes.contains("incoming") || classes.contains("outgoing"), "Missing class 'incoming' or 'outgoing'");
+
+    QDateTime datetime = QDateTime::fromString(match.captured(3), "yyyy-MM-dd HH:mm:ss");
+    datetime.setTimeSpec(Qt::UTC);
+    invariant(
+        datetime.isValid(),
+        "Invalid timestamp '%s' (must be yyyy-mm-dd hh:mm:ss)",
+        qUtf8Printable(match.captured(3))
+    );
+
+    return make_unique<IFMessageEvent>(
+        ApparentTime(datetime),
+        conversation.events.size(),
+        make_unique<SubjectGivenAsAccount>(parse_account(conversation.protocol, match.captured(4))),
+        move(parse_message_content(match.captured(5)))
+    );
+}
+
+IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html) {
+    IntermediateFormatMessageContent content;
+
+    // Temporary hack
+    content.items.push_back(make_unique<TextSection>(content_html));
+
+    return content;
 }
 
 }}}
