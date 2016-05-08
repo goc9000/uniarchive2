@@ -38,6 +38,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/IntermediateFormatMessageContentItem.h
         src/intermediate_format/content/ItalicTag.cpp
         src/intermediate_format/content/ItalicTag.h
+        src/intermediate_format/content/LineBreakTag.cpp
+        src/intermediate_format/content/LineBreakTag.h
         src/intermediate_format/content/LinkTag.cpp
         src/intermediate_format/content/LinkTag.h
         src/intermediate_format/content/Markup.h

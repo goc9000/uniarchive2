@@ -24,6 +24,7 @@
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/FontTag.h"
 #include "intermediate_format/content/ItalicTag.h"
+#include "intermediate_format/content/LineBreakTag.h"
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
@@ -339,7 +340,9 @@ CEDE(TextSection) parse_text_section(IMM(QString) text) {
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     invariant(!tag_info.open || !tag_info.closed, "Did not expect self-closing tags in Digsby archives");
 
-    if (tag_info.tagName == "b") {
+    if (tag_info.tagName == "br") {
+        return make_unique<LineBreakTag>();
+    } else if (tag_info.tagName == "b") {
         return make_unique<BoldTag>(tag_info.closed);
     } else if (tag_info.tagName == "i") {
         return make_unique<ItalicTag>(tag_info.closed);
