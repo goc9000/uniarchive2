@@ -19,6 +19,10 @@
 
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/content/BoldTag.h"
+#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/ItalicTag.h"
+#include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFCorruptedMessageEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
@@ -314,6 +318,25 @@ IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html
 }
 
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    if (tag_info.tagName == "b") {
+        return make_unique<BoldTag>(tag_info.closed);
+    } else if (tag_info.tagName == "i") {
+        return make_unique<ItalicTag>(tag_info.closed);
+    } else if (tag_info.tagName == "u") {
+        return make_unique<UnderlineTag>(tag_info.closed);
+    } else if (tag_info.tagName == "span") {
+        if (tag_info.closed) {
+            return make_unique<CSSStyleTag>(true);
+        } else {
+            invariant(
+                tag_info.attributes.empty() ||
+                ((tag_info.attributes.size() == 1) && (tag_info.attributes.keys().first() == "style")),
+                "Expected <span style=\"(css)\"> to be the only use of the SPAN tag"
+            );
+            return make_unique<CSSStyleTag>(tag_info.attributes["style"]);
+        }
+    }
+
     // If the tag is not recognized, return it as unparsed text
     return make_unique<TextSection>(tag_info.originalText);
 }
