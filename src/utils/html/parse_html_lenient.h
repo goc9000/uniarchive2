@@ -30,9 +30,21 @@ struct ParsedHTMLTagInfo {
     QMap<QString, QString> attributes;
     vector<QString> noValueAttributes;
     QString originalText;
+
+    ParsedHTMLTagInfo(): valid(false), open(false), closed(false) {};
+};
+
+// There will always be 1 more textsection than tags. The significance is that the text is composed of the following
+// elements: textSections[0] tags[0] textSections[1] tags[1] etc.. tags[N_tags-1] textSections[N_tags]
+struct ParsedHTMLInfo {
+    vector<QString> textSections;
+    vector<ParsedHTMLTagInfo> tags;
+
+    ParsedHTMLInfo() {};
 };
 
 ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text);
+ParsedHTMLInfo parse_html_lenient(IMM(QString) html_text);
 
 }}}
 

@@ -8,6 +8,7 @@
  * Licensed under the GPL-3
  */
 
+#include <QChar>
 #include <QRegularExpression>
 
 #include "utils/language/invariant.h"
@@ -74,6 +75,42 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
 #undef ATTR_PATTERN
 #undef VALUE_PATTERN
 #undef TAG_NAME
+}
+
+ParsedHTMLInfo parse_html_lenient(IMM(QString) html_text) {
+    ParsedHTMLInfo parsed_html;
+
+    QString current_text = "";
+    int position = 0;
+
+    while (true) {
+        int next_pos = html_text.indexOf(QChar('<'), position);
+        if (next_pos < 0) {
+            break;
+        }
+        int next_pos2 = html_text.indexOf(QChar('>'), next_pos);
+        if (next_pos2 < 0) {
+            break;
+        }
+
+        ParsedHTMLTagInfo tag_info = parse_html_tag_lenient(html_text.mid(next_pos, next_pos2 - next_pos + 1));
+        if (!tag_info.valid) {
+            current_text += html_text.mid(position, next_pos - position + 1);
+            position = next_pos + 1;
+            continue;
+        }
+
+        current_text += html_text.mid(position, next_pos - position);
+        parsed_html.textSections.push_back(decode_html_entities(current_text));
+        parsed_html.tags.push_back(tag_info);
+        current_text.clear();
+        position = next_pos2 + 1;
+    }
+
+    current_text += html_text.mid(position);
+    parsed_html.textSections.push_back(decode_html_entities(current_text));
+
+    return parsed_html;
 }
 
 }}}
