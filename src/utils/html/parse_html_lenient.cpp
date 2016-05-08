@@ -11,6 +11,7 @@
 #include <QRegularExpression>
 
 #include "utils/language/invariant.h"
+#include "utils/html/entities.h"
 #include "utils/html/parse_html_lenient.h"
 
 namespace uniarchive2 { namespace utils { namespace html {
@@ -63,9 +64,7 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
                 value = attr_match.captured("raw_value");
             }
 
-            invariant(!value.contains("&"), "Decoding HTML entities in values is not yet supported");
-
-            tag_info.attributes.insert(key, value);
+            tag_info.attributes.insert(key, decode_html_entities(value));
         } else {
             tag_info.noValueAttributes.push_back(key);
         }
