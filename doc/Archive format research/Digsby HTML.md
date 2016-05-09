@@ -159,6 +159,11 @@ Event Format
     - `<span>`: Only used to specify CSS (never any attribute other than `style`)
       - **Anomaly**: Digsby protocol messages contain a `<span>` with no attributes
     - `<font>`: Any combination of the attributes `face`, `color` and `style` may appear. The `style` itself is used to specify the face, color or size.
+      - **Anomaly**: A strange alternate form has been observed, looking like this:
+      
+        `<font bdyencid-0 bdpk-6491815c1d2d43b0152e9648a6773d842e63d59c3f4862c21b21194c70aff177 bdch-44768887836493963772329000228050>`
+
+        No idea what the pseudo-attributes represent or whether they can be decoded.
     - `<fade>`: Seems to represent the Yahoo `<FADE>` tag, but the colors are never transmitted (!)
   - Tags are generally closed correctly (except for `<br>`, which is written as-is, i.e. not self-closed)
 
