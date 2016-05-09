@@ -17,6 +17,7 @@ namespace uniarchive2 { namespace protocols {
 
 enum class ArchiveFormats {
     INVALID = 0,
+    ADIUM,
     DIGSBY,
     FACEBOOK_DYI,
     MSN_MESSENGER_XML,

@@ -18,6 +18,8 @@ QString name_for_archive_format(ArchiveFormats protocol) {
     switch (protocol) {
         case ArchiveFormats::INVALID:
             return "(invalid)";
+        case ArchiveFormats::ADIUM:
+            return "Adium";
         case ArchiveFormats::DIGSBY:
             return "Digsby";
         case ArchiveFormats::FACEBOOK_DYI:

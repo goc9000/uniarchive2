@@ -4,6 +4,7 @@
 #include <QDirIterator>
 #include <QString>
 
+#include "extraction/adium/extract_adium_conversations.h"
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
@@ -11,6 +12,7 @@
 #include "utils/language/shortcuts.h"
 
 using namespace std;
+using namespace uniarchive2::extraction::adium;
 using namespace uniarchive2::extraction::digsby;
 using namespace uniarchive2::extraction::facebook;
 using namespace uniarchive2::extraction::msn;
@@ -21,6 +23,10 @@ int main() {
 
     vector<IntermediateFormatConversation> convos;
 
+    QDirIterator adium_files(QT_STRINGIFY(TEST_DATA_DIR) "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
+    while (adium_files.hasNext()) {
+        convos.push_back(extract_adium_conversation(adium_files.next()));
+    }
     QDirIterator digsby_files(QT_STRINGIFY(TEST_DATA_DIR) "/digsby", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
     while (digsby_files.hasNext()) {
         convos.push_back(extract_digsby_conversation(digsby_files.next()));
