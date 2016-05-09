@@ -43,6 +43,7 @@ public:
     unique_ptr<ApparentSubject> identity;
     vector<unique_ptr<ApparentSubject>> declaredPeers;
     optional<bool> isConference;
+    optional<ApparentTime> declaredStartDate;
     optional<QString> originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
     optional<unsigned int> numConversationInFile;

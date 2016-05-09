@@ -35,6 +35,7 @@ IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
     }
 
     convo.isConference = prototype.isConference;
+    convo.declaredStartDate = prototype.declaredStartDate;
     convo.originalFilename = prototype.originalFilename;
     convo.fileLastModifiedTime = prototype.fileLastModifiedTime;
     convo.numConversationInFile = prototype.numConversationInFile;
@@ -72,6 +73,9 @@ QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo) {
 
     if ((bool)convo.isConference) {
         stream << "\tIs conference: " << *convo.isConference << "\n";
+    }
+    if ((bool)convo.declaredStartDate) {
+        stream << "\tDeclared start date: " << *convo.declaredStartDate << "\n";
     }
     if ((bool)convo.originalFilename) {
         stream << "\tOriginal filename: " << *convo.originalFilename << "\n";

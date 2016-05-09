@@ -37,6 +37,7 @@ namespace uniarchive2 { namespace extraction { namespace adium {
 struct InfoFromFilename {
     FullAccountName identity;
     FullAccountName peer;
+    ApparentTime convoStartDate;
 };
 
 IntermediateFormatConversation init_conversation(IMM(QString) filename);
@@ -65,6 +66,8 @@ IntermediateFormatConversation init_conversation(IMM(QString) filename) {
         ApparentTime::Reference::UNKNOWN
     );
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
+    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
+    conversation.declaredStartDate = info.convoStartDate;
 
     return conversation;
 }
@@ -91,6 +94,24 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
 
     IMProtocols protocol = parse_protocol(proto_and_id_match.captured(1));
     info.identity = parse_account_generic(protocol, proto_and_id_match.captured(2));
+
+    static QRegularExpression filename_pattern(
+        "^(.*) \\((\\d{4}-\\d{2}-\\d{2}T\\d{2}.\\d{2}.\\d{2}(|Z|[+-]\\d+))\\)[.]xml$"
+    );
+    auto filename_match = filename_pattern.match(base_name);
+    invariant(
+        filename_match.hasMatch(),
+        "Expected archive filename to match pattern \"account_name (YYYY-mm-ddThh.mm.ss+offset).xml\", found \"%s\"",
+        qUtf8Printable(base_name)
+    );
+
+    info.peer = parse_account_generic(protocol, filename_match.captured(1));
+
+    QDateTime datetime = QDateTime::fromString(filename_match.captured(2), Qt::ISODate);
+    invariant(datetime.isValid(), "Could not parse XML date \"%s\"", qUtf8Printable(filename_match.captured(2)));
+
+    info.convoStartDate = ApparentTime(datetime);
+
     return info;
 }
 
