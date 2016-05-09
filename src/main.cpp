@@ -23,8 +23,7 @@ int main() {
 
     QDirIterator digsby_files(QT_STRINGIFY(TEST_DATA_DIR) "/digsby", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
     while (digsby_files.hasNext()) {
-        auto file_convos = extract_digsby_conversations(digsby_files.next());
-        move(file_convos.begin(), file_convos.end(), back_inserter(convos));
+        convos.push_back(extract_digsby_conversation(digsby_files.next()));
     }
 
     QDirIterator fb_files(QT_STRINGIFY(TEST_DATA_DIR) "/facebook", QStringList() << "messages.htm", QDir::Files, QDirIterator::Subdirectories);
