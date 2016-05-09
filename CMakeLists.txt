@@ -107,6 +107,8 @@ set(SOURCE_FILES
         src/protocols/FullAccountName.h
         src/protocols/IMProtocols.cpp
         src/protocols/IMProtocols.h
+        src/protocols/parse_account_generic.cpp
+        src/protocols/parse_account_generic.h
         src/utils/external_libs/make_unique.hpp
         src/utils/external_libs/optional.hpp
         src/utils/html/entities.cpp

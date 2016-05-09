@@ -33,11 +33,9 @@
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/digsby/account_name.h"
-#include "protocols/jabber/account_name.h"
-#include "protocols/msn/account_name.h"
-#include "protocols/yahoo/account_name.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocols.h"
+#include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
@@ -50,9 +48,6 @@ using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::digsby;
-using namespace uniarchive2::protocols::jabber;
-using namespace uniarchive2::protocols::msn;
-using namespace uniarchive2::protocols::yahoo;
 using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
 
@@ -138,7 +133,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     );
 
     IMProtocols protocol = parse_protocol(protocol_folder);
-    info.identity = parse_account(protocol, identity_folder);
+    info.identity = parse_account_generic(protocol, identity_folder);
 
     if (peer_folder == "Group Chats") {
         info.isConference = true;
@@ -154,7 +149,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
             qUtf8Printable(base_name)
         );
 
-        info.peer = parse_account(protocol, group_chat_match.captured(1));
+        info.peer = parse_account_generic(protocol, group_chat_match.captured(1));
     } else {
         info.isConference = false;
         static QRegularExpression pat_base_name(
@@ -176,7 +171,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         );
 
         IMProtocols peer_protocol = parse_protocol(remote_peer_match.captured(2));
-        info.peer = parse_account(peer_protocol, remote_peer_match.captured(1));
+        info.peer = parse_account_generic(peer_protocol, remote_peer_match.captured(1));
     }
 
     return info;
@@ -193,20 +188,6 @@ IMProtocols parse_protocol(IMM(QString) protocol_name) {
         default:
             invariant_violation("Unsupported protocol specified in Digsby: \"%s\"", qUtf8Printable(protocol_name));
     };
-}
-
-FullAccountName parse_account(IMProtocols protocol, IMM(QString) account_name) {
-    switch (protocol) {
-        case IMProtocols::DIGSBY: return parse_digsby_account(account_name);
-        case IMProtocols::JABBER: return parse_jabber_account(account_name);
-        case IMProtocols::MSN: return parse_msn_account(account_name);
-        case IMProtocols::YAHOO: return parse_yahoo_account(account_name);
-        default:
-            invariant_violation(
-                "Unsupported protocol for parsing an account in Digsby: %s",
-                qUtf8Printable(name_for_im_protocol(protocol))
-            );
-    }
 }
 
 void verify_xml_header(QTextStream& mut_stream) {
@@ -298,7 +279,7 @@ CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(Intermedi
     return make_unique<IFMessageEvent>(
         ApparentTime(datetime),
         conversation.events.size(),
-        make_unique<SubjectGivenAsAccount>(parse_account(conversation.protocol, match.captured(4))),
+        make_unique<SubjectGivenAsAccount>(parse_account_generic(conversation.protocol, match.captured(4))),
         move(parse_message_content(match.captured(5)))
     );
 }
