@@ -126,11 +126,43 @@ File Format
   - Explanation: note how the event `<div>`s are unaligned. Very likely, a fixed HTML header (ending at `<BODY onload="utc_to_local()">`) is written when the archive is created, and, subsequently, event `<div>`s are simply appended to the file without re-reading the structure.
 
 
----
+Event Format
+------------
 
-WORK IN PROGRESS
+- **Major problem**: **Due to a bug, events occasionally get corrupted!**
+  - The specific way in which this happens: a random number of characters are removed from the beginning the HTML corresponding to the `<div>` for the event
+    - Educated speculation: probably a circular buffer where wraparound is not handled correctly in some cases
+  - Occurs rarely (about 1 in 9200 events)
+  - May occur in consecutive messages, but this is very rare (observed in only 1 conversation)
 
----
+- Events always start on new line (this helps with recovery from the above bug)
+- Only message events observed
+- General format example (note: has been reformatted, in reality all tags are usually on a single line):
+
+  ```html
+  <div class="incoming message" auto="False" timestamp="2010-02-05 23:53:08">
+    <span class="buddy">buddy_account</span>
+    <span class="msgcontent">hello world</span>
+  </div>
+  ```
+
+- `class`: Only two observed values are `incoming message` and `outgoing message`
+- `auto`: Unclear what this stands for. Perhaps autoreply?
+- `timestamp`: Definitely UTC
+  - Evidence: the embedded JavaScript code parses it as UTC and converts it to local time for display
+- `buddy`: Always the sender account name
+- `msgcontent`: The content, in HTML format (may contain tags)
+  - **Note**: Sometimes this contains newlines, but they are always doubled by `<br>` tags, so they should be ignored
+  - **Bug**: Sometimes, tag-like constructs entered by the user (e.g. "`<checks agenda>`") are **not escaped** and, what's worse, a spurious end tag is added for them at the end of the message, e.g. `</checks>` in this case.
+  - Observed tags:
+    - `<b>`, `<i>`, `<u>`, `<a>`, `<br>`: These work as normal
+    - `<span>`: Only used to specify CSS (never any attribute other than `style`)
+      - **Anomaly**: Digsby protocol messages contain a `<span>` with no attributes
+    - `<font>`: Any combination of the attributes `face`, `color` and `style` may appear. The `style` itself is used to specify the face, color or size.
+    - `<fade>`: Seems to represent the Yahoo `<FADE>` tag, but the colors are never transmitted (!)
+  - Tags are generally closed correctly (except for `<br>`, which is written as-is, i.e. not self-closed)
+
+- **Note**: On Yahoo at least, pings from the other side are interpreted as a text message containing the literal text `<ding>`.
 
 
 General Notes
