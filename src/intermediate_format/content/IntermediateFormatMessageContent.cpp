@@ -17,6 +17,12 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 IntermediateFormatMessageContent::IntermediateFormatMessageContent() {
 }
 
+void IntermediateFormatMessageContent::addItem(TAKE(IntermediateFormatMessageContentItem) item) {
+    if (item) {
+        items.push_back(move(item));
+    }
+}
+
 QDebug operator<< (QDebug stream, IMM(IntermediateFormatMessageContent) content) {
     QDebugStateSaver saver(stream);
     stream.nospace();

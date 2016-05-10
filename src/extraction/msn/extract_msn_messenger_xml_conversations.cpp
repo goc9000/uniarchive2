@@ -233,10 +233,10 @@ IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element
 
     auto text_element = child_elem(event_element, "Text");
     if (text_element.hasAttribute("Style")) {
-        content.items.push_back(make_unique<CSSStyleTag>(read_string_attr(text_element, "Style")));
+        content.addItem(make_unique<CSSStyleTag>(read_string_attr(text_element, "Style")));
     }
 
-    content.items.push_back(make_unique<TextSection>(read_text_only_content(text_element)));
+    content.addItem(make_unique<TextSection>(read_text_only_content(text_element)));
 
     return content;
 }

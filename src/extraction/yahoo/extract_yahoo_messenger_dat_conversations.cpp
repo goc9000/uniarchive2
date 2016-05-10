@@ -287,19 +287,16 @@ IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data
         auto match = iterator.next();
 
         if (match.capturedStart(0) > last_text_pos) {
-            content.items.push_back(make_text_section(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos)));
+            content.addItem(make_text_section(text.mid(last_text_pos, match.capturedStart(0) - last_text_pos)));
         }
 
-        auto markup_tag = parse_markup_tag(match);
-        if (markup_tag) {
-            content.items.push_back(move(markup_tag));
-        }
+        content.addItem(parse_markup_tag(match));
 
         last_text_pos = match.capturedEnd(0);
     }
 
     if (text.length() > last_text_pos) {
-        content.items.push_back(make_text_section(text.mid(last_text_pos, text.length() - last_text_pos)));
+        content.addItem(make_text_section(text.mid(last_text_pos, text.length() - last_text_pos)));
     }
 
     return content;

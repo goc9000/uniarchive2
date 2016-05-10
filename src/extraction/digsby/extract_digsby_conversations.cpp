@@ -291,15 +291,9 @@ IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html
 
     for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
         if (i > 0) {
-            auto tag = parse_markup_tag(lenient_parse_result.tags[i-1]);
-            if (tag) {
-                content.items.push_back(move(tag));
-            }
+            content.addItem(parse_markup_tag(lenient_parse_result.tags[i-1]));
         }
-        auto section = parse_text_section(lenient_parse_result.textSections[i]);
-        if (section) {
-            content.items.push_back(move(section));
-        }
+        content.addItem(parse_text_section(lenient_parse_result.textSections[i]));
     }
 
     return content;

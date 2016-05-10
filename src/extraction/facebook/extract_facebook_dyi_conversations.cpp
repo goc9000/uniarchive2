@@ -211,7 +211,7 @@ CEDE(IntermediateFormatEvent) extract_message(
     invariant(mut_message_element.tagName() == "p", "Expeced a <p> to follow after the message <div>");
 
     QString message_text = read_text_only_content(mut_message_element);
-    content.items.push_back(make_unique<TextSection>(message_text));
+    content.addItem(make_unique<TextSection>(message_text));
 
     mut_message_element = mut_message_element.nextSiblingElement();
 

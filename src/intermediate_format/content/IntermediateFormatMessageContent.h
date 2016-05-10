@@ -28,6 +28,8 @@ public:
     IntermediateFormatMessageContent();
 
     vector<unique_ptr<IntermediateFormatMessageContentItem>> items;
+
+    void addItem(TAKE(IntermediateFormatMessageContentItem) item);
 };
 
 QDebug operator<< (QDebug stream, IMM(IntermediateFormatMessageContent) content);
