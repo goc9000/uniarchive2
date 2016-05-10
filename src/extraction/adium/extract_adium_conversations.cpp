@@ -24,6 +24,7 @@
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/xml/qdom_utils.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
@@ -31,6 +32,7 @@ using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
+using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace adium {
 
@@ -43,10 +45,18 @@ struct InfoFromFilename {
 IntermediateFormatConversation init_conversation(IMM(QString) filename);
 InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocols parse_protocol(IMM(QString) protocol_name);
+void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
 
 IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename) {
     IntermediateFormatConversation conversation = init_conversation(filename);
+
+    QDomDocument xml = load_xml_file(filename);
+    QDomElement root_element = get_dom_root(xml, "chat");
+
+    verify_identity(root_element, static_cast<SubjectGivenAsAccount*>(conversation.identity.get())->account);
+    conversation.adiumVersion = read_string_attr(root_element, "adiumversion");
+    conversation.adiumBuildID = read_string_attr(root_element, "buildid");
 
     return conversation;
 }
@@ -124,6 +134,15 @@ IMProtocols parse_protocol(IMM(QString) protocol_name) {
         default:
             invariant_violation("Unsupported protocol specified in Adium: \"%s\"", qUtf8Printable(protocol_name));
     };
+}
+
+void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity) {
+    FullAccountName file_account(
+        parse_protocol(read_string_attr(root_element, "service")),
+        read_string_attr(root_element, "account")
+    );
+
+    invariant(identity == file_account, "Found an unexpected identity in the archive");
 }
 
 }}}

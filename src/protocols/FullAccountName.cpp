@@ -23,6 +23,10 @@ FullAccountName::FullAccountName(IMProtocols protocol, IMM(QString) account_name
     : protocol(protocol), accountName(account_name) {
 }
 
+bool FullAccountName::operator == (IMM(FullAccountName) other) const {
+    return (protocol == other.protocol) && (accountName == other.accountName);
+}
+
 QDebug operator<< (QDebug stream, IMM(FullAccountName) account_name) {
     QDebugStateSaver settings(stream);
 

@@ -44,10 +44,12 @@ public:
     vector<unique_ptr<ApparentSubject>> declaredPeers;
     optional<bool> isConference;
     optional<ApparentTime> declaredStartDate;
-    optional<QString> originalFilename;
+    QString originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
     optional<unsigned int> numConversationInFile;
     optional<unsigned int> conversationOffsetInFileEventBased;
+    QString adiumVersion;
+    QString adiumBuildID;
 
     vector<unique_ptr<IntermediateFormatEvent>> events;
 

@@ -77,8 +77,8 @@ QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo) {
     if ((bool)convo.declaredStartDate) {
         stream << "\tDeclared start date: " << *convo.declaredStartDate << "\n";
     }
-    if ((bool)convo.originalFilename) {
-        stream << "\tOriginal filename: " << *convo.originalFilename << "\n";
+    if (!convo.originalFilename.isEmpty()) {
+        stream << "\tOriginal filename: " << convo.originalFilename << "\n";
     }
     if ((bool)convo.fileLastModifiedTime) {
         stream << "\tFile last modified time: " << *convo.fileLastModifiedTime << "\n";
@@ -88,6 +88,12 @@ QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo) {
     }
     if ((bool)convo.conversationOffsetInFileEventBased) {
         stream << "\tConversation starts at event: " << *convo.conversationOffsetInFileEventBased << "\n";
+    }
+    if (!convo.adiumVersion.isEmpty()) {
+        stream << "\tAdium version: " << convo.adiumVersion << "\n";
+    }
+    if (!convo.adiumBuildID.isEmpty()) {
+        stream << "\tAdium build ID: " << convo.adiumBuildID << "\n";
     }
 
     stream << "\t\n";

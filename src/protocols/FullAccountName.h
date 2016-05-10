@@ -26,6 +26,8 @@ public:
 
     FullAccountName();
     FullAccountName(IMProtocols protocol, IMM(QString) account_name);
+
+    bool operator == (IMM(FullAccountName) other) const;
 };
 
 QDebug operator<< (QDebug stream, IMM(FullAccountName) account_name);
