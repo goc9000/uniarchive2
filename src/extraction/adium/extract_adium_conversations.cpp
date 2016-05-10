@@ -13,8 +13,12 @@
 #include <QFileInfo>
 #include <QIODevice>
 #include <QRegularExpression>
+#include <QUrl>
 
 #include "extraction/adium/extract_adium_conversations.h"
+#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/LineBreakTag.h"
+#include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
@@ -66,6 +70,22 @@ CEDE(IntermediateFormatEvent) parse_system_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
+CEDE(IntermediateFormatEvent) parse_message_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+);
+IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_element);
+void parse_event_content_rec(
+    IMM(QDomElement) element,
+    IntermediateFormatMessageContent& mut_content
+);
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element);
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element);
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element);
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element);
+CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node);
 
 
 IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename) {
@@ -181,6 +201,8 @@ CEDE(IntermediateFormatEvent) parse_event(
 
     if (event_element.tagName() == "event") {
         return parse_system_event(event_element, event_time, event_index, move(event_subject));
+    } else if (event_element.tagName() == "message") {
+        return parse_message_event(event_element, event_time, event_index, move(event_subject));
     }
 
     // Temporary default
@@ -220,6 +242,118 @@ CEDE(IntermediateFormatEvent) parse_system_event(
     }
 
     invariant_violation("Unsupported <event> type: %s", qUtf8Printable(event_type));
+}
+
+CEDE(IntermediateFormatEvent) parse_message_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+) {
+    return make_unique<IFMessageEvent>(
+        event_time,
+        event_index,
+        move(event_subject),
+        move(parse_event_content(event_element))
+    );
+}
+
+IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_element) {
+    IntermediateFormatMessageContent content;
+
+    if (!event_element.hasChildNodes()) {
+        return content;
+    }
+
+    auto main_div = only_child_elem(event_element, "div");
+    invariant(main_div.attributes().length() == 0, "Did not expect content <div> to have attributes");
+
+    parse_event_content_rec(main_div, content);
+
+    return content;
+}
+
+void parse_event_content_rec(
+    IMM(QDomElement) element,
+    IntermediateFormatMessageContent& mut_content
+) {
+    for (QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling()) {
+        if (node.isElement()) {
+            QDomElement tag = node.toElement();
+            mut_content.addItem(convert_event_content_open_tag(tag));
+            mut_content.addItem(convert_event_content_open_tag_secondary(tag));
+            parse_event_content_rec(tag, mut_content);
+            mut_content.addItem(convert_event_content_closed_tag_secondary(tag));
+            mut_content.addItem(convert_event_content_closed_tag(tag));
+        } else if (node.isText()) {
+            mut_content.addItem(convert_event_content_text(node.toText()));
+        } else {
+            invariant_violation("Did not expect node of type: %s", qUtf8Printable(xml_to_string(node)));
+        }
+    }
+}
+
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element) {
+    QString tag_name = element.tagName();
+
+    if (tag_name == "span") {
+        return make_unique<CSSStyleTag>(read_only_string_attr(element, "style"));
+    } else if (tag_name == "br") {
+        return make_unique<LineBreakTag>();
+    } else if (tag_name == "a") {
+        return make_unique<LinkTag>(QUrl(read_string_attr(element, "href")));
+    }
+
+    invariant_violation("Unsupported open tag: <%s>", qUtf8Printable(tag_name));
+
+    return unique_ptr<IntermediateFormatMessageContentItem>();
+}
+
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element) {
+    QString tag_name = element.tagName();
+
+    if (tag_name == "span") {
+        return make_unique<CSSStyleTag>(true);
+    } else if (tag_name == "br") {
+        return unique_ptr<IntermediateFormatMessageContentItem>();
+    } else if (tag_name == "a") {
+        return make_unique<LinkTag>(true);
+    }
+
+    invariant_violation("Unsupported closed tag: <%s>", qUtf8Printable(tag_name));
+
+    return unique_ptr<IntermediateFormatMessageContentItem>();
+}
+
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element) {
+    QString tag_name = element.tagName();
+
+    if ((tag_name == "a") && (element.hasAttribute("style"))) {
+        return make_unique<CSSStyleTag>(element.attribute("style"));
+    }
+
+    return unique_ptr<IntermediateFormatMessageContentItem>();
+}
+
+CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element) {
+    QString tag_name = element.tagName();
+
+    if ((tag_name == "a") && (element.hasAttribute("style"))) {
+        return make_unique<CSSStyleTag>(true);
+    }
+
+    return unique_ptr<IntermediateFormatMessageContentItem>();
+}
+
+CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node) {
+    static QRegularExpression pattern_trim("^\n*(.*)\n*$", QRegularExpression::DotMatchesEverythingOption);
+
+    QString trimmed_text = pattern_trim.match(text_node.nodeValue()).captured(1);
+    if (!trimmed_text.isEmpty()) {
+        return make_unique<TextSection>(trimmed_text);
+    }
+
+    return unique_ptr<TextSection>();
 }
 
 }}}

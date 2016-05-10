@@ -150,7 +150,34 @@ int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
 }
 
 QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
-    invariant(node.hasAttribute(attr_name), "Node is missing attribute '%s'", qUtf8Printable(attr_name));
+    invariant(
+        node.hasAttribute(attr_name),
+        "<%s> node is missing attribute '%s'",
+        qUtf8Printable(node.tagName()),
+        qUtf8Printable(attr_name)
+    );
+
+    return node.attribute(attr_name);
+}
+
+QString read_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
+    invariant(
+        (node.attributes().length() == 1) && node.hasAttribute(attr_name),
+        "Expected <%s> node to have only the attribute '%s'",
+        qUtf8Printable(node.tagName()),
+        qUtf8Printable(attr_name)
+    );
+
+    return node.attribute(attr_name);
+}
+
+QString read_optional_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
+    invariant(
+        node.attributes().isEmpty() || ((node.attributes().length() == 1) && node.hasAttribute(attr_name)),
+        "Expected <%s> node to have only the optional attribute '%s'",
+        qUtf8Printable(node.tagName()),
+        qUtf8Printable(attr_name)
+    );
 
     return node.attribute(attr_name);
 }

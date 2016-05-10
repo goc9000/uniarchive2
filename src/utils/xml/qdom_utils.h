@@ -33,7 +33,10 @@ QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child
 
 int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name);
 QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+QString read_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+QString read_optional_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);
 QDateTime read_iso_date_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+
 QString read_text_only_content(IMM(QDomElement) node);
 
 QString xml_to_string(IMM(QDomNode) node);
