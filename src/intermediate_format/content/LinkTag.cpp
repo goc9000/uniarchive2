@@ -25,7 +25,7 @@ void LinkTag::writeToDebugStream(QDebug stream) const {
 
     stream.nospace() << "[" << (closed ? "/" : "") << "Link";
     if (!url.isEmpty()) {
-        stream << " url=" << url;
+        stream << " url=" << url.toString();
     }
     stream << "]";
 }
