@@ -19,6 +19,8 @@
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocols.h"
@@ -49,6 +51,10 @@ IMProtocols parse_protocol(IMM(QString) protocol_name);
 void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
 CEDE(IntermediateFormatEvent) parse_event(
+    IMM(QDomElement) event_element,
+    IMM(IntermediateFormatConversation) conversation
+);
+CEDE(ApparentSubject) parse_event_subject(
     IMM(QDomElement) event_element,
     IMM(IntermediateFormatConversation) conversation
 );
@@ -161,12 +167,33 @@ CEDE(IntermediateFormatEvent) parse_event(
     IMM(QDomElement) event_element,
     IMM(IntermediateFormatConversation) conversation
 ) {
+    ApparentTime event_time = ApparentTime(read_iso_date_attr(event_element, "time"));
+    unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
+
     // Temporary default
     return make_unique<IFUninterpretedEvent>(
-        ApparentTime(),
+        event_time,
         conversation.events.size(),
         xml_to_raw_data(event_element)
     );
+}
+
+CEDE(ApparentSubject) parse_event_subject(
+    IMM(QDomElement) event_element,
+    IMM(IntermediateFormatConversation) conversation
+) {
+    if (!event_element.hasAttribute("sender")) {
+        return unique_ptr<ApparentSubject>();
+    }
+
+    QString account_name = read_string_attr(event_element, "sender");
+    FullAccountName account(conversation.protocol, account_name);
+
+    if (event_element.hasAttribute("alias")) {
+        return make_unique<FullySpecifiedSubject>(account, read_string_attr(event_element, "alias"));
+    }
+
+    return make_unique<SubjectGivenAsAccount>(account);
 }
 
 }}}

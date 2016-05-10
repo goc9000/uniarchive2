@@ -81,6 +81,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IntermediateFormatEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp
         src/intermediate_format/subjects/ApparentSubject.h
+        src/intermediate_format/subjects/FullySpecifiedSubject.cpp
+        src/intermediate_format/subjects/FullySpecifiedSubject.h
         src/intermediate_format/subjects/ImplicitSubject.cpp
         src/intermediate_format/subjects/ImplicitSubject.h
         src/intermediate_format/subjects/SubjectGivenAsAccount.cpp
