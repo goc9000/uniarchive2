@@ -77,6 +77,10 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFStartConversationEvent.h
         src/intermediate_format/events/IFUninterpretedEvent.cpp
         src/intermediate_format/events/IFUninterpretedEvent.h
+        src/intermediate_format/events/IFWindowOpenedEvent.cpp
+        src/intermediate_format/events/IFWindowOpenedEvent.h
+        src/intermediate_format/events/IFWindowClosedEvent.cpp
+        src/intermediate_format/events/IFWindowClosedEvent.h
         src/intermediate_format/events/IntermediateFormatEvent.cpp
         src/intermediate_format/events/IntermediateFormatEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp

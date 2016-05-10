@@ -19,6 +19,8 @@
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
+#include "intermediate_format/events/IFWindowClosedEvent.h"
+#include "intermediate_format/events/IFWindowOpenedEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
@@ -57,6 +59,12 @@ CEDE(IntermediateFormatEvent) parse_event(
 CEDE(ApparentSubject) parse_event_subject(
     IMM(QDomElement) event_element,
     IMM(IntermediateFormatConversation) conversation
+);
+CEDE(IntermediateFormatEvent) parse_system_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
 );
 
 
@@ -169,13 +177,14 @@ CEDE(IntermediateFormatEvent) parse_event(
 ) {
     ApparentTime event_time = ApparentTime(read_iso_date_attr(event_element, "time"));
     unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
+    int event_index = (int)conversation.events.size();
+
+    if (event_element.tagName() == "event") {
+        return parse_system_event(event_element, event_time, event_index, move(event_subject));
+    }
 
     // Temporary default
-    return make_unique<IFUninterpretedEvent>(
-        event_time,
-        conversation.events.size(),
-        xml_to_raw_data(event_element)
-    );
+    return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
 }
 
 CEDE(ApparentSubject) parse_event_subject(
@@ -194,6 +203,23 @@ CEDE(ApparentSubject) parse_event_subject(
     }
 
     return make_unique<SubjectGivenAsAccount>(account);
+}
+
+CEDE(IntermediateFormatEvent) parse_system_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+) {
+    QString event_type = read_string_attr(event_element, "type");
+
+    if (event_type == "windowOpened") {
+        return make_unique<IFWindowOpenedEvent>(event_time, event_index);
+    } else if (event_type == "windowClosed") {
+        return make_unique<IFWindowClosedEvent>(event_time, event_index);
+    }
+
+    invariant_violation("Unsupported <event> type: %s", qUtf8Printable(event_type));
 }
 
 }}}
