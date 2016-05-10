@@ -19,6 +19,8 @@ IntermediateFormatMessageContent::IntermediateFormatMessageContent() {
 
 QDebug operator<< (QDebug stream, IMM(IntermediateFormatMessageContent) content) {
     QDebugStateSaver saver(stream);
+    stream.nospace();
+
     bool first = true;
 
     for (auto& item : content.items) {
