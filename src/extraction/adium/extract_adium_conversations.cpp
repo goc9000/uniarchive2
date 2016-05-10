@@ -18,6 +18,7 @@
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocols.h"
@@ -47,6 +48,11 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocols parse_protocol(IMM(QString) protocol_name);
 void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
+CEDE(IntermediateFormatEvent) parse_event(
+    IMM(QDomElement) event_element,
+    IMM(IntermediateFormatConversation) conversation
+);
+
 
 IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename) {
     IntermediateFormatConversation conversation = init_conversation(filename);
@@ -57,6 +63,12 @@ IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename)
     verify_identity(root_element, static_cast<SubjectGivenAsAccount*>(conversation.identity.get())->account);
     conversation.adiumVersion = read_string_attr(root_element, "adiumversion");
     conversation.adiumBuildID = read_string_attr(root_element, "buildid");
+
+    QDomElement event_element = root_element.firstChildElement();
+    while (!event_element.isNull()) {
+        conversation.events.push_back(parse_event(event_element, conversation));
+        event_element = event_element.nextSiblingElement();
+    }
 
     return conversation;
 }
@@ -143,6 +155,18 @@ void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identit
     );
 
     invariant(identity == file_account, "Found an unexpected identity in the archive");
+}
+
+CEDE(IntermediateFormatEvent) parse_event(
+    IMM(QDomElement) event_element,
+    IMM(IntermediateFormatConversation) conversation
+) {
+    // Temporary default
+    return make_unique<IFUninterpretedEvent>(
+        ApparentTime(),
+        conversation.events.size(),
+        xml_to_raw_data(event_element)
+    );
 }
 
 }}}
