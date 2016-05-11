@@ -75,6 +75,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFOfferCallEvent.h
         src/intermediate_format/events/IFOfferFileEvent.cpp
         src/intermediate_format/events/IFOfferFileEvent.h
+        src/intermediate_format/events/IFPingEvent.cpp
+        src/intermediate_format/events/IFPingEvent.h
         src/intermediate_format/events/IFReceiveFileEvent.cpp
         src/intermediate_format/events/IFReceiveFileEvent.h
         src/intermediate_format/events/IFStartConversationEvent.cpp

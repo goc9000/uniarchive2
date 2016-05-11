@@ -25,6 +25,7 @@
 #include "intermediate_format/events/IFDisconnectedEvent.h"
 #include "intermediate_format/events/IFConnectedEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/IFPingEvent.h"
 #include "intermediate_format/events/IFStatusChangeEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/events/IFWindowClosedEvent.h"
@@ -311,6 +312,11 @@ CEDE(IntermediateFormatEvent) parse_status_event(
     } else if (event_type == "disconnected") {
         expect_event_text(event_element, "You have disconnected");
         return make_unique<IFDisconnectedEvent>(event_time, event_index);
+    } else if (event_type == "Notification") {
+        if (event_element.text().trimmed().endsWith(" wants your attention!")) {
+            return make_unique<IFPingEvent>(event_time, event_index, move(event_subject));
+        }
+        invariant_violation("Unsupported Notification event: %s", qUtf8Printable(xml_to_string(event_element)));
     }
 
     return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
