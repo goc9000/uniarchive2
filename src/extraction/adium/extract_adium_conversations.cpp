@@ -22,6 +22,8 @@
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/IFDisconnectedEvent.h"
+#include "intermediate_format/events/IFConnectedEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/events/IFStatusChangeEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
@@ -282,14 +284,33 @@ CEDE(IFMessageEvent) parse_message_event(
     );
 }
 
+void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_text) {
+    QString event_text = event_element.text().trimmed();
+
+    invariant(
+        event_text == expected_text,
+        "Expected event text to be \"%s\", found \"%s\"",
+        qUtf8Printable(expected_text),
+        qUtf8Printable(event_text)
+    );
+}
+
 CEDE(IntermediateFormatEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
-    if (EVENT_TYPE_TO_STATUS.contains(event_element.attribute("type"))) {
+    QString event_type = event_element.attribute("type");
+
+    if (EVENT_TYPE_TO_STATUS.contains(event_type)) {
         return parse_status_change_event(event_element, event_time, event_index, move(event_subject));
+    } else if (event_type == "connected") {
+        expect_event_text(event_element, "You have connected");
+        return make_unique<IFConnectedEvent>(event_time, event_index);
+    } else if (event_type == "disconnected") {
+        expect_event_text(event_element, "You have disconnected");
+        return make_unique<IFDisconnectedEvent>(event_time, event_index);
     }
 
     return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));

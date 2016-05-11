@@ -57,10 +57,14 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooFadeTag.h
         src/intermediate_format/events/IFAnswerCallEvent.cpp
         src/intermediate_format/events/IFAnswerCallEvent.h
+        src/intermediate_format/events/IFConnectedEvent.cpp
+        src/intermediate_format/events/IFConnectedEvent.h
         src/intermediate_format/events/IFCorruptedMessageEvent.cpp
         src/intermediate_format/events/IFCorruptedMessageEvent.h
         src/intermediate_format/events/IFDeclineConferenceEvent.cpp
         src/intermediate_format/events/IFDeclineConferenceEvent.h
+        src/intermediate_format/events/IFDisconnectedEvent.cpp
+        src/intermediate_format/events/IFDisconnectedEvent.h
         src/intermediate_format/events/IFJoinConferenceEvent.cpp
         src/intermediate_format/events/IFJoinConferenceEvent.h
         src/intermediate_format/events/IFLeaveConferenceEvent.cpp
