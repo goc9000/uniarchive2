@@ -104,7 +104,7 @@ IntermediateFormatConversation init_conversation(IMM(QString) filename) {
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
 
-    IntermediateFormatConversation conversation(ArchiveFormats::DIGSBY, info.identity.protocol);
+    IntermediateFormatConversation conversation(ArchiveFormat::DIGSBY, info.identity.protocol);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(

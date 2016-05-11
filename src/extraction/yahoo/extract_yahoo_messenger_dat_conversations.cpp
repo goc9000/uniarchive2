@@ -39,7 +39,7 @@
 #include "intermediate_format/events/IFLeaveConferenceEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "protocols/ArchiveFormats.h"
+#include "protocols/ArchiveFormat.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/yahoo/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
@@ -127,7 +127,7 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    IntermediateFormatConversation conversation(ArchiveFormats::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
+    IntermediateFormatConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(

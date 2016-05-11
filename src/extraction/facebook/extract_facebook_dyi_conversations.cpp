@@ -94,7 +94,7 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
         qUtf8Printable(filename.section(QDir::separator(), -2, -1))
     );
 
-    IntermediateFormatConversation conversation(ArchiveFormats::FACEBOOK_DYI, IMProtocol::FACEBOOK);
+    IntermediateFormatConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(

@@ -20,7 +20,7 @@
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
-#include "protocols/ArchiveFormats.h"
+#include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
@@ -36,7 +36,7 @@ namespace uniarchive2 { namespace intermediate_format {
 class IntermediateFormatConversation {
 public:
     // Mandatory metadata
-    ArchiveFormats originalArchiveFormat;
+    ArchiveFormat originalArchiveFormat;
     IMProtocol protocol;
 
     // Optional metadata
@@ -54,7 +54,7 @@ public:
     vector<unique_ptr<IntermediateFormatEvent>> events;
 
     IntermediateFormatConversation();
-    IntermediateFormatConversation(ArchiveFormats format, IMProtocol protocol);
+    IntermediateFormatConversation(ArchiveFormat format, IMProtocol protocol);
 
     static IntermediateFormatConversation fromPrototype(IMM(IntermediateFormatConversation) prototype);
 };

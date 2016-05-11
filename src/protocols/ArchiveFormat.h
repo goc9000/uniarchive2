@@ -1,5 +1,5 @@
 /**
- * protocols/ArchiveFormats.h
+ * protocols/ArchiveFormat.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,14 +8,14 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_PROTOCOLS_ARCHIVEFORMATS_H
-#define UNIARCHIVE2_PROTOCOLS_ARCHIVEFORMATS_H
+#ifndef UNIARCHIVE2_PROTOCOLS_ARCHIVEFORMAT_H
+#define UNIARCHIVE2_PROTOCOLS_ARCHIVEFORMAT_H
 
 #include <QDebug>
 
 namespace uniarchive2 { namespace protocols {
 
-enum class ArchiveFormats {
+enum class ArchiveFormat {
     INVALID = 0,
     ADIUM,
     DIGSBY,
@@ -24,8 +24,8 @@ enum class ArchiveFormats {
     YAHOO_MESSENGER_DAT,
 };
 
-QDebug operator<< (QDebug stream, ArchiveFormats format);
+QDebug operator<< (QDebug stream, ArchiveFormat format);
 
 }}
 
-#endif //UNIARCHIVE2_PROTOCOLS_ARCHIVEFORMATS_H
+#endif //UNIARCHIVE2_PROTOCOLS_ARCHIVEFORMAT_H

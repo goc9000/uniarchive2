@@ -109,8 +109,8 @@ set(SOURCE_FILES
         src/protocols/msn/account_name.h
         src/protocols/yahoo/account_name.cpp
         src/protocols/yahoo/account_name.h
-        src/protocols/ArchiveFormats.cpp
-        src/protocols/ArchiveFormats.h
+        src/protocols/ArchiveFormat.cpp
+        src/protocols/ArchiveFormat.h
         src/protocols/FullAccountName.cpp
         src/protocols/FullAccountName.h
         src/protocols/IMProtocol.cpp
