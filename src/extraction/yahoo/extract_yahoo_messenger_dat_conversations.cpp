@@ -16,7 +16,7 @@
 #include <QRegularExpression>
 
 #include "graphics/Color.h"
-#include "graphics/ANSIColors.h"
+#include "graphics/ANSIColor.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
 #include "intermediate_format/ApparentTime.h"
@@ -350,7 +350,7 @@ CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sg
     } else if (match.capturedLength("link")) {
         return make_unique<LinkTag>(closed);
     } else if (match.capturedLength("ansi_color")) {
-        return make_unique<ANSIColorTag>((ANSIColors)match.captured("ansi_color").toInt(), closed);
+        return make_unique<ANSIColorTag>((ANSIColor)match.captured("ansi_color").toInt(), closed);
     } else if (match.capturedLength("html_color")) {
         return make_unique<RGBColorTag>(Color::fromHTMLFormat(match.captured("html_color")), closed);
     }

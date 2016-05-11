@@ -20,8 +20,8 @@ set(SOURCE_FILES
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
         src/extraction/yahoo/YahooProtocolEvent.h
-        src/graphics/ANSIColors.cpp
-        src/graphics/ANSIColors.h
+        src/graphics/ANSIColor.cpp
+        src/graphics/ANSIColor.h
         src/graphics/Color.cpp
         src/graphics/Color.h
         src/intermediate_format/content/ANSIColorTag.cpp

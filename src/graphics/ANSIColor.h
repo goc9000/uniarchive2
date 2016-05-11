@@ -1,5 +1,5 @@
 /**
- * graphics/ANSIColors.h
+ * graphics/ANSIColor.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,14 +8,14 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_GRAPHICS_ANSICOLORS_H
-#define UNIARCHIVE2_GRAPHICS_ANSICOLORS_H
+#ifndef UNIARCHIVE2_GRAPHICS_ANSICOLOR_H
+#define UNIARCHIVE2_GRAPHICS_ANSICOLOR_H
 
 #include <QDebug>
 
 namespace uniarchive2 { namespace graphics {
 
-enum class ANSIColors {
+enum class ANSIColor {
     BLACK = 0,
     RED = 1,
     GREEN = 2,
@@ -27,8 +27,8 @@ enum class ANSIColors {
     EXTENDED = 8
 };
 
-QDebug operator<< (QDebug stream, ANSIColors color);
+QDebug operator<< (QDebug stream, ANSIColor color);
 
 }}
 
-#endif //UNIARCHIVE2_GRAPHICS_ANSICOLORS_H
+#endif //UNIARCHIVE2_GRAPHICS_ANSICOLOR_H

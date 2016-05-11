@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-ANSIColorTag::ANSIColorTag(ANSIColors color, bool closed) : color(color), closed(closed) {
+ANSIColorTag::ANSIColorTag(ANSIColor color, bool closed) : color(color), closed(closed) {
 }
 
 void ANSIColorTag::writeToDebugStream(QDebug stream) const {

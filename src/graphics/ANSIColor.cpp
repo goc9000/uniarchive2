@@ -1,5 +1,5 @@
 /**
- * graphics/ANSIColors.cpp
+ * graphics/ANSIColor.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,34 +10,34 @@
 
 #include <QtDebug>
 
-#include "graphics/ANSIColors.h"
+#include "graphics/ANSIColor.h"
 
 namespace uniarchive2 { namespace graphics {
 
-QString name_for_color(ANSIColors color) {
+QString name_for_color(ANSIColor color) {
     switch (color) {
-        case ANSIColors::BLACK:
+        case ANSIColor::BLACK:
             return "black";
-        case ANSIColors::RED:
+        case ANSIColor::RED:
             return "red";
-        case ANSIColors::GREEN:
+        case ANSIColor::GREEN:
             return "green";
-        case ANSIColors::YELLOW:
+        case ANSIColor::YELLOW:
             return "yellow";
-        case ANSIColors::BLUE:
+        case ANSIColor::BLUE:
             return "blue";
-        case ANSIColors::MAGENTA:
+        case ANSIColor::MAGENTA:
             return "magenta";
-        case ANSIColors::CYAN:
+        case ANSIColor::CYAN:
             return "cyan";
-        case ANSIColors::WHITE:
+        case ANSIColor::WHITE:
             return "white";
-        case ANSIColors::EXTENDED:
+        case ANSIColor::EXTENDED:
             return "extended";
     }
 }
 
-QDebug operator<< (QDebug stream, ANSIColors color) {
+QDebug operator<< (QDebug stream, ANSIColor color) {
     stream << qPrintable(name_for_color(color));
 
     return stream;

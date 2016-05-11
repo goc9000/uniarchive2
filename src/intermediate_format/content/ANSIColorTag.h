@@ -13,7 +13,7 @@
 
 #include <QtDebug>
 
-#include "graphics/ANSIColors.h"
+#include "graphics/ANSIColor.h"
 #include "intermediate_format/content/Markup.h"
 
 using namespace uniarchive2::graphics;
@@ -22,10 +22,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 struct ANSIColorTag : Markup {
 public:
-    ANSIColors color;
+    ANSIColor color;
     bool closed;
 
-    ANSIColorTag(ANSIColors color, bool closed = false);
+    ANSIColorTag(ANSIColor color, bool closed = false);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
