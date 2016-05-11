@@ -34,7 +34,7 @@
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/digsby/account_name.h"
 #include "protocols/FullAccountName.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/html/parse_html_lenient.h"
@@ -61,8 +61,8 @@ struct InfoFromFilename {
 
 IntermediateFormatConversation init_conversation(IMM(QString) filename);
 InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
-IMProtocols parse_protocol(IMM(QString) protocol_name);
-FullAccountName parse_account(IMProtocols protocol, IMM(QString) account_name);
+IMProtocol parse_protocol(IMM(QString) protocol_name);
+FullAccountName parse_account(IMProtocol protocol, IMM(QString) account_name);
 
 void verify_xml_header(QTextStream& mut_stream);
 void seek_start_of_events(QTextStream& mut_stream);
@@ -132,7 +132,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         "Digsby archive file should be 5 levels deep under a \"Digsby Logs\" folder"
     );
 
-    IMProtocols protocol = parse_protocol(protocol_folder);
+    IMProtocol protocol = parse_protocol(protocol_folder);
     info.identity = parse_account_generic(protocol, identity_folder);
 
     if (peer_folder == "Group Chats") {
@@ -170,21 +170,21 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
             qUtf8Printable(peer_folder)
         );
 
-        IMProtocols peer_protocol = parse_protocol(remote_peer_match.captured(2));
+        IMProtocol peer_protocol = parse_protocol(remote_peer_match.captured(2));
         info.peer = parse_account_generic(peer_protocol, remote_peer_match.captured(1));
     }
 
     return info;
 }
 
-IMProtocols parse_protocol(IMM(QString) protocol_name) {
+IMProtocol parse_protocol(IMM(QString) protocol_name) {
     static QRegularExpression pattern("^((digsby)|(gtalk|jabber)|(msn)|(yahoo))$");
 
     switch (pattern.match(protocol_name).lastCapturedIndex() - 2) {
-        case 0: return IMProtocols::DIGSBY;
-        case 1: return IMProtocols::JABBER;
-        case 2: return IMProtocols::MSN;
-        case 3: return IMProtocols::YAHOO;
+        case 0: return IMProtocol::DIGSBY;
+        case 1: return IMProtocol::JABBER;
+        case 2: return IMProtocol::MSN;
+        case 3: return IMProtocol::YAHOO;
         default:
             invariant_violation("Unsupported protocol specified in Digsby: \"%s\"", qUtf8Printable(protocol_name));
     };

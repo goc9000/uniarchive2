@@ -14,18 +14,18 @@
 #include <QDebug>
 #include <QString>
 
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
 struct FullAccountName {
 public:
-    IMProtocols protocol;
+    IMProtocol protocol;
     QString accountName;
 
     FullAccountName();
-    FullAccountName(IMProtocols protocol, IMM(QString) account_name);
+    FullAccountName(IMProtocol protocol, IMM(QString) account_name);
 
     bool operator == (IMM(FullAccountName) other) const;
 };

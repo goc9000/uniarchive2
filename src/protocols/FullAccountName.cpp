@@ -16,10 +16,10 @@
 namespace uniarchive2 { namespace protocols {
 
 FullAccountName::FullAccountName()
-    : protocol(IMProtocols::INVALID), accountName("") {
+    : protocol(IMProtocol::INVALID), accountName("") {
 }
 
-FullAccountName::FullAccountName(IMProtocols protocol, IMM(QString) account_name)
+FullAccountName::FullAccountName(IMProtocol protocol, IMM(QString) account_name)
     : protocol(protocol), accountName(account_name) {
 }
 

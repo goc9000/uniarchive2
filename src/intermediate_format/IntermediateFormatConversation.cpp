@@ -15,10 +15,10 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 IntermediateFormatConversation::IntermediateFormatConversation()
-    : originalArchiveFormat(ArchiveFormats::INVALID),  protocol(IMProtocols::INVALID) {
+    : originalArchiveFormat(ArchiveFormats::INVALID),  protocol(IMProtocol::INVALID) {
 }
 
-IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol)
+IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormats format, IMProtocol protocol)
     : originalArchiveFormat(format), protocol(protocol) {
 }
 

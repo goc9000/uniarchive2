@@ -31,7 +31,7 @@
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/FullAccountName.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
@@ -64,7 +64,7 @@ struct InfoFromFilename {
 
 IntermediateFormatConversation init_conversation(IMM(QString) filename);
 InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
-IMProtocols parse_protocol(IMM(QString) protocol_name);
+IMProtocol parse_protocol(IMM(QString) protocol_name);
 void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
 CEDE(IntermediateFormatEvent) parse_event(
@@ -171,7 +171,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         qUtf8Printable(protocol_and_identity_folder)
     );
 
-    IMProtocols protocol = parse_protocol(proto_and_id_match.captured(1));
+    IMProtocol protocol = parse_protocol(proto_and_id_match.captured(1));
     info.identity = parse_account_generic(protocol, proto_and_id_match.captured(2));
 
     static QRegularExpression filename_pattern(
@@ -194,12 +194,12 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     return info;
 }
 
-IMProtocols parse_protocol(IMM(QString) protocol_name) {
+IMProtocol parse_protocol(IMM(QString) protocol_name) {
     static QRegularExpression pattern("^((Yahoo!)|(Jabber))$");
 
     switch (pattern.match(protocol_name).lastCapturedIndex() - 2) {
-        case 0: return IMProtocols::YAHOO;
-        case 1: return IMProtocols::JABBER;
+        case 0: return IMProtocol::YAHOO;
+        case 1: return IMProtocol::JABBER;
         default:
             invariant_violation("Unsupported protocol specified in Adium: \"%s\"", qUtf8Printable(protocol_name));
     };

@@ -14,7 +14,7 @@
 
 #include "utils/language/invariant.h"
 #include "protocols/msn/account_name.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 
 namespace uniarchive2 { namespace protocols { namespace msn {
 
@@ -38,7 +38,7 @@ void assert_valid_msn_account_name(IMM(QString) account_name) {
 
 FullAccountName parse_msn_account(IMM(QString) account_name) {
     assert_valid_msn_account_name(account_name);
-    return FullAccountName(IMProtocols::MSN, account_name);
+    return FullAccountName(IMProtocol::MSN, account_name);
 }
 
 bool is_likely_valid_encoded_msn_account_name(IMM(QString) account_name) {
@@ -94,7 +94,7 @@ FullAccountName parse_encoded_msn_account(IMM(QString) account_name) {
 
             if (hash == expected_hash) {
                 return FullAccountName(
-                    IMProtocols::MSN,
+                    IMProtocol::MSN,
                     account_name.mid(0, assumed_length).append('@').append(domain)
                 );
             }

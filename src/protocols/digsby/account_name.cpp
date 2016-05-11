@@ -13,7 +13,7 @@
 
 #include "utils/language/invariant.h"
 #include "protocols/digsby/account_name.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 
 namespace uniarchive2 { namespace protocols { namespace digsby {
 
@@ -33,7 +33,7 @@ void assert_valid_digsby_account_name(IMM(QString) account_name) {
 
 FullAccountName parse_digsby_account(IMM(QString) account_name) {
     assert_valid_digsby_account_name(account_name);
-    return FullAccountName(IMProtocols::DIGSBY, account_name.section(QChar('@'), 0, 0));
+    return FullAccountName(IMProtocol::DIGSBY, account_name.section(QChar('@'), 0, 0));
 }
 
 }}}

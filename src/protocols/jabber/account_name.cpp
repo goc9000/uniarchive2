@@ -13,7 +13,7 @@
 
 #include "utils/language/invariant.h"
 #include "protocols/jabber/account_name.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 
 namespace uniarchive2 { namespace protocols { namespace jabber {
 
@@ -36,7 +36,7 @@ void assert_valid_jabber_account_name(IMM(QString) account_name) {
 
 FullAccountName parse_jabber_account(IMM(QString) account_name) {
     assert_valid_jabber_account_name(account_name);
-    return FullAccountName(IMProtocols::JABBER, account_name);
+    return FullAccountName(IMProtocol::JABBER, account_name);
 }
 
 }}}

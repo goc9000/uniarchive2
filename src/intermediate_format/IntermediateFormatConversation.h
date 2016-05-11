@@ -21,7 +21,7 @@
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/ArchiveFormats.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
@@ -37,7 +37,7 @@ class IntermediateFormatConversation {
 public:
     // Mandatory metadata
     ArchiveFormats originalArchiveFormat;
-    IMProtocols protocol;
+    IMProtocol protocol;
 
     // Optional metadata
     unique_ptr<ApparentSubject> identity;
@@ -54,7 +54,7 @@ public:
     vector<unique_ptr<IntermediateFormatEvent>> events;
 
     IntermediateFormatConversation();
-    IntermediateFormatConversation(ArchiveFormats format, IMProtocols protocol);
+    IntermediateFormatConversation(ArchiveFormats format, IMProtocol protocol);
 
     static IntermediateFormatConversation fromPrototype(IMM(IntermediateFormatConversation) prototype);
 };

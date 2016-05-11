@@ -1,5 +1,5 @@
 /**
- * protocols/IMProtocols.h
+ * protocols/IMProtocol.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,14 +8,14 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_PROTOCOLS_IMPROTOCOLS_H
-#define UNIARCHIVE2_PROTOCOLS_IMPROTOCOLS_H
+#ifndef UNIARCHIVE2_PROTOCOLS_IMPROTOCOL_H
+#define UNIARCHIVE2_PROTOCOLS_IMPROTOCOL_H
 
 #include <QDebug>
 
 namespace uniarchive2 { namespace protocols {
 
-enum class IMProtocols {
+enum class IMProtocol {
     INVALID = 0,
     DIGSBY,
     FACEBOOK,
@@ -26,10 +26,10 @@ enum class IMProtocols {
     YAHOO,
 };
 
-QString name_for_im_protocol(IMProtocols protocol);
+QString name_for_im_protocol(IMProtocol protocol);
 
-QDebug operator<< (QDebug stream, IMProtocols protocol);
+QDebug operator<< (QDebug stream, IMProtocol protocol);
 
 }}
 
-#endif //UNIARCHIVE2_PROTOCOLS_IMPROTOCOLS_H
+#endif //UNIARCHIVE2_PROTOCOLS_IMPROTOCOL_H

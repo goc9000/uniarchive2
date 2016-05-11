@@ -1,5 +1,5 @@
 /**
- * protocols/IMProtocols.cpp
+ * protocols/IMProtocol.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,32 +10,32 @@
 
 #include <QtDebug>
 
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 
 namespace uniarchive2 { namespace protocols {
 
-QString name_for_im_protocol(IMProtocols protocol) {
+QString name_for_im_protocol(IMProtocol protocol) {
     switch (protocol) {
-        case IMProtocols::INVALID:
+        case IMProtocol::INVALID:
             return "(invalid)";
-        case IMProtocols::DIGSBY:
+        case IMProtocol::DIGSBY:
             return "Digsby";
-        case IMProtocols::FACEBOOK:
+        case IMProtocol::FACEBOOK:
             return "Facebook";
-        case IMProtocols::JABBER:
+        case IMProtocol::JABBER:
             return "Jabber";
-        case IMProtocols::MSN:
+        case IMProtocol::MSN:
             return "MSN";
-        case IMProtocols::SKYPE:
+        case IMProtocol::SKYPE:
             return "Skype";
-        case IMProtocols::WHATSAPP:
+        case IMProtocol::WHATSAPP:
             return "WhatsApp";
-        case IMProtocols::YAHOO:
+        case IMProtocol::YAHOO:
             return "Yahoo";
     }
 }
 
-QDebug operator<< (QDebug stream, IMProtocols protocol) {
+QDebug operator<< (QDebug stream, IMProtocol protocol) {
     stream << qPrintable(name_for_im_protocol(protocol));
 
     return stream;

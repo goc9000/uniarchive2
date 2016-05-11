@@ -13,13 +13,13 @@
 
 #include <QString>
 
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 #include "protocols/FullAccountName.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
-FullAccountName parse_account_generic(IMProtocols protocol, IMM(QString) account_name);
+FullAccountName parse_account_generic(IMProtocol protocol, IMM(QString) account_name);
 
 }}
 

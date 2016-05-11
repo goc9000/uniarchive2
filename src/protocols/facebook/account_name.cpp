@@ -13,7 +13,7 @@
 
 #include "utils/language/invariant.h"
 #include "protocols/facebook/account_name.h"
-#include "protocols/IMProtocols.h"
+#include "protocols/IMProtocol.h"
 
 namespace uniarchive2 { namespace protocols { namespace facebook {
 
@@ -36,7 +36,7 @@ void assert_valid_facebook_account_name(IMM(QString)account_name) {
 
 FullAccountName parse_facebook_account(IMM(QString)account_name) {
     assert_valid_facebook_account_name(account_name);
-    return FullAccountName(IMProtocols::FACEBOOK, account_name);
+    return FullAccountName(IMProtocol::FACEBOOK, account_name);
 }
 
 }}}

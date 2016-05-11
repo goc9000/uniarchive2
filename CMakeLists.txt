@@ -113,8 +113,8 @@ set(SOURCE_FILES
         src/protocols/ArchiveFormats.h
         src/protocols/FullAccountName.cpp
         src/protocols/FullAccountName.h
-        src/protocols/IMProtocols.cpp
-        src/protocols/IMProtocols.h
+        src/protocols/IMProtocol.cpp
+        src/protocols/IMProtocol.h
         src/protocols/IMStatus.cpp
         src/protocols/IMStatus.h
         src/protocols/parse_account_generic.cpp

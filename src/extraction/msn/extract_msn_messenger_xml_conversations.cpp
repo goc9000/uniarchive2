@@ -138,7 +138,7 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
         qUtf8Printable(filename.section(QDir::separator(), -3, -1))
     );
 
-    IntermediateFormatConversation conversation(ArchiveFormats::MSN_MESSENGER_XML, IMProtocols::MSN);
+    IntermediateFormatConversation conversation(ArchiveFormats::MSN_MESSENGER_XML, IMProtocol::MSN);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
