@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QMap>
 #include <QRegularExpression>
 #include <QUrl>
 
@@ -22,6 +23,7 @@
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/IFStatusChangeEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/events/IFWindowClosedEvent.h"
 #include "intermediate_format/events/IFWindowOpenedEvent.h"
@@ -30,6 +32,7 @@
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocols.h"
+#include "protocols/IMStatus.h"
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
@@ -44,6 +47,14 @@ using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace adium {
+
+static const QMap<QString, IMStatus> EVENT_TYPE_TO_STATUS {
+    { "available", IMStatus::AVAILABLE },
+    { "away", IMStatus::AWAY },
+    { "idle", IMStatus::IDLE },
+    { "offline", IMStatus::OFFLINE },
+    { "online", IMStatus::AVAILABLE },
+};
 
 struct InfoFromFilename {
     FullAccountName identity;
@@ -70,7 +81,19 @@ CEDE(IntermediateFormatEvent) parse_system_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(IntermediateFormatEvent) parse_message_event(
+CEDE(IFMessageEvent) parse_message_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+);
+CEDE(IntermediateFormatEvent) parse_status_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+);
+CEDE(IFStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -203,10 +226,11 @@ CEDE(IntermediateFormatEvent) parse_event(
         return parse_system_event(event_element, event_time, event_index, move(event_subject));
     } else if (event_element.tagName() == "message") {
         return parse_message_event(event_element, event_time, event_index, move(event_subject));
+    } else if (event_element.tagName() == "status") {
+        return parse_status_event(event_element, event_time, event_index, move(event_subject));
     }
 
-    // Temporary default
-    return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
+    invariant_violation("Unsupported event tag <%s>", qUtf8Printable(event_element.tagName()));
 }
 
 CEDE(ApparentSubject) parse_event_subject(
@@ -244,7 +268,7 @@ CEDE(IntermediateFormatEvent) parse_system_event(
     invariant_violation("Unsupported <event> type: %s", qUtf8Printable(event_type));
 }
 
-CEDE(IntermediateFormatEvent) parse_message_event(
+CEDE(IFMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -256,6 +280,38 @@ CEDE(IntermediateFormatEvent) parse_message_event(
         move(event_subject),
         move(parse_event_content(event_element))
     );
+}
+
+CEDE(IntermediateFormatEvent) parse_status_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+) {
+    if (EVENT_TYPE_TO_STATUS.contains(event_element.attribute("type"))) {
+        return parse_status_change_event(event_element, event_time, event_index, move(event_subject));
+    }
+
+    return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
+}
+
+CEDE(IFStatusChangeEvent) parse_status_change_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+) {
+    IMStatus status = EVENT_TYPE_TO_STATUS[event_element.attribute("type")];
+
+    unique_ptr<IFStatusChangeEvent> status_change =
+        make_unique<IFStatusChangeEvent>(event_time, event_index, move(event_subject), status);
+
+    IntermediateFormatMessageContent content = parse_event_content(event_element);
+    if (!content.items.empty()) {
+        status_change->message = move(content);
+    }
+
+    return status_change;
 }
 
 IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_element) {

@@ -75,6 +75,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFReceiveFileEvent.h
         src/intermediate_format/events/IFStartConversationEvent.cpp
         src/intermediate_format/events/IFStartConversationEvent.h
+        src/intermediate_format/events/IFStatusChangeEvent.cpp
+        src/intermediate_format/events/IFStatusChangeEvent.h
         src/intermediate_format/events/IFUninterpretedEvent.cpp
         src/intermediate_format/events/IFUninterpretedEvent.h
         src/intermediate_format/events/IFWindowOpenedEvent.cpp
@@ -113,6 +115,8 @@ set(SOURCE_FILES
         src/protocols/FullAccountName.h
         src/protocols/IMProtocols.cpp
         src/protocols/IMProtocols.h
+        src/protocols/IMStatus.cpp
+        src/protocols/IMStatus.h
         src/protocols/parse_account_generic.cpp
         src/protocols/parse_account_generic.h
         src/utils/external_libs/make_unique.hpp
