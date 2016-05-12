@@ -17,7 +17,7 @@
 
 #include "utils/external_libs/optional.hpp"
 
-#include "intermediate_format/content/IntermediateFormatMessageContent.h"
+#include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "protocols/IMStatus.h"
@@ -34,7 +34,7 @@ struct IFStatusChangeEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
     IMStatus status;
-    optional<IntermediateFormatMessageContent> message;
+    optional<RawMessageContent> message;
 
     IFStatusChangeEvent(
         IMM(ApparentTime) timestamp,

@@ -20,7 +20,7 @@
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
 #include "intermediate_format/ApparentTime.h"
-#include "intermediate_format/content/IntermediateFormatMessageContent.h"
+#include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/content/BoldTag.h"
 #include "intermediate_format/content/ItalicTag.h"
@@ -65,7 +65,7 @@ RawConversation init_conversation(
 CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
-IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data);
+RawMessageContent parse_message_content(IMM(QByteArray) text_data);
 CEDE(TextSection) make_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
 CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code);
@@ -250,7 +250,7 @@ CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, I
     return make_unique<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
-IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data) {
+RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
     static QRegularExpression markup_pattern(
         "\\x1B\\[(?<pseudo_ansi_seq>[^m]+)m|"\
         "(?<html_tag></?(font)\\b[^>]*>)|"\
@@ -258,7 +258,7 @@ IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data
         QRegularExpression::CaseInsensitiveOption
     );
 
-    IntermediateFormatMessageContent content;
+    RawMessageContent content;
 
     QString text = decode_utf8(text_data);
 

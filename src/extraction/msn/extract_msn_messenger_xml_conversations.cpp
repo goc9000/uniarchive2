@@ -84,7 +84,7 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_application(
 );
 ApparentTime parse_event_time(IMM(QDomElement) event_element);
 CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
-IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element);
+RawMessageContent parse_event_text(IMM(QDomElement) event_element);
 
 vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
     vector<RawConversation> conversations;
@@ -228,8 +228,8 @@ CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QStr
     return make_unique<SubjectGivenAsScreenName>(read_string_attr(user_element, "FriendlyName"));
 }
 
-IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element) {
-    IntermediateFormatMessageContent content;
+RawMessageContent parse_event_text(IMM(QDomElement) event_element) {
+    RawMessageContent content;
 
     auto text_element = child_elem(event_element, "Text");
     if (text_element.hasAttribute("Style")) {

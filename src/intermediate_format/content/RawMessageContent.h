@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/IntermediateFormatMessageContent.h
+ * intermediate_format/content/RawMessageContent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENT_H
 
 #include <vector>
 #include <memory>
@@ -23,17 +23,17 @@ using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-class IntermediateFormatMessageContent {
+class RawMessageContent {
 public:
-    IntermediateFormatMessageContent();
+    RawMessageContent();
 
     vector<unique_ptr<IntermediateFormatMessageContentItem>> items;
 
     void addItem(TAKE(IntermediateFormatMessageContentItem) item);
 };
 
-QDebug operator<< (QDebug stream, IMM(IntermediateFormatMessageContent) content);
+QDebug operator<< (QDebug stream, IMM(RawMessageContent) content);
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_INTERMEDIATEFORMATMESSAGECONTENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENT_H

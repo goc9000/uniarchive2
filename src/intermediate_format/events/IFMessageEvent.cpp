@@ -18,7 +18,7 @@ IFMessageEvent::IFMessageEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) sender,
-    IntermediateFormatMessageContent&& content
+    RawMessageContent&& content
 ): RawEvent(timestamp, index), sender(move(sender)), content(move(content)), isOffline(false) {
 }
 

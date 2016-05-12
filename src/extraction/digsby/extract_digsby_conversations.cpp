@@ -69,7 +69,7 @@ void seek_start_of_events(QTextStream& mut_stream);
 QStringList partially_parse_events(QTextStream& mut_stream);
 
 CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
-IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
+RawMessageContent parse_message_content(IMM(QString) content_html);
 CEDE(TextSection) parse_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
@@ -284,8 +284,8 @@ CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) convers
     );
 }
 
-IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html) {
-    IntermediateFormatMessageContent content;
+RawMessageContent parse_message_content(IMM(QString) content_html) {
+    RawMessageContent content;
 
     auto lenient_parse_result = parse_html_lenient(content_html);
 

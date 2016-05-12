@@ -34,8 +34,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/CSSStyleTag.h
         src/intermediate_format/content/FontTag.cpp
         src/intermediate_format/content/FontTag.h
-        src/intermediate_format/content/IntermediateFormatMessageContent.cpp
-        src/intermediate_format/content/IntermediateFormatMessageContent.h
+        src/intermediate_format/content/RawMessageContent.cpp
+        src/intermediate_format/content/RawMessageContent.h
         src/intermediate_format/content/IntermediateFormatMessageContentItem.cpp
         src/intermediate_format/content/IntermediateFormatMessageContentItem.h
         src/intermediate_format/content/ItalicTag.cpp

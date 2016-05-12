@@ -196,7 +196,7 @@ CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
     auto date_element = only_child_elem_with_class(header_element, "span", "meta");
     ApparentTime message_time = parse_message_time(read_text_only_content(date_element));
 
-    IntermediateFormatMessageContent content;
+    RawMessageContent content;
     mut_message_element = mut_message_element.nextSiblingElement();
     invariant(mut_message_element.tagName() == "p", "Expeced a <p> to follow after the message <div>");
 

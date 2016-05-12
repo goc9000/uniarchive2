@@ -111,11 +111,8 @@ CEDE(RawEvent) parse_purple_system_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
-IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_element);
-void parse_event_content_rec(
-    IMM(QDomElement) element,
-    IntermediateFormatMessageContent& mut_content
-);
+RawMessageContent parse_event_content(IMM(QDomElement) event_element);
+void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content);
 CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element);
 CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element);
 CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element);
@@ -338,7 +335,7 @@ CEDE(IFStatusChangeEvent) parse_status_change_event(
     unique_ptr<IFStatusChangeEvent> status_change =
         make_unique<IFStatusChangeEvent>(event_time, event_index, move(event_subject), status);
 
-    IntermediateFormatMessageContent content = parse_event_content(event_element);
+    RawMessageContent content = parse_event_content(event_element);
     if (!content.items.empty()) {
         status_change->message = move(content);
     }
@@ -424,8 +421,8 @@ CEDE(RawEvent) parse_purple_system_event(
     invariant_violation("Unsupported libpurple system message: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
-IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_element) {
-    IntermediateFormatMessageContent content;
+RawMessageContent parse_event_content(IMM(QDomElement) event_element) {
+    RawMessageContent content;
 
     if (!event_element.hasChildNodes()) {
         return content;
@@ -439,10 +436,7 @@ IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_elem
     return content;
 }
 
-void parse_event_content_rec(
-    IMM(QDomElement) element,
-    IntermediateFormatMessageContent& mut_content
-) {
+void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content) {
     for (QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling()) {
         if (node.isElement()) {
             QDomElement tag = node.toElement();
