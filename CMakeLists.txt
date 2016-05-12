@@ -109,8 +109,8 @@ set(SOURCE_FILES
         src/intermediate_format/subjects/SubjectGivenAsScreenName.h
         src/intermediate_format/ApparentTime.cpp
         src/intermediate_format/ApparentTime.h
-        src/intermediate_format/IntermediateFormatConversation.cpp
-        src/intermediate_format/IntermediateFormatConversation.h
+        src/intermediate_format/RawConversation.cpp
+        src/intermediate_format/RawConversation.h
         src/protocols/digsby/account_name.cpp
         src/protocols/digsby/account_name.h
         src/protocols/facebook/account_name.cpp

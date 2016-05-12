@@ -13,14 +13,14 @@
 
 #include <QString>
 
-#include "intermediate_format/IntermediateFormatConversation.h"
+#include "intermediate_format/RawConversation.h"
 #include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format;
 
 namespace uniarchive2 { namespace extraction { namespace digsby {
 
-IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename);
+RawConversation extract_digsby_conversation(IMM(QString) filename);
 
 }}}
 

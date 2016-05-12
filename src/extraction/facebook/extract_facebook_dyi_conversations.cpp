@@ -35,30 +35,25 @@ using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
 
-IntermediateFormatConversation init_prototype(IMM(QString) filename);
+RawConversation init_prototype(IMM(QString) filename);
 QString read_identity_screen_name(IMM(QDomElement) root_element);
 void extract_conversations_in_section(
     QDomElement& mut_next_element,
-    vector<IntermediateFormatConversation>& mut_conversations,
-    IMM(IntermediateFormatConversation) prototype
+    vector<RawConversation>& mut_conversations,
+    IMM(RawConversation) prototype
 );
-IntermediateFormatConversation extract_thread(
-    QDomElement& mut_thread_element,
-    IMM(IntermediateFormatConversation) prototype
-);
+RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype);
 void populate_thread_participants(
     IMM(QDomElement) thread_element,
-    IntermediateFormatConversation& mut_conversation,
-    IMM(IntermediateFormatConversation) prototype
+    RawConversation& mut_conversation,
+    IMM(RawConversation) prototype
 );
-CEDE(IntermediateFormatEvent) extract_message(
-    QDomElement& mut_message_element
-);
+CEDE(IntermediateFormatEvent) extract_message(QDomElement& mut_message_element);
 ApparentTime parse_message_time(IMM(QString) time_text);
 
-vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(IMM(QString) filename) {
-    vector<IntermediateFormatConversation> conversations;
-    IntermediateFormatConversation prototype = init_prototype(filename);
+vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename) {
+    vector<RawConversation> conversations;
+    RawConversation prototype = init_prototype(filename);
 
     QDomDocument xml = load_xml_file(filename);
     auto root_element = get_dom_root(xml, "html");
@@ -80,7 +75,7 @@ vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(IMM(QS
     return conversations;
 }
 
-IntermediateFormatConversation init_prototype(IMM(QString) filename) {
+RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -94,7 +89,7 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
         qUtf8Printable(filename.section(QDir::separator(), -2, -1))
     );
 
-    IntermediateFormatConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
+    RawConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
@@ -125,8 +120,8 @@ QString read_identity_screen_name(IMM(QDomElement) root_element) {
 
 void extract_conversations_in_section(
     QDomElement& mut_next_element,
-    vector<IntermediateFormatConversation>& mut_conversations,
-    IMM(IntermediateFormatConversation) prototype
+    vector<RawConversation>& mut_conversations,
+    IMM(RawConversation) prototype
 ) {
     invariant(mut_next_element.tagName() == "div", "Expected section <div> to follow");
 
@@ -139,16 +134,13 @@ void extract_conversations_in_section(
     mut_next_element = mut_next_element.nextSiblingElement();
 }
 
-IntermediateFormatConversation extract_thread(
-    QDomElement& mut_thread_element,
-    IMM(IntermediateFormatConversation) prototype
-) {
+RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype) {
     invariant(
         (mut_thread_element.tagName() == "div") && (mut_thread_element.attribute("class", "") == "thread"),
         "Expected thread to be defined by a <div class=\"thread\">"
     );
 
-    IntermediateFormatConversation conversation = IntermediateFormatConversation::fromPrototype(prototype);
+    RawConversation conversation = RawConversation::fromPrototype(prototype);
     populate_thread_participants(mut_thread_element, conversation, prototype);
 
     vector<unique_ptr<IntermediateFormatEvent>> events_in_reverse;
@@ -171,8 +163,8 @@ IntermediateFormatConversation extract_thread(
 
 void populate_thread_participants(
     IMM(QDomElement) thread_element,
-    IntermediateFormatConversation& mut_conversation,
-    IMM(IntermediateFormatConversation) prototype
+    RawConversation& mut_conversation,
+    IMM(RawConversation) prototype
 ) {
     auto participants_text_node = thread_element.firstChild();
     invariant(

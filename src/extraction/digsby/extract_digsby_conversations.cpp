@@ -59,7 +59,7 @@ struct InfoFromFilename {
     bool isConference;
 };
 
-IntermediateFormatConversation init_conversation(IMM(QString) filename);
+RawConversation init_conversation(IMM(QString) filename);
 InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocol parse_protocol(IMM(QString) protocol_name);
 FullAccountName parse_account(IMProtocol protocol, IMM(QString) account_name);
@@ -68,15 +68,15 @@ void verify_xml_header(QTextStream& mut_stream);
 void seek_start_of_events(QTextStream& mut_stream);
 QStringList partially_parse_events(QTextStream& mut_stream);
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation);
+CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
 CEDE(TextSection) parse_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
-IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename) {
-    IntermediateFormatConversation conversation = init_conversation(filename);
+RawConversation extract_digsby_conversation(IMM(QString) filename) {
+    RawConversation conversation = init_conversation(filename);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -97,14 +97,14 @@ IntermediateFormatConversation extract_digsby_conversation(IMM(QString) filename
     return conversation;
 }
 
-IntermediateFormatConversation init_conversation(IMM(QString) filename) {
+RawConversation init_conversation(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
 
-    IntermediateFormatConversation conversation(ArchiveFormat::DIGSBY, info.identity.protocol);
+    RawConversation conversation(ArchiveFormat::DIGSBY, info.identity.protocol);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
@@ -249,7 +249,7 @@ QStringList partially_parse_events(QTextStream& mut_stream) {
     return event_htmls;
 }
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(IntermediateFormatConversation) conversation) {
+CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
     static QRegularExpression pat_message_html(
         "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"
             "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$",

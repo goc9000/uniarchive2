@@ -21,7 +21,7 @@ using namespace uniarchive2::extraction::yahoo;
 int main() {
     // Temporary test harness
 
-    vector<IntermediateFormatConversation> convos;
+    vector<RawConversation> convos;
 
     QDirIterator adium_files(QT_STRINGIFY(TEST_DATA_DIR) "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
     while (adium_files.hasNext()) {

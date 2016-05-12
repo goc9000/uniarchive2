@@ -44,11 +44,11 @@ using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
-IntermediateFormatConversation init_prototype(IMM(QString) filename);
-IntermediateFormatConversation extract_conversation_for_session(
+RawConversation init_prototype(IMM(QString) filename);
+RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int session_id,
-    IMM(IntermediateFormatConversation) prototype,
+    IMM(RawConversation) prototype,
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 );
@@ -86,9 +86,9 @@ ApparentTime parse_event_time(IMM(QDomElement) event_element);
 CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
 IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element);
 
-vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
-    vector<IntermediateFormatConversation> conversations;
-    IntermediateFormatConversation prototype = init_prototype(filename);
+vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
+    vector<RawConversation> conversations;
+    RawConversation prototype = init_prototype(filename);
 
     QDomDocument xml = load_xml_file(filename);
     QDomElement root_element = get_dom_root(xml, "Log");
@@ -117,7 +117,7 @@ vector<IntermediateFormatConversation> extract_msn_messenger_xml_conversations(I
     return conversations;
 }
 
-IntermediateFormatConversation init_prototype(IMM(QString) filename) {
+RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -138,7 +138,7 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
         qUtf8Printable(filename.section(QDir::separator(), -3, -1))
     );
 
-    IntermediateFormatConversation conversation(ArchiveFormat::MSN_MESSENGER_XML, IMProtocol::MSN);
+    RawConversation conversation(ArchiveFormat::MSN_MESSENGER_XML, IMProtocol::MSN);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
@@ -157,10 +157,10 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     return conversation;
 }
 
-IntermediateFormatConversation extract_conversation_for_session(
+RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int expected_session_id,
-    IMM(IntermediateFormatConversation) prototype,
+    IMM(RawConversation) prototype,
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 ) {
@@ -171,7 +171,7 @@ IntermediateFormatConversation extract_conversation_for_session(
         session_id == expected_session_id, "Expected session ID = %d, found %d",  expected_session_id, session_id
     );
 
-    auto conversation = IntermediateFormatConversation::fromPrototype(prototype);
+    auto conversation = RawConversation::fromPrototype(prototype);
     conversation.numConversationInFile = conversation_no_in_file;
     conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 

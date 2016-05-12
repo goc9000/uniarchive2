@@ -15,7 +15,7 @@
 
 #include <QString>
 
-#include "intermediate_format/IntermediateFormatConversation.h"
+#include "intermediate_format/RawConversation.h"
 #include "utils/language/shortcuts.h"
 
 using namespace std;
@@ -23,7 +23,7 @@ using namespace uniarchive2::intermediate_format;
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
 
-vector<IntermediateFormatConversation> extract_facebook_dyi_conversations(IMM(QString) filename);
+vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename);
 
 }}}
 

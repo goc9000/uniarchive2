@@ -1,5 +1,5 @@
 /**
- * intermediate_format/IntermediateFormatConversation.cpp
+ * intermediate_format/RawConversation.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,22 +10,20 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/IntermediateFormatConversation.h"
+#include "intermediate_format/RawConversation.h"
 
 namespace uniarchive2 { namespace intermediate_format {
 
-IntermediateFormatConversation::IntermediateFormatConversation()
+RawConversation::RawConversation()
     : originalArchiveFormat(ArchiveFormat::INVALID),  protocol(IMProtocol::INVALID) {
 }
 
-IntermediateFormatConversation::IntermediateFormatConversation(ArchiveFormat format, IMProtocol protocol)
+RawConversation::RawConversation(ArchiveFormat format, IMProtocol protocol)
     : originalArchiveFormat(format), protocol(protocol) {
 }
 
-IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
-    IMM(IntermediateFormatConversation) prototype
-) {
-    IntermediateFormatConversation convo(prototype.originalArchiveFormat, prototype.protocol);
+RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
+    RawConversation convo(prototype.originalArchiveFormat, prototype.protocol);
 
     if (prototype.identity) {
         convo.identity = prototype.identity->clone();
@@ -44,10 +42,10 @@ IntermediateFormatConversation IntermediateFormatConversation::fromPrototype(
     return convo;
 }
 
-QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo) {
+QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
 #define N_CONTEXT_LINES 3
     QDebugStateSaver settings(stream);
-    stream.nospace() << "IntermediateFormatConversation {\n";
+    stream.nospace() << "RawConversation {\n";
 
     stream << "\tFormat: " << convo.originalArchiveFormat << "\n";
     stream << "\tProtocol: " << convo.protocol << "\n";

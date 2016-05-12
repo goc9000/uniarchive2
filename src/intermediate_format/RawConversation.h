@@ -1,5 +1,5 @@
 /**
- * intermediate_format/IntermediateFormatConversation.h
+ * intermediate_format/RawConversation.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_INTERMEDIATEFORMATCONVERSATION_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_INTERMEDIATEFORMATCONVERSATION_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATION_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATION_H
 
 #include <memory>
 #include <vector>
@@ -33,7 +33,7 @@ using namespace std::experimental;
 
 namespace uniarchive2 { namespace intermediate_format {
 
-class IntermediateFormatConversation {
+class RawConversation {
 public:
     // Mandatory metadata
     ArchiveFormat originalArchiveFormat;
@@ -53,14 +53,14 @@ public:
 
     vector<unique_ptr<IntermediateFormatEvent>> events;
 
-    IntermediateFormatConversation();
-    IntermediateFormatConversation(ArchiveFormat format, IMProtocol protocol);
+    RawConversation();
+    RawConversation(ArchiveFormat format, IMProtocol protocol);
 
-    static IntermediateFormatConversation fromPrototype(IMM(IntermediateFormatConversation) prototype);
+    static RawConversation fromPrototype(IMM(RawConversation) prototype);
 };
 
-QDebug operator<< (QDebug stream, IMM(IntermediateFormatConversation) convo);
+QDebug operator<< (QDebug stream, IMM(RawConversation) convo);
 
 }}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_INTERMEDIATEFORMATCONVERSATION_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATION_H

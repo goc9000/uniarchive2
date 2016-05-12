@@ -13,14 +13,14 @@
 
 #include <QString>
 
-#include "intermediate_format/IntermediateFormatConversation.h"
+#include "intermediate_format/RawConversation.h"
 #include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format;
 
 namespace uniarchive2 { namespace extraction { namespace adium {
 
-IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename);
+RawConversation extract_adium_conversation(IMM(QString) filename);
 
 }}}
 

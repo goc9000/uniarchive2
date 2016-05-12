@@ -56,24 +56,15 @@ using namespace std;
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-IntermediateFormatConversation init_prototype(IMM(QString) filename);
-IntermediateFormatConversation init_conversation(
-    IMM(IntermediateFormatConversation) prototype,
+RawConversation init_prototype(IMM(QString) filename);
+RawConversation init_conversation(
+    IMM(RawConversation) prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 );
-CEDE(IntermediateFormatEvent) convert_event(
-    IMM(YahooProtocolEvent) proto_event,
-    IMM(IntermediateFormatConversation) conversation
-);
-CEDE(ApparentSubject) implicit_subject(
-    IMM(YahooProtocolEvent) proto_event,
-    IMM(IntermediateFormatConversation) conversation
-);
-CEDE(ApparentSubject) parse_event_subject(
-    IMM(YahooProtocolEvent) proto_event,
-    IMM(IntermediateFormatConversation) conversation
-);
+CEDE(IntermediateFormatEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
+CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
+CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data);
 CEDE(TextSection) make_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
@@ -83,10 +74,10 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo));
 CEDE(IntermediateFormatMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
 
 
-vector<IntermediateFormatConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
-    vector<IntermediateFormatConversation> conversations;
-    IntermediateFormatConversation prototype = init_prototype(filename);
-    IntermediateFormatConversation conversation = init_conversation(prototype, 1, 0);
+vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
+    vector<RawConversation> conversations;
+    RawConversation prototype = init_prototype(filename);
+    RawConversation conversation = init_conversation(prototype, 1, 0);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -116,7 +107,7 @@ vector<IntermediateFormatConversation> extract_yahoo_messenger_dat_conversations
     return conversations;
 }
 
-IntermediateFormatConversation init_prototype(IMM(QString) filename) {
+RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
@@ -127,7 +118,7 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    IntermediateFormatConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
+    RawConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
@@ -150,22 +141,19 @@ IntermediateFormatConversation init_prototype(IMM(QString) filename) {
     return conversation;
 }
 
-IntermediateFormatConversation init_conversation(
-    IMM(IntermediateFormatConversation) prototype,
+RawConversation init_conversation(
+    IMM(RawConversation) prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 ) {
-    auto conversation = IntermediateFormatConversation::fromPrototype(prototype);
+    auto conversation = RawConversation::fromPrototype(prototype);
     conversation.numConversationInFile = num_conversation_in_file;
     conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
 
     return conversation;
 }
 
-CEDE(IntermediateFormatEvent) convert_event(
-    IMM(YahooProtocolEvent) proto_event,
-    IMM(IntermediateFormatConversation) conversation
-) {
+CEDE(IntermediateFormatEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     unique_ptr<IntermediateFormatEvent> event;
 
     ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
@@ -249,18 +237,12 @@ CEDE(IntermediateFormatEvent) convert_event(
     invariant_violation("Event not converted");
 }
 
-CEDE(ApparentSubject) implicit_subject(
-    IMM(YahooProtocolEvent) proto_event,
-    IMM(IntermediateFormatConversation) conversation
-) {
+CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     return (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
            conversation.identity->clone() : conversation.declaredPeers.front()->clone();
 }
 
-CEDE(ApparentSubject) parse_event_subject(
-    IMM(YahooProtocolEvent) proto_event,
-    IMM(IntermediateFormatConversation) conversation
-) {
+CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     if (proto_event.extra.isEmpty() || (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING)) {
         return implicit_subject(proto_event, conversation);
     }

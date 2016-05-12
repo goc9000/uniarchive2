@@ -74,19 +74,13 @@ struct InfoFromFilename {
     ApparentTime convoStartDate;
 };
 
-IntermediateFormatConversation init_conversation(IMM(QString) filename);
+RawConversation init_conversation(IMM(QString) filename);
 InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocol parse_protocol(IMM(QString) protocol_name);
 void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
-CEDE(IntermediateFormatEvent) parse_event(
-    IMM(QDomElement) event_element,
-    IMM(IntermediateFormatConversation) conversation
-);
-CEDE(ApparentSubject) parse_event_subject(
-    IMM(QDomElement) event_element,
-    IMM(IntermediateFormatConversation) conversation
-);
+CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
+CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
 CEDE(IntermediateFormatEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
@@ -129,8 +123,8 @@ CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag_seco
 CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node);
 
 
-IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename) {
-    IntermediateFormatConversation conversation = init_conversation(filename);
+RawConversation extract_adium_conversation(IMM(QString) filename) {
+    RawConversation conversation = init_conversation(filename);
 
     QDomDocument xml = load_xml_file(filename);
     QDomElement root_element = get_dom_root(xml, "chat");
@@ -148,14 +142,14 @@ IntermediateFormatConversation extract_adium_conversation(IMM(QString) filename)
     return conversation;
 }
 
-IntermediateFormatConversation init_conversation(IMM(QString) filename) {
+RawConversation init_conversation(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
 
-    IntermediateFormatConversation conversation(ArchiveFormat::ADIUM, info.identity.protocol);
+    RawConversation conversation(ArchiveFormat::ADIUM, info.identity.protocol);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime(
@@ -232,10 +226,7 @@ void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identit
     invariant(identity == file_account, "Found an unexpected identity in the archive");
 }
 
-CEDE(IntermediateFormatEvent) parse_event(
-    IMM(QDomElement) event_element,
-    IMM(IntermediateFormatConversation) conversation
-) {
+CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
     ApparentTime event_time = ApparentTime(read_iso_date_attr(event_element, "time"));
     unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
     int event_index = (int)conversation.events.size();
@@ -251,10 +242,7 @@ CEDE(IntermediateFormatEvent) parse_event(
     invariant_violation("Unsupported event tag <%s>", qUtf8Printable(event_element.tagName()));
 }
 
-CEDE(ApparentSubject) parse_event_subject(
-    IMM(QDomElement) event_element,
-    IMM(IntermediateFormatConversation) conversation
-) {
+CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
     if (!event_element.hasAttribute("sender")) {
         return unique_ptr<ApparentSubject>();
     }
