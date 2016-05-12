@@ -113,10 +113,10 @@ CEDE(RawEvent) parse_purple_system_event(
 );
 RawMessageContent parse_event_content(IMM(QDomElement) event_element);
 void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content);
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element);
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element);
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element);
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element);
+CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element);
+CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element);
+CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element);
+CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element);
 CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node);
 
 
@@ -453,7 +453,7 @@ void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_co
     }
 }
 
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element) {
+CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if (tag_name == "span") {
@@ -466,43 +466,43 @@ CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag(IMM(QD
 
     invariant_violation("Unsupported open tag: <%s>", qUtf8Printable(tag_name));
 
-    return unique_ptr<IntermediateFormatMessageContentItem>();
+    return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element) {
+CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if (tag_name == "span") {
         return make_unique<CSSStyleTag>(true);
     } else if (tag_name == "br") {
-        return unique_ptr<IntermediateFormatMessageContentItem>();
+        return unique_ptr<RawMessageContentItem>();
     } else if (tag_name == "a") {
         return make_unique<LinkTag>(true);
     }
 
     invariant_violation("Unsupported closed tag: <%s>", qUtf8Printable(tag_name));
 
-    return unique_ptr<IntermediateFormatMessageContentItem>();
+    return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element) {
+CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if ((tag_name == "a") && (element.hasAttribute("style"))) {
         return make_unique<CSSStyleTag>(element.attribute("style"));
     }
 
-    return unique_ptr<IntermediateFormatMessageContentItem>();
+    return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(IntermediateFormatMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element) {
+CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if ((tag_name == "a") && (element.hasAttribute("style"))) {
         return make_unique<CSSStyleTag>(true);
     }
 
-    return unique_ptr<IntermediateFormatMessageContentItem>();
+    return unique_ptr<RawMessageContentItem>();
 }
 
 CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node) {

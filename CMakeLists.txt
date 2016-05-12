@@ -36,8 +36,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/FontTag.h
         src/intermediate_format/content/RawMessageContent.cpp
         src/intermediate_format/content/RawMessageContent.h
-        src/intermediate_format/content/IntermediateFormatMessageContentItem.cpp
-        src/intermediate_format/content/IntermediateFormatMessageContentItem.h
+        src/intermediate_format/content/RawMessageContentItem.cpp
+        src/intermediate_format/content/RawMessageContentItem.h
         src/intermediate_format/content/ItalicTag.cpp
         src/intermediate_format/content/ItalicTag.h
         src/intermediate_format/content/LineBreakTag.cpp

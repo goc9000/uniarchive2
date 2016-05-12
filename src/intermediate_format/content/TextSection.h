@@ -14,12 +14,12 @@
 #include <QtDebug>
 #include <QString>
 
-#include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+#include "intermediate_format/content/RawMessageContentItem.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct TextSection : IntermediateFormatMessageContentItem {
+struct TextSection : RawMessageContentItem {
 public:
     QString text;
 

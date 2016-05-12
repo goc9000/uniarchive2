@@ -11,11 +11,11 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MARKUP_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MARKUP_H
 
-#include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+#include "intermediate_format/content/RawMessageContentItem.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct Markup : IntermediateFormatMessageContentItem {
+struct Markup : RawMessageContentItem {
 public:
 };
 

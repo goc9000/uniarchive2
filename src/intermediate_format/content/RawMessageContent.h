@@ -16,7 +16,7 @@
 
 #include <QtDebug>
 
-#include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+#include "intermediate_format/content/RawMessageContentItem.h"
 #include "utils/language/shortcuts.h"
 
 using namespace std;
@@ -27,9 +27,9 @@ class RawMessageContent {
 public:
     RawMessageContent();
 
-    vector<unique_ptr<IntermediateFormatMessageContentItem>> items;
+    vector<unique_ptr<RawMessageContentItem>> items;
 
-    void addItem(TAKE(IntermediateFormatMessageContentItem) item);
+    void addItem(TAKE(RawMessageContentItem) item);
 };
 
 QDebug operator<< (QDebug stream, IMM(RawMessageContent) content);

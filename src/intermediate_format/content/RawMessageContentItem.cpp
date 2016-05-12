@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/IntermediateFormatMessageContentItem.cpp
+ * intermediate_format/content/RawMessageContentItem.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,11 +10,11 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/content/IntermediateFormatMessageContentItem.h"
+#include "intermediate_format/content/RawMessageContentItem.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-QDebug operator<< (QDebug stream, IntermediateFormatMessageContentItem const * const content_item) {
+QDebug operator<< (QDebug stream, RawMessageContentItem const * const content_item) {
     QDebugStateSaver saver(stream);
     stream.nospace();
     content_item->writeToDebugStream(stream);

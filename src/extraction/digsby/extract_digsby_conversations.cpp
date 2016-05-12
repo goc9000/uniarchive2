@@ -71,7 +71,7 @@ QStringList partially_parse_events(QTextStream& mut_stream);
 CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
 RawMessageContent parse_message_content(IMM(QString) content_html);
 CEDE(TextSection) parse_text_section(IMM(QString) text);
-CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
+CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
@@ -313,7 +313,7 @@ CEDE(TextSection) parse_text_section(IMM(QString) text) {
     return make_unique<TextSection>(trimmed);
 }
 
-CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     invariant(!tag_info.open || !tag_info.closed, "Did not expect self-closing tags in Digsby archives");
 
     if (tag_info.tagName == "br") {
@@ -349,7 +349,7 @@ CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInf
 
     if (tag_info.closed) {
         // Skip unrecognized closing tags (these are added by Digsby incorrectly)
-        return unique_ptr<IntermediateFormatMessageContentItem>();
+        return unique_ptr<RawMessageContentItem>();
     }
 
     // If the tag is not recognized, return it as unparsed text

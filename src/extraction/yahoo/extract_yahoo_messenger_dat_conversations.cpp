@@ -67,11 +67,11 @@ CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(
 CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 RawMessageContent parse_message_content(IMM(QByteArray) text_data);
 CEDE(TextSection) make_text_section(IMM(QString) text);
-CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
-CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code);
-CEDE(IntermediateFormatMessageContentItem) parse_html_tag(IMM(QString) tag_text);
+CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
+CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code);
+CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text);
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo));
-CEDE(IntermediateFormatMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
+CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
 
 
 vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
@@ -290,7 +290,7 @@ CEDE(TextSection) make_text_section(IMM(QString) text) {
     return make_unique<TextSection>(text);
 };
 
-CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match) {
+CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match) {
     if (match.capturedLength("pseudo_ansi_seq")) {
         return parse_pseudo_ansi_seq(match.captured("pseudo_ansi_seq"));
     } else if (match.capturedLength("html_tag")) {
@@ -302,7 +302,7 @@ CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(QRegularExpressi
     invariant_violation("Tag not recognized: \"%s\"", qUtf8Printable(match.captured(0)));
 }
 
-CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
+CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
     static QRegularExpression pattern(
         "^(?<closed>x)?("\
         "(?<reset>0)|"\
@@ -340,7 +340,7 @@ CEDE(IntermediateFormatMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sg
     never_reached();
 }
 
-CEDE(IntermediateFormatMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
+CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
     ParsedHTMLTagInfo tag_info = parse_html_tag_lenient(tag_text);
 
     invariant(tag_info.valid, "Failed to parse tag: \"%s\"", qUtf8Printable(tag_text));
@@ -376,7 +376,7 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     return tag;
 }
 
-CEDE(IntermediateFormatMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
+CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
 #define PAT_COLOR "#[0-9a-f]{6}"
     static QRegularExpression pattern(
         "^<(?<closed>/)?(?<tag_name>[a-z._-][a-z0-9._-]*)\\b\\s*(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$",

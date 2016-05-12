@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 RawMessageContent::RawMessageContent() {
 }
 
-void RawMessageContent::addItem(TAKE(IntermediateFormatMessageContentItem) item) {
+void RawMessageContent::addItem(TAKE(RawMessageContentItem) item) {
     if (item) {
         items.push_back(move(item));
     }
