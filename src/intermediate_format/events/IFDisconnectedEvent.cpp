@@ -14,8 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-IFDisconnectedEvent::IFDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index)
-: IntermediateFormatEvent(timestamp, index) {
+IFDisconnectedEvent::IFDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index) : RawEvent(timestamp, index) {
 }
 
 QString IFDisconnectedEvent::eventName() const {

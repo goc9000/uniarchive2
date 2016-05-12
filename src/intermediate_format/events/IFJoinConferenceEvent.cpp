@@ -18,7 +18,7 @@ IFJoinConferenceEvent::IFJoinConferenceEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) subject
-): IntermediateFormatEvent(timestamp, index), subject(move(subject)) {
+): RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString IFJoinConferenceEvent::eventName() const {

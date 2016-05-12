@@ -18,7 +18,7 @@ IFLeaveConferenceEvent::IFLeaveConferenceEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) subject
-): IntermediateFormatEvent(timestamp, index), subject(move(subject)) {
+): RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString IFLeaveConferenceEvent::eventName() const {

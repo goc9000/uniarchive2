@@ -95,8 +95,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFWindowOpenedEvent.h
         src/intermediate_format/events/IFWindowClosedEvent.cpp
         src/intermediate_format/events/IFWindowClosedEvent.h
-        src/intermediate_format/events/IntermediateFormatEvent.cpp
-        src/intermediate_format/events/IntermediateFormatEvent.h
+        src/intermediate_format/events/RawEvent.cpp
+        src/intermediate_format/events/RawEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp
         src/intermediate_format/subjects/ApparentSubject.h
         src/intermediate_format/subjects/FullySpecifiedSubject.cpp

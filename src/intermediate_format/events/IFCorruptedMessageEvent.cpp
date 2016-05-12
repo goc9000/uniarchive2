@@ -18,7 +18,7 @@ IFCorruptedMessageEvent::IFCorruptedMessageEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     IMM(QByteArray) raw_data
-) : IntermediateFormatEvent(timestamp, index), rawData(raw_data) {
+) : RawEvent(timestamp, index), rawData(raw_data) {
 }
 
 QString IFCorruptedMessageEvent::eventName() const {

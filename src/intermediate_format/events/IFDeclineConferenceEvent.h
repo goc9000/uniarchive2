@@ -18,7 +18,7 @@
 #include "utils/external_libs/optional.hpp"
 
 #include "intermediate_format/content/IntermediateFormatMessageContent.h"
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
@@ -28,7 +28,7 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFDeclineConferenceEvent : IntermediateFormatEvent {
+struct IFDeclineConferenceEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
     optional<IntermediateFormatMessageContent> message;

@@ -18,7 +18,7 @@ IFCancelFileTransferEvent::IFCancelFileTransferEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     IMM(QString) filename
-): IntermediateFormatEvent(timestamp, index), filename(filename) {
+): RawEvent(timestamp, index), filename(filename) {
 }
 
 QString IFCancelFileTransferEvent::eventName() const {

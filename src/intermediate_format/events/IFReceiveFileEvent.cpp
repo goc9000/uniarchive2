@@ -19,7 +19,7 @@ IFReceiveFileEvent::IFReceiveFileEvent(
     unsigned int index,
     TAKE(ApparentSubject) receiver,
     IMM(QString) filename
-): IntermediateFormatEvent(timestamp, index), receiver(move(receiver)), filename(filename) {
+): RawEvent(timestamp, index), receiver(move(receiver)), filename(filename) {
 }
 
 QString IFReceiveFileEvent::eventName() const {

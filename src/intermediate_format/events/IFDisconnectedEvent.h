@@ -16,14 +16,14 @@
 #include <QtDebug>
 #include <QString>
 
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "utils/language/shortcuts.h"
 
 using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFDisconnectedEvent : IntermediateFormatEvent {
+struct IFDisconnectedEvent : RawEvent {
 public:
     IFDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index);
 

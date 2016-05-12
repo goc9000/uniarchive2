@@ -28,7 +28,7 @@
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/content/YahooFadeTag.h"
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/IFCorruptedMessageEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
@@ -68,7 +68,7 @@ void verify_xml_header(QTextStream& mut_stream);
 void seek_start_of_events(QTextStream& mut_stream);
 QStringList partially_parse_events(QTextStream& mut_stream);
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
+CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QString) content_html);
 CEDE(TextSection) parse_text_section(IMM(QString) text);
 CEDE(IntermediateFormatMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
@@ -249,7 +249,7 @@ QStringList partially_parse_events(QTextStream& mut_stream) {
     return event_htmls;
 }
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
+CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
     static QRegularExpression pat_message_html(
         "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"
             "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$",

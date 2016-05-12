@@ -48,7 +48,7 @@ void populate_thread_participants(
     RawConversation& mut_conversation,
     IMM(RawConversation) prototype
 );
-CEDE(IntermediateFormatEvent) extract_message(QDomElement& mut_message_element);
+CEDE(RawEvent) extract_message(QDomElement& mut_message_element);
 ApparentTime parse_message_time(IMM(QString) time_text);
 
 vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename) {
@@ -143,7 +143,7 @@ RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversat
     RawConversation conversation = RawConversation::fromPrototype(prototype);
     populate_thread_participants(mut_thread_element, conversation, prototype);
 
-    vector<unique_ptr<IntermediateFormatEvent>> events_in_reverse;
+    vector<unique_ptr<RawEvent>> events_in_reverse;
     auto message_element = mut_thread_element.firstChildElement();
     while (!message_element.isNull()) {
         events_in_reverse.push_back(extract_message(message_element));
@@ -182,9 +182,7 @@ void populate_thread_participants(
     }
 }
 
-CEDE(IntermediateFormatEvent) extract_message(
-    QDomElement& mut_message_element
-) {
+CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
     invariant(
         (mut_message_element.tagName() == "div") && (mut_message_element.attribute("class", "") == "message"),
         "Expected message to be defined by a <div class=\"message\">"

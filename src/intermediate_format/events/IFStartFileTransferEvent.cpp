@@ -18,7 +18,7 @@ IFStartFileTransferEvent::IFStartFileTransferEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     IMM(QString) filename
-): IntermediateFormatEvent(timestamp, index), filename(filename) {
+): RawEvent(timestamp, index), filename(filename) {
 }
 
 QString IFStartFileTransferEvent::eventName() const {

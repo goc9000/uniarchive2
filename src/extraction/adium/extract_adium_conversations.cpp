@@ -23,7 +23,7 @@
 #include "intermediate_format/content/LineBreakTag.h"
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/IFDisconnectedEvent.h"
 #include "intermediate_format/events/IFCancelFileTransferEvent.h"
 #include "intermediate_format/events/IFChangeScreenNameEvent.h"
@@ -79,9 +79,9 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocol parse_protocol(IMM(QString) protocol_name);
 void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
+CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
 CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
-CEDE(IntermediateFormatEvent) parse_system_event(
+CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -93,7 +93,7 @@ CEDE(IFMessageEvent) parse_message_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(IntermediateFormatEvent) parse_status_event(
+CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -105,7 +105,7 @@ CEDE(IFStatusChangeEvent) parse_status_change_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(IntermediateFormatEvent) parse_purple_system_event(
+CEDE(RawEvent) parse_purple_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -226,7 +226,7 @@ void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identit
     invariant(identity == file_account, "Found an unexpected identity in the archive");
 }
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
+CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
     ApparentTime event_time = ApparentTime(read_iso_date_attr(event_element, "time"));
     unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
     int event_index = (int)conversation.events.size();
@@ -257,7 +257,7 @@ CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(Ra
     return make_unique<SubjectGivenAsAccount>(account);
 }
 
-CEDE(IntermediateFormatEvent) parse_system_event(
+CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -299,7 +299,7 @@ void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_tex
     );
 }
 
-CEDE(IntermediateFormatEvent) parse_status_event(
+CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -346,7 +346,7 @@ CEDE(IFStatusChangeEvent) parse_status_change_event(
     return status_change;
 }
 
-CEDE(IntermediateFormatEvent) parse_purple_system_event(
+CEDE(RawEvent) parse_purple_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -379,21 +379,15 @@ CEDE(IntermediateFormatEvent) parse_purple_system_event(
             match.captured("offer_file")
         );
     } else if (match.capturedLength("xfer_file")) {
-        unique_ptr<IntermediateFormatEvent> xfer_event = make_unique<IFStartFileTransferEvent>(
-            event_time,
-            event_index,
-            match.captured("xfer_file")
-        );
+        unique_ptr<RawEvent> xfer_event =
+            make_unique<IFStartFileTransferEvent>(event_time, event_index, match.captured("xfer_file"));
         static_cast<IFStartFileTransferEvent*>(xfer_event.get())->sender =
             make_unique<SubjectGivenAsScreenName>(match.captured("xfer_from"));
 
         return xfer_event;
     } else if (match.capturedLength("cancel_file")) {
-        unique_ptr<IntermediateFormatEvent> xfer_event = make_unique<IFCancelFileTransferEvent>(
-            event_time,
-            event_index,
-            match.captured("cancel_file")
-        );
+        unique_ptr<RawEvent> xfer_event =
+            make_unique<IFCancelFileTransferEvent>(event_time, event_index, match.captured("cancel_file"));
         static_cast<IFCancelFileTransferEvent*>(xfer_event.get())->sender =
             make_unique<SubjectGivenAsScreenName>(match.captured("cancel_from"));
 

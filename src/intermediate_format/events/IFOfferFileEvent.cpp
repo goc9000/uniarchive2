@@ -19,7 +19,7 @@ IFOfferFileEvent::IFOfferFileEvent(
     unsigned int index,
     TAKE(ApparentSubject) sender,
     IMM(QString) filename
-): IntermediateFormatEvent(timestamp, index), sender(move(sender)), filename(filename) {
+): RawEvent(timestamp, index), sender(move(sender)), filename(filename) {
 }
 
 QString IFOfferFileEvent::eventName() const {

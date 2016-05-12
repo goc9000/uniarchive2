@@ -15,7 +15,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFOfferCallEvent::IFOfferCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) caller)
-    : IntermediateFormatEvent(timestamp, index), caller(move(caller)) {
+    : RawEvent(timestamp, index), caller(move(caller)) {
 }
 
 QString IFOfferCallEvent::eventName() const {

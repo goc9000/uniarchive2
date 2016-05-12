@@ -15,14 +15,14 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFStartConversationEvent::IFStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index)
-    : IntermediateFormatEvent(timestamp, index) {
+    : RawEvent(timestamp, index) {
 }
 
 IFStartConversationEvent::IFStartConversationEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) initiator
-): IntermediateFormatEvent(timestamp, index), initiator(move(initiator)) {
+): RawEvent(timestamp, index), initiator(move(initiator)) {
 }
 
 QString IFStartConversationEvent::eventName() const {

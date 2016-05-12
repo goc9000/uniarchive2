@@ -16,7 +16,7 @@
 #include <QtDebug>
 #include <QString>
 
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
@@ -25,16 +25,12 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFStartFileTransferEvent : IntermediateFormatEvent {
+struct IFStartFileTransferEvent : RawEvent {
 public:
     QString filename;
     unique_ptr<ApparentSubject> sender;
 
-    IFStartFileTransferEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        IMM(QString) filename
-    );
+    IFStartFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QString) filename);
 
     virtual QString eventName() const;
 

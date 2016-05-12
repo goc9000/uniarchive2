@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/IntermediateFormatEvent.cpp
+ * intermediate_format/events/RawEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,15 +10,14 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-IntermediateFormatEvent::IntermediateFormatEvent(IMM(ApparentTime) timestamp, unsigned int index)
-    : timestamp(timestamp), indexInConversation(index) {
+RawEvent::RawEvent(IMM(ApparentTime) timestamp, unsigned int index) : timestamp(timestamp), indexInConversation(index) {
 };
 
-void IntermediateFormatEvent::writeToDebugStream(QDebug stream) const {
+void RawEvent::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
     stream.nospace() << "#" << indexInConversation << " ";
     stream << "[" << timestamp << "] ";
@@ -26,10 +25,10 @@ void IntermediateFormatEvent::writeToDebugStream(QDebug stream) const {
     writeDetailsToDebugStream(stream);
 }
 
-void IntermediateFormatEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawEvent::writeDetailsToDebugStream(QDebug stream) const {
 }
 
-QDebug operator<< (QDebug stream, IntermediateFormatEvent const * const event) {
+QDebug operator<< (QDebug stream, RawEvent const * const event) {
     event->writeToDebugStream(stream);
     return stream;
 }

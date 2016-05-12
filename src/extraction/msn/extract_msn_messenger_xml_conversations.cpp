@@ -21,7 +21,7 @@
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/TextSection.h"
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/IFOfferFileEvent.h"
 #include "intermediate_format/events/IFReceiveFileEvent.h"
 #include "intermediate_format/events/IFOfferCallEvent.h"
@@ -52,19 +52,19 @@ RawConversation extract_conversation_for_session(
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 );
-CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
-CEDE(IntermediateFormatEvent) parse_message_event(
+CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
+CEDE(RawEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index
 );
-CEDE(IntermediateFormatEvent) parse_invitation_or_response_event(
+CEDE(RawEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response
 );
-CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
+CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -73,7 +73,7 @@ CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
     IMM(QString) text,
     IMM(QString) filename
 );
-CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_application(
+CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -183,7 +183,7 @@ RawConversation extract_conversation_for_session(
     return conversation;
 }
 
-CEDE(IntermediateFormatEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
+CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
     ApparentTime event_time = parse_event_time(event_element);
 
     if (event_element.tagName() == "Message") {
@@ -241,12 +241,12 @@ IntermediateFormatMessageContent parse_event_text(IMM(QDomElement) event_element
     return content;
 }
 
-CEDE(IntermediateFormatEvent) parse_message_event(
+CEDE(RawEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index
 ) {
-    unique_ptr<IntermediateFormatEvent> event = make_unique<IFMessageEvent>(
+    unique_ptr<RawEvent> event = make_unique<IFMessageEvent>(
         event_time,
         event_index,
         parse_event_actor(event_element, "From"),
@@ -257,7 +257,7 @@ CEDE(IntermediateFormatEvent) parse_message_event(
     return event;
 }
 
-CEDE(IntermediateFormatEvent) parse_invitation_or_response_event(
+CEDE(RawEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -284,7 +284,7 @@ CEDE(IntermediateFormatEvent) parse_invitation_or_response_event(
     invariant_violation("Unhandled invitation event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
-CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
+CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -301,7 +301,7 @@ CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
         }
     } else {
         if (text.contains("You have successfully received ")) {
-            unique_ptr<IntermediateFormatEvent> event = make_unique<IFReceiveFileEvent>(
+            unique_ptr<RawEvent> event = make_unique<IFReceiveFileEvent>(
                 event_time,
                 event_index,
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
@@ -318,7 +318,7 @@ CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_file(
     invariant_violation("Unhandled file transfer event: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
-CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_application(
+CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -333,7 +333,7 @@ CEDE(IntermediateFormatEvent) parse_invitation_or_response_event_with_applicatio
         }
     } else {
         if (text.contains("You have answered") && (application == "a Computer Call")) {
-            unique_ptr<IntermediateFormatEvent> event = make_unique<IFAnswerCallEvent>(
+            unique_ptr<RawEvent> event = make_unique<IFAnswerCallEvent>(
                 event_time,
                 event_index,
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)

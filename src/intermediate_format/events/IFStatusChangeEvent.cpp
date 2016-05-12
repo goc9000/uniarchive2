@@ -19,7 +19,7 @@ IFStatusChangeEvent::IFStatusChangeEvent(
     unsigned int index,
     TAKE(ApparentSubject) subject,
     IMStatus status
-): IntermediateFormatEvent(timestamp, index), subject(move(subject)), status(status) {
+): RawEvent(timestamp, index), subject(move(subject)), status(status) {
 }
 
 QString IFStatusChangeEvent::eventName() const {

@@ -32,7 +32,7 @@
 #include "intermediate_format/content/FontTag.h"
 #include "intermediate_format/content/YahooAltTag.h"
 #include "intermediate_format/content/YahooFadeTag.h"
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/IFStartConversationEvent.h"
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
 #include "intermediate_format/events/IFDeclineConferenceEvent.h"
@@ -62,7 +62,7 @@ RawConversation init_conversation(
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 );
-CEDE(IntermediateFormatEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
+CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 IntermediateFormatMessageContent parse_message_content(IMM(QByteArray) text_data);
@@ -153,8 +153,8 @@ RawConversation init_conversation(
     return conversation;
 }
 
-CEDE(IntermediateFormatEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
-    unique_ptr<IntermediateFormatEvent> event;
+CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
+    unique_ptr<RawEvent> event;
 
     ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
     unsigned int next_index = (unsigned int)conversation.events.size();

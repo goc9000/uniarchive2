@@ -16,14 +16,14 @@
 #include <QtDebug>
 #include <QByteArray>
 
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "utils/language/shortcuts.h"
 
 using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFCorruptedMessageEvent : IntermediateFormatEvent {
+struct IFCorruptedMessageEvent : RawEvent {
 public:
     QByteArray rawData;
 

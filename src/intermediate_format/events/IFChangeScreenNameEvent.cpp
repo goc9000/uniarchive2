@@ -19,7 +19,7 @@ IFChangeScreenNameEvent::IFChangeScreenNameEvent(
     unsigned int index,
     TAKE(ApparentSubject) from,
     TAKE(ApparentSubject) to
-) : IntermediateFormatEvent(timestamp, index), from(move(from)), to(move(to)) {
+) : RawEvent(timestamp, index), from(move(from)), to(move(to)) {
 }
 
 QString IFChangeScreenNameEvent::eventName() const {

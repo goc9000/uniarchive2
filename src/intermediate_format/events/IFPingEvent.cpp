@@ -15,7 +15,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 IFPingEvent::IFPingEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) pinger)
-    : IntermediateFormatEvent(timestamp, index), pinger(move(pinger)) {
+    : RawEvent(timestamp, index), pinger(move(pinger)) {
 }
 
 QString IFPingEvent::eventName() const {

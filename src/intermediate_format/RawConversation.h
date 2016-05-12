@@ -17,7 +17,7 @@
 #include <QDebug>
 #include <QString>
 
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/ArchiveFormat.h"
@@ -51,7 +51,7 @@ public:
     QString adiumVersion;
     QString adiumBuildID;
 
-    vector<unique_ptr<IntermediateFormatEvent>> events;
+    vector<unique_ptr<RawEvent>> events;
 
     RawConversation();
     RawConversation(ArchiveFormat format, IMProtocol protocol);

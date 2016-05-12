@@ -15,7 +15,7 @@
 
 #include <QtDebug>
 
-#include "intermediate_format/events/IntermediateFormatEvent.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
@@ -24,7 +24,7 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFPingEvent : IntermediateFormatEvent {
+struct IFPingEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> pinger;
 
