@@ -55,42 +55,42 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooAltTag.h
         src/intermediate_format/content/YahooFadeTag.cpp
         src/intermediate_format/content/YahooFadeTag.h
-        src/intermediate_format/events/IFAnswerCallEvent.cpp
-        src/intermediate_format/events/IFAnswerCallEvent.h
-        src/intermediate_format/events/IFCancelFileTransferEvent.cpp
-        src/intermediate_format/events/IFCancelFileTransferEvent.h
-        src/intermediate_format/events/IFChangeScreenNameEvent.cpp
-        src/intermediate_format/events/IFChangeScreenNameEvent.h
-        src/intermediate_format/events/IFConnectedEvent.cpp
-        src/intermediate_format/events/IFConnectedEvent.h
-        src/intermediate_format/events/IFCorruptedMessageEvent.cpp
-        src/intermediate_format/events/IFCorruptedMessageEvent.h
-        src/intermediate_format/events/IFDeclineConferenceEvent.cpp
-        src/intermediate_format/events/IFDeclineConferenceEvent.h
-        src/intermediate_format/events/IFDisconnectedEvent.cpp
-        src/intermediate_format/events/IFDisconnectedEvent.h
-        src/intermediate_format/events/IFJoinConferenceEvent.cpp
-        src/intermediate_format/events/IFJoinConferenceEvent.h
-        src/intermediate_format/events/IFLeaveConferenceEvent.cpp
-        src/intermediate_format/events/IFLeaveConferenceEvent.h
+        src/intermediate_format/events/RawAnswerCallEvent.cpp
+        src/intermediate_format/events/RawAnswerCallEvent.h
+        src/intermediate_format/events/RawCancelFileTransferEvent.cpp
+        src/intermediate_format/events/RawCancelFileTransferEvent.h
+        src/intermediate_format/events/RawChangeScreenNameEvent.cpp
+        src/intermediate_format/events/RawChangeScreenNameEvent.h
+        src/intermediate_format/events/RawConnectedEvent.cpp
+        src/intermediate_format/events/RawConnectedEvent.h
+        src/intermediate_format/events/RawCorruptedMessageEvent.cpp
+        src/intermediate_format/events/RawCorruptedMessageEvent.h
+        src/intermediate_format/events/RawDeclineConferenceEvent.cpp
+        src/intermediate_format/events/RawDeclineConferenceEvent.h
+        src/intermediate_format/events/RawDisconnectedEvent.cpp
+        src/intermediate_format/events/RawDisconnectedEvent.h
+        src/intermediate_format/events/RawJoinConferenceEvent.cpp
+        src/intermediate_format/events/RawJoinConferenceEvent.h
+        src/intermediate_format/events/RawLeaveConferenceEvent.cpp
+        src/intermediate_format/events/RawLeaveConferenceEvent.h
         src/intermediate_format/events/RawMessageEvent.cpp
         src/intermediate_format/events/RawMessageEvent.h
-        src/intermediate_format/events/IFOfferCallEvent.cpp
-        src/intermediate_format/events/IFOfferCallEvent.h
-        src/intermediate_format/events/IFOfferFileEvent.cpp
-        src/intermediate_format/events/IFOfferFileEvent.h
+        src/intermediate_format/events/RawOfferCallEvent.cpp
+        src/intermediate_format/events/RawOfferCallEvent.h
+        src/intermediate_format/events/RawOfferFileEvent.cpp
+        src/intermediate_format/events/RawOfferFileEvent.h
         src/intermediate_format/events/RawPingEvent.cpp
         src/intermediate_format/events/RawPingEvent.h
-        src/intermediate_format/events/IFReceiveFileEvent.cpp
-        src/intermediate_format/events/IFReceiveFileEvent.h
-        src/intermediate_format/events/IFStartConversationEvent.cpp
-        src/intermediate_format/events/IFStartConversationEvent.h
-        src/intermediate_format/events/IFStartFileTransferEvent.cpp
-        src/intermediate_format/events/IFStartFileTransferEvent.h
-        src/intermediate_format/events/IFStatusChangeEvent.cpp
-        src/intermediate_format/events/IFStatusChangeEvent.h
-        src/intermediate_format/events/IFUninterpretedEvent.cpp
-        src/intermediate_format/events/IFUninterpretedEvent.h
+        src/intermediate_format/events/RawReceiveFileEvent.cpp
+        src/intermediate_format/events/RawReceiveFileEvent.h
+        src/intermediate_format/events/RawStartConversationEvent.cpp
+        src/intermediate_format/events/RawStartConversationEvent.h
+        src/intermediate_format/events/RawStartFileTransferEvent.cpp
+        src/intermediate_format/events/RawStartFileTransferEvent.h
+        src/intermediate_format/events/RawStatusChangeEvent.cpp
+        src/intermediate_format/events/RawStatusChangeEvent.h
+        src/intermediate_format/events/RawUninterpretedEvent.cpp
+        src/intermediate_format/events/RawUninterpretedEvent.h
         src/intermediate_format/events/RawWindowOpenedEvent.cpp
         src/intermediate_format/events/RawWindowOpenedEvent.h
         src/intermediate_format/events/RawWindowClosedEvent.cpp

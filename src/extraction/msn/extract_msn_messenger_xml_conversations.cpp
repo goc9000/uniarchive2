@@ -22,10 +22,10 @@
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
-#include "intermediate_format/events/IFOfferFileEvent.h"
-#include "intermediate_format/events/IFReceiveFileEvent.h"
-#include "intermediate_format/events/IFOfferCallEvent.h"
-#include "intermediate_format/events/IFAnswerCallEvent.h"
+#include "intermediate_format/events/RawOfferFileEvent.h"
+#include "intermediate_format/events/RawReceiveFileEvent.h"
+#include "intermediate_format/events/RawOfferCallEvent.h"
+#include "intermediate_format/events/RawAnswerCallEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
@@ -297,21 +297,21 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_file(
 
     if (!is_response) {
         if (text.contains(" sends ")) {
-            return make_unique<IFOfferFileEvent>(event_time, event_index, move(subject), filename);
+            return make_unique<RawOfferFileEvent>(event_time, event_index, move(subject), filename);
         }
     } else {
         if (text.contains("You have successfully received ")) {
-            unique_ptr<RawEvent> event = make_unique<IFReceiveFileEvent>(
+            unique_ptr<RawEvent> event = make_unique<RawReceiveFileEvent>(
                 event_time,
                 event_index,
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
                 filename
             );
-            static_cast<IFReceiveFileEvent*>(event.get())->sender = move(subject);
+            static_cast<RawReceiveFileEvent*>(event.get())->sender = move(subject);
 
             return event;
         } else if (pat_transfer_complete.match(text).hasMatch()) {
-            return make_unique<IFReceiveFileEvent>(event_time, event_index, move(subject), filename);
+            return make_unique<RawReceiveFileEvent>(event_time, event_index, move(subject), filename);
         }
     }
 
@@ -329,16 +329,16 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_application(
 ) {
     if (!is_response) {
         if (text.contains(" is calling you") && (application == "a Computer Call")) {
-            return make_unique<IFOfferCallEvent>(event_time, event_index, move(subject));
+            return make_unique<RawOfferCallEvent>(event_time, event_index, move(subject));
         }
     } else {
         if (text.contains("You have answered") && (application == "a Computer Call")) {
-            unique_ptr<RawEvent> event = make_unique<IFAnswerCallEvent>(
+            unique_ptr<RawEvent> event = make_unique<RawAnswerCallEvent>(
                 event_time,
                 event_index,
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
             );
-            static_cast<IFAnswerCallEvent*>(event.get())->caller = move(subject);
+            static_cast<RawAnswerCallEvent*>(event.get())->caller = move(subject);
 
             return event;
         }

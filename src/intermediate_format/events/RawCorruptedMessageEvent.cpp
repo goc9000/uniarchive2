@@ -1,0 +1,32 @@
+/**
+ * intermediate_format/events/RawCorruptedMessageEvent.cpp
+ *
+ * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
+ *
+ * This file is part of UniArchive II.
+ *
+ * Licensed under the GPL-3
+ */
+
+#include <QDebugStateSaver>
+
+#include "intermediate_format/events/RawCorruptedMessageEvent.h"
+
+namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+RawCorruptedMessageEvent::RawCorruptedMessageEvent(
+    IMM(ApparentTime) timestamp,
+    unsigned int index,
+    IMM(QByteArray) raw_data
+) : RawEvent(timestamp, index), rawData(raw_data) {
+}
+
+QString RawCorruptedMessageEvent::eventName() const {
+    return "CorruptedMessage";
+}
+
+void RawCorruptedMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
+    stream << " data=" << rawData;
+}
+
+}}}

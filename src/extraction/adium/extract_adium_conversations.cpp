@@ -24,17 +24,17 @@
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
-#include "intermediate_format/events/IFDisconnectedEvent.h"
-#include "intermediate_format/events/IFCancelFileTransferEvent.h"
-#include "intermediate_format/events/IFChangeScreenNameEvent.h"
-#include "intermediate_format/events/IFConnectedEvent.h"
+#include "intermediate_format/events/RawDisconnectedEvent.h"
+#include "intermediate_format/events/RawCancelFileTransferEvent.h"
+#include "intermediate_format/events/RawChangeScreenNameEvent.h"
+#include "intermediate_format/events/RawConnectedEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
-#include "intermediate_format/events/IFOfferFileEvent.h"
+#include "intermediate_format/events/RawOfferFileEvent.h"
 #include "intermediate_format/events/RawPingEvent.h"
-#include "intermediate_format/events/IFReceiveFileEvent.h"
-#include "intermediate_format/events/IFStartFileTransferEvent.h"
-#include "intermediate_format/events/IFStatusChangeEvent.h"
-#include "intermediate_format/events/IFUninterpretedEvent.h"
+#include "intermediate_format/events/RawReceiveFileEvent.h"
+#include "intermediate_format/events/RawStartFileTransferEvent.h"
+#include "intermediate_format/events/RawStatusChangeEvent.h"
+#include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/events/RawWindowClosedEvent.h"
 #include "intermediate_format/events/RawWindowOpenedEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
@@ -99,7 +99,7 @@ CEDE(RawEvent) parse_status_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(IFStatusChangeEvent) parse_status_change_event(
+CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -308,10 +308,10 @@ CEDE(RawEvent) parse_status_event(
         return parse_status_change_event(event_element, event_time, event_index, move(event_subject));
     } else if (event_type == "connected") {
         expect_event_text(event_element, "You have connected");
-        return make_unique<IFConnectedEvent>(event_time, event_index);
+        return make_unique<RawConnectedEvent>(event_time, event_index);
     } else if (event_type == "disconnected") {
         expect_event_text(event_element, "You have disconnected");
-        return make_unique<IFDisconnectedEvent>(event_time, event_index);
+        return make_unique<RawDisconnectedEvent>(event_time, event_index);
     } else if (event_type == "Notification") {
         if (event_element.text().trimmed().endsWith(" wants your attention!")) {
             return make_unique<RawPingEvent>(event_time, event_index, move(event_subject));
@@ -324,7 +324,7 @@ CEDE(RawEvent) parse_status_event(
     invariant_violation("Unsupported <status> event type: %s", qUtf8Printable(event_type));
 }
 
-CEDE(IFStatusChangeEvent) parse_status_change_event(
+CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -332,8 +332,8 @@ CEDE(IFStatusChangeEvent) parse_status_change_event(
 ) {
     IMStatus status = EVENT_TYPE_TO_STATUS[event_element.attribute("type")];
 
-    unique_ptr<IFStatusChangeEvent> status_change =
-        make_unique<IFStatusChangeEvent>(event_time, event_index, move(event_subject), status);
+    unique_ptr<RawStatusChangeEvent> status_change =
+        make_unique<RawStatusChangeEvent>(event_time, event_index, move(event_subject), status);
 
     RawMessageContent content = parse_event_content(event_element);
     if (!content.items.empty()) {
@@ -362,14 +362,14 @@ CEDE(RawEvent) parse_purple_system_event(
     auto match = master_pattern.match(event_element.text().trimmed());
 
     if (match.capturedLength("rename_old")) {
-        return make_unique<IFChangeScreenNameEvent>(
+        return make_unique<RawChangeScreenNameEvent>(
             event_time,
             event_index,
             make_unique<SubjectGivenAsScreenName>(match.captured("rename_old")),
             make_unique<SubjectGivenAsScreenName>(match.captured("rename_new"))
         );
     } else if (match.capturedLength("offer_who")) {
-        return make_unique<IFOfferFileEvent>(
+        return make_unique<RawOfferFileEvent>(
             event_time,
             event_index,
             make_unique<SubjectGivenAsScreenName>(match.captured("offer_who")),
@@ -377,15 +377,15 @@ CEDE(RawEvent) parse_purple_system_event(
         );
     } else if (match.capturedLength("xfer_file")) {
         unique_ptr<RawEvent> xfer_event =
-            make_unique<IFStartFileTransferEvent>(event_time, event_index, match.captured("xfer_file"));
-        static_cast<IFStartFileTransferEvent*>(xfer_event.get())->sender =
+            make_unique<RawStartFileTransferEvent>(event_time, event_index, match.captured("xfer_file"));
+        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender =
             make_unique<SubjectGivenAsScreenName>(match.captured("xfer_from"));
 
         return xfer_event;
     } else if (match.capturedLength("cancel_file")) {
         unique_ptr<RawEvent> xfer_event =
-            make_unique<IFCancelFileTransferEvent>(event_time, event_index, match.captured("cancel_file"));
-        static_cast<IFCancelFileTransferEvent*>(xfer_event.get())->sender =
+            make_unique<RawCancelFileTransferEvent>(event_time, event_index, match.captured("cancel_file"));
+        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->sender =
             make_unique<SubjectGivenAsScreenName>(match.captured("cancel_from"));
 
         return xfer_event;
@@ -410,7 +410,7 @@ CEDE(RawEvent) parse_purple_system_event(
             }
         }
 
-        return make_unique<IFReceiveFileEvent>(
+        return make_unique<RawReceiveFileEvent>(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::FILE_RECEIVER),

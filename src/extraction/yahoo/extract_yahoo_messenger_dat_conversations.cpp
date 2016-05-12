@@ -33,10 +33,10 @@
 #include "intermediate_format/content/YahooAltTag.h"
 #include "intermediate_format/content/YahooFadeTag.h"
 #include "intermediate_format/events/RawEvent.h"
-#include "intermediate_format/events/IFStartConversationEvent.h"
-#include "intermediate_format/events/IFJoinConferenceEvent.h"
-#include "intermediate_format/events/IFDeclineConferenceEvent.h"
-#include "intermediate_format/events/IFLeaveConferenceEvent.h"
+#include "intermediate_format/events/RawStartConversationEvent.h"
+#include "intermediate_format/events/RawJoinConferenceEvent.h"
+#include "intermediate_format/events/RawDeclineConferenceEvent.h"
+#include "intermediate_format/events/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormat.h"
@@ -165,7 +165,7 @@ CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConvers
                 proto_event.text.isEmpty() && proto_event.extra.isEmpty(),
                 "START_CONVERSATION events should have blank 'text' and 'extra' fields"
             );
-            return make_unique<IFStartConversationEvent>(
+            return make_unique<RawStartConversationEvent>(
                 timestamp,
                 next_index,
                 implicit_subject(proto_event, conversation)
@@ -175,13 +175,13 @@ CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConvers
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
                 "CONFERENCE_JOIN events can only be incoming"
             );
-            event = make_unique<IFJoinConferenceEvent>(
+            event = make_unique<RawJoinConferenceEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation)
             );
             if (!proto_event.text.isEmpty()) {
-                ((IFJoinConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
+                ((RawJoinConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
             return event;
         case YahooProtocolEvent::Type::CONFERENCE_DECLINE:
@@ -189,13 +189,13 @@ CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConvers
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
                 "CONFERENCE_DECLINE events can only be incoming"
             );
-            event = make_unique<IFDeclineConferenceEvent>(
+            event = make_unique<RawDeclineConferenceEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation)
             );
             if (!proto_event.text.isEmpty()) {
-                ((IFDeclineConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
+                ((RawDeclineConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
             return event;
         case YahooProtocolEvent::Type::CONFERENCE_LEAVE:
@@ -203,13 +203,13 @@ CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConvers
                 proto_event.direction == YahooProtocolEvent::Direction::INCOMING,
                 "CONFERENCE_LEAVE events can only be incoming"
             );
-            event = make_unique<IFLeaveConferenceEvent>(
+            event = make_unique<RawLeaveConferenceEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation)
             );
             if (!proto_event.text.isEmpty()) {
-                ((IFLeaveConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
+                ((RawLeaveConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
             }
             return event;
         case YahooProtocolEvent::Type::CONVERSATION_MESSAGE:

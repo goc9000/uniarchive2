@@ -29,7 +29,7 @@
 #include "intermediate_format/content/UnderlineTag.h"
 #include "intermediate_format/content/YahooFadeTag.h"
 #include "intermediate_format/events/RawEvent.h"
-#include "intermediate_format/events/IFCorruptedMessageEvent.h"
+#include "intermediate_format/events/RawCorruptedMessageEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/digsby/account_name.h"
@@ -258,7 +258,7 @@ CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) convers
 
     auto match = pat_message_html.match(event_html);
     if (!match.hasMatch()) {
-        return make_unique<IFCorruptedMessageEvent>(ApparentTime(), conversation.events.size(), event_html.toUtf8());
+        return make_unique<RawCorruptedMessageEvent>(ApparentTime(), conversation.events.size(), event_html.toUtf8());
     }
 
     QStringList classes = match.captured(1).trimmed().split(QChar(' '), QString::SkipEmptyParts);
