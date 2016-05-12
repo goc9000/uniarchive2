@@ -29,6 +29,8 @@ QString name_for_implicit_subject_kind(ImplicitSubject::Kind kind) {
             return "(invalid)";
         case ImplicitSubject::Kind::IDENTITY:
             return "identity";
+        case ImplicitSubject::Kind::FILE_RECEIVER:
+            return "file_receiver";
     }
 
     invariant_violation("Unhandled enum value");

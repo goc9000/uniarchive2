@@ -8,6 +8,8 @@
  * Licensed under the GPL-3
  */
 
+#include <deque>
+
 #include <QtDebug>
 #include <QDir>
 #include <QFileInfo>
@@ -23,16 +25,23 @@
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/IntermediateFormatEvent.h"
 #include "intermediate_format/events/IFDisconnectedEvent.h"
+#include "intermediate_format/events/IFCancelFileTransferEvent.h"
+#include "intermediate_format/events/IFChangeScreenNameEvent.h"
 #include "intermediate_format/events/IFConnectedEvent.h"
 #include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/IFOfferFileEvent.h"
 #include "intermediate_format/events/IFPingEvent.h"
+#include "intermediate_format/events/IFReceiveFileEvent.h"
+#include "intermediate_format/events/IFStartFileTransferEvent.h"
 #include "intermediate_format/events/IFStatusChangeEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
 #include "intermediate_format/events/IFWindowClosedEvent.h"
 #include "intermediate_format/events/IFWindowOpenedEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
+#include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
@@ -97,6 +106,12 @@ CEDE(IntermediateFormatEvent) parse_status_event(
     TAKE(ApparentSubject) event_subject
 );
 CEDE(IFStatusChangeEvent) parse_status_change_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+);
+CEDE(IntermediateFormatEvent) parse_purple_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -317,9 +332,11 @@ CEDE(IntermediateFormatEvent) parse_status_event(
             return make_unique<IFPingEvent>(event_time, event_index, move(event_subject));
         }
         invariant_violation("Unsupported Notification event: %s", qUtf8Printable(xml_to_string(event_element)));
+    } else if ((event_type == "purple") || (event_type == "libpurpleMessage")) {
+        return parse_purple_system_event(event_element, event_time, event_index, move(event_subject));
     }
 
-    return make_unique<IFUninterpretedEvent>(event_time, event_index, xml_to_raw_data(event_element));
+    invariant_violation("Unsupported <status> event type: %s", qUtf8Printable(event_type));
 }
 
 CEDE(IFStatusChangeEvent) parse_status_change_event(
@@ -339,6 +356,90 @@ CEDE(IFStatusChangeEvent) parse_status_change_event(
     }
 
     return status_change;
+}
+
+CEDE(IntermediateFormatEvent) parse_purple_system_event(
+    IMM(QDomElement) event_element,
+    ApparentTime event_time,
+    int event_index,
+    TAKE(ApparentSubject) event_subject
+) {
+    static QRegularExpression master_pattern(
+        "^("
+        "((?<rename_old>.+) is now known as (?<rename_new>.+)[.])|"
+        "((?<offer_who>.+) is offering to send file (?<offer_file>.+))|"
+        "((?<cancel_from>.+) cancelled the transfer of (?<cancel_file>.+))|"
+        "(Starting transfer of (?<xfer_file>.+) from (?<xfer_from>.+))|"
+        "(Transfer of file (?<recv_file>.+) complete)"
+        ")$"
+    );
+
+    auto match = master_pattern.match(event_element.text().trimmed());
+
+    if (match.capturedLength("rename_old")) {
+        return make_unique<IFChangeScreenNameEvent>(
+            event_time,
+            event_index,
+            make_unique<SubjectGivenAsScreenName>(match.captured("rename_old")),
+            make_unique<SubjectGivenAsScreenName>(match.captured("rename_new"))
+        );
+    } else if (match.capturedLength("offer_who")) {
+        return make_unique<IFOfferFileEvent>(
+            event_time,
+            event_index,
+            make_unique<SubjectGivenAsScreenName>(match.captured("offer_who")),
+            match.captured("offer_file")
+        );
+    } else if (match.capturedLength("xfer_file")) {
+        unique_ptr<IntermediateFormatEvent> xfer_event = make_unique<IFStartFileTransferEvent>(
+            event_time,
+            event_index,
+            match.captured("xfer_file")
+        );
+        static_cast<IFStartFileTransferEvent*>(xfer_event.get())->sender =
+            make_unique<SubjectGivenAsScreenName>(match.captured("xfer_from"));
+
+        return xfer_event;
+    } else if (match.capturedLength("cancel_file")) {
+        unique_ptr<IntermediateFormatEvent> xfer_event = make_unique<IFCancelFileTransferEvent>(
+            event_time,
+            event_index,
+            match.captured("cancel_file")
+        );
+        static_cast<IFCancelFileTransferEvent*>(xfer_event.get())->sender =
+            make_unique<SubjectGivenAsScreenName>(match.captured("cancel_from"));
+
+        return xfer_event;
+    } else if (match.capturedLength("recv_file")) {
+        QString filename = match.captured("recv_file");
+
+        deque<QDomElement> deq;
+        deq.push_back(event_element);
+        while (!deq.empty()) {
+            auto elem = deq.front();
+            if ((elem.tagName() == "a") && (elem.hasAttribute("href"))) {
+                filename = elem.attribute("href");
+                break;
+            }
+            deq.pop_front();
+            for (
+                auto child_elem = elem.firstChildElement();
+                !child_elem.isNull();
+                child_elem = child_elem.nextSiblingElement()
+                ) {
+                deq.push_back(child_elem);
+            }
+        }
+
+        return make_unique<IFReceiveFileEvent>(
+            event_time,
+            event_index,
+            make_unique<ImplicitSubject>(ImplicitSubject::Kind::FILE_RECEIVER),
+            filename
+        );
+    }
+
+    invariant_violation("Unsupported libpurple system message: %s", qUtf8Printable(xml_to_string(event_element)));
 }
 
 IntermediateFormatMessageContent parse_event_content(IMM(QDomElement) event_element) {

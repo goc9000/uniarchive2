@@ -25,7 +25,8 @@ class ImplicitSubject : public ApparentSubject {
 public:
     enum Kind {
         INVALID = 0,
-        IDENTITY // Whoever the identity (i.e. local user) is
+        IDENTITY, // Whoever the identity (i.e. local user) is
+        FILE_RECEIVER,
     };
 
     Kind kind;

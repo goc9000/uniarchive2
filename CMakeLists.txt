@@ -57,6 +57,10 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooFadeTag.h
         src/intermediate_format/events/IFAnswerCallEvent.cpp
         src/intermediate_format/events/IFAnswerCallEvent.h
+        src/intermediate_format/events/IFCancelFileTransferEvent.cpp
+        src/intermediate_format/events/IFCancelFileTransferEvent.h
+        src/intermediate_format/events/IFChangeScreenNameEvent.cpp
+        src/intermediate_format/events/IFChangeScreenNameEvent.h
         src/intermediate_format/events/IFConnectedEvent.cpp
         src/intermediate_format/events/IFConnectedEvent.h
         src/intermediate_format/events/IFCorruptedMessageEvent.cpp
@@ -81,6 +85,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFReceiveFileEvent.h
         src/intermediate_format/events/IFStartConversationEvent.cpp
         src/intermediate_format/events/IFStartConversationEvent.h
+        src/intermediate_format/events/IFStartFileTransferEvent.cpp
+        src/intermediate_format/events/IFStartFileTransferEvent.h
         src/intermediate_format/events/IFStatusChangeEvent.cpp
         src/intermediate_format/events/IFStatusChangeEvent.h
         src/intermediate_format/events/IFUninterpretedEvent.cpp
