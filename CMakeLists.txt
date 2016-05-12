@@ -73,14 +73,14 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFJoinConferenceEvent.h
         src/intermediate_format/events/IFLeaveConferenceEvent.cpp
         src/intermediate_format/events/IFLeaveConferenceEvent.h
-        src/intermediate_format/events/IFMessageEvent.cpp
-        src/intermediate_format/events/IFMessageEvent.h
+        src/intermediate_format/events/RawMessageEvent.cpp
+        src/intermediate_format/events/RawMessageEvent.h
         src/intermediate_format/events/IFOfferCallEvent.cpp
         src/intermediate_format/events/IFOfferCallEvent.h
         src/intermediate_format/events/IFOfferFileEvent.cpp
         src/intermediate_format/events/IFOfferFileEvent.h
-        src/intermediate_format/events/IFPingEvent.cpp
-        src/intermediate_format/events/IFPingEvent.h
+        src/intermediate_format/events/RawPingEvent.cpp
+        src/intermediate_format/events/RawPingEvent.h
         src/intermediate_format/events/IFReceiveFileEvent.cpp
         src/intermediate_format/events/IFReceiveFileEvent.h
         src/intermediate_format/events/IFStartConversationEvent.cpp
@@ -91,10 +91,10 @@ set(SOURCE_FILES
         src/intermediate_format/events/IFStatusChangeEvent.h
         src/intermediate_format/events/IFUninterpretedEvent.cpp
         src/intermediate_format/events/IFUninterpretedEvent.h
-        src/intermediate_format/events/IFWindowOpenedEvent.cpp
-        src/intermediate_format/events/IFWindowOpenedEvent.h
-        src/intermediate_format/events/IFWindowClosedEvent.cpp
-        src/intermediate_format/events/IFWindowClosedEvent.h
+        src/intermediate_format/events/RawWindowOpenedEvent.cpp
+        src/intermediate_format/events/RawWindowOpenedEvent.h
+        src/intermediate_format/events/RawWindowClosedEvent.cpp
+        src/intermediate_format/events/RawWindowClosedEvent.h
         src/intermediate_format/events/RawEvent.cpp
         src/intermediate_format/events/RawEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp

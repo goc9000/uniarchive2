@@ -18,7 +18,7 @@
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
-#include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "protocols/facebook/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
@@ -207,7 +207,7 @@ CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
 
     // Note: we fill in an index of 0 because the index can be computed only after we have all the messages (this is
     // because they are parsed in reverse)
-    return make_unique<IFMessageEvent>(message_time, 0, move(sender), move(content));
+    return make_unique<RawMessageEvent>(message_time, 0, move(sender), move(content));
 }
 
 ApparentTime parse_message_time(IMM(QString) time_text) {

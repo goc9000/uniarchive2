@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/IFMessageEvent.h
+ * intermediate_format/events/RawMessageEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_IFMESSAGEEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_IFMESSAGEEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWMESSAGEEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWMESSAGEEVENT_H
 
 #include <memory>
 
@@ -28,14 +28,14 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFMessageEvent : RawEvent {
+struct RawMessageEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> receiver;
     RawMessageContent content;
     bool isOffline;
 
-    IFMessageEvent(
+    RawMessageEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
         TAKE(ApparentSubject) sender,
@@ -50,4 +50,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_IFMESSAGEEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWMESSAGEEVENT_H

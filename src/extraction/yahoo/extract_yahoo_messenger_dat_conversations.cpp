@@ -37,7 +37,7 @@
 #include "intermediate_format/events/IFJoinConferenceEvent.h"
 #include "intermediate_format/events/IFDeclineConferenceEvent.h"
 #include "intermediate_format/events/IFLeaveConferenceEvent.h"
-#include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/FullAccountName.h"
@@ -216,19 +216,19 @@ CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConvers
             invariant(proto_event.extra.isEmpty(), "CONVERSATION_MESSAGE events should have no 'extra' field");
             // intentional fallthrough
         case YahooProtocolEvent::Type::CONFERENCE_MESSAGE:
-            event = make_unique<IFMessageEvent>(
+            event = make_unique<RawMessageEvent>(
                 timestamp,
                 next_index,
                 parse_event_subject(proto_event, conversation),
                 parse_message_content(proto_event.text)
             );
             if ((proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) && !proto_event.extra.isEmpty()) {
-                ((IFMessageEvent*)event.get())->receiver = make_unique<SubjectGivenAsAccount>(
+                ((RawMessageEvent*)event.get())->receiver = make_unique<SubjectGivenAsAccount>(
                     parse_yahoo_account(QString::fromUtf8(proto_event.extra))
                 );
             }
             if (proto_event.direction == YahooProtocolEvent::Direction::OFFLINE) {
-                ((IFMessageEvent*)event.get())->isOffline = true;
+                ((RawMessageEvent*)event.get())->isOffline = true;
             }
             return event;
     }

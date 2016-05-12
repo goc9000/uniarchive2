@@ -30,7 +30,7 @@
 #include "intermediate_format/content/YahooFadeTag.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/IFCorruptedMessageEvent.h"
-#include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/digsby/account_name.h"
 #include "protocols/FullAccountName.h"
@@ -276,7 +276,7 @@ CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) convers
         qUtf8Printable(match.captured(3))
     );
 
-    return make_unique<IFMessageEvent>(
+    return make_unique<RawMessageEvent>(
         ApparentTime(datetime),
         conversation.events.size(),
         make_unique<SubjectGivenAsAccount>(parse_account_generic(conversation.protocol, match.captured(4))),

@@ -26,7 +26,7 @@
 #include "intermediate_format/events/IFReceiveFileEvent.h"
 #include "intermediate_format/events/IFOfferCallEvent.h"
 #include "intermediate_format/events/IFAnswerCallEvent.h"
-#include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -246,13 +246,13 @@ CEDE(RawEvent) parse_message_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index
 ) {
-    unique_ptr<RawEvent> event = make_unique<IFMessageEvent>(
+    unique_ptr<RawEvent> event = make_unique<RawMessageEvent>(
         event_time,
         event_index,
         parse_event_actor(event_element, "From"),
         parse_event_text(event_element)
     );
-    static_cast<IFMessageEvent*>(event.get())->receiver = parse_event_actor(event_element, "To");
+    static_cast<RawMessageEvent*>(event.get())->receiver = parse_event_actor(event_element, "To");
 
     return event;
 }

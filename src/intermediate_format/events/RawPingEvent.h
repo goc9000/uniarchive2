@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/IFPingEvent.h
+ * intermediate_format/events/RawPingEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_IFPINGEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_IFPINGEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWPINGEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWPINGEVENT_H
 
 #include <memory>
 
@@ -24,11 +24,11 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct IFPingEvent : RawEvent {
+struct RawPingEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> pinger;
 
-    IFPingEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) pinger);
+    RawPingEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) pinger);
 
     virtual QString eventName() const;
 
@@ -38,4 +38,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_IFPINGEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWPINGEVENT_H

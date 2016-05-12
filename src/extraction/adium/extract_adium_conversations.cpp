@@ -28,15 +28,15 @@
 #include "intermediate_format/events/IFCancelFileTransferEvent.h"
 #include "intermediate_format/events/IFChangeScreenNameEvent.h"
 #include "intermediate_format/events/IFConnectedEvent.h"
-#include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/IFOfferFileEvent.h"
-#include "intermediate_format/events/IFPingEvent.h"
+#include "intermediate_format/events/RawPingEvent.h"
 #include "intermediate_format/events/IFReceiveFileEvent.h"
 #include "intermediate_format/events/IFStartFileTransferEvent.h"
 #include "intermediate_format/events/IFStatusChangeEvent.h"
 #include "intermediate_format/events/IFUninterpretedEvent.h"
-#include "intermediate_format/events/IFWindowClosedEvent.h"
-#include "intermediate_format/events/IFWindowOpenedEvent.h"
+#include "intermediate_format/events/RawWindowClosedEvent.h"
+#include "intermediate_format/events/RawWindowOpenedEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
@@ -87,7 +87,7 @@ CEDE(RawEvent) parse_system_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(IFMessageEvent) parse_message_event(
+CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
@@ -263,21 +263,21 @@ CEDE(RawEvent) parse_system_event(
     QString event_type = read_string_attr(event_element, "type");
 
     if (event_type == "windowOpened") {
-        return make_unique<IFWindowOpenedEvent>(event_time, event_index);
+        return make_unique<RawWindowOpenedEvent>(event_time, event_index);
     } else if (event_type == "windowClosed") {
-        return make_unique<IFWindowClosedEvent>(event_time, event_index);
+        return make_unique<RawWindowClosedEvent>(event_time, event_index);
     }
 
     invariant_violation("Unsupported <event> type: %s", qUtf8Printable(event_type));
 }
 
-CEDE(IFMessageEvent) parse_message_event(
+CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
-    return make_unique<IFMessageEvent>(
+    return make_unique<RawMessageEvent>(
         event_time,
         event_index,
         move(event_subject),
@@ -314,7 +314,7 @@ CEDE(RawEvent) parse_status_event(
         return make_unique<IFDisconnectedEvent>(event_time, event_index);
     } else if (event_type == "Notification") {
         if (event_element.text().trimmed().endsWith(" wants your attention!")) {
-            return make_unique<IFPingEvent>(event_time, event_index, move(event_subject));
+            return make_unique<RawPingEvent>(event_time, event_index, move(event_subject));
         }
         invariant_violation("Unsupported Notification event: %s", qUtf8Printable(xml_to_string(event_element)));
     } else if ((event_type == "purple") || (event_type == "libpurpleMessage")) {

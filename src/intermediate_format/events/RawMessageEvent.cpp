@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/IFMessageEvent.cpp
+ * intermediate_format/events/RawMessageEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,11 +10,11 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/IFMessageEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-IFMessageEvent::IFMessageEvent(
+RawMessageEvent::RawMessageEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) sender,
@@ -22,11 +22,11 @@ IFMessageEvent::IFMessageEvent(
 ): RawEvent(timestamp, index), sender(move(sender)), content(move(content)), isOffline(false) {
 }
 
-QString IFMessageEvent::eventName() const {
+QString RawMessageEvent::eventName() const {
     return "Message";
 }
 
-void IFMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (isOffline) {
         stream << " OFFLINE";
     }
