@@ -14,6 +14,8 @@ set(SOURCE_FILES
         src/extraction/facebook/extract_facebook_dyi_conversations.h
         src/extraction/msn/extract_msn_messenger_xml_conversations.cpp
         src/extraction/msn/extract_msn_messenger_xml_conversations.h
+        src/extraction/pidgin/extract_pidgin_conversations.cpp
+        src/extraction/pidgin/extract_pidgin_conversations.h
         src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp
         src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.h
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp

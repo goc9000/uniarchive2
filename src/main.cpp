@@ -8,6 +8,7 @@
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
+#include "extraction/pidgin/extract_pidgin_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "utils/language/shortcuts.h"
 
@@ -16,6 +17,7 @@ using namespace uniarchive2::extraction::adium;
 using namespace uniarchive2::extraction::digsby;
 using namespace uniarchive2::extraction::facebook;
 using namespace uniarchive2::extraction::msn;
+using namespace uniarchive2::extraction::pidgin;
 using namespace uniarchive2::extraction::yahoo;
 
 int main() {
@@ -23,6 +25,10 @@ int main() {
 
     vector<RawConversation> convos;
 
+    QDirIterator pidgin_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
+    while (pidgin_files.hasNext()) {
+        convos.push_back(extract_pidgin_html_conversation(pidgin_files.next()));
+    }
     QDirIterator adium_files(QT_STRINGIFY(TEST_DATA_DIR) "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
     while (adium_files.hasNext()) {
         convos.push_back(extract_adium_conversation(adium_files.next()));

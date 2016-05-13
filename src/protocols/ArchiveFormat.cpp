@@ -26,6 +26,10 @@ QString name_for_archive_format(ArchiveFormat protocol) {
             return "Facebook (DYI archive)";
         case ArchiveFormat::MSN_MESSENGER_XML:
             return "MSN Messenger (XML format)";
+        case ArchiveFormat::PIDGIN_HTML:
+            return "Pidgin (HTML format)";
+        case ArchiveFormat::PIDGIN_TXT:
+            return "Pidgin (TXT format)";
         case ArchiveFormat::YAHOO_MESSENGER_DAT:
             return "Yahoo Messenger (DAT format)";
     }

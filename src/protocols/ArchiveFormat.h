@@ -21,6 +21,8 @@ enum class ArchiveFormat {
     DIGSBY,
     FACEBOOK_DYI,
     MSN_MESSENGER_XML,
+    PIDGIN_HTML,
+    PIDGIN_TXT,
     YAHOO_MESSENGER_DAT,
 };
 
