@@ -28,7 +28,7 @@ unsigned int parse_english_month_name(IMM(QString) month_name) {
 }
 
 int parse_timezone_offset_in_quarters(IMM(QString) offset_text) {
-    static QRegularExpression pattern("^(\\+|-)(\\d+)(:(\\d+))?$");
+    static const QRegularExpression pattern("^(\\+|-)(\\d{1,2}):?(\\d{2})?$");
 
     if (offset_text == "") {
         return 0;
@@ -39,9 +39,9 @@ int parse_timezone_offset_in_quarters(IMM(QString) offset_text) {
 
     bool positive = match.captured(1) == "+";
     int hours = match.captured(2).toInt();
-    int minutes = match.captured(4).toInt();
+    int minutes = (match.capturedLength(3) > 0) ? match.captured(3).toInt() : 0;
 
-    invariant(hours < 14, "Timezone offset should be <14 hours");
+    invariant(hours < 14, "Timezone offset should be <14 hours (found: %s)", qUtf8Printable(offset_text));
     invariant(minutes % 15 == 0, "Timezone offset should be a multiple of 15 minutes");
 
     return (positive ? 1 : -1) * (hours * 4 + (minutes / 15));
