@@ -93,10 +93,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     RawConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
 
     conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime(
-        file_info.lastModified().toTime_t(),
-        ApparentTime::Reference::UNKNOWN
-    );
+    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
 
     return conversation;
 }

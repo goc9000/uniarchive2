@@ -43,8 +43,10 @@ public:
     QByteArray timeZoneID;
 
     ApparentTime();
-    ApparentTime(quint32 unix_timestamp, Reference reference = Reference::UTC);
     ApparentTime(IMM(QDateTime) datetime);
+
+    static ApparentTime fromUnixTimestamp(quint32 unix_timestamp);
+    static ApparentTime fromQDateTimeUnknownReference(QDateTime datetime);
 
     bool isSpecified() const;
     bool hasSpecifiedDate() const;

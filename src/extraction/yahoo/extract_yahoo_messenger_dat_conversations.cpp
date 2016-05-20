@@ -122,10 +122,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     RawConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
 
     conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime(
-        file_info.lastModified().toTime_t(),
-        ApparentTime::Reference::UNKNOWN
-    );
+    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
@@ -157,7 +154,7 @@ RawConversation init_conversation(
 CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     unique_ptr<RawEvent> event;
 
-    ApparentTime timestamp(proto_event.timestamp, ApparentTime::Reference::UTC);
+    ApparentTime timestamp = ApparentTime::fromUnixTimestamp(proto_event.timestamp);
     unsigned int next_index = (unsigned int)conversation.events.size();
 
     switch (proto_event.type) {

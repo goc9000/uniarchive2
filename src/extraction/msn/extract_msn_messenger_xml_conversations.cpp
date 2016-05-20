@@ -142,10 +142,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     RawConversation conversation(ArchiveFormat::MSN_MESSENGER_XML, IMProtocol::MSN);
 
     conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime(
-        file_info.lastModified().toTime_t(),
-        ApparentTime::Reference::UNKNOWN
-    );
+    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
 
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);
     auto remote_account = parse_optionally_encoded_msn_account(base_name);

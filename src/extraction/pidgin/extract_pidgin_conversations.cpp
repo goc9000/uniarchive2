@@ -51,10 +51,7 @@ RawConversation init_conversation(IMM(QString)filename) {
     RawConversation conversation(ArchiveFormat::PIDGIN_HTML, IMProtocol::INVALID);
 
     conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime(
-        file_info.lastModified().toTime_t(),
-        ApparentTime::Reference::UNKNOWN
-    );
+    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
 
     return conversation;
 }

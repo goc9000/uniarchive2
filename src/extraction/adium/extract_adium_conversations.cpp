@@ -150,10 +150,7 @@ RawConversation init_conversation(IMM(QString) filename) {
     RawConversation conversation(ArchiveFormat::ADIUM, info.identity.protocol);
 
     conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime(
-        file_info.lastModified().toTime_t(),
-        ApparentTime::Reference::UNKNOWN
-    );
+    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
     conversation.declaredStartDate = info.convoStartDate;

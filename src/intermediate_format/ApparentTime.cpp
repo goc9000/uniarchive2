@@ -22,15 +22,7 @@ namespace uniarchive2 { namespace intermediate_format {
 
 QString format_utc_offset(int offset_quarters);
 
-ApparentTime::ApparentTime(
-): date(), time(), secondsSpecified(false), reference(Reference::UNKNOWN) {
-}
-
-ApparentTime::ApparentTime(quint32 unix_timestamp, Reference reference)
-: secondsSpecified(true), reference(reference) {
-    QDateTime timestamp = QDateTime::fromTime_t(unix_timestamp, Qt::UTC);
-    date = timestamp.date();
-    time = timestamp.time();
+ApparentTime::ApparentTime(): date(), time(), secondsSpecified(true), reference(Reference::UNKNOWN) {
 }
 
 ApparentTime::ApparentTime(IMM(QDateTime) datetime): secondsSpecified(true) {
@@ -53,6 +45,26 @@ ApparentTime::ApparentTime(IMM(QDateTime) datetime): secondsSpecified(true) {
             timeZoneID = datetime.timeZone().id();
             break;
     }
+}
+
+ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
+    QDateTime timestamp = QDateTime::fromTime_t(unix_timestamp, Qt::UTC);
+
+    ApparentTime time;
+    time.date = timestamp.date();
+    time.time = timestamp.time();
+    time.reference = Reference::UTC;
+
+    return time;
+}
+
+ApparentTime ApparentTime::fromQDateTimeUnknownReference(QDateTime datetime) {
+    ApparentTime time;
+    time.date = datetime.date();
+    time.time = datetime.time();
+    time.reference = Reference::UNKNOWN;
+
+    return time;
 }
 
 bool ApparentTime::isSpecified() const {
