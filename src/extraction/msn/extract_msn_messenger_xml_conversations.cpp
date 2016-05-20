@@ -216,7 +216,7 @@ ApparentTime parse_event_time(IMM(QDomElement) event_element) {
 
     absolute_time = absolute_time.toOffsetFromUtc(900 * offsetQuarters);
 
-    return ApparentTime(absolute_time);
+    return ApparentTime::fromQDateTime(absolute_time);
 }
 
 CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name) {

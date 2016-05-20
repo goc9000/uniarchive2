@@ -25,28 +25,6 @@ QString format_utc_offset(int offset_quarters);
 ApparentTime::ApparentTime(): date(), time(), secondsSpecified(true), reference(Reference::UNKNOWN) {
 }
 
-ApparentTime::ApparentTime(IMM(QDateTime) datetime): secondsSpecified(true) {
-    date = datetime.date();
-    time = datetime.time();
-
-    switch (datetime.timeSpec()) {
-        case Qt::LocalTime:
-            invariant_violation("Cannot initialize equivalent ApparentTime for QDateTime defined on local timespec");
-        case Qt::UTC:
-            reference = Reference::UTC;
-            break;
-        case Qt::OffsetFromUTC:
-            reference = Reference::OFFSET_FROM_UTC;
-            invariant(abs(datetime.offsetFromUtc()) % 900 == 0, "UTC offset must be a multiple of 15 minutes");
-            utcOffsetQuarters = datetime.offsetFromUtc() / 900;
-            break;
-        case Qt::TimeZone:
-            reference = Reference::TIMEZONE;
-            timeZoneID = datetime.timeZone().id();
-            break;
-    }
-}
-
 ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
     QDateTime timestamp = QDateTime::fromTime_t(unix_timestamp, Qt::UTC);
 
@@ -58,7 +36,32 @@ ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
     return time;
 }
 
-ApparentTime ApparentTime::fromQDateTimeUnknownReference(QDateTime datetime) {
+ApparentTime ApparentTime::fromQDateTime(IMM(QDateTime) datetime) {
+    ApparentTime time;
+    time.date = datetime.date();
+    time.time = datetime.time();
+
+    switch (datetime.timeSpec()) {
+        case Qt::LocalTime:
+            invariant_violation("Cannot initialize equivalent ApparentTime for QDateTime defined on local timespec");
+        case Qt::UTC:
+            time.reference = Reference::UTC;
+            break;
+        case Qt::OffsetFromUTC:
+            time.reference = Reference::OFFSET_FROM_UTC;
+            invariant(abs(datetime.offsetFromUtc()) % 900 == 0, "UTC offset must be a multiple of 15 minutes");
+            time.utcOffsetQuarters = datetime.offsetFromUtc() / 900;
+            break;
+        case Qt::TimeZone:
+            time.reference = Reference::TIMEZONE;
+            time.timeZoneID = datetime.timeZone().id();
+            break;
+    }
+
+    return time;
+}
+
+ApparentTime ApparentTime::fromQDateTimeUnknownReference(IMM(QDateTime) datetime) {
     ApparentTime time;
     time.date = datetime.date();
     time.time = datetime.time();

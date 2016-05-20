@@ -225,7 +225,7 @@ ApparentTime parse_message_time(IMM(QString) time_text) {
     // so that we don't have the illusion that we have local date info.
     QDateTime datetime(date, daytime, Qt::TimeSpec::OffsetFromUTC, 900 * offset_quarters);
 
-    ApparentTime result(datetime.toUTC());
+    ApparentTime result = ApparentTime::fromQDateTime(datetime.toUTC());
     result.secondsSpecified = false;
 
     return result;

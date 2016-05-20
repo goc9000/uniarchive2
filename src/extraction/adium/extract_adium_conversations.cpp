@@ -196,7 +196,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     QDateTime datetime = QDateTime::fromString(filename_match.captured(2), Qt::ISODate);
     invariant(datetime.isValid(), "Could not parse XML date \"%s\"", QP(filename_match.captured(2)));
 
-    info.convoStartDate = ApparentTime(datetime);
+    info.convoStartDate = ApparentTime::fromQDateTime(datetime);
 
     return info;
 }
@@ -222,7 +222,7 @@ void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identit
 }
 
 CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
-    ApparentTime event_time = ApparentTime(read_iso_date_attr(event_element, "time"));
+    ApparentTime event_time = ApparentTime::fromQDateTime(read_iso_date_attr(event_element, "time"));
     unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
     int event_index = (int)conversation.events.size();
 

@@ -268,7 +268,7 @@ CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) convers
     invariant(datetime.isValid(), "Invalid timestamp '%s' (must be yyyy-mm-dd hh:mm:ss)", QP(match.captured(3)));
 
     return make_unique<RawMessageEvent>(
-        ApparentTime(datetime),
+        ApparentTime::fromQDateTime(datetime),
         conversation.events.size(),
         make_unique<SubjectGivenAsAccount>(parse_account_generic(conversation.protocol, match.captured(4))),
         move(parse_message_content(match.captured(5)))

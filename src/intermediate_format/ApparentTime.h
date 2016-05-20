@@ -43,10 +43,9 @@ public:
     QByteArray timeZoneID;
 
     ApparentTime();
-    ApparentTime(IMM(QDateTime) datetime);
-
     static ApparentTime fromUnixTimestamp(quint32 unix_timestamp);
-    static ApparentTime fromQDateTimeUnknownReference(QDateTime datetime);
+    static ApparentTime fromQDateTime(IMM(QDateTime) datetime);
+    static ApparentTime fromQDateTimeUnknownReference(IMM(QDateTime) datetime);
 
     bool isSpecified() const;
     bool hasSpecifiedDate() const;
