@@ -31,7 +31,8 @@ ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
     ApparentTime time;
     time.date = timestamp.date();
     time.time = timestamp.time();
-    time.reference = Reference::UTC;
+    time.reference = Reference::TIMEZONE;
+    time.timeZoneID = QTimeZone::utc().id();
 
     return time;
 }
@@ -45,7 +46,8 @@ ApparentTime ApparentTime::fromQDateTime(IMM(QDateTime) datetime) {
         case Qt::LocalTime:
             invariant_violation("Cannot initialize equivalent ApparentTime for QDateTime defined on local timespec");
         case Qt::UTC:
-            time.reference = Reference::UTC;
+            time.reference = Reference::TIMEZONE;
+            time.timeZoneID = QTimeZone::utc().id();
             break;
         case Qt::OffsetFromUTC:
             time.reference = Reference::OFFSET_FROM_UTC;
@@ -121,14 +123,15 @@ QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
         case ApparentTime::Reference::LOCAL_TIME:
             stream << " (local time)";
             break;
-        case ApparentTime::Reference::UTC:
-            stream << " UTC";
-            break;
         case ApparentTime::Reference::OFFSET_FROM_UTC:
             stream << " UTC" << QP(format_utc_offset(time.utcOffsetQuarters));
             break;
         case ApparentTime::Reference::TIMEZONE:
-            stream << " (tz: " << QP(time.timeZoneName()) << ")";
+            if (time.timeZoneID == QTimeZone::utc().id()) {
+                stream << " UTC";
+            } else {
+                stream << " (tz: " << QP(time.timeZoneName()) << ")";
+            }
             break;
     }
 

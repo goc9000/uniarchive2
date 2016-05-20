@@ -30,7 +30,6 @@ public:
     enum class Reference {
         UNKNOWN,
         LOCAL_TIME, // The local time when the conversation was recorded
-        UTC,
         OFFSET_FROM_UTC,
         TIMEZONE
     };
