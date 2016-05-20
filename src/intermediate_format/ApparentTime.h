@@ -30,16 +30,23 @@ public:
     enum class Reference {
         UNKNOWN,
         LOCAL_TIME, // The local time when the conversation was recorded
-        OFFSET_FROM_UTC,
-        TIMEZONE
+        SPECIFIED // At least one of UTC offset, timezone abbreviation or timezone are specified
     };
 
+    // These three fields form the "mantissa" of the date, i.e. the day/hour/etc. numbers relative to a reference
     optional<QDate> date;
     optional<QTime> time;
-    bool secondsSpecified;
-    Reference reference;
-    int utcOffsetQuarters;
-    QByteArray timeZoneID;
+    bool secondsSpecified = true;
+
+    Reference reference = Reference::UNKNOWN;
+
+    // These fields describe the time reference, if reference=SPECIFIED. They are listed in increasing order of
+    // specificity: if a timezone abbreviation is specified, the UTC offset is implied (but will be stored nonetheless
+    // if provided, to enable sanity checks), just as a timezone abbreviation is implied by the full timezone ID in
+    // the context of the given date
+    optional<int> utcOffsetQuarters; // The UTC offset for the timezone, valid at the given date
+    QString timeZoneAbbreviation; // The abbreviation for the timezone, valid at the given date
+    QByteArray timeZoneID; // The timezone ID
 
     ApparentTime();
     static ApparentTime fromUnixTimestamp(quint32 unix_timestamp);
@@ -50,8 +57,6 @@ public:
     bool hasSpecifiedDate() const;
     bool hasSpecifiedTime() const;
     bool hasSpecifiedSeconds() const;
-
-    QString timeZoneName() const;
 };
 
 QDebug operator<< (QDebug stream, IMM(ApparentTime) time);

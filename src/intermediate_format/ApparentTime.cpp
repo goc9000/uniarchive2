@@ -22,7 +22,7 @@ namespace uniarchive2 { namespace intermediate_format {
 
 QString format_utc_offset(int offset_quarters);
 
-ApparentTime::ApparentTime(): date(), time(), secondsSpecified(true), reference(Reference::UNKNOWN) {
+ApparentTime::ApparentTime() {
 }
 
 ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
@@ -31,7 +31,7 @@ ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
     ApparentTime time;
     time.date = timestamp.date();
     time.time = timestamp.time();
-    time.reference = Reference::TIMEZONE;
+    time.reference = Reference::SPECIFIED;
     time.timeZoneID = QTimeZone::utc().id();
 
     return time;
@@ -46,16 +46,16 @@ ApparentTime ApparentTime::fromQDateTime(IMM(QDateTime) datetime) {
         case Qt::LocalTime:
             invariant_violation("Cannot initialize equivalent ApparentTime for QDateTime defined on local timespec");
         case Qt::UTC:
-            time.reference = Reference::TIMEZONE;
+            time.reference = Reference::SPECIFIED;
             time.timeZoneID = QTimeZone::utc().id();
             break;
         case Qt::OffsetFromUTC:
-            time.reference = Reference::OFFSET_FROM_UTC;
+            time.reference = Reference::SPECIFIED;
             invariant(abs(datetime.offsetFromUtc()) % 900 == 0, "UTC offset must be a multiple of 15 minutes");
             time.utcOffsetQuarters = datetime.offsetFromUtc() / 900;
             break;
         case Qt::TimeZone:
-            time.reference = Reference::TIMEZONE;
+            time.reference = Reference::SPECIFIED;
             time.timeZoneID = datetime.timeZone().id();
             break;
     }
@@ -88,16 +88,6 @@ bool ApparentTime::hasSpecifiedSeconds() const {
     return hasSpecifiedTime() && secondsSpecified;
 }
 
-QString ApparentTime::timeZoneName() const {
-    invariant(reference == Reference::TIMEZONE, "Cannot display time zone when reference is not TIMEZONE");
-
-    QTimeZone timeZone(timeZoneID);
-    invariant(timeZone.isValid(), "Time zone is invalid");
-
-    QDateTime datetime(*date, *time, timeZone);
-    return timeZone.displayName(datetime, QTimeZone::ShortName);
-}
-
 QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
     QDebugStateSaver settings(stream);
     stream.nospace();
@@ -123,14 +113,25 @@ QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
         case ApparentTime::Reference::LOCAL_TIME:
             stream << " (local time)";
             break;
-        case ApparentTime::Reference::OFFSET_FROM_UTC:
-            stream << " UTC" << QP(format_utc_offset(time.utcOffsetQuarters));
-            break;
-        case ApparentTime::Reference::TIMEZONE:
-            if (time.timeZoneID == QTimeZone::utc().id()) {
-                stream << " UTC";
-            } else {
-                stream << " (tz: " << QP(time.timeZoneName()) << ")";
+        case ApparentTime::Reference::SPECIFIED:
+            if (time.utcOffsetQuarters) {
+                stream << QP(format_utc_offset(*time.utcOffsetQuarters));
+            }
+            if (!time.timeZoneAbbreviation.isEmpty()) {
+                stream << " " << QP(time.timeZoneAbbreviation);
+            }
+            if (!time.timeZoneID.isEmpty()) {
+                QTimeZone timeZone(time.timeZoneID);
+                QDateTime datetime(*time.date, *time.time, timeZone);
+
+                stream << " ";
+                if (!time.timeZoneAbbreviation.isEmpty()) {
+                    stream << "(";
+                }
+                stream << QP(timeZone.displayName(datetime, QTimeZone::ShortName));
+                if (!time.timeZoneAbbreviation.isEmpty()) {
+                    stream << ")";
+                }
             }
             break;
     }
@@ -139,6 +140,10 @@ QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
 }
 
 QString format_utc_offset(int offset_quarters) {
+    if (!offset_quarters) {
+        return "Z";
+    }
+
     return QString("%1%2:%3")
         .arg(offset_quarters < 0 ? "-" : "+")
         .arg(abs(offset_quarters) / 4, 2, 10, QChar('0'))
