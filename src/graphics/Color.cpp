@@ -14,6 +14,7 @@
 
 #include "graphics/Color.h"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace graphics {
 
@@ -31,7 +32,7 @@ Color Color::fromHTMLFormat(IMM(QString) text) {
     );
     auto match = pattern.match(text);
 
-    invariant(match.hasMatch(), "Invalid HTML color format: \"%s\"", qUtf8Printable(text));
+    invariant(match.hasMatch(), "Invalid HTML color format: \"%s\"", QP(text));
 
     return Color(
         (unsigned char)match.captured("r").toInt(nullptr, 16),
@@ -41,9 +42,7 @@ Color Color::fromHTMLFormat(IMM(QString) text) {
 }
 
 QDebug operator<< (QDebug stream, IMM(Color) color) {
-    QDebugStateSaver saver(stream);
-
-    stream << qPrintable(color.toHTMLFormat());
+    stream << QP(color.toHTMLFormat());
 
     return stream;
 }

@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "protocols/IMStatus.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
@@ -30,7 +31,7 @@ QString name_for_im_status(IMStatus status) {
 }
 
 QDebug operator<< (QDebug stream, IMStatus status) {
-    stream << qPrintable(name_for_im_status(status));
+    stream << QP(name_for_im_status(status));
 
     return stream;
 }

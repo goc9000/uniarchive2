@@ -11,6 +11,7 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/events/RawEvent.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
@@ -21,7 +22,7 @@ void RawEvent::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
     stream.nospace() << "#" << indexInConversation << " ";
     stream << "[" << timestamp << "] ";
-    stream << qPrintable(eventName());
+    stream << QP(eventName());
     writeDetailsToDebugStream(stream);
 }
 

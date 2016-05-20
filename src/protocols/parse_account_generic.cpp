@@ -10,12 +10,13 @@
 
 #include <QtDebug>
 
-#include "utils/language/invariant.h"
 #include "protocols/digsby/account_name.h"
 #include "protocols/jabber/account_name.h"
 #include "protocols/msn/account_name.h"
 #include "protocols/yahoo/account_name.h"
 #include "protocols/IMProtocol.h"
+#include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 using namespace uniarchive2::protocols::digsby;
 using namespace uniarchive2::protocols::jabber;
@@ -31,10 +32,7 @@ FullAccountName parse_account_generic(IMProtocol protocol, IMM(QString) account_
         case IMProtocol::MSN: return parse_msn_account(account_name);
         case IMProtocol::YAHOO: return parse_yahoo_account(account_name);
         default:
-            invariant_violation(
-                "Unsupported protocol for parsing an account: %s",
-                qUtf8Printable(name_for_im_protocol(protocol))
-            );
+            invariant_violation("Unsupported protocol for parsing an account: %s", QP(name_for_im_protocol(protocol)));
     }
 }
 

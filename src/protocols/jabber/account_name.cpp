@@ -11,9 +11,10 @@
 #include <QtDebug>
 #include <QRegularExpression>
 
-#include "utils/language/invariant.h"
 #include "protocols/jabber/account_name.h"
 #include "protocols/IMProtocol.h"
+#include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols { namespace jabber {
 
@@ -30,7 +31,7 @@ void assert_valid_jabber_account_name(IMM(QString) account_name) {
     invariant(
         is_valid_jabber_account_name(account_name),
         "'%s' doesn't look like a valid GTalk/Jabber account name",
-        qUtf8Printable(account_name)
+        QP(account_name)
     );
 }
 

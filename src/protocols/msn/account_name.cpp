@@ -12,9 +12,10 @@
 #include <QRegularExpression>
 #include <QStringList>
 
-#include "utils/language/invariant.h"
 #include "protocols/msn/account_name.h"
 #include "protocols/IMProtocol.h"
+#include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols { namespace msn {
 
@@ -32,7 +33,7 @@ void assert_valid_msn_account_name(IMM(QString) account_name) {
     invariant(
         is_valid_msn_account_name(account_name),
         "'%s' doesn't look like a valid MSN account name",
-        qUtf8Printable(account_name)
+        QP(account_name)
     );
 }
 
@@ -55,7 +56,7 @@ void assert_likely_valid_encoded_msn_account_name(IMM(QString) account_name) {
     invariant(
         is_likely_valid_encoded_msn_account_name(account_name),
         "'%s' doesn't look like a valid encoded MSN account name",
-        qUtf8Printable(account_name)
+        QP(account_name)
     );
 }
 
@@ -101,7 +102,7 @@ FullAccountName parse_encoded_msn_account(IMM(QString) account_name) {
         }
     }
 
-    invariant_violation("Could not decode MSN Messenger encoded account name: %s", qUtf8Printable(account_name));
+    invariant_violation("Could not decode MSN Messenger encoded account name: %s", QP(account_name));
 }
 
 bool is_likely_valid_optionally_encoded_msn_account_name(IMM(QString) account_name) {
@@ -112,7 +113,7 @@ void assert_likely_valid_optionally_encoded_msn_account_name(IMM(QString) accoun
     invariant(
         is_likely_valid_optionally_encoded_msn_account_name(account_name),
         "'%s' doesn't look like a valid (optionally encoded) MSN account name",
-        qUtf8Printable(account_name)
+        QP(account_name)
     );
 }
 

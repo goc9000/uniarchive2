@@ -11,6 +11,7 @@
 #include <QFile>
 
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"
 
 namespace uniarchive2 { namespace utils { namespace xml {
@@ -18,7 +19,7 @@ namespace uniarchive2 { namespace utils { namespace xml {
 QDomDocument load_xml_file(IMM(QString) filename) {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", qUtf8Printable(filename));
+        qFatal("Can't open file: %s", QP(filename));
     }
 
     QDomDocument xml;
@@ -28,8 +29,8 @@ QDomDocument load_xml_file(IMM(QString) filename) {
     if (!xml.setContent(&file, false, &error_message, &error_line, &error_column)) {
         qFatal(
             "Error reading XML file '%s': %s (at line %d, column %d)",
-            qUtf8Printable(filename),
-            qUtf8Printable(error_message),
+            QP(filename),
+            QP(error_message),
             error_line,
             error_column
         );
@@ -44,12 +45,7 @@ QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data) {
     int error_line, error_column;
 
     if (!xml.setContent(raw_data, false, &error_message, &error_line, &error_column)) {
-        qFatal(
-            "Error parsing XML: %s (at line %d, column %d)",
-            qUtf8Printable(error_message),
-            error_line,
-            error_column
-        );
+        qFatal("Error parsing XML: %s (at line %d, column %d)", QP(error_message), error_line, error_column);
     }
 
     return xml;
@@ -60,8 +56,8 @@ QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_
     invariant(
         root_node.tagName() == expected_root_name,
         "Expected root node to be <%s>, found <%s>",
-        qUtf8Printable(expected_root_name),
-        qUtf8Printable(root_node.tagName())
+        QP(expected_root_name),
+        QP(root_node.tagName())
     );
 
     return root_node;
@@ -69,12 +65,7 @@ QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_
 
 QDomElement child_elem(IMM(QDomElement) node, IMM(QString) child_name) {
     QDomElement child_node = node.firstChildElement(child_name);
-    invariant(
-        !child_node.isNull(),
-        "Expected to find <%s> node under <%s>",
-        qUtf8Printable(child_name),
-        qUtf8Printable(node.tagName())
-    );
+    invariant(!child_node.isNull(), "Expected to find <%s> node under <%s>", QP(child_name), QP(node.tagName()));
 
     return child_node;
 }
@@ -84,8 +75,8 @@ QDomElement only_child_elem(IMM(QDomElement) node, IMM(QString) child_name) {
     invariant(
         (child_node.tagName() == child_name) && child_node.nextSiblingElement().isNull(),
         "Expected to find only a <%s> node under <%s>",
-        qUtf8Printable(child_name),
-        qUtf8Printable(node.tagName())
+        QP(child_name),
+        QP(node.tagName())
     );
 
     return child_node;
@@ -102,11 +93,7 @@ QDomElement child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name
         }
     }
 
-    invariant_violation(
-        "Could not find a child node of type <%s> and class \"%s\"",
-        qUtf8Printable(child_name),
-        qUtf8Printable(class_name)
-    );
+    invariant_violation("Could not find a child node of type <%s> and class \"%s\"", QP(child_name), QP(class_name));
 }
 
 QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name, IMM(QString) class_name) {
@@ -121,8 +108,8 @@ QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child
             invariant(
                 found_node.isNull(),
                 "Expected to find only one node of type <%s> and class \"%s\"",
-                qUtf8Printable(child_name),
-                qUtf8Printable(class_name)
+                QP(child_name),
+                QP(class_name)
             );
 
             found_node = child_node;
@@ -132,8 +119,8 @@ QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child
     invariant(
         !found_node.isNull(),
         "Could not find a child node of type <%s> and class \"%s\"",
-        qUtf8Printable(child_name),
-        qUtf8Printable(class_name)
+        QP(child_name),
+        QP(class_name)
     );
 
     return found_node;
@@ -144,18 +131,13 @@ int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     bool ok = false;
     int value = value_text.toInt(&ok);
 
-    invariant(ok, "Invalid integer attribute value: '%s'", qUtf8Printable(value_text));
+    invariant(ok, "Invalid integer attribute value: '%s'", QP(value_text));
 
     return value;
 }
 
 QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
-    invariant(
-        node.hasAttribute(attr_name),
-        "<%s> node is missing attribute '%s'",
-        qUtf8Printable(node.tagName()),
-        qUtf8Printable(attr_name)
-    );
+    invariant(node.hasAttribute(attr_name), "<%s> node is missing attribute '%s'", QP(node.tagName()), QP(attr_name));
 
     return node.attribute(attr_name);
 }
@@ -164,8 +146,8 @@ QString read_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     invariant(
         (node.attributes().length() == 1) && node.hasAttribute(attr_name),
         "Expected <%s> node to have only the attribute '%s'",
-        qUtf8Printable(node.tagName()),
-        qUtf8Printable(attr_name)
+        QP(node.tagName()),
+        QP(attr_name)
     );
 
     return node.attribute(attr_name);
@@ -175,8 +157,8 @@ QString read_optional_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_
     invariant(
         node.attributes().isEmpty() || ((node.attributes().length() == 1) && node.hasAttribute(attr_name)),
         "Expected <%s> node to have only the optional attribute '%s'",
-        qUtf8Printable(node.tagName()),
-        qUtf8Printable(attr_name)
+        QP(node.tagName()),
+        QP(attr_name)
     );
 
     return node.attribute(attr_name);
@@ -186,17 +168,13 @@ QDateTime read_iso_date_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     QString value_text = read_string_attr(node, attr_name);
 
     QDateTime value = QDateTime::fromString(value_text, Qt::ISODate);
-    invariant(value.isValid(), "Invalid ISO datetime attribute value: '%s'", qUtf8Printable(value_text));
+    invariant(value.isValid(), "Invalid ISO datetime attribute value: '%s'", QP(value_text));
 
     return value;
 }
 
 QString read_text_only_content(IMM(QDomElement) node) {
-    invariant(
-        node.firstChildElement().isNull(),
-        "Not expecting <%s> node to have sub-elements",
-        qUtf8Printable(node.tagName())
-    );
+    invariant(node.firstChildElement().isNull(), "Not expecting <%s> node to have sub-elements", QP(node.tagName()));
 
     return node.text();
 }

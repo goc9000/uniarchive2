@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "protocols/ArchiveFormat.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
@@ -36,7 +37,7 @@ QString name_for_archive_format(ArchiveFormat protocol) {
 }
 
 QDebug operator<< (QDebug stream, ArchiveFormat format) {
-    stream << qPrintable(name_for_archive_format(format));
+    stream << QP(name_for_archive_format(format));
 
     return stream;
 }

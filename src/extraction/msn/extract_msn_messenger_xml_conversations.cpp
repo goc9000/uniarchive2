@@ -33,6 +33,7 @@
 #include "protocols/msn/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"
 
 using namespace std;
@@ -119,7 +120,7 @@ vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) fil
 
 RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     QString grand_parent = full_filename.section(QDir::separator(), -3, -3);
@@ -135,7 +136,7 @@ RawConversation init_prototype(IMM(QString) filename) {
         ),
         "MSN archive filename should have the form <local account name>/History/<remote account name>.xml, instead "
             "it looks like: %s",
-        qUtf8Printable(filename.section(QDir::separator(), -3, -1))
+        QP(filename.section(QDir::separator(), -3, -1))
     );
 
     RawConversation conversation(ArchiveFormat::MSN_MESSENGER_XML, IMProtocol::MSN);
@@ -194,7 +195,7 @@ CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_in
         return parse_invitation_or_response_event(event_element, event_time, event_index, true);
     }
 
-    invariant_violation("Can't handle MSN event node of type %s", qUtf8Printable(event_element.tagName()));
+    invariant_violation("Can't handle MSN event node of type %s", QP(event_element.tagName()));
 }
 
 ApparentTime parse_event_time(IMM(QDomElement) event_element) {
@@ -281,7 +282,7 @@ CEDE(RawEvent) parse_invitation_or_response_event(
         );
     }
 
-    invariant_violation("Unhandled invitation event: %s", qUtf8Printable(xml_to_string(event_element)));
+    invariant_violation("Unhandled invitation event: %s", QP(xml_to_string(event_element)));
 }
 
 CEDE(RawEvent) parse_invitation_or_response_event_with_file(
@@ -315,7 +316,7 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_file(
         }
     }
 
-    invariant_violation("Unhandled file transfer event: %s", qUtf8Printable(xml_to_string(event_element)));
+    invariant_violation("Unhandled file transfer event: %s", QP(xml_to_string(event_element)));
 }
 
 CEDE(RawEvent) parse_invitation_or_response_event_with_application(
@@ -344,7 +345,7 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_application(
         }
     }
 
-    invariant_violation("Unhandled application invite event: %s", qUtf8Printable(xml_to_string(event_element)));
+    invariant_violation("Unhandled application invite event: %s", QP(xml_to_string(event_element)));
 }
 
 }}}

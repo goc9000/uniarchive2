@@ -13,6 +13,7 @@
 
 #include "utils/language/invariant.h"
 #include "utils/html/entities.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace utils { namespace html {
 
@@ -291,7 +292,7 @@ QChar html_entity_for_name(IMM(QString) entity_name) {
         return entities[entity_name];
     }
 
-    invariant_violation("Unsupported HTML entity: &%s;", qUtf8Printable(entity_name));
+    invariant_violation("Unsupported HTML entity: &%s;", QP(entity_name));
 }
 
 }}}

@@ -12,6 +12,7 @@
 #include <QDebugStateSaver>
 
 #include "extraction/yahoo/YahooProtocolEvent.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
@@ -47,8 +48,8 @@ QDebug operator<< (QDebug stream, IMM(YahooProtocolEvent) event) {
     QDebugStateSaver settings(stream);
     stream.nospace() << "YahooProtocolEvent(";
     stream << "timestamp=" << event.timestamp;
-    stream << ", type=" << qPrintable(name_for_event_type(event.type));
-    stream << ", dir=" << qPrintable(name_for_event_direction(event.direction));
+    stream << ", type=" << QP(name_for_event_type(event.type));
+    stream << ", dir=" << QP(name_for_event_direction(event.direction));
     stream << ", text=" << event.text;
     stream << ", extra=" << event.extra;
     stream << ")";

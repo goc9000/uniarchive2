@@ -16,6 +16,7 @@
 
 #include "intermediate_format/ApparentTime.h"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format {
 
@@ -90,13 +91,13 @@ QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
     }
 
     if (time.hasSpecifiedDate()) {
-        stream << qPrintable(time.date->toString("yyyy-MM-dd"));
+        stream << QP(time.date->toString("yyyy-MM-dd"));
         if (time.hasSpecifiedTime()) {
             stream << " ";
         }
     }
     if (time.hasSpecifiedTime()) {
-        stream << qPrintable(time.time->toString(time.hasSpecifiedSeconds() ? "HH:mm:ss" : "HH:mm"));
+        stream << QP(time.time->toString(time.hasSpecifiedSeconds() ? "HH:mm:ss" : "HH:mm"));
     }
     switch (time.reference) {
         case ApparentTime::Reference::UNKNOWN:
@@ -109,10 +110,10 @@ QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
             stream << " UTC";
             break;
         case ApparentTime::Reference::OFFSET_FROM_UTC:
-            stream << " UTC" << qUtf8Printable(format_utc_offset(time.utcOffsetQuarters));
+            stream << " UTC" << QP(format_utc_offset(time.utcOffsetQuarters));
             break;
         case ApparentTime::Reference::TIMEZONE:
-            stream << " (tz: " << qUtf8Printable(time.timeZoneName()) << ")";
+            stream << " (tz: " << QP(time.timeZoneName()) << ")";
             break;
     }
 

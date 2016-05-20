@@ -11,6 +11,7 @@
 #include <QTextCodec>
 
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/text/decoding.h"
 
 namespace uniarchive2 { namespace utils { namespace text {

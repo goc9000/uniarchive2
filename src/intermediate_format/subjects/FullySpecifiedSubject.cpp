@@ -12,6 +12,7 @@
 
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "utils/external_libs/make_unique.hpp"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
@@ -25,7 +26,7 @@ CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {
 
 void FullySpecifiedSubject::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
-    stream.nospace() << "Sbj:full:" << qUtf8Printable(screenName) << " [" << accountName << "]";
+    stream.nospace() << "Sbj:full:" << QP(screenName) << " [" << accountName << "]";
 }
 
 }}}

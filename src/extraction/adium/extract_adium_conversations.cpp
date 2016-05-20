@@ -48,6 +48,7 @@
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"
 
 using namespace std;
@@ -141,7 +142,7 @@ RawConversation extract_adium_conversation(IMM(QString) filename) {
 
 RawConversation init_conversation(IMM(QString) filename) {
     QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
@@ -177,7 +178,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     invariant(
         proto_and_id_match.hasMatch(),
         "Expected folder to match Protocol.account_name, but found \"%s\"",
-        qUtf8Printable(protocol_and_identity_folder)
+        QP(protocol_and_identity_folder)
     );
 
     IMProtocol protocol = parse_protocol(proto_and_id_match.captured(1));
@@ -190,13 +191,13 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     invariant(
         filename_match.hasMatch(),
         "Expected archive filename to match pattern \"account_name (YYYY-mm-ddThh.mm.ss+offset).xml\", found \"%s\"",
-        qUtf8Printable(base_name)
+        QP(base_name)
     );
 
     info.peer = parse_account_generic(protocol, filename_match.captured(1));
 
     QDateTime datetime = QDateTime::fromString(filename_match.captured(2), Qt::ISODate);
-    invariant(datetime.isValid(), "Could not parse XML date \"%s\"", qUtf8Printable(filename_match.captured(2)));
+    invariant(datetime.isValid(), "Could not parse XML date \"%s\"", QP(filename_match.captured(2)));
 
     info.convoStartDate = ApparentTime(datetime);
 
@@ -210,7 +211,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
         case 0: return IMProtocol::YAHOO;
         case 1: return IMProtocol::JABBER;
         default:
-            invariant_violation("Unsupported protocol specified in Adium: \"%s\"", qUtf8Printable(protocol_name));
+            invariant_violation("Unsupported protocol specified in Adium: \"%s\"", QP(protocol_name));
     };
 }
 
@@ -236,7 +237,7 @@ CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) 
         return parse_status_event(event_element, event_time, event_index, move(event_subject));
     }
 
-    invariant_violation("Unsupported event tag <%s>", qUtf8Printable(event_element.tagName()));
+    invariant_violation("Unsupported event tag <%s>", QP(event_element.tagName()));
 }
 
 CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
@@ -268,7 +269,7 @@ CEDE(RawEvent) parse_system_event(
         return make_unique<RawWindowClosedEvent>(event_time, event_index);
     }
 
-    invariant_violation("Unsupported <event> type: %s", qUtf8Printable(event_type));
+    invariant_violation("Unsupported <event> type: %s", QP(event_type));
 }
 
 CEDE(RawMessageEvent) parse_message_event(
@@ -291,8 +292,8 @@ void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_tex
     invariant(
         event_text == expected_text,
         "Expected event text to be \"%s\", found \"%s\"",
-        qUtf8Printable(expected_text),
-        qUtf8Printable(event_text)
+        QP(expected_text),
+        QP(event_text)
     );
 }
 
@@ -316,12 +317,12 @@ CEDE(RawEvent) parse_status_event(
         if (event_element.text().trimmed().endsWith(" wants your attention!")) {
             return make_unique<RawPingEvent>(event_time, event_index, move(event_subject));
         }
-        invariant_violation("Unsupported Notification event: %s", qUtf8Printable(xml_to_string(event_element)));
+        invariant_violation("Unsupported Notification event: %s", QP(xml_to_string(event_element)));
     } else if ((event_type == "purple") || (event_type == "libpurpleMessage")) {
         return parse_purple_system_event(event_element, event_time, event_index, move(event_subject));
     }
 
-    invariant_violation("Unsupported <status> event type: %s", qUtf8Printable(event_type));
+    invariant_violation("Unsupported <status> event type: %s", QP(event_type));
 }
 
 CEDE(RawStatusChangeEvent) parse_status_change_event(
@@ -418,7 +419,7 @@ CEDE(RawEvent) parse_purple_system_event(
         );
     }
 
-    invariant_violation("Unsupported libpurple system message: %s", qUtf8Printable(xml_to_string(event_element)));
+    invariant_violation("Unsupported libpurple system message: %s", QP(xml_to_string(event_element)));
 }
 
 RawMessageContent parse_event_content(IMM(QDomElement) event_element) {
@@ -448,7 +449,7 @@ void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_co
         } else if (node.isText()) {
             mut_content.addItem(convert_event_content_text(node.toText()));
         } else {
-            invariant_violation("Did not expect node of type: %s", qUtf8Printable(xml_to_string(node)));
+            invariant_violation("Did not expect node of type: %s", QP(xml_to_string(node)));
         }
     }
 }
@@ -464,7 +465,7 @@ CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) elem
         return make_unique<LinkTag>(QUrl(read_string_attr(element, "href")));
     }
 
-    invariant_violation("Unsupported open tag: <%s>", qUtf8Printable(tag_name));
+    invariant_violation("Unsupported open tag: <%s>", QP(tag_name));
 
     return unique_ptr<RawMessageContentItem>();
 }
@@ -480,7 +481,7 @@ CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) el
         return make_unique<LinkTag>(true);
     }
 
-    invariant_violation("Unsupported closed tag: <%s>", qUtf8Printable(tag_name));
+    invariant_violation("Unsupported closed tag: <%s>", QP(tag_name));
 
     return unique_ptr<RawMessageContentItem>();
 }

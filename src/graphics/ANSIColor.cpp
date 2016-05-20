@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "graphics/ANSIColor.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace graphics {
 
@@ -38,7 +39,7 @@ QString name_for_color(ANSIColor color) {
 }
 
 QDebug operator<< (QDebug stream, ANSIColor color) {
-    stream << qPrintable(name_for_color(color));
+    stream << QP(name_for_color(color));
 
     return stream;
 }

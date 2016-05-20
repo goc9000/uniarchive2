@@ -11,6 +11,7 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/content/FontTag.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
@@ -24,13 +25,13 @@ void FontTag::writeToDebugStream(QDebug stream) const {
 
     int any = 0;
     if (faces.length() > 0) {
-        stream << (any++ ? ":" : ",") << qUtf8Printable(faces[0]);
+        stream << (any++ ? ":" : ",") << QP(faces[0]);
         if (faces.length() > 1) {
             stream << "+";
         }
     }
     if (!size.isEmpty()) {
-        stream << (any++ ? ":" : ",") << qUtf8Printable(size);
+        stream << (any++ ? ":" : ",") << QP(size);
     }
     if (color) {
         stream << (any++ ? ":" : ",") << *color;

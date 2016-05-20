@@ -12,6 +12,7 @@
 #include <QDebugStateSaver>
 
 #include "protocols/FullAccountName.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
@@ -30,7 +31,7 @@ bool FullAccountName::operator == (IMM(FullAccountName) other) const {
 QDebug operator<< (QDebug stream, IMM(FullAccountName) account_name) {
     QDebugStateSaver settings(stream);
 
-    stream.nospace() << qUtf8Printable(account_name.accountName) << "@" << account_name.protocol;
+    stream.nospace() << QP(account_name.accountName) << "@" << account_name.protocol;
 
     return stream;
 }

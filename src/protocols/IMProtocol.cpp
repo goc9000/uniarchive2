@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "protocols/IMProtocol.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace protocols {
 
@@ -36,7 +37,7 @@ QString name_for_im_protocol(IMProtocol protocol) {
 }
 
 QDebug operator<< (QDebug stream, IMProtocol protocol) {
-    stream << qPrintable(name_for_im_protocol(protocol));
+    stream << QP(name_for_im_protocol(protocol));
 
     return stream;
 }

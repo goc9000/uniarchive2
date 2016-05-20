@@ -39,6 +39,7 @@
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/text/decoding.h"
 
 using namespace std;
@@ -80,7 +81,7 @@ RawConversation extract_digsby_conversation(IMM(QString) filename) {
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", qUtf8Printable(filename));
+        qFatal("Can't open file: %s", QP(filename));
     }
 
     // Unfortunately we are reduced to manual text processing as the HTML produced by Digsby is occasionally damaged
@@ -99,7 +100,7 @@ RawConversation extract_digsby_conversation(IMM(QString) filename) {
 
 RawConversation init_conversation(IMM(QString) filename) {
     QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
@@ -146,7 +147,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
             group_chat_match.hasMatch(),
             "Digsby conference archive file must have a filename like "
                 "YYYY-mm-ddThh.mm.ss - account_name-<timestamp>.html, it is actually \"%s\"",
-            qUtf8Printable(base_name)
+            QP(base_name)
         );
 
         info.peer = parse_account_generic(protocol, group_chat_match.captured(1));
@@ -159,7 +160,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         invariant(
             pat_base_name.match(base_name).hasMatch(),
             "Digsby archive file must have a filename like YYYY-mm-dd.html, it is actually \"%s\"",
-            qUtf8Printable(base_name)
+            QP(base_name)
         );
 
         static QRegularExpression pat_remote_peer("^(.*)_([a-z]+)$", QRegularExpression::CaseInsensitiveOption);
@@ -167,7 +168,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         invariant(
             remote_peer_match.hasMatch(),
             "Digsby peer folder must look like <account>_<protocol>, it is actually \"%s\"",
-            qUtf8Printable(peer_folder)
+            QP(peer_folder)
         );
 
         IMProtocol peer_protocol = parse_protocol(remote_peer_match.captured(2));
@@ -186,7 +187,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
         case 2: return IMProtocol::MSN;
         case 3: return IMProtocol::YAHOO;
         default:
-            invariant_violation("Unsupported protocol specified in Digsby: \"%s\"", qUtf8Printable(protocol_name));
+            invariant_violation("Unsupported protocol specified in Digsby: \"%s\"", QP(protocol_name));
     };
 }
 
@@ -195,7 +196,7 @@ void verify_xml_header(QTextStream& mut_stream) {
     invariant(
         xml_header.startsWith("<?xml ") && xml_header.contains("encoding=\"UTF-8\""),
         "Expected Digsby archive to be a UTF-8 encoded XML file, but header is \"%s\"",
-        qUtf8Printable(xml_header)
+        QP(xml_header)
     );
 
     mut_stream.setCodec(QTextCodec::codecForName("UTF-8"));
@@ -262,19 +263,12 @@ CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) convers
     }
 
     QStringList classes = match.captured(1).trimmed().split(QChar(' '), QString::SkipEmptyParts);
-    invariant(
-        classes.contains("message"),
-        "Event of unsupported type (is not message): %s", qUtf8Printable(event_html)
-    );
+    invariant(classes.contains("message"), "Event of unsupported type (is not message): %s", QP(event_html));
     invariant(classes.contains("incoming") || classes.contains("outgoing"), "Missing class 'incoming' or 'outgoing'");
 
     QDateTime datetime = QDateTime::fromString(match.captured(3), "yyyy-MM-dd HH:mm:ss");
     datetime.setTimeSpec(Qt::UTC);
-    invariant(
-        datetime.isValid(),
-        "Invalid timestamp '%s' (must be yyyy-mm-dd hh:mm:ss)",
-        qUtf8Printable(match.captured(3))
-    );
+    invariant(datetime.isValid(), "Invalid timestamp '%s' (must be yyyy-mm-dd hh:mm:ss)", QP(match.captured(3)));
 
     return make_unique<RawMessageEvent>(
         ApparentTime(datetime),
@@ -370,7 +364,7 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
         } else if (key == "style") {
             font_tag->css = value;
         } else {
-            invariant_violation("Unhandled <font> attribute \"%s\"", qUtf8Printable(key));
+            invariant_violation("Unhandled <font> attribute \"%s\"", QP(key));
         }
     }
 

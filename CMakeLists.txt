@@ -142,6 +142,7 @@ set(SOURCE_FILES
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
         src/utils/language/shortcuts.h
+        src/utils/qt/shortcuts.h
         src/utils/text/decoding.cpp
         src/utils/text/decoding.h
         src/utils/time/parse_date_parts.cpp

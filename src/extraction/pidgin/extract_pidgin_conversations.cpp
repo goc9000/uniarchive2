@@ -23,6 +23,7 @@
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
@@ -43,7 +44,7 @@ RawConversation extract_pidgin_html_conversation(IMM(QString)filename) {
 
 RawConversation init_conversation(IMM(QString)filename) {
     QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
 

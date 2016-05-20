@@ -13,6 +13,7 @@
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
@@ -38,7 +39,7 @@ QString name_for_implicit_subject_kind(ImplicitSubject::Kind kind) {
 
 void ImplicitSubject::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
-    stream.nospace() << "Sbj:implicit:" << qUtf8Printable(name_for_implicit_subject_kind(kind));
+    stream.nospace() << "Sbj:implicit:" << QP(name_for_implicit_subject_kind(kind));
 }
 
 }}}

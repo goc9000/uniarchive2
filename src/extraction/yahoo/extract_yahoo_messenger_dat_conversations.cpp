@@ -45,6 +45,7 @@
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
 #include "utils/html/parse_html_lenient.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/text/decoding.h"
 
 using namespace uniarchive2::intermediate_format;
@@ -81,7 +82,7 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", qUtf8Printable(filename));
+        qFatal("Can't open file: %s", QP(filename));
     }
     QByteArray data = file.readAll();
 
@@ -109,7 +110,7 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
 
 RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
 
@@ -285,7 +286,7 @@ RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
 }
 
 CEDE(TextSection) make_text_section(IMM(QString) text) {
-    invariant(!text.contains(0x1B), "Unprocessed ANSI-like sequence in text: \"%s\"", qUtf8Printable(text));
+    invariant(!text.contains(0x1B), "Unprocessed ANSI-like sequence in text: \"%s\"", QP(text));
 
     return make_unique<TextSection>(text);
 };
@@ -299,7 +300,7 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match)
         return parse_yahoo_tag(match.captured("yahoo_tag"));
     }
 
-    invariant_violation("Tag not recognized: \"%s\"", qUtf8Printable(match.captured(0)));
+    invariant_violation("Tag not recognized: \"%s\"", QP(match.captured(0)));
 }
 
 CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
@@ -317,7 +318,7 @@ CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
     );
 
     auto match = pattern.match(sgr_code);
-    invariant(match.hasMatch(), "SGR code not recognized: \"%s\"", qUtf8Printable(sgr_code));
+    invariant(match.hasMatch(), "SGR code not recognized: \"%s\"", QP(sgr_code));
 
     bool closed = match.capturedLength("closed") > 0;
 
@@ -343,18 +344,18 @@ CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
 CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
     ParsedHTMLTagInfo tag_info = parse_html_tag_lenient(tag_text);
 
-    invariant(tag_info.valid, "Failed to parse tag: \"%s\"", qUtf8Printable(tag_text));
+    invariant(tag_info.valid, "Failed to parse tag: \"%s\"", QP(tag_text));
     invariant(
         !tag_info.open || !tag_info.closed,
         "Encountered unexpected self-closed tag: \"%s\"",
-        qUtf8Printable(tag_text)
+        QP(tag_text)
     );
 
     if (tag_info.tagName.toLower() == "font") {
         return parse_font_tag(tag_info);
     }
 
-    invariant_violation("HTML tag not supported: \"%s\"", qUtf8Printable(tag_info.tagName));
+    invariant_violation("HTML tag not supported: \"%s\"", QP(tag_info.tagName));
 }
 
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
@@ -369,7 +370,7 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
         } else if (norm_key == "size") {
             tag->size = value;
         } else {
-            invariant_violation("Font attr not supported: \"%s\"", qUtf8Printable(key));
+            invariant_violation("Font attr not supported: \"%s\"", QP(key));
         }
     }
 
@@ -384,7 +385,7 @@ CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
     );
 
     auto match = pattern.match(tag_text);
-    invariant(match.hasMatch(), "Yahoo tag not recognized: \"%s\"", qUtf8Printable(tag_text));
+    invariant(match.hasMatch(), "Yahoo tag not recognized: \"%s\"", QP(tag_text));
 
     QString tag_name = match.captured("tag_name").toLower();
     bool closed = match.capturedLength("closed") > 0;
@@ -406,7 +407,7 @@ CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
                make_unique<YahooAltTag>(false, colors[0], colors[1]);
     }
 
-    invariant_violation("Yahoo markup tag not supported: \"%s\"", qUtf8Printable(tag_name));
+    invariant_violation("Yahoo markup tag not supported: \"%s\"", QP(tag_name));
 #undef PAT_COLOR
 }
 

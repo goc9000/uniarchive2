@@ -11,6 +11,7 @@
 #include <QRegularExpression>
 
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/time/parse_date_parts.h"
 
 namespace uniarchive2 { namespace utils { namespace time {
@@ -22,7 +23,7 @@ unsigned int parse_english_month_name(IMM(QString) month_name) {
     );
 
     int month = pattern.match(month_name.toLower()).lastCapturedIndex() - 1;
-    invariant((month >= 1) && (month <= 12), "Not a month name in English: \"%s\"", qUtf8Printable(month_name));
+    invariant((month >= 1) && (month <= 12), "Not a month name in English: \"%s\"", QP(month_name));
 
     return (unsigned int)month;
 }
@@ -35,13 +36,13 @@ int parse_timezone_offset_in_quarters(IMM(QString) offset_text) {
     }
 
     auto match = pattern.match(offset_text);
-    invariant(match.hasMatch(), "Invalid timezone offset format: \"%s\"", qUtf8Printable(offset_text));
+    invariant(match.hasMatch(), "Invalid timezone offset format: \"%s\"", QP(offset_text));
 
     bool positive = match.captured(1) == "+";
     int hours = match.captured(2).toInt();
     int minutes = (match.capturedLength(3) > 0) ? match.captured(3).toInt() : 0;
 
-    invariant(hours < 14, "Timezone offset should be <14 hours (found: %s)", qUtf8Printable(offset_text));
+    invariant(hours < 14, "Timezone offset should be <14 hours (found: %s)", QP(offset_text));
     invariant(minutes % 15 == 0, "Timezone offset should be a multiple of 15 minutes");
 
     return (positive ? 1 : -1) * (hours * 4 + (minutes / 15));

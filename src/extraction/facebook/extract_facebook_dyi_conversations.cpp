@@ -22,6 +22,7 @@
 #include "protocols/facebook/account_name.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 #include "utils/time/parse_date_parts.h"
 #include "utils/xml/qdom_utils.h"
 
@@ -77,7 +78,7 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename
 
 RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", qUtf8Printable(filename));
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     QString parent = full_filename.section(QDir::separator(), -2, -2);
@@ -86,7 +87,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     invariant(
         (parent == "html") && (full_base_name == "messages.htm"),
         "Facebook DYI archive filename should have the form html/messages.htm, instead it looks like: %s",
-        qUtf8Printable(filename.section(QDir::separator(), -2, -1))
+        QP(filename.section(QDir::separator(), -2, -1))
     );
 
     RawConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
@@ -109,11 +110,7 @@ QString read_identity_screen_name(IMM(QDomElement) root_element) {
     static QRegularExpression title_pattern("^(.*) - Messages$");
     auto match = title_pattern.match(title);
 
-    invariant(
-        match.hasMatch(),
-        "Expected title to be \"(screen name) - Messages\", but it is \"%s\"",
-        qUtf8Printable(title)
-    );
+    invariant(match.hasMatch(), "Expected title to be \"(screen name) - Messages\", but it is \"%s\"", QP(title));
 
     return match.captured(1);
 }
@@ -214,16 +211,16 @@ ApparentTime parse_message_time(IMM(QString) time_text) {
     static QRegularExpression pattern("^\\w+, (\\w+) (\\d+), (\\d+) at (\\d+:\\d+(am|pm)) UTC(.*)$");
 
     auto match = pattern.match(time_text);
-    invariant(match.hasMatch(), "Unexpected datetime format: \"%s\"", qUtf8Printable(time_text));
+    invariant(match.hasMatch(), "Unexpected datetime format: \"%s\"", QP(time_text));
 
     int month = parse_english_month_name(match.captured(1));
     int day = match.captured(2).toInt();
     int year = match.captured(3).toInt();
     QDate date(year, month, day);
-    invariant(date.isValid(), "Invalid date: \"%s\"", qUtf8Printable(time_text));
+    invariant(date.isValid(), "Invalid date: \"%s\"", QP(time_text));
 
     QTime daytime = QTime::fromString(match.captured(4), "h:mma");
-    invariant(daytime.isValid(), "Invalid time: \"%s\"", qUtf8Printable(match.captured(4)));
+    invariant(daytime.isValid(), "Invalid time: \"%s\"", QP(match.captured(4)));
 
     int offset_quarters = parse_timezone_offset_in_quarters(match.captured(6));
 
