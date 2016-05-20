@@ -49,8 +49,6 @@ QString decode_html_entities(IMM(QString) html_text) {
 
     result += html_text.mid(position);
 
-//    invariant(!html_text.contains("&"), "PAC\n%s\n%s", qUtf8Printable(html_text), qUtf8Printable(result));
-
     return result;
 }
 
