@@ -5,7 +5,15 @@ Archive Format Research: Adium Multi-Messenger
 Filename Format
 ---------------
 
-...
+`Logs/` *protocol* `.` *local_account* `/` *peer_account* `/` *peer_account* ` (` *yyyy-MM-ddThh.mm.ss+offset* `).chatlog/` *(same as folder name)* `.xml`
+
+where:
+  
+- *protocol* is the local account protocol
+  - Observed values: `Yahoo!`, `Jabber`
+- *yyyy-MM-ddThh.mm.ss+offset* is the conversation start date. It includes the timezone offset in `+hhmm` format.
+- The last folder name is repeated in the `.xml` archive basename
+  - There only seems to ever be a single archive in the last folder
 
 
 Other File Properties
@@ -19,10 +27,23 @@ Other File Properties
 Distribution of Conversations Across Files
 ------------------------------------------
 
-...
+- One file = one conversation
 
 
 File Format
 -----------
 
-...
+- Well-formed XML file
+- General form:
+
+  ```xml
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <chat
+    xmlns="http://purl.org/net/ulf/ns/0.4-02" account="(local_account)"
+    service="(protocol)" adiumversion="1.5.6" buildid="90a171a6b0fc">
+    <event ...></event>
+    <message ...></message>
+    ...
+    <event ...></event>
+  </chat>
+  ```
