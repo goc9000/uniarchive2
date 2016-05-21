@@ -4,7 +4,7 @@ Supported Formats Status
 
 | Archive Format  | Format Variant | Protocol                   | Status        |
 |-----------------|----------------|----------------------------|---------------|
-| Adium           |                | Jabber, Yahoo              | *Documenting* |
+| Adium           |                | Jabber, Yahoo              | **Done**      |
 | Digsby          | HTML           | Digsby, Jabber, MSN, Yahoo | **Done**      |
 | Empathy         |                | Empathy                    | Planned       |
 | Facebook        | DYI            | Facebook                   | **Done**      |
