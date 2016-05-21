@@ -17,11 +17,13 @@
 #include "extraction/pidgin/extract_pidgin_conversations.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
+#include "utils/external_libs/optional.hpp"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/time/parse_date_parts.h"
@@ -37,6 +39,9 @@ namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 struct InfoFromFilename {
     ApparentTime conversation_date;
+    FullAccountName identity;
+    optional<FullAccountName> peer;
+    bool is_conference;
 };
 
 RawConversation init_conversation(IMM(QString)filename);
@@ -57,11 +62,16 @@ RawConversation init_conversation(IMM(QString)filename) {
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
 
-    RawConversation conversation(ArchiveFormat::PIDGIN_HTML, IMProtocol::INVALID);
+    RawConversation conversation(ArchiveFormat::PIDGIN_HTML, info.identity.protocol);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.declaredStartDate = info.conversation_date;
+    conversation.isConference = info.is_conference;
+    conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
+    if (info.peer) {
+        conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(*info.peer));
+    }
 
     return conversation;
 }
@@ -90,6 +100,14 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     info.conversation_date.timeZoneAbbreviation = filename_match.captured(3);
 
     IMProtocol protocol = parse_protocol(protocol_folder);
+    info.identity = parse_account_generic(protocol, identity_folder);
+
+    if (peer_folder.endsWith(".chat")) {
+        info.is_conference = true;
+    } else {
+        info.peer = parse_account_generic(protocol, peer_folder);
+        info.is_conference = false;
+    }
 
     return info;
 }

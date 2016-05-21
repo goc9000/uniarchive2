@@ -20,7 +20,9 @@ namespace uniarchive2 { namespace protocols { namespace msn {
 
 bool is_valid_msn_account_name(IMM(QString) account_name) {
     // Note: this is not completely accurate, but good enough for a quick check
-    QREGEX_MATCH_CI(match, "^[a-z][a-z0-9_.-]*@(live|hotmail|outlook)[.]com$", account_name);
+    QREGEX_MATCH_CI(
+        match, "^[a-z][a-z0-9_.-]*@((live|hotmail|outlook)[.]com|fakeskypedomain[.]fakedomain)$", account_name
+    );
     return match.hasMatch();
 }
 
