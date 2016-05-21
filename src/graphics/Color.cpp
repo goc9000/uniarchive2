@@ -10,7 +10,6 @@
 
 #include <QChar>
 #include <QDebugStateSaver>
-#include <QRegularExpression>
 
 #include "graphics/Color.h"
 #include "utils/language/invariant.h"
@@ -26,10 +25,7 @@ QString Color::toHTMLFormat() const {
 }
 
 Color Color::fromHTMLFormat(IMM(QString) text) {
-    static QRegularExpression pattern(
-        "^\\s*#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})\\s*$",
-        QRegularExpression::CaseInsensitiveOption
-    );
+    QREGEX_CI(pattern, "^\\s*#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})\\s*$");
     auto match = pattern.match(text);
 
     invariant(match.hasMatch(), "Invalid HTML color format: \"%s\"", QP(text));

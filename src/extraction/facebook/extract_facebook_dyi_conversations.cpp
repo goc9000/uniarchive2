@@ -11,7 +11,6 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFileInfo>
-#include <QRegularExpression>
 
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "intermediate_format/content/TextSection.h"
@@ -104,7 +103,7 @@ QString read_identity_screen_name(IMM(QDomElement) root_element) {
 
     QString title = read_text_only_content(title_element);
 
-    static QRegularExpression title_pattern("^(.*) - Messages$");
+    QREGEX(title_pattern, "^(.*) - Messages$");
     auto match = title_pattern.match(title);
 
     invariant(match.hasMatch(), "Expected title to be \"(screen name) - Messages\", but it is \"%s\"", QP(title));
@@ -205,7 +204,7 @@ CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
 }
 
 ApparentTime parse_message_time(IMM(QString) time_text) {
-    static QRegularExpression pattern("^\\w+, (\\w+) (\\d+), (\\d+) at (\\d+:\\d+(am|pm)) UTC(.*)$");
+    QREGEX(pattern, "^\\w+, (\\w+) (\\d+), (\\d+) at (\\d+:\\d+(am|pm)) UTC(.*)$");
 
     auto match = pattern.match(time_text);
     invariant(match.hasMatch(), "Unexpected datetime format: \"%s\"", QP(time_text));

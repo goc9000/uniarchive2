@@ -12,7 +12,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
-#include <QRegularExpression>
 #include <QTimeZone>
 
 #include "extraction/pidgin/extract_pidgin_conversations.h"
@@ -75,10 +74,8 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
     QString base_name = full_filename.section(QDir::separator(), -1, -1);
 
-    const static QRegularExpression filename_pattern(
-        "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)[.]html$",
-        QRegularExpression::CaseInsensitiveOption
-    );
+    QREGEX_CI(filename_pattern, "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)[.]html$");
+
     auto filename_match = filename_pattern.match(base_name);
     invariant(
         filename_match.hasMatch(),
@@ -112,7 +109,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
         return PROTOCOL_MAP[protocol_name];
     }
 
-    invariant_violation("Unrecognized protocol in Pidgin: %s", qUtf8Printable(protocol_name));
+    invariant_violation("Unrecognized protocol in Pidgin: \"%s\"", QP(protocol_name));
 }
 
 }}}

@@ -9,7 +9,6 @@
  */
 
 #include <QtDebug>
-#include <QRegularExpression>
 
 #include "protocols/digsby/account_name.h"
 #include "protocols/IMProtocol.h"
@@ -19,7 +18,7 @@
 namespace uniarchive2 { namespace protocols { namespace digsby {
 
 bool is_valid_digsby_account_name(IMM(QString) account_name) {
-    static QRegularExpression pattern("^[a-z][a-z0-9_.]*(@digsby[.]org)?$", QRegularExpression::CaseInsensitiveOption);
+    QREGEX_CI(pattern, "^[a-z][a-z0-9_.]*(@digsby[.]org)?$");
 
     return pattern.match(account_name).hasMatch();
 }

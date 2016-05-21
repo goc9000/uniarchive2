@@ -9,11 +9,11 @@
  */
 
 #include <QChar>
-#include <QRegularExpression>
 
-#include "utils/language/invariant.h"
 #include "utils/html/entities.h"
 #include "utils/html/parse_html_lenient.h"
+#include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace utils { namespace html {
 
@@ -21,16 +21,16 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
 #define TAG_NAME "[a-z._-][a-z0-9._-]*"
 #define VALUE_PATTERN "((?<dblq_value>\"[^\"]*\")|(?<quot_value>'[^']*')|(?<raw_value>(.(?! |/>|>))*))"
 #define ATTR_PATTERN "\\s+(?<attr_name>" TAG_NAME ")(?<has_value>=" VALUE_PATTERN ")?"
-    static QRegularExpression tag_pattern(
+    QREGEX_CI(
+        tag_pattern,
         "^<"\
         "(?<closed1>/)?"\
         "(?<tag_name>" TAG_NAME ")"\
         "(?<attributes>(" ATTR_PATTERN ")*)\\s*"\
         "(?<closed2>/)?"\
-        ">$",
-        QRegularExpression::CaseInsensitiveOption
+        ">$"
     );
-    static QRegularExpression attr_pattern(ATTR_PATTERN);
+    QREGEX_CI(attr_pattern, ATTR_PATTERN);
 
     ParsedHTMLTagInfo tag_info;
     tag_info.valid = false;

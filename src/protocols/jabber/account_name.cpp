@@ -9,7 +9,6 @@
  */
 
 #include <QtDebug>
-#include <QRegularExpression>
 
 #include "protocols/jabber/account_name.h"
 #include "protocols/IMProtocol.h"
@@ -19,10 +18,7 @@
 namespace uniarchive2 { namespace protocols { namespace jabber {
 
 bool is_valid_jabber_account_name(IMM(QString) account_name) {
-    static QRegularExpression pattern(
-        "^[a-z0-9_.]+@[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)*$",
-        QRegularExpression::CaseInsensitiveOption
-    );
+    QREGEX_CI(pattern, "^[a-z0-9_.]+@[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)*$");
 
     return pattern.match(account_name).hasMatch();
 }

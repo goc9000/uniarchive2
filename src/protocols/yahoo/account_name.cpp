@@ -9,7 +9,6 @@
  */
 
 #include <QtDebug>
-#include <QRegularExpression>
 
 #include "protocols/yahoo/account_name.h"
 #include "protocols/IMProtocol.h"
@@ -19,10 +18,7 @@
 namespace uniarchive2 { namespace protocols { namespace yahoo {
 
 bool is_valid_yahoo_account_name(IMM(QString) account_name) {
-    static QRegularExpression pattern(
-        "^[a-z][a-z0-9_.]*(@(ymail|yahoo)[.].*)?$",
-        QRegularExpression::CaseInsensitiveOption
-    );
+    QREGEX_CI(pattern, "^[a-z][a-z0-9_.]*(@(ymail|yahoo)[.].*)?$");
 
     return pattern.match(account_name).hasMatch();
 }

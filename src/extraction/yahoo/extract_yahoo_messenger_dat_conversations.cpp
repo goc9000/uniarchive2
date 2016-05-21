@@ -13,7 +13,6 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFile>
-#include <QRegularExpression>
 
 #include "graphics/Color.h"
 #include "graphics/ANSIColor.h"
@@ -114,7 +113,7 @@ RawConversation init_prototype(IMM(QString) filename) {
 
     QString full_filename = file_info.absoluteFilePath();
 
-    static QRegularExpression pattern("\\d{8}-(.+)[.]dat", QRegularExpression::CaseInsensitiveOption);
+    QREGEX_CI(pattern, "^\\d{8}-(.+)[.]dat$");
     auto match = pattern.match(filename.section(QDir::separator(), -1, -1));
     invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
     auto local_account = parse_yahoo_account(match.captured(1));
@@ -249,11 +248,11 @@ CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, I
 }
 
 RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
-    static QRegularExpression markup_pattern(
+    QREGEX_CI(
+        markup_pattern,
         "\\x1B\\[(?<pseudo_ansi_seq>[^m]+)m|"\
         "(?<html_tag></?(font)\\b[^>]*>)|"\
-        "(?<yahoo_tag></?(fade|alt)\\b[^>]*>)",
-        QRegularExpression::CaseInsensitiveOption
+        "(?<yahoo_tag></?(fade|alt)\\b[^>]*>)"
     );
 
     RawMessageContent content;
@@ -301,7 +300,8 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match)
 }
 
 CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
-    static QRegularExpression pattern(
+    QREGEX_CI(
+        pattern,
         "^(?<closed>x)?("\
         "(?<reset>0)|"\
         "(?<bold>1)|"\
@@ -310,8 +310,7 @@ CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
         "(?<link>l)|"\
         "3(?<ansi_color>[0-8])|"\
         "(?<html_color>#[0-9a-f]{6})"\
-        ")$",
-        QRegularExpression::CaseInsensitiveOption
+        ")$"
     );
 
     auto match = pattern.match(sgr_code);
@@ -356,6 +355,8 @@ CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
 }
 
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    QREGEX(comma_separator, "\\s*,\\s*");
+
     auto tag = make_unique<FontTag>(tag_info.closed);
 
     for (IMM(auto) key : tag_info.attributes.keys()) {
@@ -363,7 +364,7 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
         QString value = tag_info.attributes[key].trimmed();
 
         if (norm_key == "face") {
-            tag->faces = value.split(QRegularExpression("\\s*,\\s*"), QString::SkipEmptyParts);
+            tag->faces = value.split(comma_separator, QString::SkipEmptyParts);
         } else if (norm_key == "size") {
             tag->size = value;
         } else {
@@ -376,9 +377,10 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
 
 CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
 #define PAT_COLOR "#[0-9a-f]{6}"
-    static QRegularExpression pattern(
-        "^<(?<closed>/)?(?<tag_name>[a-z._-][a-z0-9._-]*)\\b\\s*(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$",
-        QRegularExpression::CaseInsensitiveOption
+    QREGEX_CI(
+        pattern,
+        "^<(?<closed>/)?(?<tag_name>[a-z._-][a-z0-9._-]*)\\b\\s*"\
+        "(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$"
     );
 
     auto match = pattern.match(tag_text);

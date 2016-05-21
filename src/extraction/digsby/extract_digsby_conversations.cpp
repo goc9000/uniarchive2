@@ -12,7 +12,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
-#include <QRegularExpression>
 #include <QStringList>
 #include <QTextCodec>
 #include <QTextStream>
@@ -135,10 +134,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
 
     if (peer_folder == "Group Chats") {
         info.isConference = true;
-        static QRegularExpression pat_group_chat(
-            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}[.]\\d{2}[.]\\d{2} - (.*)-\\d+[.]html$",
-            QRegularExpression::CaseInsensitiveOption
-        );
+        QREGEX_CI(pat_group_chat, "^\\d{4}-\\d{2}-\\d{2}T\\d{2}[.]\\d{2}[.]\\d{2} - (.*)-\\d+[.]html$");
         auto group_chat_match = pat_group_chat.match(base_name);
         invariant(
             group_chat_match.hasMatch(),
@@ -150,17 +146,14 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         info.peer = parse_account_generic(protocol, group_chat_match.captured(1));
     } else {
         info.isConference = false;
-        static QRegularExpression pat_base_name(
-            "^\\d{4}-\\d{2}-\\d{2}.html$",
-            QRegularExpression::CaseInsensitiveOption
-        );
+        QREGEX_CI(pat_base_name, "^\\d{4}-\\d{2}-\\d{2}.html$");
         invariant(
             pat_base_name.match(base_name).hasMatch(),
             "Digsby archive file must have a filename like YYYY-mm-dd.html, it is actually \"%s\"",
             QP(base_name)
         );
 
-        static QRegularExpression pat_remote_peer("^(.*)_([a-z]+)$", QRegularExpression::CaseInsensitiveOption);
+        QREGEX_CI(pat_remote_peer, "^(.*)_([a-z]+)$");
         auto remote_peer_match = pat_remote_peer.match(peer_folder);
         invariant(
             remote_peer_match.hasMatch(),
@@ -176,16 +169,19 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
 }
 
 IMProtocol parse_protocol(IMM(QString) protocol_name) {
-    static QRegularExpression pattern("^((digsby)|(gtalk|jabber)|(msn)|(yahoo))$");
-
-    switch (pattern.match(protocol_name).lastCapturedIndex() - 2) {
-        case 0: return IMProtocol::DIGSBY;
-        case 1: return IMProtocol::JABBER;
-        case 2: return IMProtocol::MSN;
-        case 3: return IMProtocol::YAHOO;
-        default:
-            invariant_violation("Unsupported protocol specified in Digsby: \"%s\"", QP(protocol_name));
+    const static QMap<QString, IMProtocol> PROTOCOL_MAP = {
+        { "digsby", IMProtocol::DIGSBY },
+        { "gtalk",  IMProtocol::JABBER },
+        { "jabber", IMProtocol::JABBER },
+        { "msn",    IMProtocol::MSN },
+        { "yahoo",  IMProtocol::YAHOO },
     };
+
+    if (PROTOCOL_MAP.contains(protocol_name)) {
+        return PROTOCOL_MAP[protocol_name];
+    }
+
+    invariant_violation("Unrecognized protocol in Digsby: \"%s\"", QP(protocol_name));
 }
 
 void verify_xml_header(QTextStream& mut_stream) {
@@ -248,10 +244,10 @@ QStringList partially_parse_events(QTextStream& mut_stream) {
 }
 
 CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
-    static QRegularExpression pat_message_html(
+    QREGEX(
+        pat_message_html,
         "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"
-            "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$",
-        QRegularExpression::DotMatchesEverythingOption
+            "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$"
     );
 
     auto match = pat_message_html.match(event_html);
@@ -292,7 +288,7 @@ RawMessageContent parse_message_content(IMM(QString) content_html) {
 
 CEDE(TextSection) parse_text_section(IMM(QString) text) {
     // Remove \n's because whenever these appear, <br>'s are also present
-    static QRegularExpression trim_pattern("^\n*(.*?)\n*$");
+    QREGEX(trim_pattern, "^\n*(.*?)\n*$");
     auto match = trim_pattern.match(text);
     invariant(match.hasMatch(), "Expected to always get match here");
 
@@ -348,6 +344,8 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
 }
 
 CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    QREGEX(comma_separator, "\\s*,\\s*");
+
     invariant(tag_info.tagName == "font", "This function should be run on <font> tags only");
 
     auto font_tag = make_unique<FontTag>(tag_info.closed);
@@ -357,7 +355,7 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
         if (key == "color") {
             font_tag->color = Color::fromHTMLFormat(value);
         } else if (key == "face") {
-            font_tag->faces = value.split(QRegularExpression("\\s*,\\s*"), QString::SkipEmptyParts);
+            font_tag->faces = value.split(comma_separator, QString::SkipEmptyParts);
         } else if (key == "style") {
             font_tag->css = value;
         } else {

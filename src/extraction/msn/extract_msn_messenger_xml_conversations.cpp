@@ -16,7 +16,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
-#include <QRegularExpression>
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "intermediate_format/content/CSSStyleTag.h"
@@ -291,7 +290,7 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QString) text,
     IMM(QString) filename
 ) {
-    static QRegularExpression pat_transfer_complete("^Transfer of .* is complete[.]$");
+    QREGEX_CI(pat_transfer_complete, "^Transfer of .* is complete[.]$");
 
     if (!is_response) {
         if (text.contains(" sends ")) {

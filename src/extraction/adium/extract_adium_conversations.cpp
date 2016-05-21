@@ -15,7 +15,6 @@
 #include <QFileInfo>
 #include <QIODevice>
 #include <QMap>
-#include <QRegularExpression>
 #include <QUrl>
 
 #include "extraction/adium/extract_adium_conversations.h"
@@ -170,7 +169,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
         "Adium archive file should be 4 levels deep under a \"Logs\" folder"
     );
 
-    static QRegularExpression protocol_and_identity_pattern("^([^.]+)[.](.*)$");
+    QREGEX(protocol_and_identity_pattern, "^([^.]+)[.](.*)$");
     auto proto_and_id_match = protocol_and_identity_pattern.match(protocol_and_identity_folder);
     invariant(
         proto_and_id_match.hasMatch(),
@@ -181,9 +180,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     IMProtocol protocol = parse_protocol(proto_and_id_match.captured(1));
     info.identity = parse_account_generic(protocol, proto_and_id_match.captured(2));
 
-    static QRegularExpression filename_pattern(
-        "^(.*) \\((\\d{4}-\\d{2}-\\d{2}T\\d{2}.\\d{2}.\\d{2}(|Z|[+-]\\d+))\\)[.]xml$"
-    );
+    QREGEX(filename_pattern, "^(.*) \\((\\d{4}-\\d{2}-\\d{2}T\\d{2}.\\d{2}.\\d{2}(|Z|[+-]\\d+))\\)[.]xml$");
     auto filename_match = filename_pattern.match(base_name);
     invariant(
         filename_match.hasMatch(),
@@ -202,14 +199,16 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
 }
 
 IMProtocol parse_protocol(IMM(QString) protocol_name) {
-    static QRegularExpression pattern("^((Yahoo!)|(Jabber))$");
-
-    switch (pattern.match(protocol_name).lastCapturedIndex() - 2) {
-        case 0: return IMProtocol::YAHOO;
-        case 1: return IMProtocol::JABBER;
-        default:
-            invariant_violation("Unsupported protocol specified in Adium: \"%s\"", QP(protocol_name));
+    const static QMap<QString, IMProtocol> PROTOCOL_MAP = {
+        { "Yahoo!", IMProtocol::YAHOO },
+        { "Jabber", IMProtocol::JABBER },
     };
+
+    if (PROTOCOL_MAP.contains(protocol_name)) {
+        return PROTOCOL_MAP[protocol_name];
+    }
+
+    invariant_violation("Unrecognized protocol in Adium: \"%s\"", QP(protocol_name));
 }
 
 void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity) {
@@ -347,7 +346,8 @@ CEDE(RawEvent) parse_purple_system_event(
     int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
-    static QRegularExpression master_pattern(
+    QREGEX(
+        master_pattern,
         "^("
         "((?<rename_old>.+) is now known as (?<rename_new>.+)[.])|"
         "((?<offer_who>.+) is offering to send file (?<offer_file>.+))|"
@@ -504,7 +504,7 @@ CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomE
 }
 
 CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node) {
-    static QRegularExpression pattern_trim("^\n*(.*)\n*$", QRegularExpression::DotMatchesEverythingOption);
+    QREGEX(pattern_trim, "^\n*(.*)\n*$");
 
     QString trimmed_text = pattern_trim.match(text_node.nodeValue()).captured(1);
     if (!trimmed_text.isEmpty()) {

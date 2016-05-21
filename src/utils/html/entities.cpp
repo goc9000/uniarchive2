@@ -9,7 +9,6 @@
  */
 
 #include <QMap>
-#include <QRegularExpression>
 
 #include "utils/language/invariant.h"
 #include "utils/html/entities.h"
@@ -20,12 +19,12 @@ namespace uniarchive2 { namespace utils { namespace html {
 QString decode_html_entities(IMM(QString) html_text) {
     // Note that this isn't very optimized, but it'll do for most cases
 
-    static QRegularExpression entity_pattern(
+    QREGEX_CI(
+        entity_pattern,
         "&("
         "(?<by_name>[a-z]+)|"
         "#((?<by_code>[0-9]+)|x(?<by_hex>[a-f0-9]+))"
-        ");",
-        QRegularExpression::CaseInsensitiveOption
+        ");"
     );
 
     QString result;

@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include <QRegularExpression>
+#include <QMap>
 
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
@@ -17,19 +17,32 @@
 namespace uniarchive2 { namespace utils { namespace time {
 
 unsigned int parse_english_month_name(IMM(QString) month_name) {
-    static QRegularExpression pattern(
-        "^((january)|(february)|(march)|(april)|(may)|(june)|(july)|(august)|(september)|(october)|"
-            "(november)|(december))$"
-    );
+    const static QMap<QString, unsigned int> MONTH_MAP = {
+        { "january",   1 },
+        { "february",  2 },
+        { "march",     3 },
+        { "april",     4 },
+        { "may",       5 },
+        { "june",      6 },
+        { "july",      7 },
+        { "august",    8 },
+        { "september", 9 },
+        { "october",  10 },
+        { "november", 11 },
+        { "december", 12 },
+    };
 
-    int month = pattern.match(month_name.toLower()).lastCapturedIndex() - 1;
-    invariant((month >= 1) && (month <= 12), "Not a month name in English: \"%s\"", QP(month_name));
+    QString normalized_month_name = month_name.toLower();
 
-    return (unsigned int)month;
+    if (MONTH_MAP.contains(normalized_month_name)) {
+        return MONTH_MAP[normalized_month_name];
+    }
+
+    invariant_violation("Not a month name in English: \"%s\"", QP(month_name));
 }
 
 int parse_timezone_offset_in_quarters(IMM(QString) offset_text) {
-    static const QRegularExpression pattern("^(\\+|-)(\\d{1,2}):?(\\d{2})?$");
+    QREGEX(pattern, "^(\\+|-)(\\d{1,2}):?(\\d{2})?$");
 
     if (offset_text == "") {
         return 0;
