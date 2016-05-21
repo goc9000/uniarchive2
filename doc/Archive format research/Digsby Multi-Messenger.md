@@ -1,5 +1,5 @@
-Archive Format Research: Digsby Multi-Messenger (HTML format)
-=============================================================
+Archive Format Research: Digsby Multi-Messenger
+===============================================
 
 
 Filename Format
