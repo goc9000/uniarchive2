@@ -25,10 +25,10 @@ QString Color::toHTMLFormat() const {
 }
 
 Color Color::fromHTMLFormat(IMM(QString) text) {
-    QREGEX_CI(pattern, "^\\s*#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})\\s*$");
-    auto match = pattern.match(text);
-
-    invariant(match.hasMatch(), "Invalid HTML color format: \"%s\"", QP(text));
+    QREGEX_MUST_MATCH_CI(
+        match, "^\\s*#?(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})\\s*$", text,
+        "Invalid HTML color format: \"%s\""
+    );
 
     return Color(
         (unsigned char)match.captured("r").toInt(nullptr, 16),

@@ -74,14 +74,10 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
     QString base_name = full_filename.section(QDir::separator(), -1, -1);
 
-    QREGEX_CI(filename_pattern, "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)[.]html$");
-
-    auto filename_match = filename_pattern.match(base_name);
-    invariant(
-        filename_match.hasMatch(),
-        "Expected Pidgin archive filename to match pattern \"account_name (YYYY-mm-dd.hhmmss+offset/timezone).html\", "
-            "found \"%s\"",
-        qUtf8Printable(base_name)
+    QREGEX_MUST_MATCH_CI(
+        filename_match, "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)[.]html$", base_name,
+        "Expected Pidgin archive filename to match pattern \"account_name (YYYY-mm-dd.hhmmss+offset/timezone).html\", "\
+        "found \"%s\""
     );
 
     QDateTime raw_date = QDateTime::fromString(filename_match.captured(1), "yyyy-MM-dd.hhmmss");

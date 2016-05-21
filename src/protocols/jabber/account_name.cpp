@@ -18,9 +18,8 @@
 namespace uniarchive2 { namespace protocols { namespace jabber {
 
 bool is_valid_jabber_account_name(IMM(QString) account_name) {
-    QREGEX_CI(pattern, "^[a-z0-9_.]+@[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)*$");
-
-    return pattern.match(account_name).hasMatch();
+    QREGEX_MATCH_CI(match, "^[a-z0-9_.]+@[a-z][a-z0-9_]*([.][a-z][a-z0-9_]*)*$", account_name);
+    return match.hasMatch();
 }
 
 void assert_valid_jabber_account_name(IMM(QString) account_name) {

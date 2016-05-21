@@ -18,9 +18,8 @@
 namespace uniarchive2 { namespace protocols { namespace yahoo {
 
 bool is_valid_yahoo_account_name(IMM(QString) account_name) {
-    QREGEX_CI(pattern, "^[a-z][a-z0-9_.]*(@(ymail|yahoo)[.].*)?$");
-
-    return pattern.match(account_name).hasMatch();
+    QREGEX_MATCH_CI(match, "^[a-z][a-z0-9_.]*(@(ymail|yahoo)[.].*)?$", account_name);
+    return match.hasMatch();
 }
 
 void assert_valid_yahoo_account_name(IMM(QString) account_name) {

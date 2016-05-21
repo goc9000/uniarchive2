@@ -113,9 +113,10 @@ RawConversation init_prototype(IMM(QString) filename) {
 
     QString full_filename = file_info.absoluteFilePath();
 
-    QREGEX_CI(pattern, "^\\d{8}-(.+)[.]dat$");
-    auto match = pattern.match(filename.section(QDir::separator(), -1, -1));
-    invariant(match.hasMatch(), "Yahoo archive filename does not have the form YYYYMMDD-account_name.dat");
+    QREGEX_MUST_MATCH_CI(
+        match, "^\\d{8}-(.+)[.]dat$", filename.section(QDir::separator(), -1, -1),
+        "Yahoo archive filename does not have the form \"YYYYMMDD-account_name.dat\""
+    );
     auto local_account = parse_yahoo_account(match.captured(1));
 
     RawConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
@@ -248,17 +249,16 @@ CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, I
 }
 
 RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
+    RawMessageContent content;
+
+    QString text = decode_utf8(text_data);
+
     QREGEX_CI(
         markup_pattern,
         "\\x1B\\[(?<pseudo_ansi_seq>[^m]+)m|"\
         "(?<html_tag></?(font)\\b[^>]*>)|"\
         "(?<yahoo_tag></?(fade|alt)\\b[^>]*>)"
     );
-
-    RawMessageContent content;
-
-    QString text = decode_utf8(text_data);
-
     auto iterator = markup_pattern.globalMatch(text_data);
     int last_text_pos = 0;
 
@@ -300,8 +300,8 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match)
 }
 
 CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
-    QREGEX_CI(
-        pattern,
+    QREGEX_MUST_MATCH_CI(
+        match,
         "^(?<closed>x)?("\
         "(?<reset>0)|"\
         "(?<bold>1)|"\
@@ -310,11 +310,10 @@ CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
         "(?<link>l)|"\
         "3(?<ansi_color>[0-8])|"\
         "(?<html_color>#[0-9a-f]{6})"\
-        ")$"
+        ")$",
+        sgr_code,
+        "SGR code not recognized: \"%s\""
     );
-
-    auto match = pattern.match(sgr_code);
-    invariant(match.hasMatch(), "SGR code not recognized: \"%s\"", QP(sgr_code));
 
     bool closed = match.capturedLength("closed") > 0;
 
@@ -377,14 +376,13 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
 
 CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
 #define PAT_COLOR "#[0-9a-f]{6}"
-    QREGEX_CI(
-        pattern,
+    QREGEX_MUST_MATCH_CI(
+        match,
         "^<(?<closed>/)?(?<tag_name>[a-z._-][a-z0-9._-]*)\\b\\s*"\
-        "(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$"
+        "(?<colors>" PAT_COLOR "(\\s*,\\s*" PAT_COLOR ")*)?\\s*>$",
+        tag_text,
+        "Yahoo tag not recognized: \"%s\""
     );
-
-    auto match = pattern.match(tag_text);
-    invariant(match.hasMatch(), "Yahoo tag not recognized: \"%s\"", QP(tag_text));
 
     QString tag_name = match.captured("tag_name").toLower();
     bool closed = match.capturedLength("closed") > 0;

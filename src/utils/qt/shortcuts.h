@@ -32,4 +32,26 @@ static inline QRegularExpression initQRegEx(IMM(QString) pattern, QRegularExpres
     return regex;
 }
 
+#define QREGEX_MATCH(match_name, pattern, input)\
+    QREGEX(pattern_ ## match_name, pattern);\
+    auto match_name = pattern_ ## match_name.match(input)
+
+#define QREGEX_MUST_MATCH(match_name, pattern, input, error_text)\
+    QREGEX_MATCH(match_name, pattern, input);\
+    invariant(match_name.hasMatch(), error_text, QP(input))
+
+#define QREGEX_WILL_MATCH(match_name, pattern, input)\
+    QREGEX_MUST_MATCH(match_name, pattern, input, "Text \"%s\" unexpectedly failed to match")
+
+#define QREGEX_MATCH_CI(match_name, pattern, input)\
+    QREGEX_CI(pattern_ ## match_name, pattern);\
+    auto match_name = pattern_ ## match_name.match(input)
+
+#define QREGEX_MUST_MATCH_CI(match_name, pattern, input, error_text)\
+    QREGEX_MATCH_CI(match_name, pattern, input);\
+    invariant(match_name.hasMatch(), error_text, QP(input))
+
+#define QREGEX_WILL_MATCH_CI(match_name, pattern, input)\
+    QREGEX_MUST_MATCH_CI(match_name, pattern, input, "Text \"%s\" unexpectedly failed to match")
+
 #endif //UNIARCHIVE2_UTILS_QT_SHORTCUTS_H

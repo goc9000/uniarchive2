@@ -103,10 +103,10 @@ QString read_identity_screen_name(IMM(QDomElement) root_element) {
 
     QString title = read_text_only_content(title_element);
 
-    QREGEX(title_pattern, "^(.*) - Messages$");
-    auto match = title_pattern.match(title);
-
-    invariant(match.hasMatch(), "Expected title to be \"(screen name) - Messages\", but it is \"%s\"", QP(title));
+    QREGEX_MUST_MATCH(
+        match, "^(.*) - Messages$", title,
+        "Expected title to be \"(screen name) - Messages\", but it is \"%s\""
+    );
 
     return match.captured(1);
 }
@@ -204,10 +204,10 @@ CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
 }
 
 ApparentTime parse_message_time(IMM(QString) time_text) {
-    QREGEX(pattern, "^\\w+, (\\w+) (\\d+), (\\d+) at (\\d+:\\d+(am|pm)) UTC(.*)$");
-
-    auto match = pattern.match(time_text);
-    invariant(match.hasMatch(), "Unexpected datetime format: \"%s\"", QP(time_text));
+    QREGEX_MUST_MATCH(
+        match, "^\\w+, (\\w+) (\\d+), (\\d+) at (\\d+:\\d+(am|pm)) UTC(.*)$", time_text,
+        "Unexpected datetime format: \"%s\""
+    );
 
     int month = parse_english_month_name(match.captured(1));
     int day = match.captured(2).toInt();

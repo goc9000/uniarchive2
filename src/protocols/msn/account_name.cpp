@@ -20,9 +20,8 @@ namespace uniarchive2 { namespace protocols { namespace msn {
 
 bool is_valid_msn_account_name(IMM(QString) account_name) {
     // Note: this is not completely accurate, but good enough for a quick check
-    QREGEX_CI(pattern, "^[a-z][a-z0-9_.-]*@(live|hotmail|outlook)[.]com$");
-
-    return pattern.match(account_name).hasMatch();
+    QREGEX_MATCH_CI(match, "^[a-z][a-z0-9_.-]*@(live|hotmail|outlook)[.]com$", account_name);
+    return match.hasMatch();
 }
 
 void assert_valid_msn_account_name(IMM(QString) account_name) {
@@ -40,9 +39,8 @@ FullAccountName parse_msn_account(IMM(QString) account_name) {
 
 bool is_likely_valid_encoded_msn_account_name(IMM(QString) account_name) {
     // We say "likely" valid because we don't check the validity of the hash (it's expensive)
-    QREGEX_CI(pattern, "^[a-z][a-z0-9_.-]*?[0-9]+$");
-
-    return pattern.match(account_name).hasMatch();
+    QREGEX_MATCH_CI(match, "^[a-z][a-z0-9_.-]*?[0-9]+$", account_name);
+    return match.hasMatch();
 }
 
 void assert_likely_valid_encoded_msn_account_name(IMM(QString) account_name) {
@@ -60,9 +58,9 @@ quint32 update_messenger_hash(quint32 old_hash, QChar character) {
 FullAccountName parse_encoded_msn_account(IMM(QString) account_name) {
     assert_likely_valid_encoded_msn_account_name(account_name);
 
-    QREGEX_CI(pattern, "^([a-z][a-z0-9_.-]*?)[0-9]+$");
+    QREGEX_WILL_MATCH_CI(match, "^([a-z][a-z0-9_.-]*?)[0-9]+$", account_name);
 
-    unsigned int assumed_length = (unsigned int)pattern.match(account_name).capturedLength(1);
+    unsigned int assumed_length = (unsigned int)match.capturedLength(1);
     unsigned int full_length = (unsigned int)account_name.length();
 
     quint32 base_hash = 0;

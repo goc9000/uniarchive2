@@ -133,36 +133,26 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     info.identity = parse_account_generic(protocol, identity_folder);
 
     if (peer_folder == "Group Chats") {
-        info.isConference = true;
-        QREGEX_CI(pat_group_chat, "^\\d{4}-\\d{2}-\\d{2}T\\d{2}[.]\\d{2}[.]\\d{2} - (.*)-\\d+[.]html$");
-        auto group_chat_match = pat_group_chat.match(base_name);
-        invariant(
-            group_chat_match.hasMatch(),
-            "Digsby conference archive file must have a filename like "
-                "YYYY-mm-ddThh.mm.ss - account_name-<timestamp>.html, it is actually \"%s\"",
-            QP(base_name)
+        QREGEX_MUST_MATCH_CI(
+            group_chat_match, "^\\d{4}-\\d{2}-\\d{2}T\\d{2}[.]\\d{2}[.]\\d{2} - (.*)-\\d+[.]html$", base_name,
+            "Digsby conference archive file must have a filename like \"YYYY-mm-ddThh.mm.ss - account_name-"\
+            "<timestamp>.html\", it is actually \"%s\""
         );
-
         info.peer = parse_account_generic(protocol, group_chat_match.captured(1));
+        info.isConference = true;
     } else {
-        info.isConference = false;
-        QREGEX_CI(pat_base_name, "^\\d{4}-\\d{2}-\\d{2}.html$");
-        invariant(
-            pat_base_name.match(base_name).hasMatch(),
-            "Digsby archive file must have a filename like YYYY-mm-dd.html, it is actually \"%s\"",
-            QP(base_name)
+        QREGEX_MUST_MATCH_CI(
+            base_name_match, "^\\d{4}-\\d{2}-\\d{2}.html$", base_name,
+            "Digsby archive file must have a filename like \"YYYY-mm-dd.html\", it is actually \"%s\""
         );
-
-        QREGEX_CI(pat_remote_peer, "^(.*)_([a-z]+)$");
-        auto remote_peer_match = pat_remote_peer.match(peer_folder);
-        invariant(
-            remote_peer_match.hasMatch(),
-            "Digsby peer folder must look like <account>_<protocol>, it is actually \"%s\"",
-            QP(peer_folder)
+        QREGEX_MUST_MATCH_CI(
+            remote_peer_match, "^(.*)_([a-z]+)$", peer_folder,
+            "Digsby peer folder must look like <account>_<protocol>, it is actually \"%s\""
         );
 
         IMProtocol peer_protocol = parse_protocol(remote_peer_match.captured(2));
         info.peer = parse_account_generic(peer_protocol, remote_peer_match.captured(1));
+        info.isConference = false;
     }
 
     return info;
@@ -244,13 +234,12 @@ QStringList partially_parse_events(QTextStream& mut_stream) {
 }
 
 CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
-    QREGEX(
-        pat_message_html,
-        "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"
-            "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$"
+    QREGEX_MATCH(
+        match,
+        "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"\
+        "<span class=\"buddy\">([^<]*)</span>\\s*<span class=\"msgcontent\">\\s*(.*)</span></div>$",
+        event_html
     );
-
-    auto match = pat_message_html.match(event_html);
     if (!match.hasMatch()) {
         return make_unique<RawCorruptedMessageEvent>(ApparentTime(), conversation.events.size(), event_html.toUtf8());
     }
@@ -288,9 +277,7 @@ RawMessageContent parse_message_content(IMM(QString) content_html) {
 
 CEDE(TextSection) parse_text_section(IMM(QString) text) {
     // Remove \n's because whenever these appear, <br>'s are also present
-    QREGEX(trim_pattern, "^\n*(.*?)\n*$");
-    auto match = trim_pattern.match(text);
-    invariant(match.hasMatch(), "Expected to always get match here");
+    QREGEX_WILL_MATCH(match, "^\n*(.*?)\n*$", text);
 
     QString trimmed = match.captured(1);
     if (trimmed.isEmpty()) {
