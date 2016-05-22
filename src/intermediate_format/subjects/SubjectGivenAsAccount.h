@@ -28,7 +28,7 @@ class SubjectGivenAsAccount : public ApparentSubject {
 public:
     FullAccountName account;
 
-    SubjectGivenAsAccount(IMM(FullAccountName) account);
+    SubjectGivenAsAccount(IMM(FullAccountName) account, Hints hints = Hint::NoHints);
 
     virtual CEDE(ApparentSubject) clone() const;
 

@@ -16,11 +16,14 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-SubjectGivenAsScreenName::SubjectGivenAsScreenName(IMM(QString) screen_name) : screenName(screen_name) {
+SubjectGivenAsScreenName::SubjectGivenAsScreenName(
+    IMM(QString) screen_name,
+    Hints hints
+) : ApparentSubject(hints), screenName(screen_name) {
 }
 
 CEDE(ApparentSubject) SubjectGivenAsScreenName::clone() const {
-    return make_unique<SubjectGivenAsScreenName>(screenName);
+    return make_unique<SubjectGivenAsScreenName>(screenName, hints);
 }
 
 void SubjectGivenAsScreenName::writeToDebugStream(QDebug stream) const {

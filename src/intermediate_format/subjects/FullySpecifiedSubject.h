@@ -31,7 +31,7 @@ public:
     FullAccountName accountName;
     QString screenName;
 
-    FullySpecifiedSubject(IMM(FullAccountName) account_name, IMM(QString) screen_name);
+    FullySpecifiedSubject(IMM(FullAccountName) account_name, IMM(QString) screen_name, Hints hints = Hint::NoHints);
 
     virtual CEDE(ApparentSubject) clone() const;
 

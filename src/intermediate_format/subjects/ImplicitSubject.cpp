@@ -17,11 +17,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-ImplicitSubject::ImplicitSubject(Kind kind) : kind(kind) {
+ImplicitSubject::ImplicitSubject(Kind kind, Hints hints) : ApparentSubject(hints), kind(kind) {
 }
 
 CEDE(ApparentSubject) ImplicitSubject::clone() const {
-    return make_unique<ImplicitSubject>(kind);
+    return make_unique<ImplicitSubject>(kind, hints);
 }
 
 QString name_for_implicit_subject_kind(ImplicitSubject::Kind kind) {

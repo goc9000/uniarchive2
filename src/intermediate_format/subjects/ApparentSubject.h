@@ -21,12 +21,25 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class ApparentSubject {
 public:
+    enum class Hint {
+        NoHints    = 0,
+        IsIdentity = (1 << 0),
+        IsPeer     = (1 << 1),
+    };
+    Q_DECLARE_FLAGS(Hints, Hint);
+
+    Hints hints;
+
+    ApparentSubject(Hints hints = Hint::NoHints);
+
     virtual CEDE(ApparentSubject) clone() const = 0;
 
     virtual void writeToDebugStream(QDebug stream) const = 0;
 };
 
 QDebug operator<< (QDebug stream, ApparentSubject const * const subject);
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(ApparentSubject::Hints);
 
 }}}
 

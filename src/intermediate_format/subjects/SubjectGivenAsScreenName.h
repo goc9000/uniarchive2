@@ -27,7 +27,7 @@ class SubjectGivenAsScreenName : public ApparentSubject {
 public:
     QString screenName;
 
-    SubjectGivenAsScreenName(IMM(QString) screen_name);
+    SubjectGivenAsScreenName(IMM(QString) screen_name, Hints hints = Hint::NoHints);
 
     virtual CEDE(ApparentSubject) clone() const;
 

@@ -16,12 +16,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-FullySpecifiedSubject::FullySpecifiedSubject(IMM(FullAccountName) account_name, IMM(QString) screen_name)
-    : accountName(account_name), screenName(screen_name) {
+FullySpecifiedSubject::FullySpecifiedSubject(
+    IMM(FullAccountName) account_name,
+    IMM(QString) screen_name,
+    Hints hints
+) : ApparentSubject(hints), accountName(account_name), screenName(screen_name) {
 }
 
 CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {
-    return make_unique<FullySpecifiedSubject>(accountName, screenName);
+    return make_unique<FullySpecifiedSubject>(accountName, screenName, hints);
 }
 
 void FullySpecifiedSubject::writeToDebugStream(QDebug stream) const {

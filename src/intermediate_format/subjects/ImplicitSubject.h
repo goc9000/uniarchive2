@@ -23,7 +23,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class ImplicitSubject : public ApparentSubject {
 public:
-    enum Kind {
+    enum class Kind {
         INVALID = 0,
         IDENTITY, // Whoever the identity (i.e. local user) is
         FILE_RECEIVER,
@@ -31,7 +31,7 @@ public:
 
     Kind kind;
 
-    ImplicitSubject(Kind kind);
+    ImplicitSubject(Kind kind, Hints hints = Hint::NoHints);
 
     virtual CEDE(ApparentSubject) clone() const;
 
