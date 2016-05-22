@@ -19,6 +19,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
@@ -54,6 +55,7 @@ void seek_to_start_of_events(QTextStream& mut_stream);
 
 void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
+QString strip_sender_suffix(IMM(QString) sender);
 
 
 RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
@@ -120,6 +122,10 @@ void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation
         );
 
         bool is_self = (color == "#16569E");
+        unique_ptr<ApparentSubject> sender = make_unique<SubjectGivenAsScreenName>(
+            strip_sender_suffix(event_match.captured("sender")),
+            is_self ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer
+        );
 
         // TODO: parse regular message
     }
@@ -273,6 +279,11 @@ void seek_to_start_of_events(QTextStream& mut_stream) {
         first_line,
         "Unexpected format for first line of archive: \"%s\""
     );
+}
+
+QString strip_sender_suffix(IMM(QString) sender) {
+    QREGEX_MATCH_CI(match, "(.*@[^/]*)/.*", sender);
+    return match.hasMatch() ? match.captured(1) : sender;
 }
 
 }}}
