@@ -66,6 +66,36 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
     verify_is_utf8_html(stream);
     seek_to_start_of_events(stream);
 
+    QString full_text = stream.readAll();
+
+    QREGEX_CI(
+        event_pattern,
+        "("\
+          "(<font color=\"(?<color>#[a-z0-9]{6})\">)?" \
+          "<font size=\"2\">\\((?<timestamp>[^)]*)\\)</font>" \
+          "(" \
+            "( <b>(?<sender>[^:]*):</b></font> (?<message>.*?))|" \
+            "(<b> (?<system_message>.*?)</b>(</font>)?)" \
+          ")" \
+          "<br/>\r?\n" \
+        ")|("\
+          "?<end_of_file></body></html>\\s*$"\
+        ")"
+    );
+
+    int offset = 0;
+    while (offset < full_text.length()) {
+        auto event_match = event_pattern.match(full_text, offset);
+        invariant(
+            event_match.hasMatch() && (event_match.capturedStart(0) == offset),
+            "Failed to parse event at text: \"%s...\"", QP(full_text.mid(offset, 256))
+        );
+        if (event_match.capturedLength("end_of_file")) {
+            break;
+        }
+        offset = event_match.capturedEnd(0);
+    }
+
     return conversation;
 }
 
