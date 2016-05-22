@@ -53,6 +53,7 @@ void verify_is_utf8_html(QTextStream& mut_stream);
 void seek_to_start_of_events(QTextStream& mut_stream);
 
 void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
+ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 
 
 RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
@@ -106,6 +107,7 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
 
 void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
     QString color = event_match.captured("color");
+    ApparentTime timestamp = parse_timestamp(event_match.captured("timestamp"), conversation);
 
     if (event_match.capturedLength("system_message")) {
         invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
@@ -121,6 +123,60 @@ void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation
 
         // TODO: parse regular message
     }
+}
+
+ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation) {
+    ApparentTime timestamp;
+    timestamp.reference = ApparentTime::Reference::LOCAL_TIME;
+
+    QREGEX_MUST_MATCH_CI(
+        match,
+        "((?<date_part>[^ ]+) )?(?<time_part>\\d+:\\d{2}:\\d{2}(?<ampm> (am|pm))?)",
+        timestamp_text.trimmed(),
+        "Could not find time part in \"%s\""
+    );
+
+    QTime time = QTime::fromString(
+        match.captured("time_part").toLower(),
+        match.capturedLength("ampm") ? "h:mm:ss ap" : "h:mm:ss"
+    );
+    invariant(time.isValid(), "Invalid time: \"%s\"", QP(match.captured("time_part")));
+
+    timestamp.time = time;
+
+    QString date_part = match.captured("date_part").trimmed();
+    if (!date_part.isEmpty()) {
+        // Now the nightmare starts. Date parts could be in any order, with any separator...
+        QREGEX(separator, "\\W");
+        date_part = date_part.replace(separator, "-");
+
+        vector<QDate> candidates;
+        QStringList date_formats { "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M" };
+
+        for (IMM(QString) format : date_formats) {
+            QDate candidate = QDate::fromString(date_part, format);
+            if (candidate.isValid()) {
+                candidates.push_back(candidate);
+            }
+        }
+
+        invariant(candidates.size() > 0, "Could not parse date \"%s\" with any format", QP(date_part));
+
+        // Disambiguate using the closest date to the conversation date
+        QDate convo_date = *(conversation.declaredStartDate->date);
+        sort(
+            candidates.begin(), candidates.end(),
+            [convo_date](IMM(QDate) date_a, IMM(QDate) date_b) -> bool {
+                auto delta_a = abs((int)date_a.daysTo(convo_date));
+                auto delta_b = abs((int)date_b.daysTo(convo_date));
+                return delta_a < delta_b;
+            }
+        );
+
+        timestamp.date = candidates.front();
+    }
+
+    return timestamp;
 }
 
 RawConversation init_conversation(IMM(QString)filename) {
