@@ -52,6 +52,8 @@ IMProtocol parse_protocol(IMM(QString) protocol_name);
 void verify_is_utf8_html(QTextStream& mut_stream);
 void seek_to_start_of_events(QTextStream& mut_stream);
 
+void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
+
 
 RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
     RawConversation conversation = init_conversation(filename);
@@ -93,10 +95,32 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
         if (event_match.capturedLength("end_of_file")) {
             break;
         }
+
+        parse_message(event_match, conversation);
+
         offset = event_match.capturedEnd(0);
     }
 
     return conversation;
+}
+
+void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
+    QString color = event_match.captured("color");
+
+    if (event_match.capturedLength("system_message")) {
+        invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
+
+        // TODO: parse system message
+    } else {
+        invariant(
+            color == "#16569E" || color == "#A82F2F",
+            "Expected color to be #16569E or #A82F2F for system message"
+        );
+
+        bool is_self = (color == "#16569E");
+
+        // TODO: parse regular message
+    }
 }
 
 RawConversation init_conversation(IMM(QString)filename) {
