@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QTextCodec>
 #include <QTimeZone>
 
 #include "extraction/pidgin/extract_pidgin_conversations.h"
@@ -48,9 +49,22 @@ RawConversation init_conversation(IMM(QString)filename);
 InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 IMProtocol parse_protocol(IMM(QString) protocol_name);
 
+void verify_is_utf8_html(QTextStream& mut_stream);
+void seek_to_start_of_events(QTextStream& mut_stream);
 
-RawConversation extract_pidgin_html_conversation(IMM(QString)filename) {
+
+RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
     RawConversation conversation = init_conversation(filename);
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qFatal("Can't open file: %s", QP(filename));
+    }
+
+    // Use regular expressions because newlines are very significant in parsing here
+    QTextStream stream(&file);
+    verify_is_utf8_html(stream);
+    seek_to_start_of_events(stream);
 
     return conversation;
 }
@@ -124,6 +138,31 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
     }
 
     invariant_violation("Unrecognized protocol in Pidgin: \"%s\"", QP(protocol_name));
+}
+
+void verify_is_utf8_html(QTextStream& mut_stream) {
+    QByteArray expected_header("<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
+    QByteArray actual_header = mut_stream.device()->peek(expected_header.length());
+
+    invariant(
+         actual_header == expected_header,
+         "Expected header to be \"\", found \"\"", qPrintable(expected_header), qPrintable(actual_header)
+    );
+
+    mut_stream.setCodec(QTextCodec::codecForName("UTF-8"));
+}
+
+void seek_to_start_of_events(QTextStream& mut_stream) {
+    QString first_line = mut_stream.readLine();
+
+    QREGEX_MUST_MATCH_CI(
+        match,
+        "^<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">"\
+        "<title>Conversation with (.*) at (.*) on (.*) \\((.*)\\)</title>"\
+        "</head><body><h3>Conversation with (.*) at (.*) on (.*) \\((.*)\\)</h3>$",
+        first_line,
+        "Unexpected format for first line of archive: \"%s\""
+    );
 }
 
 }}}
