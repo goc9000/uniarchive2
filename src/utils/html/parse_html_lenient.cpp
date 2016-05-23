@@ -47,8 +47,14 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
 
     QREGEX_CI(attr_pattern, ATTR_PATTERN);
     auto iter_matches = attr_pattern.globalMatch(match.captured("attributes"));
+    int expected_offset = 0;
     while (iter_matches.hasNext()) {
         auto attr_match = iter_matches.next();
+        invariant(
+            attr_match.capturedStart(0) == expected_offset,
+            "Expected attr match offset to be %d, instead it is %d (text: \"%s\")",
+            expected_offset, attr_match.capturedStart(0), QP(match.captured("attributes"))
+        );
 
         QString key = attr_match.captured("attr_name");
 
@@ -69,6 +75,8 @@ ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
         } else {
             tag_info.noValueAttributes.push_back(key);
         }
+
+        expected_offset = attr_match.capturedEnd(0);
     }
 
     return tag_info;
