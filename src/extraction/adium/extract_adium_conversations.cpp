@@ -18,27 +18,22 @@
 #include <QUrl>
 
 #include "extraction/adium/extract_adium_conversations.h"
+#include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/LineBreakTag.h"
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawDisconnectedEvent.h"
-#include "intermediate_format/events/RawCancelFileTransferEvent.h"
-#include "intermediate_format/events/RawChangeScreenNameEvent.h"
 #include "intermediate_format/events/RawConnectedEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
-#include "intermediate_format/events/RawOfferFileEvent.h"
 #include "intermediate_format/events/RawPingEvent.h"
-#include "intermediate_format/events/RawReceiveFileEvent.h"
-#include "intermediate_format/events/RawStartFileTransferEvent.h"
 #include "intermediate_format/events/RawStatusChangeEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/events/RawWindowClosedEvent.h"
 #include "intermediate_format/events/RawWindowOpenedEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
-#include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/FullAccountName.h"
@@ -84,31 +79,25 @@ CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(Ra
 CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
 CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
 CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
 CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
-    TAKE(ApparentSubject) event_subject
-);
-CEDE(RawEvent) parse_purple_system_event(
-    IMM(QDomElement) event_element,
-    ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
 RawMessageContent parse_event_content(IMM(QDomElement) event_element);
@@ -248,7 +237,7 @@ CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(Ra
 CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
     QString event_type = read_string_attr(event_element, "type");
@@ -265,7 +254,7 @@ CEDE(RawEvent) parse_system_event(
 CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
     return make_unique<RawMessageEvent>(
@@ -290,7 +279,7 @@ void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_tex
 CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
     QString event_type = event_element.attribute("type");
@@ -309,7 +298,13 @@ CEDE(RawEvent) parse_status_event(
         }
         invariant_violation("Unsupported Notification event: %s", QP(xml_to_string(event_element)));
     } else if ((event_type == "purple") || (event_type == "libpurpleMessage")) {
-        return parse_purple_system_event(event_element, event_time, event_index, move(event_subject));
+        QREGEX_WILL_MATCH(
+            content_match,
+            "^<[^>]*>(.*)<[^>]*>$",
+            xml_to_string(only_child_elem(only_child_elem(event_element, "div"), "span"))
+        );
+
+        return parse_libpurple_system_message(event_index, event_time, content_match.captured(1).trimmed());
     }
 
     invariant_violation("Unsupported <status> event type: %s", QP(event_type));
@@ -318,7 +313,7 @@ CEDE(RawEvent) parse_status_event(
 CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    int event_index,
+    unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 ) {
     IMStatus status = EVENT_TYPE_TO_STATUS[event_element.attribute("type")];
@@ -332,85 +327,6 @@ CEDE(RawStatusChangeEvent) parse_status_change_event(
     }
 
     return status_change;
-}
-
-CEDE(RawEvent) parse_purple_system_event(
-    IMM(QDomElement) event_element,
-    ApparentTime event_time,
-    int event_index,
-    TAKE(ApparentSubject) event_subject
-) {
-    QREGEX(
-        master_pattern,
-        "^("
-        "((?<rename_old>.+) is now known as (?<rename_new>.+)[.])|"
-        "((?<offer_who>.+) is offering to send file (?<offer_file>.+))|"
-        "((?<cancel_from>.+) cancelled the transfer of (?<cancel_file>.+))|"
-        "(Starting transfer of (?<xfer_file>.+) from (?<xfer_from>.+))|"
-        "(Transfer of file (?<recv_file>.+) complete)"
-        ")$"
-    );
-
-    auto match = master_pattern.match(event_element.text().trimmed());
-
-    if (match.capturedLength("rename_old")) {
-        return make_unique<RawChangeScreenNameEvent>(
-            event_time,
-            event_index,
-            make_unique<SubjectGivenAsScreenName>(match.captured("rename_old")),
-            make_unique<SubjectGivenAsScreenName>(match.captured("rename_new"))
-        );
-    } else if (match.capturedLength("offer_who")) {
-        return make_unique<RawOfferFileEvent>(
-            event_time,
-            event_index,
-            make_unique<SubjectGivenAsScreenName>(match.captured("offer_who")),
-            match.captured("offer_file")
-        );
-    } else if (match.capturedLength("xfer_file")) {
-        unique_ptr<RawEvent> xfer_event =
-            make_unique<RawStartFileTransferEvent>(event_time, event_index, match.captured("xfer_file"));
-        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender =
-            make_unique<SubjectGivenAsScreenName>(match.captured("xfer_from"));
-
-        return xfer_event;
-    } else if (match.capturedLength("cancel_file")) {
-        unique_ptr<RawEvent> xfer_event =
-            make_unique<RawCancelFileTransferEvent>(event_time, event_index, match.captured("cancel_file"));
-        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->sender =
-            make_unique<SubjectGivenAsScreenName>(match.captured("cancel_from"));
-
-        return xfer_event;
-    } else if (match.capturedLength("recv_file")) {
-        QString filename = match.captured("recv_file");
-
-        deque<QDomElement> deq;
-        deq.push_back(event_element);
-        while (!deq.empty()) {
-            auto elem = deq.front();
-            if ((elem.tagName() == "a") && (elem.hasAttribute("href"))) {
-                filename = elem.attribute("href");
-                break;
-            }
-            deq.pop_front();
-            for (
-                auto child_elem = elem.firstChildElement();
-                !child_elem.isNull();
-                child_elem = child_elem.nextSiblingElement()
-                ) {
-                deq.push_back(child_elem);
-            }
-        }
-
-        return make_unique<RawReceiveFileEvent>(
-            event_time,
-            event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::FILE_RECEIVER),
-            filename
-        );
-    }
-
-    invariant_violation("Unsupported libpurple system message: %s", QP(xml_to_string(event_element)));
 }
 
 RawMessageContent parse_event_content(IMM(QDomElement) event_element) {

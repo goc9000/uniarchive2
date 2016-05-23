@@ -22,6 +22,8 @@ set(SOURCE_FILES
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.h
         src/extraction/yahoo/YahooProtocolEvent.cpp
         src/extraction/yahoo/YahooProtocolEvent.h
+        src/extraction/parse_libpurple_system_message.cpp
+        src/extraction/parse_libpurple_system_message.h
         src/graphics/ANSIColor.cpp
         src/graphics/ANSIColor.h
         src/graphics/Color.cpp
