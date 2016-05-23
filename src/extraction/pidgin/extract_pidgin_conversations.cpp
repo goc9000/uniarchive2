@@ -23,6 +23,7 @@
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -65,6 +66,10 @@ void seek_to_start_of_events(QTextStream& mut_stream);
 
 void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
+
+CEDE(RawMessageEvent) parse_message(
+    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message
+);
 QString strip_sender_suffix(IMM(QString) sender);
 RawMessageContent parse_message_content(IMM(QString) content_html);
 CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
@@ -225,20 +230,13 @@ void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) 
 
         // TODO: parse system message
     } else {
-        invariant(
-            color == "#16569E" || color == "#A82F2F",
-            "Expected color to be #16569E or #A82F2F for system message"
+        parse_message(
+            (unsigned int)conversation.events.size(),
+            color,
+            timestamp,
+            event_match.captured("sender"),
+            event_match.captured("message")
         );
-
-        bool is_self = (color == "#16569E");
-        unique_ptr<ApparentSubject> sender = make_unique<SubjectGivenAsScreenName>(
-            strip_sender_suffix(event_match.captured("sender")),
-            is_self ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer
-        );
-
-        RawMessageContent content = parse_message_content(event_match.captured("message"));
-
-        // TODO: parse regular message
     }
 }
 
@@ -294,6 +292,25 @@ ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) c
     }
 
     return timestamp;
+}
+
+CEDE(RawMessageEvent) parse_message(
+    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message
+) {
+    invariant(
+        color == "#16569E" || color == "#A82F2F",
+        "Expected color to be #16569E or #A82F2F for system message"
+    );
+
+    return make_unique<RawMessageEvent>(
+        timestamp,
+        index,
+        make_unique<SubjectGivenAsScreenName>(
+            strip_sender_suffix(sender),
+            (color == "#16569E") ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer
+        ),
+        parse_message_content(message)
+    );
 }
 
 QString strip_sender_suffix(IMM(QString) sender) {
