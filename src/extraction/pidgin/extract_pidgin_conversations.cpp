@@ -63,7 +63,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name);
 void verify_is_utf8_html(QTextStream& mut_stream);
 void seek_to_start_of_events(QTextStream& mut_stream);
 
-void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
+void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 QString strip_sender_suffix(IMM(QString) sender);
 RawMessageContent parse_message_content(IMM(QString) content_html);
@@ -112,7 +112,7 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
             break;
         }
 
-        parse_message(event_match, conversation);
+        parse_event(event_match, conversation);
 
         offset = event_match.capturedEnd(0);
     }
@@ -216,7 +216,7 @@ void seek_to_start_of_events(QTextStream& mut_stream) {
     );
 }
 
-void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
+void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
     QString color = event_match.captured("color");
     ApparentTime timestamp = parse_timestamp(event_match.captured("timestamp"), conversation);
 
