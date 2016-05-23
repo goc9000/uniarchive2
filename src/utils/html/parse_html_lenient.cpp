@@ -9,6 +9,7 @@
  */
 
 #include <QChar>
+#include <QDebugStateSaver>
 
 #include "utils/html/entities.h"
 #include "utils/html/parse_html_lenient.h"
@@ -110,6 +111,53 @@ ParsedHTMLInfo parse_html_lenient(IMM(QString) html_text) {
     parsed_html.textSections.push_back(decode_html_entities(current_text));
 
     return parsed_html;
+}
+
+QDebug operator<< (QDebug stream, IMM(ParsedHTMLTagInfo) tag_info) {
+    QDebugStateSaver save(stream);
+    stream.nospace();
+
+    if (!tag_info.valid) {
+        stream << "(INVALID TAG, text=" << tag_info.originalText << ")";
+        return stream;
+    }
+
+    stream << "<";
+    if (!tag_info.open && tag_info.closed) {
+        stream << "/";
+    }
+    stream << QP(tag_info.tagName);
+
+    for (IMM(QString) attr_name : tag_info.attributes.keys()) {
+        stream << " " << QP(attr_name) << "=" << tag_info.attributes[attr_name];
+    }
+    for (IMM(QString) attr_name : tag_info.noValueAttributes) {
+        stream << " [" << QP(attr_name) << "]";
+    }
+
+    if (tag_info.open && tag_info.closed) {
+        stream << "/";
+    }
+    stream << ">";
+
+    return stream;
+}
+
+QDebug operator<< (QDebug stream, IMM(ParsedHTMLInfo) parse_info) {
+    QDebugStateSaver save(stream);
+    stream.nospace();
+
+    stream << "[\n";
+
+    for (int i = 0; i < parse_info.tags.size(); i++) {
+        stream << "    " << parse_info.textSections[i] << "\n";
+        stream << "    " << parse_info.tags[i] << "\n";
+    }
+    stream << "    " << parse_info.textSections.back() << "\n";
+
+    stream << "]\n";
+
+    return stream;
 }
 
 }}}
