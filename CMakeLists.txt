@@ -34,6 +34,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/BoldTag.h
         src/intermediate_format/content/CSSStyleTag.cpp
         src/intermediate_format/content/CSSStyleTag.h
+        src/intermediate_format/content/EmphasisTag.cpp
+        src/intermediate_format/content/EmphasisTag.h
         src/intermediate_format/content/FontTag.cpp
         src/intermediate_format/content/FontTag.h
         src/intermediate_format/content/RawMessageContent.cpp
