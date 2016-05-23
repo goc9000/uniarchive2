@@ -16,6 +16,12 @@
 #include <QTimeZone>
 
 #include "extraction/pidgin/extract_pidgin_conversations.h"
+#include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/EmphasisTag.h"
+#include "intermediate_format/content/LineBreakTag.h"
+#include "intermediate_format/content/LinkTag.h"
+#include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
@@ -26,15 +32,19 @@
 #include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/external_libs/optional.hpp"
+#include "utils/html/entities.h"
+#include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/time/parse_date_parts.h"
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
+using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::time;
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
@@ -56,6 +66,9 @@ void seek_to_start_of_events(QTextStream& mut_stream);
 void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 QString strip_sender_suffix(IMM(QString) sender);
+RawMessageContent parse_message_content(IMM(QString) content_html);
+CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
+CEDE(TextSection) parse_text_section(IMM(QString) text);
 
 
 RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
@@ -223,6 +236,8 @@ void parse_message(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation
             is_self ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer
         );
 
+        RawMessageContent content = parse_message_content(event_match.captured("message"));
+
         // TODO: parse regular message
     }
 }
@@ -284,6 +299,74 @@ ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) c
 QString strip_sender_suffix(IMM(QString) sender) {
     QREGEX_MATCH_CI(match, "(.*@[^/]*)/.*", sender);
     return match.hasMatch() ? match.captured(1) : sender;
+}
+
+RawMessageContent parse_message_content(IMM(QString) content_html) {
+    RawMessageContent content;
+
+    auto lenient_parse_result = parse_html_lenient(content_html);
+
+    for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
+        if (i > 0) {
+            content.addItem(parse_markup_tag(lenient_parse_result.tags[i-1]));
+        }
+        content.addItem(parse_text_section(lenient_parse_result.textSections[i]));
+    }
+
+    return content;
+}
+
+CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    if (tag_info.tagName == "br") {
+        return make_unique<LineBreakTag>();
+    }
+
+    if (tag_info.open && tag_info.closed) {
+        if (tag_info.tagName == "span") {
+            return unique_ptr<RawMessageContentItem>(); // skip these tags if self-closed
+        }
+        invariant_violation("Did not expect this self-closing tag in a Pidign archive: <%s/>", QP(tag_info.tagName));
+    }
+
+    if ((tag_info.tagName == "html") || (tag_info.tagName == "body") || (tag_info.tagName == "p")) {
+        return unique_ptr<RawMessageContentItem>(); // skip these tags
+    } else if (tag_info.tagName == "em") {
+        return make_unique<EmphasisTag>(tag_info.closed);
+    } else if (tag_info.tagName == "span") {
+        if (tag_info.closed) {
+            return make_unique<CSSStyleTag>(true);
+        } else {
+            invariant(
+                tag_info.attributes.empty() ||
+                ((tag_info.attributes.size() == 1) && (tag_info.attributes.keys().first() == "style")),
+                "Expected <span style=\"(css)\"> to be the only use of the SPAN tag"
+            );
+
+            QString style = tag_info.attributes["style"];
+
+            // HAXX: sometimes this attribute is double-encoded, try to fix it
+            style = decode_html_entities(style);
+
+            return make_unique<CSSStyleTag>(style);
+        }
+    } else if (tag_info.tagName == "a") {
+        if (tag_info.closed) {
+            return make_unique<LinkTag>(true);
+        } else {
+            return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
+        }
+    }
+
+    // If the tag is not recognized, return it as unparsed text
+    return make_unique<TextSection>(tag_info.originalText);
+}
+
+CEDE(TextSection) parse_text_section(IMM(QString) text) {
+    if (text.isEmpty()) {
+        return unique_ptr<TextSection>();
+    }
+
+    return make_unique<TextSection>(text);
 }
 
 }}}
