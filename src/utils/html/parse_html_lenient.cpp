@@ -20,7 +20,14 @@ namespace uniarchive2 { namespace utils { namespace html {
 
 ParsedHTMLTagInfo parse_html_tag_lenient(IMM(QString) tag_text) {
 #define TAG_NAME "[a-z._-][a-z0-9._-]*"
-#define VALUE_PATTERN "((?<dblq_value>\"[^\"]*\")|(?<quot_value>'[^']*')|(?<raw_value>(.(?! |/>|>))*))"
+#define VALUE_PATTERN \
+    "(("\
+        "?<dblq_value>\"[^\"]*\""\
+    ")|("\
+        "?<quot_value>'([^']|'(?! |/>|>))*'"\
+    ")|("\
+        "?<raw_value>(.(?! |/>|>))*"\
+    "))"
 #define ATTR_PATTERN "\\s+(?<attr_name>" TAG_NAME ")(?<has_value>=" VALUE_PATTERN ")?"
     ParsedHTMLTagInfo tag_info;
     tag_info.valid = false;
