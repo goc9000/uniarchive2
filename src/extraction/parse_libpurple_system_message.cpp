@@ -37,7 +37,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         "^("\
         "((?<offer_who>.+) is offering to send file (?<offer_file>.+))|"\
         "(Starting transfer of (?<xfer_file>.+) from (?<xfer_from>.+))|"\
-        "((?<cancel_from>.+) cancelled the transfer of (?<cancel_file>.+))|"\
+        "((?<cancel_who>.+) cancelled the transfer of (?<cancel_file>.+))|"\
         "(Transfer of file (?<recv_file>.+) complete)|"\
         "((?<rename_old>.+) is now known as (?<rename_new>.+)[.])|"\
         ")(<br/?>)?$",
@@ -58,11 +58,11 @@ CEDE(RawEvent) parse_libpurple_system_message(
             make_unique<SubjectGivenAsScreenName>(match.captured("xfer_from"));
 
         return xfer_event;
-    } else if (match.capturedLength("cancel_from")) {
+    } else if (match.capturedLength("cancel_who")) {
         unique_ptr<RawEvent> xfer_event =
             make_unique<RawCancelFileTransferEvent>(event_time, event_index, match.captured("cancel_file"));
-        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->sender =
-            make_unique<SubjectGivenAsScreenName>(match.captured("cancel_from"));
+        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor =
+            make_unique<SubjectGivenAsScreenName>(match.captured("cancel_who"));
 
         return xfer_event;
     } else if (match.capturedLength("recv_file")) {

@@ -28,7 +28,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 struct RawCancelFileTransferEvent : RawEvent {
 public:
     QString filename;
-    unique_ptr<ApparentSubject> sender;
+    unique_ptr<ApparentSubject> actor;
 
     RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QString) filename);
 

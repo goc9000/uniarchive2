@@ -26,8 +26,8 @@ QString RawCancelFileTransferEvent::eventName() const {
 }
 
 void RawCancelFileTransferEvent::writeDetailsToDebugStream(QDebug stream) const {
-    if (sender) {
-        stream << " sender=" << sender.get();
+    if (actor) {
+        stream << " actor=" << actor.get();
     }
     stream << " file=" << filename;
 }
