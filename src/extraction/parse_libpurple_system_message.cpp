@@ -16,16 +16,23 @@
 #include "intermediate_format/events/RawOfferFileEvent.h"
 #include "intermediate_format/events/RawReceiveFileEvent.h"
 #include "intermediate_format/events/RawStartFileTransferEvent.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "utils/external_libs/make_unique.hpp"
+#include "utils/html/entities.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
+using namespace uniarchive2::utils::html;
 
 namespace uniarchive2 { namespace extraction {
+
+CEDE(ApparentSubject) parse_subject(IMM(QString) subject);
+QString parse_filename(IMM(QString) filename);
+
 
 CEDE(RawEvent) parse_libpurple_system_message(
     unsigned int event_index,
@@ -48,21 +55,25 @@ CEDE(RawEvent) parse_libpurple_system_message(
         return make_unique<RawOfferFileEvent>(
             event_time,
             event_index,
-            make_unique<SubjectGivenAsScreenName>(match.captured("offer_who")),
-            match.captured("offer_file")
+            parse_subject(match.captured("offer_who")),
+            parse_filename(match.captured("offer_file"))
         );
     } else if (match.capturedLength("xfer_file")) {
-        unique_ptr<RawEvent> xfer_event =
-            make_unique<RawStartFileTransferEvent>(event_time, event_index, match.captured("xfer_file"));
-        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender =
-            make_unique<SubjectGivenAsScreenName>(match.captured("xfer_from"));
+        unique_ptr<RawEvent> xfer_event = make_unique<RawStartFileTransferEvent>(
+            event_time,
+            event_index,
+            parse_filename(match.captured("xfer_file"))
+        );
+        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender = parse_subject(match.captured("xfer_from"));
 
         return xfer_event;
     } else if (match.capturedLength("cancel_who")) {
-        unique_ptr<RawEvent> xfer_event =
-            make_unique<RawCancelFileTransferEvent>(event_time, event_index, match.captured("cancel_file"));
-        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor =
-            make_unique<SubjectGivenAsScreenName>(match.captured("cancel_who"));
+        unique_ptr<RawEvent> xfer_event = make_unique<RawCancelFileTransferEvent>(
+            event_time,
+            event_index,
+            parse_filename(match.captured("cancel_file"))
+        );
+        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor = parse_subject(match.captured("cancel_who"));
 
         return xfer_event;
     } else if (match.capturedLength("recv_file")) {
@@ -70,18 +81,32 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::FILE_RECEIVER),
-            match.captured("recv_file")
+            parse_filename(match.captured("recv_file"))
         );
     } else if (match.capturedLength("rename_old")) {
         return make_unique<RawChangeScreenNameEvent>(
             event_time,
             event_index,
-            make_unique<SubjectGivenAsScreenName>(match.captured("rename_old")),
-            make_unique<SubjectGivenAsScreenName>(match.captured("rename_new"))
+            parse_subject(match.captured("rename_old")),
+            parse_subject(match.captured("rename_new"))
         );
     }
 
     invariant_violation("Unsupported libpurple system message: %s", QP(content));
+}
+
+CEDE(ApparentSubject) parse_subject(IMM(QString) subject) {
+    return make_unique<SubjectGivenAsScreenName>(decode_html_entities(subject));
+}
+
+QString parse_filename(IMM(QString) filename) {
+    QREGEX_MATCH_CI(link_match, "^<a href=\"(.*)\">.*</a>$", filename);
+
+    if (link_match.hasMatch()) {
+        return decode_html_entities(link_match.captured(1));
+    }
+
+    return decode_html_entities(filename);
 }
 
 }}
