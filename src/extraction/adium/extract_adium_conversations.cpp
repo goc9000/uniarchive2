@@ -69,45 +69,45 @@ struct InfoFromFilename {
     ApparentTime convoStartDate;
 };
 
-RawConversation init_conversation(IMM(QString) filename);
-InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
-IMProtocol parse_protocol(IMM(QString) protocol_name);
-void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
+static RawConversation init_conversation(IMM(QString) filename);
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
+static IMProtocol parse_protocol(IMM(QString) protocol_name);
+static void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
-CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
-CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
-CEDE(RawEvent) parse_system_event(
+static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
+static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
+static CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(RawMessageEvent) parse_message_event(
+static CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
-CEDE(RawEvent) parse_status_event(
+static CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
     TAKE(ApparentSubject) event_subject,
     IMProtocol protocol
 );
-CEDE(RawStatusChangeEvent) parse_status_change_event(
+static CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
     TAKE(ApparentSubject) event_subject
 );
-RawMessageContent parse_event_content(IMM(QDomElement) event_element);
-void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content);
-CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element);
-CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element);
-CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element);
-CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element);
-CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node);
+static RawMessageContent parse_event_content(IMM(QDomElement) event_element);
+static void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content);
+static CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element);
+static CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element);
+static CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element);
+static CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element);
+static CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node);
 
 
 RawConversation extract_adium_conversation(IMM(QString) filename) {
@@ -129,7 +129,7 @@ RawConversation extract_adium_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-RawConversation init_conversation(IMM(QString) filename) {
+static RawConversation init_conversation(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
@@ -147,7 +147,7 @@ RawConversation init_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     InfoFromFilename info;
 
     QString logs_folder = full_filename.section(QDir::separator(), -5, -5);
@@ -182,7 +182,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     return info;
 }
 
-IMProtocol parse_protocol(IMM(QString) protocol_name) {
+static IMProtocol parse_protocol(IMM(QString) protocol_name) {
     const static QMap<QString, IMProtocol> PROTOCOL_MAP = {
         { "Yahoo!", IMProtocol::YAHOO },
         { "Jabber", IMProtocol::JABBER },
@@ -195,7 +195,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
     invariant_violation("Unrecognized protocol in Adium: \"%s\"", QP(protocol_name));
 }
 
-void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity) {
+static void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity) {
     FullAccountName file_account(
         parse_protocol(read_string_attr(root_element, "service")),
         read_string_attr(root_element, "account")
@@ -204,7 +204,7 @@ void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identit
     invariant(identity == file_account, "Found an unexpected identity in the archive");
 }
 
-CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
+static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
     ApparentTime event_time = ApparentTime::fromQDateTime(read_iso_date_attr(event_element, "time"));
     unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
     unsigned int event_index = (unsigned int)conversation.events.size();
@@ -220,7 +220,7 @@ CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) 
     invariant_violation("Unsupported event tag <%s>", QP(event_element.tagName()));
 }
 
-CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
+static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
     if (!event_element.hasAttribute("sender")) {
         return unique_ptr<ApparentSubject>();
     }
@@ -235,7 +235,7 @@ CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(Ra
     return make_unique<SubjectGivenAsAccount>(account);
 }
 
-CEDE(RawEvent) parse_system_event(
+static CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
@@ -252,7 +252,7 @@ CEDE(RawEvent) parse_system_event(
     invariant_violation("Unsupported <event> type: %s", QP(event_type));
 }
 
-CEDE(RawMessageEvent) parse_message_event(
+static CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
@@ -266,7 +266,7 @@ CEDE(RawMessageEvent) parse_message_event(
     );
 }
 
-void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_text) {
+static void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_text) {
     QString event_text = event_element.text().trimmed();
 
     invariant(
@@ -277,7 +277,7 @@ void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expected_tex
     );
 }
 
-CEDE(RawEvent) parse_status_event(
+static CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
@@ -317,7 +317,7 @@ CEDE(RawEvent) parse_status_event(
     invariant_violation("Unsupported <status> event type: %s", QP(event_type));
 }
 
-CEDE(RawStatusChangeEvent) parse_status_change_event(
+static CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
@@ -336,7 +336,7 @@ CEDE(RawStatusChangeEvent) parse_status_change_event(
     return status_change;
 }
 
-RawMessageContent parse_event_content(IMM(QDomElement) event_element) {
+static RawMessageContent parse_event_content(IMM(QDomElement) event_element) {
     RawMessageContent content;
 
     if (!event_element.hasChildNodes()) {
@@ -351,7 +351,7 @@ RawMessageContent parse_event_content(IMM(QDomElement) event_element) {
     return content;
 }
 
-void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content) {
+static void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_content) {
     for (QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling()) {
         if (node.isElement()) {
             QDomElement tag = node.toElement();
@@ -368,7 +368,7 @@ void parse_event_content_rec(IMM(QDomElement) element, RawMessageContent& mut_co
     }
 }
 
-CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element) {
+static CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if (tag_name == "span") {
@@ -384,7 +384,7 @@ CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElement) elem
     return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element) {
+static CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if (tag_name == "span") {
@@ -400,7 +400,7 @@ CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElement) el
     return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element) {
+static CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if ((tag_name == "a") && (element.hasAttribute("style"))) {
@@ -410,7 +410,7 @@ CEDE(RawMessageContentItem) convert_event_content_open_tag_secondary(IMM(QDomEle
     return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element) {
+static CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomElement) element) {
     QString tag_name = element.tagName();
 
     if ((tag_name == "a") && (element.hasAttribute("style"))) {
@@ -420,7 +420,7 @@ CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IMM(QDomE
     return unique_ptr<RawMessageContentItem>();
 }
 
-CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node) {
+static CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node) {
     QREGEX_WILL_MATCH(trim_match, "^\n*(.*)\n*$", text_node.nodeValue());
 
     QString trimmed_text = trim_match.captured(1);
