@@ -81,12 +81,24 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawJoinConferenceEvent.h
         src/intermediate_format/events/RawLeaveConferenceEvent.cpp
         src/intermediate_format/events/RawLeaveConferenceEvent.h
+        src/intermediate_format/events/RawLeaveConversationEvent.cpp
+        src/intermediate_format/events/RawLeaveConversationEvent.h
+        src/intermediate_format/events/RawLoggingStartedEvent.cpp
+        src/intermediate_format/events/RawLoggingStartedEvent.h
+        src/intermediate_format/events/RawLoggingStoppedEvent.cpp
+        src/intermediate_format/events/RawLoggingStoppedEvent.h
         src/intermediate_format/events/RawMessageEvent.cpp
         src/intermediate_format/events/RawMessageEvent.h
+        src/intermediate_format/events/RawMessageSendFailedEvent.cpp
+        src/intermediate_format/events/RawMessageSendFailedEvent.h
         src/intermediate_format/events/RawOfferCallEvent.cpp
         src/intermediate_format/events/RawOfferCallEvent.h
         src/intermediate_format/events/RawOfferFileEvent.cpp
         src/intermediate_format/events/RawOfferFileEvent.h
+        src/intermediate_format/events/RawOfferFileGroupEvent.cpp
+        src/intermediate_format/events/RawOfferFileGroupEvent.h
+        src/intermediate_format/events/RawOfferWebcamEvent.cpp
+        src/intermediate_format/events/RawOfferWebcamEvent.h
         src/intermediate_format/events/RawPingEvent.cpp
         src/intermediate_format/events/RawPingEvent.h
         src/intermediate_format/events/RawReceiveFileEvent.cpp

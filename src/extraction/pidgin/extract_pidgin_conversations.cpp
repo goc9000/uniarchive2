@@ -16,6 +16,7 @@
 #include <QTimeZone>
 
 #include "extraction/pidgin/extract_pidgin_conversations.h"
+#include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/EmphasisTag.h"
@@ -40,6 +41,7 @@
 #include "utils/time/parse_date_parts.h"
 
 using namespace std;
+using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
@@ -225,17 +227,21 @@ void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) 
     QString color = event_match.captured("color");
     ApparentTime timestamp = parse_timestamp(event_match.captured("timestamp"), conversation);
 
-    if (event_match.capturedLength("system_message")) {
-        invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
-
-        // TODO: parse system message
-    } else {
+    if (!event_match.capturedLength("system_message")) {
         parse_message(
             (unsigned int)conversation.events.size(),
             color,
             timestamp,
             decode_html_entities(event_match.captured("sender")),
             event_match.captured("message")
+        );
+    } else {
+        invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
+        parse_libpurple_system_message(
+            (unsigned int)conversation.events.size(),
+            timestamp,
+            event_match.captured("system_message"),
+            conversation.protocol
         );
     }
 }
