@@ -66,7 +66,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name);
 void verify_is_utf8_html(QTextStream& mut_stream);
 void seek_to_start_of_events(QTextStream& mut_stream);
 
-void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
+CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 
 CEDE(RawMessageEvent) parse_message(
@@ -119,7 +119,7 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
             break;
         }
 
-        parse_event(event_match, conversation);
+        conversation.events.push_back(parse_event(event_match, conversation));
 
         offset = event_match.capturedEnd(0);
     }
@@ -223,12 +223,12 @@ void seek_to_start_of_events(QTextStream& mut_stream) {
     );
 }
 
-void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
+CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
     QString color = event_match.captured("color");
     ApparentTime timestamp = parse_timestamp(event_match.captured("timestamp"), conversation);
 
     if (!event_match.capturedLength("system_message")) {
-        parse_message(
+        return parse_message(
             (unsigned int)conversation.events.size(),
             color,
             timestamp,
@@ -237,7 +237,7 @@ void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) 
         );
     } else {
         invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
-        parse_libpurple_system_message(
+        return parse_libpurple_system_message(
             (unsigned int)conversation.events.size(),
             timestamp,
             event_match.captured("system_message"),
