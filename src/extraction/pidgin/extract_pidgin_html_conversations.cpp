@@ -60,7 +60,7 @@ struct InfoFromFilename {
 };
 
 static RawConversation init_conversation(IMM(QString)filename);
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename, IMM(QString) expected_extension);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 
 static void verify_is_utf8_html(QTextStream& mut_stream);
@@ -132,7 +132,7 @@ static RawConversation init_conversation(IMM(QString)filename) {
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
-    auto info = analyze_conversation_filename(full_filename);
+    auto info = analyze_conversation_filename(full_filename, "html");
 
     RawConversation conversation(ArchiveFormat::PIDGIN_HTML, info.identity.protocol);
 
@@ -148,17 +148,23 @@ static RawConversation init_conversation(IMM(QString)filename) {
     return conversation;
 }
 
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename, IMM(QString) expected_extension) {
     InfoFromFilename info;
 
+    QFileInfo file_info(full_filename);
     QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
     QString identity_folder = full_filename.section(QDir::separator(), -3, -3);
     QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
-    QString base_name = full_filename.section(QDir::separator(), -1, -1);
+    QString base_name = file_info.completeBaseName();
+    QString extension = file_info.suffix().toLower();
 
+    invariant(
+        extension == expected_extension,
+        "Expected archive extension to be %s, but it is %s instead", QP(expected_extension), QP(extension)
+    );
     QREGEX_MUST_MATCH_CI(
-        filename_match, "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)[.]html$", base_name,
-        "Expected Pidgin archive filename to match pattern \"account_name (YYYY-mm-dd.hhmmss+offset/timezone).html\", "\
+        filename_match, "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)$", base_name,
+        "Expected Pidgin archive filename to match pattern \"account_name (YYYY-mm-dd.hhmmss+offset/timezone)\", "\
         "found \"%s\""
     );
 
