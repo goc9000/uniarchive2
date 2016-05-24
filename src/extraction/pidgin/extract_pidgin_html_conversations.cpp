@@ -67,7 +67,7 @@ static CEDE(TextSection) parse_text_section(IMM(QString) text);
 
 
 RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
-    RawConversation conversation = init_conversation(filename, "html");
+    RawConversation conversation = init_conversation(filename, "html", ArchiveFormat::PIDGIN_HTML);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {

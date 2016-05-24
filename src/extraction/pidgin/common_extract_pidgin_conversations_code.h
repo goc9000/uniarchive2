@@ -14,13 +14,15 @@
 #include <QString>
 
 #include "intermediate_format/RawConversation.h"
+#include "protocols/ArchiveFormat.h"
 #include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::protocols;
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
 
-RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension);
+RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension, ArchiveFormat format);
 
 }}}
 

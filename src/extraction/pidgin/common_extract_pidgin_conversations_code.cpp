@@ -41,14 +41,14 @@ static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 
 
-RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension) {
+RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension, ArchiveFormat format) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename, expected_extension);
 
-    RawConversation conversation(ArchiveFormat::PIDGIN_HTML, info.identity.protocol);
+    RawConversation conversation(format, info.identity.protocol);
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
