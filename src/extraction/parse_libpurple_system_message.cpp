@@ -18,7 +18,9 @@
 #include "intermediate_format/events/RawStartFileTransferEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
+#include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "protocols/parse_account_generic.h"
 #include "utils/external_libs/make_unique.hpp"
 #include "utils/html/entities.h"
 #include "utils/language/invariant.h"
@@ -30,14 +32,15 @@ using namespace uniarchive2::utils::html;
 
 namespace uniarchive2 { namespace extraction {
 
-CEDE(ApparentSubject) parse_subject(IMM(QString) subject);
+CEDE(ApparentSubject) parse_subject(IMM(QString) subject, IMProtocol protocol);
 QString parse_filename(IMM(QString) filename);
 
 
 CEDE(RawEvent) parse_libpurple_system_message(
     unsigned int event_index,
     IMM(ApparentTime) event_time,
-    IMM(QString) content
+    IMM(QString) content,
+    IMProtocol protocol
 ) {
     QREGEX_MATCH_CI(
         match,
@@ -55,7 +58,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         return make_unique<RawOfferFileEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("offer_who")),
+            parse_subject(match.captured("offer_who"), protocol),
             parse_filename(match.captured("offer_file"))
         );
     } else if (match.capturedLength("xfer_file")) {
@@ -64,7 +67,8 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             parse_filename(match.captured("xfer_file"))
         );
-        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender = parse_subject(match.captured("xfer_from"));
+        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender =
+            parse_subject(match.captured("xfer_from"), protocol);
 
         return xfer_event;
     } else if (match.capturedLength("cancel_who")) {
@@ -73,7 +77,8 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             parse_filename(match.captured("cancel_file"))
         );
-        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor = parse_subject(match.captured("cancel_who"));
+        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor =
+            parse_subject(match.captured("cancel_who"), protocol)
 
         return xfer_event;
     } else if (match.capturedLength("recv_file")) {
@@ -87,15 +92,31 @@ CEDE(RawEvent) parse_libpurple_system_message(
         return make_unique<RawChangeScreenNameEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("rename_old")),
-            parse_subject(match.captured("rename_new"))
+            parse_subject(match.captured("rename_old"), protocol),
+            parse_subject(match.captured("rename_new"), protocol)
         );
     }
 
     invariant_violation("Unsupported libpurple system message: %s", QP(content));
 }
 
-CEDE(ApparentSubject) parse_subject(IMM(QString) subject) {
+CEDE(ApparentSubject) parse_subject(IMM(QString) subject, IMProtocol protocol) {
+    QREGEX_MATCH_CI(match, "^(.*) \\[<em>(.*)</em>\\]$", subject);
+    if (match.hasMatch()) {
+        QString screen_name = decode_html_entities(match.captured(1));
+        QString account_name = decode_html_entities(match.captured(2));
+
+        QREGEX_MATCH_CI(strip_match, "^(.*@.*)/.*$", account_name);
+        if (strip_match.hasMatch()) {
+            account_name = strip_match.captured(1);
+        }
+
+        return make_unique<FullySpecifiedSubject>(
+            parse_account_generic(protocol, account_name),
+            screen_name
+        );
+    }
+
     return make_unique<SubjectGivenAsScreenName>(decode_html_entities(subject));
 }
 

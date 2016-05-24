@@ -92,7 +92,8 @@ CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
-    TAKE(ApparentSubject) event_subject
+    TAKE(ApparentSubject) event_subject,
+    IMProtocol protocol
 );
 CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
@@ -213,7 +214,7 @@ CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) 
     } else if (event_element.tagName() == "message") {
         return parse_message_event(event_element, event_time, event_index, move(event_subject));
     } else if (event_element.tagName() == "status") {
-        return parse_status_event(event_element, event_time, event_index, move(event_subject));
+        return parse_status_event(event_element, event_time, event_index, move(event_subject), conversation.protocol);
     }
 
     invariant_violation("Unsupported event tag <%s>", QP(event_element.tagName()));
@@ -280,7 +281,8 @@ CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
     unsigned int event_index,
-    TAKE(ApparentSubject) event_subject
+    TAKE(ApparentSubject) event_subject,
+    IMProtocol protocol
 ) {
     QString event_type = event_element.attribute("type");
 
@@ -304,7 +306,12 @@ CEDE(RawEvent) parse_status_event(
             xml_to_string(only_child_elem(only_child_elem(event_element, "div"), "span"))
         );
 
-        return parse_libpurple_system_message(event_index, event_time, content_match.captured(1).trimmed());
+        return parse_libpurple_system_message(
+            event_index,
+            event_time,
+            content_match.captured(1).trimmed(),
+            protocol
+        );
     }
 
     invariant_violation("Unsupported <status> event type: %s", QP(event_type));

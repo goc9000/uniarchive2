@@ -15,17 +15,20 @@
 
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/ApparentTime.h"
+#include "protocols/IMProtocol.h"
 #include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::protocols;
 
 namespace uniarchive2 { namespace extraction {
 
 CEDE(RawEvent) parse_libpurple_system_message(
     unsigned int event_index,
     IMM(ApparentTime) event_time,
-    IMM(QString) content
+    IMM(QString) content,
+    IMProtocol protocol
 );
 
 }}
