@@ -53,7 +53,7 @@ void assert_likely_valid_encoded_msn_account_name(IMM(QString) account_name) {
     );
 }
 
-quint32 update_messenger_hash(quint32 old_hash, QChar character) {
+static quint32 update_messenger_hash(quint32 old_hash, QChar character) {
     return (old_hash * 101) + character.unicode();
 }
 

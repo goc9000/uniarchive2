@@ -44,27 +44,27 @@ using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
-RawConversation init_prototype(IMM(QString) filename);
-RawConversation extract_conversation_for_session(
+static RawConversation init_prototype(IMM(QString) filename);
+static RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int session_id,
     IMM(RawConversation) prototype,
     unsigned int conversation_no_in_file,
     unsigned int conversation_offset_in_file
 );
-CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
-CEDE(RawEvent) parse_message_event(
+static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
+static CEDE(RawEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index
 );
-CEDE(RawEvent) parse_invitation_or_response_event(
+static CEDE(RawEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     bool is_response
 );
-CEDE(RawEvent) parse_invitation_or_response_event_with_file(
+static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -73,7 +73,7 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QString) text,
     IMM(QString) filename
 );
-CEDE(RawEvent) parse_invitation_or_response_event_with_application(
+static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -82,9 +82,10 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QString) text,
     IMM(QString) application
 );
-ApparentTime parse_event_time(IMM(QDomElement) event_element);
-CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
-RawMessageContent parse_event_text(IMM(QDomElement) event_element);
+static ApparentTime parse_event_time(IMM(QDomElement) event_element);
+static CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name);
+static RawMessageContent parse_event_text(IMM(QDomElement) event_element);
+
 
 vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
     vector<RawConversation> conversations;
@@ -117,7 +118,7 @@ vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) fil
     return conversations;
 }
 
-RawConversation init_prototype(IMM(QString) filename) {
+static RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
@@ -154,7 +155,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     return conversation;
 }
 
-RawConversation extract_conversation_for_session(
+static RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int expected_session_id,
     IMM(RawConversation) prototype,
@@ -180,7 +181,7 @@ RawConversation extract_conversation_for_session(
     return conversation;
 }
 
-CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
+static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
     ApparentTime event_time = parse_event_time(event_element);
 
     if (event_element.tagName() == "Message") {
@@ -194,7 +195,7 @@ CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_in
     invariant_violation("Can't handle MSN event node of type %s", QP(event_element.tagName()));
 }
 
-ApparentTime parse_event_time(IMM(QDomElement) event_element) {
+static ApparentTime parse_event_time(IMM(QDomElement) event_element) {
     QDateTime absolute_time = read_iso_date_attr(event_element, "DateTime");
     invariant(absolute_time.timeSpec() == Qt::UTC, "Expected MSN message datetime to be UTC");
 
@@ -218,14 +219,14 @@ ApparentTime parse_event_time(IMM(QDomElement) event_element) {
     return ApparentTime::fromQDateTime(absolute_time);
 }
 
-CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name) {
+static CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, IMM(QString) node_name) {
     auto actor_element = child_elem(event_element, node_name);
     auto user_element = only_child_elem(actor_element, "User");
 
     return make_unique<SubjectGivenAsScreenName>(read_string_attr(user_element, "FriendlyName"));
 }
 
-RawMessageContent parse_event_text(IMM(QDomElement) event_element) {
+static RawMessageContent parse_event_text(IMM(QDomElement) event_element) {
     RawMessageContent content;
 
     auto text_element = child_elem(event_element, "Text");
@@ -238,7 +239,7 @@ RawMessageContent parse_event_text(IMM(QDomElement) event_element) {
     return content;
 }
 
-CEDE(RawEvent) parse_message_event(
+static CEDE(RawEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index
@@ -254,7 +255,7 @@ CEDE(RawEvent) parse_message_event(
     return event;
 }
 
-CEDE(RawEvent) parse_invitation_or_response_event(
+static CEDE(RawEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -281,7 +282,7 @@ CEDE(RawEvent) parse_invitation_or_response_event(
     invariant_violation("Unhandled invitation event: %s", QP(xml_to_string(event_element)));
 }
 
-CEDE(RawEvent) parse_invitation_or_response_event_with_file(
+static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -315,7 +316,7 @@ CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     invariant_violation("Unhandled file transfer event: %s", QP(xml_to_string(event_element)));
 }
 
-CEDE(RawEvent) parse_invitation_or_response_event_with_application(
+static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
     unsigned int event_index,

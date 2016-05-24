@@ -56,22 +56,25 @@ using namespace std;
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
-RawConversation init_prototype(IMM(QString) filename);
-RawConversation init_conversation(
+static RawConversation init_prototype(IMM(QString) filename);
+static RawConversation init_conversation(
     IMM(RawConversation) prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
 );
-CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
-CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
-CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
-RawMessageContent parse_message_content(IMM(QByteArray) text_data);
-CEDE(TextSection) make_text_section(IMM(QString) text);
-CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
-CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code);
-CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text);
-CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo));
-CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
+static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
+static CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
+static CEDE(ApparentSubject) parse_event_subject(
+    IMM(YahooProtocolEvent) proto_event,
+    IMM(RawConversation) conversation
+);
+static RawMessageContent parse_message_content(IMM(QByteArray) text_data);
+static CEDE(TextSection) make_text_section(IMM(QString) text);
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match);
+static CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code);
+static CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text);
+static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo));
+static CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
 
 
 vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
@@ -107,7 +110,7 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
     return conversations;
 }
 
-RawConversation init_prototype(IMM(QString) filename) {
+static RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
@@ -139,7 +142,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     return conversation;
 }
 
-RawConversation init_conversation(
+static RawConversation init_conversation(
     IMM(RawConversation) prototype,
     unsigned int num_conversation_in_file,
     unsigned int conversation_offset_in_file
@@ -151,7 +154,7 @@ RawConversation init_conversation(
     return conversation;
 }
 
-CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
+static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     unique_ptr<RawEvent> event;
 
     ApparentTime timestamp = ApparentTime::fromUnixTimestamp(proto_event.timestamp);
@@ -235,12 +238,12 @@ CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConvers
     invariant_violation("Event not converted");
 }
 
-CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
+static CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     return (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) ?
            conversation.identity->clone() : conversation.declaredPeers.front()->clone();
 }
 
-CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
+static CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
     if (proto_event.extra.isEmpty() || (proto_event.direction == YahooProtocolEvent::Direction::OUTGOING)) {
         return implicit_subject(proto_event, conversation);
     }
@@ -248,7 +251,7 @@ CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_event, I
     return make_unique<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
-RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
+static RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
     RawMessageContent content;
 
     QString text = decode_utf8(text_data);
@@ -281,13 +284,13 @@ RawMessageContent parse_message_content(IMM(QByteArray) text_data) {
     return content;
 }
 
-CEDE(TextSection) make_text_section(IMM(QString) text) {
+static CEDE(TextSection) make_text_section(IMM(QString) text) {
     invariant(!text.contains(0x1B), "Unprocessed ANSI-like sequence in text: \"%s\"", QP(text));
 
     return make_unique<TextSection>(text);
 };
 
-CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match) {
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match) {
     if (match.capturedLength("pseudo_ansi_seq")) {
         return parse_pseudo_ansi_seq(match.captured("pseudo_ansi_seq"));
     } else if (match.capturedLength("html_tag")) {
@@ -299,7 +302,7 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(QRegularExpressionMatch) match)
     invariant_violation("Tag not recognized: \"%s\"", QP(match.captured(0)));
 }
 
-CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
+static CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
     QREGEX_MUST_MATCH_CI(
         match,
         "^(?<closed>x)?("\
@@ -336,7 +339,7 @@ CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) {
     never_reached();
 }
 
-CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
+static CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
     ParsedHTMLTagInfo tag_info = parse_html_tag_lenient(tag_text);
 
     invariant(tag_info.valid, "Failed to parse tag: \"%s\"", QP(tag_text));
@@ -353,7 +356,7 @@ CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
     invariant_violation("HTML tag not supported: \"%s\"", QP(tag_info.tagName));
 }
 
-CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     QREGEX(comma_separator, "\\s*,\\s*");
 
     auto tag = make_unique<FontTag>(tag_info.closed);
@@ -374,7 +377,7 @@ CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     return tag;
 }
 
-CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
+static CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
 #define PAT_COLOR "#[0-9a-f]{6}"
     QREGEX_MUST_MATCH_CI(
         match,

@@ -35,21 +35,22 @@ using namespace uniarchive2::utils::xml;
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
 
-RawConversation init_prototype(IMM(QString) filename);
-QString read_identity_screen_name(IMM(QDomElement) root_element);
-void extract_conversations_in_section(
+static RawConversation init_prototype(IMM(QString) filename);
+static QString read_identity_screen_name(IMM(QDomElement) root_element);
+static void extract_conversations_in_section(
     QDomElement& mut_next_element,
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype
 );
-RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype);
-void populate_thread_participants(
+static RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype);
+static void populate_thread_participants(
     IMM(QDomElement) thread_element,
     RawConversation& mut_conversation,
     IMM(RawConversation) prototype
 );
-CEDE(RawEvent) extract_message(QDomElement& mut_message_element);
-ApparentTime parse_message_time(IMM(QString) time_text);
+static CEDE(RawEvent) extract_message(QDomElement& mut_message_element);
+static ApparentTime parse_message_time(IMM(QString) time_text);
+
 
 vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename) {
     vector<RawConversation> conversations;
@@ -75,7 +76,7 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename
     return conversations;
 }
 
-RawConversation init_prototype(IMM(QString) filename) {
+static RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
@@ -97,7 +98,7 @@ RawConversation init_prototype(IMM(QString) filename) {
     return conversation;
 }
 
-QString read_identity_screen_name(IMM(QDomElement) root_element) {
+static QString read_identity_screen_name(IMM(QDomElement) root_element) {
     auto head_element = child_elem(root_element, "head");
     auto title_element = child_elem(head_element, "title");
 
@@ -111,7 +112,7 @@ QString read_identity_screen_name(IMM(QDomElement) root_element) {
     return match.captured(1);
 }
 
-void extract_conversations_in_section(
+static void extract_conversations_in_section(
     QDomElement& mut_next_element,
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype
@@ -127,7 +128,7 @@ void extract_conversations_in_section(
     mut_next_element = mut_next_element.nextSiblingElement();
 }
 
-RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype) {
+static RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype) {
     invariant(
         (mut_thread_element.tagName() == "div") && (mut_thread_element.attribute("class", "") == "thread"),
         "Expected thread to be defined by a <div class=\"thread\">"
@@ -154,7 +155,7 @@ RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversat
     return conversation;
 }
 
-void populate_thread_participants(
+static void populate_thread_participants(
     IMM(QDomElement) thread_element,
     RawConversation& mut_conversation,
     IMM(RawConversation) prototype
@@ -175,7 +176,7 @@ void populate_thread_participants(
     }
 }
 
-CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
+static CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
     invariant(
         (mut_message_element.tagName() == "div") && (mut_message_element.attribute("class", "") == "message"),
         "Expected message to be defined by a <div class=\"message\">"
@@ -203,7 +204,7 @@ CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
     return make_unique<RawMessageEvent>(message_time, 0, move(sender), move(content));
 }
 
-ApparentTime parse_message_time(IMM(QString) time_text) {
+static ApparentTime parse_message_time(IMM(QString) time_text) {
     QREGEX_MUST_MATCH(
         match, "^\\w+, (\\w+) (\\d+), (\\d+) at (\\d+:\\d+(am|pm)) UTC(.*)$", time_text,
         "Unexpected datetime format: \"%s\""

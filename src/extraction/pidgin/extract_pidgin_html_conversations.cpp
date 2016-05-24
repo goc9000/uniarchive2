@@ -59,23 +59,23 @@ struct InfoFromFilename {
     bool is_conference;
 };
 
-RawConversation init_conversation(IMM(QString)filename);
-InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
-IMProtocol parse_protocol(IMM(QString) protocol_name);
+static RawConversation init_conversation(IMM(QString)filename);
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
+static IMProtocol parse_protocol(IMM(QString) protocol_name);
 
-void verify_is_utf8_html(QTextStream& mut_stream);
-void seek_to_start_of_events(QTextStream& mut_stream);
+static void verify_is_utf8_html(QTextStream& mut_stream);
+static void seek_to_start_of_events(QTextStream& mut_stream);
 
-CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
-ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
+static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
+static ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 
-CEDE(RawMessageEvent) parse_message(
+static CEDE(RawMessageEvent) parse_message(
     unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message_html
 );
-QString strip_sender_suffix(IMM(QString) sender);
-RawMessageContent parse_message_content(IMM(QString) content_html);
-CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
-CEDE(TextSection) parse_text_section(IMM(QString) text);
+static QString strip_sender_suffix(IMM(QString) sender);
+static RawMessageContent parse_message_content(IMM(QString) content_html);
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
+static CEDE(TextSection) parse_text_section(IMM(QString) text);
 
 
 RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
@@ -127,7 +127,7 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-RawConversation init_conversation(IMM(QString)filename) {
+static RawConversation init_conversation(IMM(QString)filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
@@ -148,7 +148,7 @@ RawConversation init_conversation(IMM(QString)filename) {
     return conversation;
 }
 
-InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     InfoFromFilename info;
 
     QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
@@ -184,7 +184,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     return info;
 }
 
-IMProtocol parse_protocol(IMM(QString) protocol_name) {
+static IMProtocol parse_protocol(IMM(QString) protocol_name) {
     const static QMap<QString, IMProtocol> PROTOCOL_MAP = {
         { "jabber", IMProtocol::JABBER },
         { "msn"   , IMProtocol::MSN },
@@ -198,7 +198,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
     invariant_violation("Unrecognized protocol in Pidgin: \"%s\"", QP(protocol_name));
 }
 
-void verify_is_utf8_html(QTextStream& mut_stream) {
+static void verify_is_utf8_html(QTextStream& mut_stream) {
     QByteArray expected_header("<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">");
     QByteArray actual_header = mut_stream.device()->peek(expected_header.length());
 
@@ -210,7 +210,7 @@ void verify_is_utf8_html(QTextStream& mut_stream) {
     mut_stream.setCodec(QTextCodec::codecForName("UTF-8"));
 }
 
-void seek_to_start_of_events(QTextStream& mut_stream) {
+static void seek_to_start_of_events(QTextStream& mut_stream) {
     QString first_line = mut_stream.readLine();
 
     QREGEX_MUST_MATCH_CI(
@@ -223,7 +223,7 @@ void seek_to_start_of_events(QTextStream& mut_stream) {
     );
 }
 
-CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
+static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation) {
     QString color = event_match.captured("color");
     ApparentTime timestamp = parse_timestamp(event_match.captured("timestamp"), conversation);
 
@@ -246,7 +246,7 @@ CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConv
     }
 }
 
-ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation) {
+static ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation) {
     ApparentTime timestamp;
     timestamp.reference = ApparentTime::Reference::LOCAL_TIME;
 
@@ -300,7 +300,7 @@ ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) c
     return timestamp;
 }
 
-CEDE(RawMessageEvent) parse_message(
+static CEDE(RawMessageEvent) parse_message(
     unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message_html
 ) {
     invariant(
@@ -319,12 +319,12 @@ CEDE(RawMessageEvent) parse_message(
     );
 }
 
-QString strip_sender_suffix(IMM(QString) sender) {
+static QString strip_sender_suffix(IMM(QString) sender) {
     QREGEX_MATCH_CI(match, "(.*@[^/]*)/.*", sender);
     return match.hasMatch() ? match.captured(1) : sender;
 }
 
-RawMessageContent parse_message_content(IMM(QString) content_html) {
+static RawMessageContent parse_message_content(IMM(QString) content_html) {
     RawMessageContent content;
 
     auto lenient_parse_result = parse_html_lenient(content_html);
@@ -339,7 +339,7 @@ RawMessageContent parse_message_content(IMM(QString) content_html) {
     return content;
 }
 
-CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     if (tag_info.tagName == "br") {
         return make_unique<LineBreakTag>();
     }
@@ -384,7 +384,7 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     return make_unique<TextSection>(tag_info.originalText);
 }
 
-CEDE(TextSection) parse_text_section(IMM(QString) text) {
+static CEDE(TextSection) parse_text_section(IMM(QString) text) {
     if (text.isEmpty()) {
         return unique_ptr<TextSection>();
     }

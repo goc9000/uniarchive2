@@ -59,20 +59,20 @@ struct InfoFromFilename {
     bool isConference;
 };
 
-RawConversation init_conversation(IMM(QString) filename);
-InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
-IMProtocol parse_protocol(IMM(QString) protocol_name);
-FullAccountName parse_account(IMProtocol protocol, IMM(QString) account_name);
+static RawConversation init_conversation(IMM(QString) filename);
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
+static IMProtocol parse_protocol(IMM(QString) protocol_name);
+static FullAccountName parse_account(IMProtocol protocol, IMM(QString) account_name);
 
-void verify_xml_header(QTextStream& mut_stream);
-void seek_start_of_events(QTextStream& mut_stream);
-QStringList partially_parse_events(QTextStream& mut_stream);
+static void verify_xml_header(QTextStream& mut_stream);
+static void seek_start_of_events(QTextStream& mut_stream);
+static QStringList partially_parse_events(QTextStream& mut_stream);
 
-CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
-RawMessageContent parse_message_content(IMM(QString) content_html);
-CEDE(TextSection) parse_text_section(IMM(QString) text);
-CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
-CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
+static CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation);
+static RawMessageContent parse_message_content(IMM(QString) content_html);
+static CEDE(TextSection) parse_text_section(IMM(QString) text);
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
+static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
 RawConversation extract_digsby_conversation(IMM(QString) filename) {
@@ -97,7 +97,7 @@ RawConversation extract_digsby_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-RawConversation init_conversation(IMM(QString) filename) {
+static RawConversation init_conversation(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
@@ -115,7 +115,7 @@ RawConversation init_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     InfoFromFilename info;
 
     QString logs_folder = full_filename.section(QDir::separator(), -6, -6);
@@ -158,7 +158,7 @@ InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
     return info;
 }
 
-IMProtocol parse_protocol(IMM(QString) protocol_name) {
+static IMProtocol parse_protocol(IMM(QString) protocol_name) {
     const static QMap<QString, IMProtocol> PROTOCOL_MAP = {
         { "digsby", IMProtocol::DIGSBY },
         { "gtalk",  IMProtocol::JABBER },
@@ -174,7 +174,7 @@ IMProtocol parse_protocol(IMM(QString) protocol_name) {
     invariant_violation("Unrecognized protocol in Digsby: \"%s\"", QP(protocol_name));
 }
 
-void verify_xml_header(QTextStream& mut_stream) {
+static void verify_xml_header(QTextStream& mut_stream) {
     QString xml_header = mut_stream.readLine();
     invariant(
         xml_header.startsWith("<?xml ") && xml_header.contains("encoding=\"UTF-8\""),
@@ -185,7 +185,7 @@ void verify_xml_header(QTextStream& mut_stream) {
     mut_stream.setCodec(QTextCodec::codecForName("UTF-8"));
 }
 
-void seek_start_of_events(QTextStream& mut_stream) {
+static void seek_start_of_events(QTextStream& mut_stream) {
     while (!mut_stream.atEnd()) {
         QString line = mut_stream.readLine();
 
@@ -199,7 +199,7 @@ void seek_start_of_events(QTextStream& mut_stream) {
     );
 }
 
-QStringList partially_parse_events(QTextStream& mut_stream) {
+static QStringList partially_parse_events(QTextStream& mut_stream) {
     QStringList event_htmls;
     QString current_event_html;
     bool event_open = false;
@@ -233,7 +233,7 @@ QStringList partially_parse_events(QTextStream& mut_stream) {
     return event_htmls;
 }
 
-CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
+static CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) conversation) {
     QREGEX_MATCH(
         match,
         "^<div class=\"([^\"]*)\" auto=\"([^\"]*)\" timestamp=\"([^\"]*)\">\\s*"\
@@ -260,7 +260,7 @@ CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) convers
     );
 }
 
-RawMessageContent parse_message_content(IMM(QString) content_html) {
+static RawMessageContent parse_message_content(IMM(QString) content_html) {
     RawMessageContent content;
 
     auto lenient_parse_result = parse_html_lenient(content_html);
@@ -275,7 +275,7 @@ RawMessageContent parse_message_content(IMM(QString) content_html) {
     return content;
 }
 
-CEDE(TextSection) parse_text_section(IMM(QString) text) {
+static CEDE(TextSection) parse_text_section(IMM(QString) text) {
     // Remove \n's because whenever these appear, <br>'s are also present
     QREGEX_WILL_MATCH(match, "^\n*(.*?)\n*$", text);
 
@@ -287,7 +287,7 @@ CEDE(TextSection) parse_text_section(IMM(QString) text) {
     return make_unique<TextSection>(trimmed);
 }
 
-CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     invariant(!tag_info.open || !tag_info.closed, "Did not expect self-closing tags in Digsby archives");
 
     if (tag_info.tagName == "br") {
@@ -330,7 +330,7 @@ CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     return make_unique<TextSection>(tag_info.originalText);
 }
 
-CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     QREGEX(comma_separator, "\\s*,\\s*");
 
     invariant(tag_info.tagName == "font", "This function should be run on <font> tags only");
