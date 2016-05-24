@@ -8,7 +8,8 @@
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
-#include "extraction/pidgin/extract_pidgin_conversations.h"
+#include "extraction/pidgin/extract_pidgin_html_conversations.h"
+#include "extraction/pidgin/extract_pidgin_txt_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "utils/language/shortcuts.h"
 
@@ -25,9 +26,13 @@ int main() {
 
     vector<RawConversation> convos;
 
-    QDirIterator pidgin_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
-    while (pidgin_files.hasNext()) {
-        convos.push_back(extract_pidgin_html_conversation(pidgin_files.next()));
+    QDirIterator pidgin_txt_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
+    while (pidgin_txt_files.hasNext()) {
+        convos.push_back(extract_pidgin_txt_conversation(pidgin_txt_files.next()));
+    }
+    QDirIterator pidgin_html_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
+    while (pidgin_html_files.hasNext()) {
+        convos.push_back(extract_pidgin_html_conversation(pidgin_html_files.next()));
     }
     QDirIterator adium_files(QT_STRINGIFY(TEST_DATA_DIR) "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
     while (adium_files.hasNext()) {
@@ -37,7 +42,6 @@ int main() {
     while (digsby_files.hasNext()) {
         convos.push_back(extract_digsby_conversation(digsby_files.next()));
     }
-
     QDirIterator fb_files(QT_STRINGIFY(TEST_DATA_DIR) "/facebook", QStringList() << "messages.htm", QDir::Files, QDirIterator::Subdirectories);
     while (fb_files.hasNext()) {
         auto file_convos = extract_facebook_dyi_conversations(fb_files.next());
@@ -48,14 +52,13 @@ int main() {
         auto file_convos = extract_yahoo_messenger_dat_conversations(yahoo_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
-
     QDirIterator msn_files(QT_STRINGIFY(TEST_DATA_DIR) "/msn", QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
     while (msn_files.hasNext()) {
         auto file_convos = extract_msn_messenger_xml_conversations(msn_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
 
-    int limit = 50;
+    int limit = 250;
     for (IMM(auto) convo : convos) {
         qDebug() << convo;
         if (!--limit) {
