@@ -68,7 +68,7 @@ void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) 
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 
 CEDE(RawMessageEvent) parse_message(
-    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message
+    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message_html
 );
 QString strip_sender_suffix(IMM(QString) sender);
 RawMessageContent parse_message_content(IMM(QString) content_html);
@@ -234,7 +234,7 @@ void parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) 
             (unsigned int)conversation.events.size(),
             color,
             timestamp,
-            event_match.captured("sender"),
+            decode_html_entities(event_match.captured("sender")),
             event_match.captured("message")
         );
     }
@@ -295,7 +295,7 @@ ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) c
 }
 
 CEDE(RawMessageEvent) parse_message(
-    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message
+    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message_html
 ) {
     invariant(
         color == "#16569E" || color == "#A82F2F",
@@ -309,7 +309,7 @@ CEDE(RawMessageEvent) parse_message(
             strip_sender_suffix(sender),
             (color == "#16569E") ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer
         ),
-        parse_message_content(message)
+        parse_message_content(message_html)
     );
 }
 
