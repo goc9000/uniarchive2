@@ -15,7 +15,7 @@
 
 #include <QtDebug>
 
-#include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
@@ -24,7 +24,7 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawPingEvent : RawEvent {
+struct RawPingEvent : RawFailableEvent {
 public:
     unique_ptr<ApparentSubject> pinger;
     unique_ptr<ApparentSubject> pingee;
@@ -34,7 +34,7 @@ public:
     virtual QString eventName() const;
 
 protected:
-    virtual void writeDetailsToDebugStream(QDebug stream) const;
+    virtual void writeFailableEventDetailsToDebugStream(QDebug stream) const;
 };
 
 }}}

@@ -15,14 +15,14 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawPingEvent::RawPingEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) pinger)
-    : RawEvent(timestamp, index), pinger(move(pinger)) {
+    : RawFailableEvent(timestamp, index), pinger(move(pinger)) {
 }
 
 QString RawPingEvent::eventName() const {
     return "Ping";
 }
 
-void RawPingEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawPingEvent::writeFailableEventDetailsToDebugStream(QDebug stream) const {
     stream << " pinger=" << pinger.get();
     if (pingee) {
         stream << " pingee=" << pingee.get();

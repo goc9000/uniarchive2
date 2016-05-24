@@ -75,6 +75,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawDeclineConferenceEvent.h
         src/intermediate_format/events/RawDisconnectedEvent.cpp
         src/intermediate_format/events/RawDisconnectedEvent.h
+        src/intermediate_format/events/RawFailableEvent.cpp
+        src/intermediate_format/events/RawFailableEvent.h
         src/intermediate_format/events/RawJoinConferenceEvent.cpp
         src/intermediate_format/events/RawJoinConferenceEvent.h
         src/intermediate_format/events/RawLeaveConferenceEvent.cpp
