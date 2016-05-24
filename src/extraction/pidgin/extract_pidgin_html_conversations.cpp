@@ -1,5 +1,5 @@
 /**
- * extraction/pidgin/extract_pidgin_conversations.cpp
+ * extraction/pidgin/extract_pidgin_html_conversations.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -15,7 +15,7 @@
 #include <QTextCodec>
 #include <QTimeZone>
 
-#include "extraction/pidgin/extract_pidgin_conversations.h"
+#include "extraction/pidgin/extract_pidgin_html_conversations.h"
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/CSSStyleTag.h"

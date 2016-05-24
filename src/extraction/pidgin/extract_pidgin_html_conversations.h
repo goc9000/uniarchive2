@@ -1,5 +1,5 @@
 /**
- * extraction/pidgin/extract_pidgin_conversations.h
+ * extraction/pidgin/extract_pidgin_html_conversations.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_CONVERSATIONS_H
-#define UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_CONVERSATIONS_H
+#ifndef UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_HTML_CONVERSATIONS_H
+#define UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_HTML_CONVERSATIONS_H
 
 #include <QString>
 
@@ -24,4 +24,4 @@ RawConversation extract_pidgin_html_conversation(IMM(QString) filename);
 
 }}}
 
-#endif //UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_CONVERSATIONS_H
+#endif //UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_HTML_CONVERSATIONS_H
