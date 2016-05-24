@@ -28,6 +28,9 @@ QString RawOfferFileEvent::eventName() const {
 
 void RawOfferFileEvent::writeDetailsToDebugStream(QDebug stream) const {
     stream << " sender=" << sender.get() << " file=" << filename;
+    if (recipient) {
+        stream << " recipient=" << recipient.get();
+    }
 }
 
 }}}

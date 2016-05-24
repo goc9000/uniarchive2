@@ -24,6 +24,9 @@ QString RawPingEvent::eventName() const {
 
 void RawPingEvent::writeDetailsToDebugStream(QDebug stream) const {
     stream << " pinger=" << pinger.get();
+    if (pingee) {
+        stream << " pingee=" << pingee.get();
+    }
 }
 
 }}}

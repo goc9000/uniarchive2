@@ -27,6 +27,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 struct RawPingEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> pinger;
+    unique_ptr<ApparentSubject> pingee;
 
     RawPingEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) pinger);
 

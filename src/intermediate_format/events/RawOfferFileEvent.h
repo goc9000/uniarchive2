@@ -28,6 +28,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 struct RawOfferFileEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> sender;
+    unique_ptr<ApparentSubject> recipient;
     QString filename;
 
     RawOfferFileEvent(
