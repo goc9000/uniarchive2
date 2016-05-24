@@ -72,6 +72,15 @@ ApparentTime ApparentTime::fromQDateTimeUnknownReference(IMM(QDateTime) datetime
     return time;
 }
 
+ApparentTime ApparentTime::fromQDateTimeLocalTime(IMM(QDateTime) datetime) {
+    ApparentTime time;
+    time.date = datetime.date();
+    time.time = datetime.time();
+    time.reference = Reference::LOCAL_TIME;
+
+    return time;
+}
+
 bool ApparentTime::isSpecified() const {
     return hasSpecifiedDate() || hasSpecifiedTime();
 }

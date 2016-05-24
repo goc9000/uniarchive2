@@ -51,6 +51,7 @@ public:
     ApparentTime();
     static ApparentTime fromUnixTimestamp(quint32 unix_timestamp);
     static ApparentTime fromQDateTime(IMM(QDateTime) datetime);
+    static ApparentTime fromQDateTimeLocalTime(IMM(QDateTime) datetime);
     static ApparentTime fromQDateTimeUnknownReference(IMM(QDateTime) datetime);
 
     bool isSpecified() const;

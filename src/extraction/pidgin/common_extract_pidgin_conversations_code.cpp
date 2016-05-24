@@ -77,19 +77,23 @@ static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename
         "Expected archive extension to be %s, but it is %s instead", QP(expected_extension), QP(extension)
     );
     QREGEX_MUST_MATCH_CI(
-        filename_match, "^(\\d{4}-\\d{2}-\\d{2}[.]\\d{6})([+-]\\d+)([a-z]+)$", base_name,
+        filename_match, "^(?<date>\\d{4}-\\d{2}-\\d{2}[.]\\d{6})((?<offset>[+-]\\d+)(?<timezone>[a-z]+))?$", base_name,
         "Expected Pidgin archive filename to match pattern \"account_name (YYYY-mm-dd.hhmmss+offset/timezone)\", "\
         "found \"%s\""
     );
 
-    QDateTime raw_date = QDateTime::fromString(filename_match.captured(1), "yyyy-MM-dd.hhmmss");
-    int offset_quarters = parse_timezone_offset_in_quarters(filename_match.captured(2));
+    QDateTime raw_date = QDateTime::fromString(filename_match.captured("date"), "yyyy-MM-dd.hhmmss");
 
-    raw_date.setTimeSpec(Qt::OffsetFromUTC);
-    raw_date.setOffsetFromUtc(900 * offset_quarters);
+    if (filename_match.capturedLength("offset")) {
+        int offset_quarters = parse_timezone_offset_in_quarters(filename_match.captured("offset"));
+        raw_date.setTimeSpec(Qt::OffsetFromUTC);
+        raw_date.setOffsetFromUtc(900 * offset_quarters);
 
-    info.conversation_date = ApparentTime::fromQDateTime(raw_date);
-    info.conversation_date.timeZoneAbbreviation = filename_match.captured(3);
+        info.conversation_date = ApparentTime::fromQDateTime(raw_date);
+        info.conversation_date.timeZoneAbbreviation = filename_match.captured("timezone");
+    } else {
+        info.conversation_date = ApparentTime::fromQDateTimeLocalTime(raw_date);
+    }
 
     IMProtocol protocol = parse_protocol(protocol_folder);
     info.identity = parse_account_generic(protocol, identity_folder);
