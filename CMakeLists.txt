@@ -167,6 +167,8 @@ set(SOURCE_FILES
         src/utils/qt/shortcuts.h
         src/utils/text/decoding.cpp
         src/utils/text/decoding.h
+        src/utils/text/load_text_file.cpp
+        src/utils/text/load_text_file.h
         src/utils/time/parse_date_parts.cpp
         src/utils/time/parse_date_parts.h
         src/utils/xml/qdom_utils.cpp
