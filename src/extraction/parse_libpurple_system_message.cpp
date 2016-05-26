@@ -61,13 +61,13 @@ CEDE(RawEvent) parse_libpurple_system_message(
         "((?<offer_grp_who>.+) is trying to send you a group of (?<n_files_group>\\d+) files[.])|"\
         "((?<offer_who>.+) is offering to send file (?<offer_file>.+))|"\
         "(Starting transfer of (?<xfer_file>.+) from (?<xfer_from>.+))|"\
-        "(((?<cancel_you>You)|(?<cancel_who>.+)) cancelled the transfer of (?<cancel_file>.+))|"\
+        "(((?<cancel_you>You)|(?<cancel_who>.+)) cancell?ed the transfer of (?<cancel_file>.+))|"\
         "(?<cancel_undef>File transfer cancelled)|"\
         "(Transfer of file (?<recv_file>.+) complete)|"\
         "(Offering to send (?<you_offer_file>.+) to (?<you_offer_to>.+))|"\
         "(Buzzing (?<buzz_to>.+)[.][.][.])|"\
         "(Unable to buzz, because (?<buzz_to_fail>.+) does not support it or does not wish to receive buzzes now[.])|"\
-        "((?<buzz_from>.+) has buzzed you!)|"\
+        "((?<buzz_from>.+) (has buzzed you|just sent you a Buzz)!)|"\
         "((?<rename_old>.+) is now known as (?<rename_new>.+)[.])|"\
         "((?<leave_11_who>.+) has left the conversation[.])|"\
         "((?<join_conf_who>.+) entered the room[.])|"\
