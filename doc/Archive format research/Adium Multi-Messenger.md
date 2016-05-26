@@ -128,10 +128,10 @@ System Event Format (`<status>` tag)
     - Often has no specified `sender`
       - Subject can be deduced from screen name present in tag content
     - The tag content further specifies what the message means
-    - Observed content:
+      - See separate *Libpurple System Messages* document for a complete list 
+    - Observed kinds of messages in Adium archives:
       - `account_name is now known as Screen Name.`
       - `Screen Name is offering to send file filename.ext`
       - `Starting transfer of filename.ext from Screen Name`
       - `Transfer of file filename.ext complete`
-        - The filename may be contained in an `<a>` tag
       - `Screen Name cancelled the transfer of filename.ext`
