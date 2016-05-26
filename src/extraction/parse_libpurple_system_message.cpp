@@ -15,6 +15,8 @@
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawCancelFileTransferEvent.h"
 #include "intermediate_format/events/RawChangeScreenNameEvent.h"
+#include "intermediate_format/events/RawConnectedEvent.h"
+#include "intermediate_format/events/RawDisconnectedEvent.h"
 #include "intermediate_format/events/RawJoinConferenceEvent.h"
 #include "intermediate_format/events/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/RawLeaveConversationEvent.h"
@@ -27,6 +29,7 @@
 #include "intermediate_format/events/RawPingEvent.h"
 #include "intermediate_format/events/RawReceiveFileEvent.h"
 #include "intermediate_format/events/RawStartFileTransferEvent.h"
+#include "intermediate_format/events/RawStatusChangeEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
@@ -72,6 +75,11 @@ CEDE(RawEvent) parse_libpurple_system_message(
         "((?<leave_11_who>.+) has left the conversation[.])|"\
         "((?<join_conf_who>.+) entered the room[.])|"\
         "((?<leave_conf_who>.+) left the room[.])|"\
+        "((?<sign_on_who>.+) (has signed on|logged in)[.])|"\
+        "((?<sign_off_who>.+) (has signed off|logged out)[.])|"\
+        "((?<away_who>.+) has gone away[.])|"\
+        "((?<idle_who>.+) has become idle[.])|"\
+        "((?<avail_who>.+) is no longer (idle|away)[.])|"\
         "(?<msg_too_large>Unable to send message: The message is too large[.])|"\
         "(?<msg_not_sent>Message could not be sent because "\
           "((?<fail_user_offline>the user is offline)|(?<fail_conn_err>a connection error occurred))"\
@@ -197,6 +205,39 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_time,
             event_index,
             parse_subject(match.captured("leave_conf_who"), protocol, is_html)
+        );
+    } else if (match.capturedLength("sign_on_who")) {
+        return make_unique<RawConnectedEvent>(
+            event_time,
+            event_index,
+            parse_subject(match.captured("sign_on_who"), protocol, is_html)
+        );
+    } else if (match.capturedLength("sign_off_who")) {
+        return make_unique<RawDisconnectedEvent>(
+            event_time,
+            event_index,
+            parse_subject(match.captured("sign_off_who"), protocol, is_html)
+        );
+    } else if (match.capturedLength("away_who")) {
+        return make_unique<RawStatusChangeEvent>(
+            event_time,
+            event_index,
+            parse_subject(match.captured("away_who"), protocol, is_html),
+            IMStatus::AWAY
+        );
+    } else if (match.capturedLength("idle_who")) {
+        return make_unique<RawStatusChangeEvent>(
+            event_time,
+            event_index,
+            parse_subject(match.captured("idle_who"), protocol, is_html),
+            IMStatus::IDLE
+        );
+    } else if (match.capturedLength("avail_who")) {
+        return make_unique<RawStatusChangeEvent>(
+            event_time,
+            event_index,
+            parse_subject(match.captured("avail_who"), protocol, is_html),
+            IMStatus::AVAILABLE
         );
     } else if (match.capturedLength("msg_too_large")) {
         return make_unique<RawMessageSendFailedEvent>(
