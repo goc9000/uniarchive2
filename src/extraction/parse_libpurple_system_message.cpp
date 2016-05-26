@@ -46,8 +46,8 @@ using namespace uniarchive2::utils::html;
 
 namespace uniarchive2 { namespace extraction {
 
-CEDE(ApparentSubject) parse_subject(IMM(QString) subject, IMProtocol protocol, bool is_html);
-QString parse_filename(IMM(QString) filename, bool is_html);
+static QString strip_subject_suffix(IMM(QString) subject);
+static QString parse_filename(IMM(QString) filename, bool is_html);
 
 
 CEDE(RawEvent) parse_libpurple_system_message(
@@ -96,14 +96,14 @@ CEDE(RawEvent) parse_libpurple_system_message(
         return make_unique<RawOfferFileGroupEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("offer_grp_who"), protocol, is_html),
+            parse_libpurple_subject(match.captured("offer_grp_who"), protocol, is_html),
             match.captured("n_files_group").toUInt()
         );
     } else if (match.capturedLength("offer_who")) {
         return make_unique<RawOfferFileEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("offer_who"), protocol, is_html),
+            parse_libpurple_subject(match.captured("offer_who"), protocol, is_html),
             parse_filename(match.captured("offer_file"), is_html)
         );
     } else if (match.capturedLength("xfer_file")) {
@@ -113,7 +113,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             parse_filename(match.captured("xfer_file"), is_html)
         );
         static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender =
-            parse_subject(match.captured("xfer_from"), protocol, is_html);
+            parse_libpurple_subject(match.captured("xfer_from"), protocol, is_html);
 
         return xfer_event;
     } else if (match.capturedLength("cancel_file")) {
@@ -125,7 +125,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor =
             match.capturedLength("cancel_you")
                 ? make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
-                : parse_subject(match.captured("cancel_who"), protocol, is_html);
+                : parse_libpurple_subject(match.captured("cancel_who"), protocol, is_html);
 
         return xfer_event;
     } else if (match.capturedLength("cancel_undef")) {
@@ -150,7 +150,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             parse_filename(match.captured("you_offer_file"), is_html)
         );
         static_cast<RawOfferFileEvent*>(offer_event.get())->recipient =
-            parse_subject(match.captured("you_offer_to"), protocol, is_html);
+            parse_libpurple_subject(match.captured("you_offer_to"), protocol, is_html);
 
         return offer_event;
     } else if (match.capturedLength("you_buzz") || match.capturedLength("buzz_to")) {
@@ -162,7 +162,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
 
         if (match.capturedLength("buzz_to")) {
             static_cast<RawPingEvent *>(ping_event.get())->pingee =
-                parse_subject(match.captured("buzz_to"), protocol, is_html);
+                parse_libpurple_subject(match.captured("buzz_to"), protocol, is_html);
         }
 
         return ping_event;
@@ -173,7 +173,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
         );
         static_cast<RawPingEvent*>(ping_event.get())->pingee =
-            parse_subject(match.captured("buzz_to_fail"), protocol, is_html);
+            parse_libpurple_subject(match.captured("buzz_to_fail"), protocol, is_html);
         static_cast<RawPingEvent*>(ping_event.get())->reasonFailed =
             RawFailableEvent::FailReason::FAILED_BLOCKED_OR_UNSUPPORTED;
 
@@ -182,64 +182,64 @@ CEDE(RawEvent) parse_libpurple_system_message(
         return make_unique<RawPingEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("buzz_from"), protocol, is_html)
+            parse_libpurple_subject(match.captured("buzz_from"), protocol, is_html)
         );
     } else if (match.capturedLength("rename_old")) {
         return make_unique<RawChangeScreenNameEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("rename_old"), protocol, is_html),
-            parse_subject(match.captured("rename_new"), protocol, is_html)
+            parse_libpurple_subject(match.captured("rename_old"), protocol, is_html),
+            parse_libpurple_subject(match.captured("rename_new"), protocol, is_html)
         );
     } else if (match.capturedLength("leave_11_who")) {
         return make_unique<RawLeaveConversationEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("leave_11_who"), protocol, is_html)
+            parse_libpurple_subject(match.captured("leave_11_who"), protocol, is_html)
         );
     } else if (match.capturedLength("join_conf_who")) {
         return make_unique<RawJoinConferenceEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("join_conf_who"), protocol, is_html)
+            parse_libpurple_subject(match.captured("join_conf_who"), protocol, is_html)
         );
     } else if (match.capturedLength("leave_conf_who")) {
         return make_unique<RawLeaveConferenceEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("leave_conf_who"), protocol, is_html)
+            parse_libpurple_subject(match.captured("leave_conf_who"), protocol, is_html)
         );
     } else if (match.capturedLength("sign_on_who")) {
         return make_unique<RawConnectedEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("sign_on_who"), protocol, is_html)
+            parse_libpurple_subject(match.captured("sign_on_who"), protocol, is_html)
         );
     } else if (match.capturedLength("sign_off_who")) {
         return make_unique<RawDisconnectedEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("sign_off_who"), protocol, is_html)
+            parse_libpurple_subject(match.captured("sign_off_who"), protocol, is_html)
         );
     } else if (match.capturedLength("away_who")) {
         return make_unique<RawStatusChangeEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("away_who"), protocol, is_html),
+            parse_libpurple_subject(match.captured("away_who"), protocol, is_html),
             IMStatus::AWAY
         );
     } else if (match.capturedLength("idle_who")) {
         return make_unique<RawStatusChangeEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("idle_who"), protocol, is_html),
+            parse_libpurple_subject(match.captured("idle_who"), protocol, is_html),
             IMStatus::IDLE
         );
     } else if (match.capturedLength("avail_who")) {
         return make_unique<RawStatusChangeEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("avail_who"), protocol, is_html),
+            parse_libpurple_subject(match.captured("avail_who"), protocol, is_html),
             IMStatus::AVAILABLE
         );
     } else if (match.capturedLength("msg_too_large")) {
@@ -273,7 +273,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> cam_event = make_unique<RawOfferWebcamEvent>(
             event_time,
             event_index,
-            parse_subject(match.captured("unsup_webcam_from"), protocol, is_html)
+            parse_libpurple_subject(match.captured("unsup_webcam_from"), protocol, is_html)
         );
         static_cast<RawOfferWebcamEvent*>(cam_event.get())->reasonFailed =
             RawFailableEvent::FailReason::FAILED_UNSUPPORTED;
@@ -288,20 +288,15 @@ CEDE(RawEvent) parse_libpurple_system_message(
     invariant_violation("Unsupported libpurple system message: %s", QP(content));
 }
 
-CEDE(ApparentSubject) parse_subject(IMM(QString) subject, IMProtocol protocol, bool is_html) {
+CEDE(ApparentSubject) parse_libpurple_subject(IMM(QString) subject, IMProtocol protocol, bool is_html) {
     if (!is_html) {
-        return make_unique<SubjectGivenAsScreenName>(subject);
+        return make_unique<SubjectGivenAsScreenName>(strip_subject_suffix(subject));
     }
 
     QREGEX_MATCH_CI(match, "^(.*) \\[<em>(.*)</em>\\]$", subject);
     if (match.hasMatch()) {
-        QString screen_name = decode_html_entities(match.captured(1));
-        QString account_name = decode_html_entities(match.captured(2));
-
-        QREGEX_MATCH_CI(strip_match, "^(.*@.*)/.*$", account_name);
-        if (strip_match.hasMatch()) {
-            account_name = strip_match.captured(1);
-        }
+        QString screen_name = strip_subject_suffix(decode_html_entities(match.captured(1)));
+        QString account_name = strip_subject_suffix(decode_html_entities(match.captured(2)));
 
         return make_unique<FullySpecifiedSubject>(
             parse_account_generic(protocol, account_name),
@@ -309,10 +304,15 @@ CEDE(ApparentSubject) parse_subject(IMM(QString) subject, IMProtocol protocol, b
         );
     }
 
-    return make_unique<SubjectGivenAsScreenName>(decode_html_entities(subject));
+    return make_unique<SubjectGivenAsScreenName>(strip_subject_suffix(decode_html_entities(subject)));
 }
 
-QString parse_filename(IMM(QString) filename, bool is_html) {
+static QString strip_subject_suffix(IMM(QString) subject) {
+    QREGEX_MATCH_CI(match, "(.*@[^/]*)/.*", subject);
+    return match.hasMatch() ? match.captured(1) : subject;
+}
+
+static QString parse_filename(IMM(QString) filename, bool is_html) {
     if (!is_html) {
         return filename;
     }

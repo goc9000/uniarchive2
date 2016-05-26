@@ -56,9 +56,13 @@ static void seek_to_start_of_events(QTextStream& mut_stream);
 
 static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 static CEDE(RawMessageEvent) parse_message(
-    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message_html
+    unsigned int index,
+    IMM(QString) color,
+    IMM(ApparentTime) timestamp,
+    IMM(QString) sender,
+    IMM(QString) message_html,
+    IMProtocol protocol
 );
-static QString strip_sender_suffix(IMM(QString) sender);
 static RawMessageContent parse_message_content(IMM(QString) content_html);
 static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 static CEDE(TextSection) parse_text_section(IMM(QString) text);
@@ -148,7 +152,8 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
             color,
             timestamp,
             decode_html_entities(event_match.captured("sender")),
-            event_match.captured("message")
+            event_match.captured("message"),
+            conversation.protocol
         );
     } else {
         invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
@@ -163,27 +168,22 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
 }
 
 static CEDE(RawMessageEvent) parse_message(
-    unsigned int index, IMM(QString) color, IMM(ApparentTime) timestamp, IMM(QString) sender, IMM(QString) message_html
+    unsigned int index,
+    IMM(QString) color,
+    IMM(ApparentTime) timestamp,
+    IMM(QString) sender,
+    IMM(QString) message_html,
+    IMProtocol protocol
 ) {
     invariant(
         color == "#16569E" || color == "#A82F2F",
         "Expected color to be #16569E or #A82F2F for system message"
     );
 
-    return make_unique<RawMessageEvent>(
-        timestamp,
-        index,
-        make_unique<SubjectGivenAsScreenName>(
-            strip_sender_suffix(sender),
-            (color == "#16569E") ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer
-        ),
-        parse_message_content(message_html)
-    );
-}
+    unique_ptr<ApparentSubject> subject = parse_libpurple_subject(sender, protocol, true);
+    subject->hints = (color == "#16569E") ? ApparentSubject::Hint::IsIdentity : ApparentSubject::Hint::IsPeer;
 
-static QString strip_sender_suffix(IMM(QString) sender) {
-    QREGEX_MATCH_CI(match, "(.*@[^/]*)/.*", sender);
-    return match.hasMatch() ? match.captured(1) : sender;
+    return make_unique<RawMessageEvent>(timestamp, index, move(subject), parse_message_content(message_html));
 }
 
 static RawMessageContent parse_message_content(IMM(QString) content_html) {

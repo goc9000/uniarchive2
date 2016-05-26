@@ -13,12 +13,14 @@
 
 #include <QString>
 
+#include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/IMProtocol.h"
 #include "utils/language/shortcuts.h"
 
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::protocols;
 
@@ -31,6 +33,8 @@ CEDE(RawEvent) parse_libpurple_system_message(
     bool is_html,
     IMProtocol protocol
 );
+
+CEDE(ApparentSubject) parse_libpurple_subject(IMM(QString) subject, IMProtocol protocol, bool is_html);
 
 }}
 
