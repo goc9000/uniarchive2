@@ -69,6 +69,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         "(Transfer of file (?<recv_file>.+) complete)|"\
         "(Offering to send (?<you_offer_file>.+) to (?<you_offer_to>.+))|"\
         "(Buzzing (?<buzz_to>.+)[.][.][.])|"\
+        "(?<you_buzz>: Buzz!!)|"\
         "(Unable to buzz, because (?<buzz_to_fail>.+) does not support it or does not wish to receive buzzes now[.])|"\
         "((?<buzz_from>.+) (has buzzed you|just sent you a Buzz)!)|"\
         "((?<rename_old>.+) is now known as (?<rename_new>.+)[.])|"\
@@ -153,14 +154,17 @@ CEDE(RawEvent) parse_libpurple_system_message(
             parse_subject(match.captured("you_offer_to"), protocol, is_html);
 
         return offer_event;
-    } else if (match.capturedLength("buzz_to")) {
+    } else if (match.capturedLength("you_buzz") || match.capturedLength("buzz_to")) {
         unique_ptr<RawEvent> ping_event = make_unique<RawPingEvent>(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
         );
-        static_cast<RawPingEvent*>(ping_event.get())->pingee =
-            parse_subject(match.captured("buzz_to"), protocol, is_html);
+
+        if (match.capturedLength("buzz_to")) {
+            static_cast<RawPingEvent *>(ping_event.get())->pingee =
+                parse_subject(match.captured("buzz_to"), protocol, is_html);
+        }
 
         return ping_event;
     } else if (match.capturedLength("buzz_to_fail")) {
