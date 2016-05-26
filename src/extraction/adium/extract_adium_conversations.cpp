@@ -310,6 +310,7 @@ static CEDE(RawEvent) parse_status_event(
             event_index,
             event_time,
             content_match.captured(1).trimmed(),
+            true,
             protocol
         );
     }

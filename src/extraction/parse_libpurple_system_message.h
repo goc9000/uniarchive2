@@ -28,6 +28,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
     unsigned int event_index,
     IMM(ApparentTime) event_time,
     IMM(QString) content,
+    bool is_html,
     IMProtocol protocol
 );
 

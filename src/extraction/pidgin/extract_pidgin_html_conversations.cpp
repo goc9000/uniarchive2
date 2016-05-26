@@ -156,6 +156,7 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
             (unsigned int)conversation.events.size(),
             timestamp,
             event_match.captured("system_message"),
+            true,
             conversation.protocol
         );
     }
