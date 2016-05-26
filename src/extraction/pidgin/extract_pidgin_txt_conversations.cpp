@@ -84,10 +84,13 @@ vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data) {
             lines[i]
         );
 
-        if (unsent_message_follows || !start_match.hasMatch()) {
+        if (unsent_message_follows) {
+            invariant(start_match.hasMatch(), "Expected unsent message to start with proper header");
+            raw_event.raw_content.append("\n").append(start_match.captured("content"));
+            unsent_message_follows = false;
+        } else if (!start_match.hasMatch()) {
             invariant(i != 1, "First event in file does not match format!");
             raw_event.raw_content.append("\n").append(lines[i].trimmed());
-            unsent_message_follows = false;
         } else {
             if (i != 1) {
                 raw_events.push_back(raw_event);
