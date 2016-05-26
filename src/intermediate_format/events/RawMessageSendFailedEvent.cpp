@@ -18,8 +18,10 @@ RawMessageSendFailedEvent::RawMessageSendFailedEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) sender,
-    SendFailReason reason
-): RawEvent(timestamp, index), sender(move(sender)), reasonFailed(reason) {
+    SendFailReason reason,
+    RawMessageContent&& unsentMessageContent
+): RawEvent(timestamp, index), sender(move(sender)), reasonFailed(reason),
+   unsentMessageContent(move(unsentMessageContent)) {
 }
 
 QString RawMessageSendFailedEvent::eventName() const {
@@ -39,6 +41,9 @@ void RawMessageSendFailedEvent::writeDetailsToDebugStream(QDebug stream) const {
         case SendFailReason::MESSAGE_TOO_LARGE:
             stream << "MESSAGE_TOO_LARGE";
             break;
+    }
+    if (!unsentMessageContent.items.empty()) {
+        stream << " unsent_message=" << unsentMessageContent;
     }
 }
 

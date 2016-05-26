@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "extraction/parse_libpurple_system_message.h"
+#include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/events/RawCancelFileTransferEvent.h"
 #include "intermediate_format/events/RawChangeScreenNameEvent.h"
 #include "intermediate_format/events/RawJoinConferenceEvent.h"
@@ -35,6 +36,7 @@
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 
+using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::utils::html;
@@ -196,7 +198,8 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
-            RawMessageSendFailedEvent::SendFailReason::MESSAGE_TOO_LARGE
+            RawMessageSendFailedEvent::SendFailReason::MESSAGE_TOO_LARGE,
+            RawMessageContent()
         );
     } else if (match.capturedLength("unsup_webcam_from")) {
         unique_ptr<RawEvent> cam_event = make_unique<RawOfferWebcamEvent>(

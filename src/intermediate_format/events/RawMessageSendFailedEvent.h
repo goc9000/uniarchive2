@@ -23,6 +23,7 @@
 #include "utils/language/shortcuts.h"
 
 using namespace std;
+using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
@@ -37,12 +38,14 @@ public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> receiver;
     SendFailReason reasonFailed;
+    RawMessageContent unsentMessageContent;
 
     RawMessageSendFailedEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
         TAKE(ApparentSubject) sender,
-        SendFailReason reason
+        SendFailReason reason,
+        RawMessageContent&& unsentMessageContent = RawMessageContent()
     );
 
     virtual QString eventName() const;
