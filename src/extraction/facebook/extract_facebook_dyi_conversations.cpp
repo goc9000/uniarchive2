@@ -13,7 +13,7 @@
 #include <QFileInfo>
 
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
-#include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -190,18 +190,15 @@ static CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
     auto date_element = only_child_elem_with_class(header_element, "span", "meta");
     ApparentTime message_time = parse_message_time(read_text_only_content(date_element));
 
-    RawMessageContent content;
     mut_message_element = mut_message_element.nextSiblingElement();
     invariant(mut_message_element.tagName() == "p", "Expeced a <p> to follow after the message <div>");
 
     QString message_text = read_text_only_content(mut_message_element);
-    content.addItem(make_unique<TextSection>(message_text));
-
     mut_message_element = mut_message_element.nextSiblingElement();
 
     // Note: we fill in an index of 0 because the index can be computed only after we have all the messages (this is
     // because they are parsed in reverse)
-    return make_unique<RawMessageEvent>(message_time, 0, move(sender), move(content));
+    return make_unique<RawMessageEvent>(message_time, 0, move(sender), RawMessageContent::fromPlainText(message_text));
 }
 
 static ApparentTime parse_message_time(IMM(QString) time_text) {

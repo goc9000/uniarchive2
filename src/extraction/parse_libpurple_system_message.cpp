@@ -12,7 +12,6 @@
 
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
-#include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawCancelFileTransferEvent.h"
 #include "intermediate_format/events/RawChangeScreenNameEvent.h"
 #include "intermediate_format/events/RawConnectedEvent.h"
@@ -263,15 +262,12 @@ CEDE(RawEvent) parse_libpurple_system_message(
             never_reached();
         }
 
-        RawMessageContent msg_content;
-        msg_content.addItem(make_unique<TextSection>(match.captured("unsent_msg")));
-
         return make_unique<RawMessageSendFailedEvent>(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
             fail_reason,
-            move(msg_content)
+            RawMessageContent::fromPlainText(match.captured("unsent_msg"))
         );
     } else if (match.capturedLength("unsup_webcam_from")) {
         unique_ptr<RawEvent> cam_event = make_unique<RawOfferWebcamEvent>(

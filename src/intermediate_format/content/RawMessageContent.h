@@ -15,6 +15,7 @@
 #include <memory>
 
 #include <QtDebug>
+#include <QString>
 
 #include "intermediate_format/content/RawMessageContentItem.h"
 #include "utils/language/shortcuts.h"
@@ -25,9 +26,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 class RawMessageContent {
 public:
-    RawMessageContent();
-
     vector<unique_ptr<RawMessageContentItem>> items;
+
+    RawMessageContent();
+    static RawMessageContent fromPlainText(IMM(QString) text);
 
     void addItem(TAKE(RawMessageContentItem) item);
 };

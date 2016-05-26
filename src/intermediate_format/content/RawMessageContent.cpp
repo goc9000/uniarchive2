@@ -11,10 +11,20 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/TextSection.h"
+
+#include "utils/external_libs/make_unique.hpp"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 RawMessageContent::RawMessageContent() {
+}
+
+RawMessageContent RawMessageContent::fromPlainText(IMM(QString) text) {
+    RawMessageContent content;
+    content.addItem(make_unique<TextSection>(text));
+
+    return content;
 }
 
 void RawMessageContent::addItem(TAKE(RawMessageContentItem) item) {
