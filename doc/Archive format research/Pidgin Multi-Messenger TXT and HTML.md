@@ -30,9 +30,8 @@ Filename Format
 - Offset is missing pre-14 Nov 2006 (in this case, the date represents the local date)
 - Extension is `.txt` if pre-Aug 2009, `.html` otherwise
 - *conference_id* has no stable format. Some observed:
-  
-  *peer_account_name* `-` *unix_timestamp*
-  `private-chat-9631bd3a-7352-4427-8040-d5ebfee942cd@groupchat.google.com`
+  - *peer_account_name* `-` *unix_timestamp*
+  - `private-chat-9631bd3a-7352-4427-8040-d5ebfee942cd@groupchat.google.com`
 
 
 Other File Properties
