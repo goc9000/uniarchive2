@@ -15,6 +15,8 @@
 
 #include "extraction/pidgin/extract_pidgin_txt_conversations.h"
 #include "extraction/pidgin/common_extract_pidgin_conversations_code.h"
+#include "extraction/parse_libpurple_system_message.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
@@ -42,6 +44,7 @@ struct PreParsedEvent {
 };
 
 vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data);
+CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, IMM(RawConversation) conversation);
 
 
 RawConversation extract_pidgin_txt_conversation(IMM(QString) filename) {
@@ -50,6 +53,7 @@ RawConversation extract_pidgin_txt_conversation(IMM(QString) filename) {
     QString full_text = load_utf8_text_file(filename).trimmed();
 
     for (PreParsedEvent raw_event : pre_parse_events(full_text.trimmed())) {
+        conversation.events.push_back(parse_event(raw_event, conversation));
     }
 
     return conversation;
@@ -111,6 +115,29 @@ vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data) {
     }
 
     return raw_events;
+}
+
+CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, IMM(RawConversation) conversation) {
+    ApparentTime timestamp = parse_timestamp(raw_event.raw_timestamp, conversation);
+
+    if (raw_event.raw_screen_name.isEmpty()) {
+        return parse_libpurple_system_message(
+            (unsigned int)conversation.events.size(),
+            timestamp,
+            raw_event.raw_content,
+            false,
+            conversation.protocol
+        );
+    } else {
+        return make_unique<RawMessageEvent>(
+            timestamp,
+            (unsigned int)conversation.events.size(),
+            parse_libpurple_subject(raw_event.raw_screen_name, conversation.protocol, false),
+            RawMessageContent::fromPlainText(raw_event.raw_content)
+        );
+    }
+
+    return unique_ptr<RawEvent>();
 }
 
 }}}
