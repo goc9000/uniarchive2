@@ -12,6 +12,7 @@
 
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawCancelFileTransferEvent.h"
 #include "intermediate_format/events/RawChangeScreenNameEvent.h"
 #include "intermediate_format/events/RawJoinConferenceEvent.h"
@@ -72,6 +73,10 @@ CEDE(RawEvent) parse_libpurple_system_message(
         "((?<join_conf_who>.+) entered the room[.])|"\
         "((?<leave_conf_who>.+) left the room[.])|"\
         "(?<msg_too_large>Unable to send message: The message is too large[.])|"\
+        "(?<msg_not_sent>Message could not be sent because "\
+          "((?<fail_user_offline>the user is offline)|(?<fail_conn_err>a connection error occurred))"\
+          ":\\s*(?<unsent_msg>.*)"\
+        ")|"\
         "((?<unsup_webcam_from>.+) has sent you a webcam invite, which is not yet supported[.])|"\
         "(?<log_started>Logging started[.] Future messages in this conversation will be logged[.])|"\
         "(?<log_stopped>Logging stopped[.] Future messages in this conversation will not be logged[.])"\
@@ -200,6 +205,28 @@ CEDE(RawEvent) parse_libpurple_system_message(
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
             RawMessageSendFailedEvent::SendFailReason::MESSAGE_TOO_LARGE,
             RawMessageContent()
+        );
+    } else if (match.capturedLength("msg_not_sent")) {
+        invariant(!is_html, "'Message could not be sent' events not supported in HTML mode");
+
+        auto fail_reason = RawMessageSendFailedEvent::SendFailReason::UNKNOWN;
+        if (match.capturedLength("fail_user_offline")) {
+            fail_reason = RawMessageSendFailedEvent::SendFailReason::RECIPIENT_OFFLINE;
+        } else if (match.capturedLength("fail_conn_err")) {
+            fail_reason = RawMessageSendFailedEvent::SendFailReason::CONNECTION_ERROR;
+        } else {
+            never_reached();
+        }
+
+        RawMessageContent msg_content;
+        msg_content.addItem(make_unique<TextSection>(match.captured("unsent_msg")));
+
+        return make_unique<RawMessageSendFailedEvent>(
+            event_time,
+            event_index,
+            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+            fail_reason,
+            move(msg_content)
         );
     } else if (match.capturedLength("unsup_webcam_from")) {
         unique_ptr<RawEvent> cam_event = make_unique<RawOfferWebcamEvent>(

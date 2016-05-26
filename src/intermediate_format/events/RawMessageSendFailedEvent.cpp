@@ -41,6 +41,12 @@ void RawMessageSendFailedEvent::writeDetailsToDebugStream(QDebug stream) const {
         case SendFailReason::MESSAGE_TOO_LARGE:
             stream << "MESSAGE_TOO_LARGE";
             break;
+        case SendFailReason::RECIPIENT_OFFLINE:
+            stream << "RECIPIENT_OFFLINE";
+            break;
+        case SendFailReason::CONNECTION_ERROR:
+            stream << "CONNECTION_ERROR";
+            break;
     }
     if (!unsentMessageContent.items.empty()) {
         stream << " unsent_message=" << unsentMessageContent;

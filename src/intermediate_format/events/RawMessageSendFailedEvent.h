@@ -32,7 +32,9 @@ struct RawMessageSendFailedEvent : RawEvent {
 public:
     enum class SendFailReason {
         UNKNOWN = 0,
-        MESSAGE_TOO_LARGE
+        MESSAGE_TOO_LARGE,
+        RECIPIENT_OFFLINE,
+        CONNECTION_ERROR
     };
 
     unique_ptr<ApparentSubject> sender;
