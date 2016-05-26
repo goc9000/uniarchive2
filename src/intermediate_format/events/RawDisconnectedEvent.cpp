@@ -14,7 +14,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawDisconnectedEvent::RawDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index) : RawEvent(timestamp, index) {
+RawDisconnectedEvent::RawDisconnectedEvent(
+    IMM(ApparentTime) timestamp,
+    unsigned int index,
+    TAKE(ApparentSubject) subject
+) : RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString RawDisconnectedEvent::eventName() const {
@@ -22,6 +26,7 @@ QString RawDisconnectedEvent::eventName() const {
 }
 
 void RawDisconnectedEvent::writeDetailsToDebugStream(QDebug stream) const {
+    stream << " subject=" << subject.get();
 }
 
 }}}

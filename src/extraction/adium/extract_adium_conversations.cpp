@@ -33,6 +33,7 @@
 #include "intermediate_format/events/RawWindowClosedEvent.h"
 #include "intermediate_format/events/RawWindowOpenedEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -290,10 +291,18 @@ static CEDE(RawEvent) parse_status_event(
         return parse_status_change_event(event_element, event_time, event_index, move(event_subject));
     } else if (event_type == "connected") {
         expect_event_text(event_element, "You have connected");
-        return make_unique<RawConnectedEvent>(event_time, event_index);
+        return make_unique<RawConnectedEvent>(
+            event_time,
+            event_index,
+            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+        );
     } else if (event_type == "disconnected") {
         expect_event_text(event_element, "You have disconnected");
-        return make_unique<RawDisconnectedEvent>(event_time, event_index);
+        return make_unique<RawDisconnectedEvent>(
+            event_time,
+            event_index,
+            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+        );
     } else if (event_type == "Notification") {
         if (event_element.text().trimmed().endsWith(" wants your attention!")) {
             return make_unique<RawPingEvent>(event_time, event_index, move(event_subject));

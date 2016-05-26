@@ -17,15 +17,19 @@
 #include <QString>
 
 #include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
 using namespace std;
+using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 struct RawDisconnectedEvent : RawEvent {
 public:
-    RawDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    unique_ptr<ApparentSubject> subject;
+
+    RawDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 
