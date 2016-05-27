@@ -138,3 +138,27 @@ System Message Format (HTML variant)
 
 - Except for the timestamp, the semantics are completely defined by the content
   - See the *Libpurple System Messages* document
+
+
+File Format (TXT variant)
+--------------------------
+
+- Can be seen as the HTML version with all tags stripped out
+- More difficult and ambiguous to parse
+- General form:
+
+  ```
+  Conversation with peer_account at Tue 12 Oct 2010 09:18:15 PM EEST on local_account (protocol)
+  (09:18:14 PM) Peer Name: bla bla
+  (09:20:13 PM) Local Name: ba bla
+  ...
+  (09:44:17 PM) Local Name: this is a
+  multi line
+  message
+  ...
+  (10:01:25 PM) Local Name left the room.
+  ...
+  ```
+
+- **Problem**: Newlines in multi-line messages are not quoted, and there is no markup to delimit different messages
+  - Quoted messages are indistinguishable from normal messages
