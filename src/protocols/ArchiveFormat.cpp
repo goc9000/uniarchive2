@@ -31,6 +31,8 @@ QString name_for_archive_format(ArchiveFormat protocol) {
             return "Pidgin (HTML format)";
         case ArchiveFormat::PIDGIN_TXT:
             return "Pidgin (TXT format)";
+        case ArchiveFormat::WHATSAPP_EMAIL:
+            return "WhatsApp (Email format)";
         case ArchiveFormat::YAHOO_MESSENGER_DAT:
             return "Yahoo Messenger (DAT format)";
     }

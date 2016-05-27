@@ -10,6 +10,7 @@
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "extraction/pidgin/extract_pidgin_html_conversations.h"
 #include "extraction/pidgin/extract_pidgin_txt_conversations.h"
+#include "extraction/whatsapp/extract_whatsapp_email_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "utils/language/shortcuts.h"
 
@@ -19,6 +20,7 @@ using namespace uniarchive2::extraction::digsby;
 using namespace uniarchive2::extraction::facebook;
 using namespace uniarchive2::extraction::msn;
 using namespace uniarchive2::extraction::pidgin;
+using namespace uniarchive2::extraction::whatsapp;
 using namespace uniarchive2::extraction::yahoo;
 
 int main() {
@@ -26,6 +28,10 @@ int main() {
 
     vector<RawConversation> convos;
 
+    QDirIterator whatsapp_files(QT_STRINGIFY(TEST_DATA_DIR) "/whatsapp", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
+    while (whatsapp_files.hasNext()) {
+        convos.push_back(extract_whatsapp_email_conversation(whatsapp_files.next()));
+    }
     QDirIterator pidgin_txt_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
     while (pidgin_txt_files.hasNext()) {
         convos.push_back(extract_pidgin_txt_conversation(pidgin_txt_files.next()));

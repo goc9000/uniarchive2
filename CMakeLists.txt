@@ -20,6 +20,8 @@ set(SOURCE_FILES
         src/extraction/pidgin/extract_pidgin_html_conversations.h
         src/extraction/pidgin/extract_pidgin_txt_conversations.cpp
         src/extraction/pidgin/extract_pidgin_txt_conversations.h
+        src/extraction/whatsapp/extract_whatsapp_email_conversations.cpp
+        src/extraction/whatsapp/extract_whatsapp_email_conversations.h
         src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp
         src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.h
         src/extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp
