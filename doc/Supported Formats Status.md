@@ -9,8 +9,8 @@ Supported Formats Status
 | Empathy         |                | Empathy                    | Planned       |
 | Facebook        | DYI            | Facebook                   | **Done**      |
 | MSN Messenger   | XML            | MSN Messenger              | **Done**      |
-| Pidgin          | TXT            | Jabber, MSN, Yahoo         | Planned       |
-| Pidgin          | HTML           | Jabber, MSN, Yahoo         | *In Progress* |
+| Pidgin          | TXT            | Jabber, MSN, Yahoo         | **Done**      |
+| Pidgin          | HTML           | Jabber, MSN, Yahoo         | **Done**      |
 | Skype           |                | Skype                      | Planned       |
-| Whatsapp        | Email          | Whatsapp                   | Planned       |
+| Whatsapp        | Email          | Whatsapp                   | *In Progress* |
 | Yahoo Messenger | DAT            | Yahoo Messenger            | **Done**      |
