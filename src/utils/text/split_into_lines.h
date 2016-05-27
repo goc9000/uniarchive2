@@ -1,5 +1,5 @@
 /**
- * utils/text/load_text_file.h
+ * utils/text/split_into_lines.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,17 +8,18 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_UTILS_TEXT_LOAD_TEXT_FILE_H
-#define UNIARCHIVE2_UTILS_TEXT_LOAD_TEXT_FILE_H
+#ifndef UNIARCHIVE2_UTILS_TEXT_SPLIT_INTO_LINES_H
+#define UNIARCHIVE2_UTILS_TEXT_SPLIT_INTO_LINES_H
 
 #include <QString>
+#include <QStringList>
 
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace utils { namespace text {
 
-QString load_utf8_text_file(IMM(QString) filename);
+QStringList split_into_lines(IMM(QString) filename);
 
 }}}
 
-#endif //UNIARCHIVE2_UTILS_TEXT_LOAD_TEXT_FILE_H
+#endif //UNIARCHIVE2_UTILS_TEXT_SPLIT_INTO_LINES_H

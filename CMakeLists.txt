@@ -171,6 +171,8 @@ set(SOURCE_FILES
         src/utils/text/decoding.h
         src/utils/text/load_text_file.cpp
         src/utils/text/load_text_file.h
+        src/utils/text/split_into_lines.cpp
+        src/utils/text/split_into_lines.h
         src/utils/time/parse_date_parts.cpp
         src/utils/time/parse_date_parts.h
         src/utils/xml/qdom_utils.cpp

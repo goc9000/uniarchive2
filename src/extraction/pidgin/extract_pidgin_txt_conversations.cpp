@@ -24,6 +24,7 @@
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/text/load_text_file.h"
+#include "utils/text/split_into_lines.h"
 #include "utils/time/parse_date_parts.h"
 
 using namespace std;
@@ -52,7 +53,7 @@ RawConversation extract_pidgin_txt_conversation(IMM(QString) filename) {
 
     QString full_text = load_utf8_text_file(filename).trimmed();
 
-    for (PreParsedEvent raw_event : pre_parse_events(full_text.trimmed())) {
+    for (PreParsedEvent raw_event : pre_parse_events(full_text)) {
         conversation.events.push_back(parse_event(raw_event, conversation));
     }
 
@@ -66,8 +67,7 @@ vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data) {
         return raw_events;
     }
 
-    QREGEX(line_terminator, "(\r\n|\r|\n)");
-    QStringList lines = text_data.split(line_terminator);
+    QStringList lines = split_into_lines(text_data);
 
     QREGEX_MUST_MATCH(
         header_match, "^Conversation with .* at .* on .* \\(.*\\)$", lines[0],
