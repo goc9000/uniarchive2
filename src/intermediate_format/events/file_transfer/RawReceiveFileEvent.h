@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawCancelFileTransferEvent.h
+ * intermediate_format/events/file_transfer/RawReceiveFileEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCANCELFILETRANSFEREVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCANCELFILETRANSFEREVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWRECEIVEFILEEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWRECEIVEFILEEVENT_H
 
 #include <memory>
 
@@ -25,12 +25,18 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawCancelFileTransferEvent : RawEvent {
+struct RawReceiveFileEvent : RawEvent {
 public:
+    unique_ptr<ApparentSubject> receiver;
+    unique_ptr<ApparentSubject> sender;
     QString filename;
-    unique_ptr<ApparentSubject> actor;
 
-    RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QString) filename);
+    RawReceiveFileEvent(
+        IMM(ApparentTime) timestamp,
+        unsigned int index,
+        TAKE(ApparentSubject) receiver,
+        IMM(QString) filename
+    );
 
     virtual QString eventName() const;
 
@@ -40,4 +46,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCANCELFILETRANSFEREVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWRECEIVEFILEEVENT_H

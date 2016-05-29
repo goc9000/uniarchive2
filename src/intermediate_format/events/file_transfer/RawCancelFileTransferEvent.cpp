@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawCancelFileTransferEvent.cpp
+ * intermediate_format/events/file_transfer/RawCancelFileTransferEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,7 +10,7 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/RawCancelFileTransferEvent.h"
+#include "intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 

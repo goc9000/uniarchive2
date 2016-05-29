@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawOfferFileGroupEvent.h
+ * intermediate_format/events/file_transfer/RawStartFileTransferEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERFILEGROUPEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERFILEGROUPEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWSTARTFILETRANSFEREVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWSTARTFILETRANSFEREVENT_H
 
 #include <memory>
 
@@ -25,18 +25,12 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawOfferFileGroupEvent : RawEvent {
+struct RawStartFileTransferEvent : RawEvent {
 public:
+    QString filename;
     unique_ptr<ApparentSubject> sender;
-    unique_ptr<ApparentSubject> recipient;
-    unsigned int num_files;
 
-    RawOfferFileGroupEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) sender,
-        unsigned int num_files
-    );
+    RawStartFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QString) filename);
 
     virtual QString eventName() const;
 
@@ -46,4 +40,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERFILEGROUPEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWSTARTFILETRANSFEREVENT_H

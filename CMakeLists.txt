@@ -69,12 +69,20 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooAltTag.h
         src/intermediate_format/content/YahooFadeTag.cpp
         src/intermediate_format/content/YahooFadeTag.h
+        src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.cpp
+        src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h
+        src/intermediate_format/events/file_transfer/RawOfferFileEvent.cpp
+        src/intermediate_format/events/file_transfer/RawOfferFileEvent.h
+        src/intermediate_format/events/file_transfer/RawOfferFileGroupEvent.cpp
+        src/intermediate_format/events/file_transfer/RawOfferFileGroupEvent.h
+        src/intermediate_format/events/file_transfer/RawReceiveFileEvent.cpp
+        src/intermediate_format/events/file_transfer/RawReceiveFileEvent.h
+        src/intermediate_format/events/file_transfer/RawStartFileTransferEvent.cpp
+        src/intermediate_format/events/file_transfer/RawStartFileTransferEvent.h
         src/intermediate_format/events/RawAddToConferenceEvent.cpp
         src/intermediate_format/events/RawAddToConferenceEvent.h
         src/intermediate_format/events/RawAnswerCallEvent.cpp
         src/intermediate_format/events/RawAnswerCallEvent.h
-        src/intermediate_format/events/RawCancelFileTransferEvent.cpp
-        src/intermediate_format/events/RawCancelFileTransferEvent.h
         src/intermediate_format/events/RawChangeScreenNameEvent.cpp
         src/intermediate_format/events/RawChangeScreenNameEvent.h
         src/intermediate_format/events/RawConnectedEvent.cpp
@@ -107,20 +115,12 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawMessageSendFailedEvent.h
         src/intermediate_format/events/RawOfferCallEvent.cpp
         src/intermediate_format/events/RawOfferCallEvent.h
-        src/intermediate_format/events/RawOfferFileEvent.cpp
-        src/intermediate_format/events/RawOfferFileEvent.h
-        src/intermediate_format/events/RawOfferFileGroupEvent.cpp
-        src/intermediate_format/events/RawOfferFileGroupEvent.h
         src/intermediate_format/events/RawOfferWebcamEvent.cpp
         src/intermediate_format/events/RawOfferWebcamEvent.h
         src/intermediate_format/events/RawPingEvent.cpp
         src/intermediate_format/events/RawPingEvent.h
-        src/intermediate_format/events/RawReceiveFileEvent.cpp
-        src/intermediate_format/events/RawReceiveFileEvent.h
         src/intermediate_format/events/RawStartConversationEvent.cpp
         src/intermediate_format/events/RawStartConversationEvent.h
-        src/intermediate_format/events/RawStartFileTransferEvent.cpp
-        src/intermediate_format/events/RawStartFileTransferEvent.h
         src/intermediate_format/events/RawStatusChangeEvent.cpp
         src/intermediate_format/events/RawStatusChangeEvent.h
         src/intermediate_format/events/RawUninterpretedEvent.cpp

@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawReceiveFileEvent.cpp
+ * intermediate_format/events/file_transfer/RawReceiveFileEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,7 +10,7 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/RawReceiveFileEvent.h"
+#include "intermediate_format/events/file_transfer/RawReceiveFileEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 

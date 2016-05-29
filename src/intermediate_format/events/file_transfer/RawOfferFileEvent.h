@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawOfferFileEvent.h
+ * intermediate_format/events/file_transfer/RawOfferFileEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
