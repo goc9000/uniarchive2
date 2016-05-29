@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawConnectedEvent.cpp
+ * intermediate_format/events/status/RawConnectedEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,7 +10,7 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/RawConnectedEvent.h"
+#include "intermediate_format/events/status/RawConnectedEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 

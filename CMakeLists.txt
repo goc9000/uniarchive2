@@ -69,6 +69,12 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooAltTag.h
         src/intermediate_format/content/YahooFadeTag.cpp
         src/intermediate_format/content/YahooFadeTag.h
+        src/intermediate_format/events/calls/RawAnswerCallEvent.cpp
+        src/intermediate_format/events/calls/RawAnswerCallEvent.h
+        src/intermediate_format/events/calls/RawOfferCallEvent.cpp
+        src/intermediate_format/events/calls/RawOfferCallEvent.h
+        src/intermediate_format/events/calls/RawOfferWebcamEvent.cpp
+        src/intermediate_format/events/calls/RawOfferWebcamEvent.h
         src/intermediate_format/events/conference/RawAddToConferenceEvent.cpp
         src/intermediate_format/events/conference/RawAddToConferenceEvent.h
         src/intermediate_format/events/conference/RawCreateConferenceEvent.cpp
@@ -89,46 +95,40 @@ set(SOURCE_FILES
         src/intermediate_format/events/file_transfer/RawReceiveFileEvent.h
         src/intermediate_format/events/file_transfer/RawStartFileTransferEvent.cpp
         src/intermediate_format/events/file_transfer/RawStartFileTransferEvent.h
-        src/intermediate_format/events/RawAnswerCallEvent.cpp
-        src/intermediate_format/events/RawAnswerCallEvent.h
+        src/intermediate_format/events/status/RawConnectedEvent.cpp
+        src/intermediate_format/events/status/RawConnectedEvent.h
+        src/intermediate_format/events/status/RawDisconnectedEvent.cpp
+        src/intermediate_format/events/status/RawDisconnectedEvent.h
+        src/intermediate_format/events/status/RawStatusChangeEvent.cpp
+        src/intermediate_format/events/status/RawStatusChangeEvent.h
+        src/intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.cpp
+        src/intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.h
+        src/intermediate_format/events/system/RawLoggingStartedEvent.cpp
+        src/intermediate_format/events/system/RawLoggingStartedEvent.h
+        src/intermediate_format/events/system/RawLoggingStoppedEvent.cpp
+        src/intermediate_format/events/system/RawLoggingStoppedEvent.h
+        src/intermediate_format/events/system/RawWindowOpenedEvent.cpp
+        src/intermediate_format/events/system/RawWindowOpenedEvent.h
+        src/intermediate_format/events/system/RawWindowClosedEvent.cpp
+        src/intermediate_format/events/system/RawWindowClosedEvent.h
         src/intermediate_format/events/RawChangeScreenNameEvent.cpp
         src/intermediate_format/events/RawChangeScreenNameEvent.h
-        src/intermediate_format/events/RawConnectedEvent.cpp
-        src/intermediate_format/events/RawConnectedEvent.h
         src/intermediate_format/events/RawCorruptedMessageEvent.cpp
         src/intermediate_format/events/RawCorruptedMessageEvent.h
-        src/intermediate_format/events/RawDisconnectedEvent.cpp
-        src/intermediate_format/events/RawDisconnectedEvent.h
-        src/intermediate_format/events/RawEEEncryptionAnnouncementEvent.cpp
-        src/intermediate_format/events/RawEEEncryptionAnnouncementEvent.h
         src/intermediate_format/events/RawFailableEvent.cpp
         src/intermediate_format/events/RawFailableEvent.h
         src/intermediate_format/events/RawLeaveConversationEvent.cpp
         src/intermediate_format/events/RawLeaveConversationEvent.h
-        src/intermediate_format/events/RawLoggingStartedEvent.cpp
-        src/intermediate_format/events/RawLoggingStartedEvent.h
-        src/intermediate_format/events/RawLoggingStoppedEvent.cpp
-        src/intermediate_format/events/RawLoggingStoppedEvent.h
         src/intermediate_format/events/RawMessageEvent.cpp
         src/intermediate_format/events/RawMessageEvent.h
         src/intermediate_format/events/RawMessageSendFailedEvent.cpp
         src/intermediate_format/events/RawMessageSendFailedEvent.h
-        src/intermediate_format/events/RawOfferCallEvent.cpp
-        src/intermediate_format/events/RawOfferCallEvent.h
-        src/intermediate_format/events/RawOfferWebcamEvent.cpp
-        src/intermediate_format/events/RawOfferWebcamEvent.h
         src/intermediate_format/events/RawPingEvent.cpp
         src/intermediate_format/events/RawPingEvent.h
         src/intermediate_format/events/RawStartConversationEvent.cpp
         src/intermediate_format/events/RawStartConversationEvent.h
-        src/intermediate_format/events/RawStatusChangeEvent.cpp
-        src/intermediate_format/events/RawStatusChangeEvent.h
         src/intermediate_format/events/RawUninterpretedEvent.cpp
         src/intermediate_format/events/RawUninterpretedEvent.h
-        src/intermediate_format/events/RawWindowOpenedEvent.cpp
-        src/intermediate_format/events/RawWindowOpenedEvent.h
-        src/intermediate_format/events/RawWindowClosedEvent.cpp
-        src/intermediate_format/events/RawWindowClosedEvent.h
         src/intermediate_format/events/RawEvent.cpp
         src/intermediate_format/events/RawEvent.h
         src/intermediate_format/subjects/ApparentSubject.cpp

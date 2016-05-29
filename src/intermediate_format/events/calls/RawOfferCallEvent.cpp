@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawOfferCallEvent.cpp
+ * intermediate_format/events/calls/RawOfferCallEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,7 +10,7 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/RawOfferCallEvent.h"
+#include "intermediate_format/events/calls/RawOfferCallEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 

@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawOfferCallEvent.h
+ * intermediate_format/events/calls/RawOfferCallEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawStatusChangeEvent.h
+ * intermediate_format/events/status/RawStatusChangeEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *

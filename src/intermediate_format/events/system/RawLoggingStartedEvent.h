@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawLoggingStoppedEvent.h
+ * intermediate_format/events/system/RawLoggingStartedEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTOPPEDEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTOPPEDEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTARTEDEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTARTEDEVENT_H
 
 #include <memory>
 
@@ -23,9 +23,9 @@ using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawLoggingStoppedEvent : RawEvent {
+struct RawLoggingStartedEvent : RawEvent {
 public:
-    RawLoggingStoppedEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawLoggingStartedEvent(IMM(ApparentTime) timestamp, unsigned int index);
 
     virtual QString eventName() const;
 
@@ -35,4 +35,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTOPPEDEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTARTEDEVENT_H

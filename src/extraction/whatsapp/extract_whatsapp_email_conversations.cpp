@@ -17,7 +17,7 @@
 #include "intermediate_format/content/MediaAttachment.h"
 #include "intermediate_format/events/conference/RawAddToConferenceEvent.h"
 #include "intermediate_format/events/conference/RawCreateConferenceEvent.h"
-#include "intermediate_format/events/RawEEEncryptionAnnouncementEvent.h"
+#include "intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"

@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawDisconnectedEvent.h
+ * intermediate_format/events/calls/RawAnswerCallEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,13 +8,12 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWDISCONNECTEDEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWDISCONNECTEDEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWANSWERCALLEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWANSWERCALLEVENT_H
 
 #include <memory>
 
 #include <QtDebug>
-#include <QString>
 
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
@@ -25,11 +24,12 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawDisconnectedEvent : RawEvent {
+struct RawAnswerCallEvent : RawEvent {
 public:
-    unique_ptr<ApparentSubject> subject;
+    unique_ptr<ApparentSubject> receiver;
+    unique_ptr<ApparentSubject> caller;
 
-    RawDisconnectedEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
+    RawAnswerCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) receiver);
 
     virtual QString eventName() const;
 
@@ -39,4 +39,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWDISCONNECTEDEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWANSWERCALLEVENT_H

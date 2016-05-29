@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawWindowOpenedEvent.h
+ * intermediate_format/events/system/RawWindowClosedEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWWINDOWOPENEDEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWWINDOWOPENEDEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWWINDOWCLOSEDEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWWINDOWCLOSEDEVENT_H
 
 #include <memory>
 
@@ -23,9 +23,9 @@ using namespace std;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawWindowOpenedEvent : RawEvent {
+struct RawWindowClosedEvent : RawEvent {
 public:
-    RawWindowOpenedEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawWindowClosedEvent(IMM(ApparentTime) timestamp, unsigned int index);
 
     virtual QString eventName() const;
 
@@ -35,4 +35,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWWINDOWOPENEDEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWWINDOWCLOSEDEVENT_H

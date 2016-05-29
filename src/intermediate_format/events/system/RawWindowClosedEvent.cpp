@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawWindowClosedEvent.cpp
+ * intermediate_format/events/system/RawWindowClosedEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,7 +10,7 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/RawWindowClosedEvent.h"
+#include "intermediate_format/events/system/RawWindowClosedEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
