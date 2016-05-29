@@ -43,6 +43,7 @@ public:
     unique_ptr<ApparentSubject> identity;
     vector<unique_ptr<ApparentSubject>> declaredPeers;
     optional<bool> isConference;
+    QString conferenceTitle;
     optional<ApparentTime> declaredStartDate;
     QString originalFilename;
     optional<ApparentTime> fileLastModifiedTime;

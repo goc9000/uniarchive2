@@ -134,8 +134,6 @@ CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, IMM(RawConversation) c
             RawMessageContent::fromPlainText(raw_event.raw_content)
         );
     }
-
-    return unique_ptr<RawEvent>();
 }
 
 }}}

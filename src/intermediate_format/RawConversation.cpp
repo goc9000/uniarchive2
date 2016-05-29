@@ -33,6 +33,7 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     }
 
     convo.isConference = prototype.isConference;
+    convo.conferenceTitle = prototype.conferenceTitle;
     convo.declaredStartDate = prototype.declaredStartDate;
     convo.originalFilename = prototype.originalFilename;
     convo.fileLastModifiedTime = prototype.fileLastModifiedTime;
@@ -71,6 +72,9 @@ QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
 
     if ((bool)convo.isConference) {
         stream << "\tIs conference: " << *convo.isConference << "\n";
+    }
+    if (!convo.conferenceTitle.isEmpty()) {
+        stream << "\tConference title: " << convo.conferenceTitle << "\n";
     }
     if ((bool)convo.declaredStartDate) {
         stream << "\tDeclared start date: " << *convo.declaredStartDate << "\n";
