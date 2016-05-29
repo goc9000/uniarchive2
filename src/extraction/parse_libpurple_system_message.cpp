@@ -12,6 +12,8 @@
 
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/events/conference/RawJoinConferenceEvent.h"
+#include "intermediate_format/events/conference/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h"
 #include "intermediate_format/events/file_transfer/RawOfferFileEvent.h"
 #include "intermediate_format/events/file_transfer/RawOfferFileGroupEvent.h"
@@ -20,8 +22,6 @@
 #include "intermediate_format/events/RawChangeScreenNameEvent.h"
 #include "intermediate_format/events/RawConnectedEvent.h"
 #include "intermediate_format/events/RawDisconnectedEvent.h"
-#include "intermediate_format/events/RawJoinConferenceEvent.h"
-#include "intermediate_format/events/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/RawLeaveConversationEvent.h"
 #include "intermediate_format/events/RawLoggingStartedEvent.h"
 #include "intermediate_format/events/RawLoggingStoppedEvent.h"

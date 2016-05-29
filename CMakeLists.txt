@@ -69,6 +69,16 @@ set(SOURCE_FILES
         src/intermediate_format/content/YahooAltTag.h
         src/intermediate_format/content/YahooFadeTag.cpp
         src/intermediate_format/content/YahooFadeTag.h
+        src/intermediate_format/events/conference/RawAddToConferenceEvent.cpp
+        src/intermediate_format/events/conference/RawAddToConferenceEvent.h
+        src/intermediate_format/events/conference/RawCreateConferenceEvent.cpp
+        src/intermediate_format/events/conference/RawCreateConferenceEvent.h
+        src/intermediate_format/events/conference/RawDeclineConferenceEvent.cpp
+        src/intermediate_format/events/conference/RawDeclineConferenceEvent.h
+        src/intermediate_format/events/conference/RawJoinConferenceEvent.cpp
+        src/intermediate_format/events/conference/RawJoinConferenceEvent.h
+        src/intermediate_format/events/conference/RawLeaveConferenceEvent.cpp
+        src/intermediate_format/events/conference/RawLeaveConferenceEvent.h
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.cpp
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h
         src/intermediate_format/events/file_transfer/RawOfferFileEvent.cpp
@@ -79,8 +89,6 @@ set(SOURCE_FILES
         src/intermediate_format/events/file_transfer/RawReceiveFileEvent.h
         src/intermediate_format/events/file_transfer/RawStartFileTransferEvent.cpp
         src/intermediate_format/events/file_transfer/RawStartFileTransferEvent.h
-        src/intermediate_format/events/RawAddToConferenceEvent.cpp
-        src/intermediate_format/events/RawAddToConferenceEvent.h
         src/intermediate_format/events/RawAnswerCallEvent.cpp
         src/intermediate_format/events/RawAnswerCallEvent.h
         src/intermediate_format/events/RawChangeScreenNameEvent.cpp
@@ -89,20 +97,12 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawConnectedEvent.h
         src/intermediate_format/events/RawCorruptedMessageEvent.cpp
         src/intermediate_format/events/RawCorruptedMessageEvent.h
-        src/intermediate_format/events/RawCreateConferenceEvent.cpp
-        src/intermediate_format/events/RawCreateConferenceEvent.h
-        src/intermediate_format/events/RawDeclineConferenceEvent.cpp
-        src/intermediate_format/events/RawDeclineConferenceEvent.h
         src/intermediate_format/events/RawDisconnectedEvent.cpp
         src/intermediate_format/events/RawDisconnectedEvent.h
         src/intermediate_format/events/RawEEEncryptionAnnouncementEvent.cpp
         src/intermediate_format/events/RawEEEncryptionAnnouncementEvent.h
         src/intermediate_format/events/RawFailableEvent.cpp
         src/intermediate_format/events/RawFailableEvent.h
-        src/intermediate_format/events/RawJoinConferenceEvent.cpp
-        src/intermediate_format/events/RawJoinConferenceEvent.h
-        src/intermediate_format/events/RawLeaveConferenceEvent.cpp
-        src/intermediate_format/events/RawLeaveConferenceEvent.h
         src/intermediate_format/events/RawLeaveConversationEvent.cpp
         src/intermediate_format/events/RawLeaveConversationEvent.h
         src/intermediate_format/events/RawLoggingStartedEvent.cpp

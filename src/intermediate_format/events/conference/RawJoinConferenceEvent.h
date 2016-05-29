@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawLeaveConferenceEvent.h
+ * intermediate_format/events/conference/RawJoinConferenceEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONFERENCEEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONFERENCEEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWJOINCONFERENCEEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWJOINCONFERENCEEVENT_H
 
 #include <memory>
 
@@ -28,12 +28,12 @@ using namespace uniarchive2::intermediate_format::subjects;
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-struct RawLeaveConferenceEvent : RawEvent {
+struct RawJoinConferenceEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
     optional<RawMessageContent> message;
 
-    RawLeaveConferenceEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
+    RawJoinConferenceEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 
@@ -43,4 +43,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONFERENCEEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWJOINCONFERENCEEVENT_H

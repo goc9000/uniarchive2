@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawDeclineConferenceEvent.h
+ * intermediate_format/events/conference/RawDeclineConferenceEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *

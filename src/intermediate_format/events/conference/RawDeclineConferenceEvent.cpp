@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawJoinConferenceEvent.cpp
+ * intermediate_format/events/conference/RawDeclineConferenceEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -10,22 +10,22 @@
 
 #include <QDebugStateSaver>
 
-#include "intermediate_format/events/RawJoinConferenceEvent.h"
+#include "intermediate_format/events/conference/RawDeclineConferenceEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawJoinConferenceEvent::RawJoinConferenceEvent(
+RawDeclineConferenceEvent::RawDeclineConferenceEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) subject
 ): RawEvent(timestamp, index), subject(move(subject)) {
 }
 
-QString RawJoinConferenceEvent::eventName() const {
-    return "JoinConference";
+QString RawDeclineConferenceEvent::eventName() const {
+    return "DeclineConference";
 }
 
-void RawJoinConferenceEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawDeclineConferenceEvent::writeDetailsToDebugStream(QDebug stream) const {
     stream << " subject=" << subject.get();
     if (message) {
         stream << " message=" << *message;
