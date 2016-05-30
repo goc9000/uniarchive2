@@ -23,7 +23,8 @@ using namespace uniarchive2::extraction::pidgin;
 using namespace uniarchive2::extraction::whatsapp;
 using namespace uniarchive2::extraction::yahoo;
 
-int main() {
+
+int main(int argc, char* argv[]) {
     // Temporary test harness
 
     vector<RawConversation> convos;
