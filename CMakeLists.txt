@@ -169,6 +169,8 @@ set(SOURCE_FILES
         src/protocols/parse_account_generic.h
         src/utils/external_libs/make_unique.hpp
         src/utils/external_libs/optional.hpp
+        src/utils/external_libs/sqlite/sqlite3.c
+        src/utils/external_libs/sqlite/sqlite3.h
         src/utils/html/entities.cpp
         src/utils/html/entities.h
         src/utils/html/parse_html_lenient.cpp
