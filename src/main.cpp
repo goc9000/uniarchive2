@@ -10,6 +10,7 @@
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "extraction/pidgin/extract_pidgin_html_conversations.h"
 #include "extraction/pidgin/extract_pidgin_txt_conversations.h"
+#include "extraction/skype/extract_skype_conversations.h"
 #include "extraction/whatsapp/extract_whatsapp_email_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "utils/language/shortcuts.h"
@@ -20,6 +21,7 @@ using namespace uniarchive2::extraction::digsby;
 using namespace uniarchive2::extraction::facebook;
 using namespace uniarchive2::extraction::msn;
 using namespace uniarchive2::extraction::pidgin;
+using namespace uniarchive2::extraction::skype;
 using namespace uniarchive2::extraction::whatsapp;
 using namespace uniarchive2::extraction::yahoo;
 
@@ -29,6 +31,11 @@ int main(int argc, char* argv[]) {
 
     vector<RawConversation> convos;
 
+    QDirIterator skype_files(QT_STRINGIFY(TEST_DATA_DIR) "/skype", QStringList() << "main.db", QDir::Files, QDirIterator::Subdirectories);
+    while (skype_files.hasNext()) {
+        auto file_convos = extract_skype_conversations(skype_files.next());
+        move(file_convos.begin(), file_convos.end(), back_inserter(convos));
+    }
     QDirIterator whatsapp_files(QT_STRINGIFY(TEST_DATA_DIR) "/whatsapp", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
     while (whatsapp_files.hasNext()) {
         convos.push_back(extract_whatsapp_email_conversation(whatsapp_files.next()));
