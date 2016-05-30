@@ -179,6 +179,8 @@ set(SOURCE_FILES
         src/utils/language/JavaStyleIterator.h
         src/utils/language/shortcuts.h
         src/utils/qt/shortcuts.h
+        src/utils/sqlite/SQLiteDB.cpp
+        src/utils/sqlite/SQLiteDB.h
         src/utils/text/decoding.cpp
         src/utils/text/decoding.h
         src/utils/text/load_text_file.cpp
