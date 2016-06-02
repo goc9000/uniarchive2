@@ -11,7 +11,6 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {

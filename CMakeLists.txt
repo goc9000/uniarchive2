@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.3)
 project(uniarchive2)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 14)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Xml)
 
@@ -167,7 +168,6 @@ set(SOURCE_FILES
         src/protocols/IMStatus.h
         src/protocols/parse_account_generic.cpp
         src/protocols/parse_account_generic.h
-        src/utils/external_libs/make_unique.hpp
         src/utils/external_libs/optional.hpp
         src/utils/external_libs/sqlite/sqlite3.c
         src/utils/external_libs/sqlite/sqlite3.h

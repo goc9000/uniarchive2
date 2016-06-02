@@ -35,7 +35,6 @@
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/parse_account_generic.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"

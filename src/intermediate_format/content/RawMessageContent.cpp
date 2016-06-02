@@ -13,8 +13,6 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/TextSection.h"
 
-#include "utils/external_libs/make_unique.hpp"
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 RawMessageContent::RawMessageContent() {

@@ -20,7 +20,6 @@
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/text/load_text_file.h"

@@ -41,7 +41,6 @@
 #include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
 #include "protocols/parse_account_generic.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"

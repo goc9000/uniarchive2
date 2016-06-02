@@ -18,7 +18,6 @@
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/parse_account_generic.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/time/parse_date_parts.h"
 #include "utils/qt/shortcuts.h"
 

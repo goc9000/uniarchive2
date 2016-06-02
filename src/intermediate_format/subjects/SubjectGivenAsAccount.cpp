@@ -11,7 +11,6 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "utils/external_libs/make_unique.hpp"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 

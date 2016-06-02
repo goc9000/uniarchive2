@@ -31,7 +31,6 @@
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/external_libs/optional.hpp"
 #include "utils/html/entities.h"
 #include "utils/html/parse_html_lenient.h"

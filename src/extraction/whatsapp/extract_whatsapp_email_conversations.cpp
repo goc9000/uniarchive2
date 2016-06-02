@@ -23,7 +23,6 @@
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/text/load_text_file.h"

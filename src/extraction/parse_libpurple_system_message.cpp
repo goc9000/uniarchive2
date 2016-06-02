@@ -34,7 +34,6 @@
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/parse_account_generic.h"
-#include "utils/external_libs/make_unique.hpp"
 #include "utils/html/entities.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
