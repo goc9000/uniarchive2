@@ -29,6 +29,8 @@ SQLiteDB& SQLiteDB::operator = (SQLiteDB&& move_me) {
     handle = move_me.handle;
     move_me.handle = nullptr;
 
+    move(move_me.statements.begin(), move_me.statements.end(), std::inserter(statements, statements.begin()));
+
     return *this;
 }
 
@@ -37,8 +39,24 @@ SQLiteDB::~SQLiteDB() {
         return;
     }
 
+    statements.clear();
+
     sqlite3_close_v2(handle);
     handle = nullptr;
+}
+
+IMM(SQLiteStmt) SQLiteDB::stmt(char const * const sql) {
+    auto it = statements.find(sql);
+    if (it != statements.end()) {
+        return it->second;
+    }
+
+    sqlite3_stmt* statement_handle = nullptr;
+    int status = sqlite3_prepare_v2(handle, sql, -1, &statement_handle, nullptr);
+    invariant(status == SQLITE_OK,  "Could not prepare statement '%s': %s", sql, sqlite3_errmsg(handle));
+
+    statements.emplace(sql, SQLiteStmt(statement_handle, this));
+    return statements.at(sql);
 }
 
 SQLiteDB SQLiteDB::openReadOnly(IMM(QString) filename) {
