@@ -175,6 +175,7 @@ set(SOURCE_FILES
         src/utils/html/entities.h
         src/utils/html/parse_html_lenient.cpp
         src/utils/html/parse_html_lenient.h
+        src/utils/language/callback_adapter.hpp
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
         src/utils/language/shortcuts.h

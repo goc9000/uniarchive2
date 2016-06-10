@@ -38,7 +38,7 @@ public:
     SQLiteDB& operator = (SQLiteDB&& move_me);
     ~SQLiteDB();
 
-    IMM(SQLiteStmt) stmt(char const * const sql);
+    SQLiteStmt& stmt(char const * const sql);
 
     static SQLiteDB openReadOnly(IMM(QString) filename);
 };

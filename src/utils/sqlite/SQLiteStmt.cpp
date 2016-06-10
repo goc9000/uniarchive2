@@ -45,4 +45,24 @@ SQLiteStmt::~SQLiteStmt() {
     parentDB = nullptr;
 }
 
+void SQLiteStmt::startQuery() {
+    invariant(handle, "Trying to run a dead statement!");
+
+    sqlite3_reset(handle);
+
+    nextRow();
+}
+
+bool SQLiteStmt::hasRow() const {
+    return lastOpStatus == SQLITE_ROW;
+}
+
+void SQLiteStmt::nextRow() {
+    lastOpStatus = sqlite3_step(handle);
+    invariant(
+        (lastOpStatus == SQLITE_ROW) || (lastOpStatus == SQLITE_DONE),
+        "Query error: %s", sqlite3_errmsg(parentDB->handle)
+    );
+}
+
 }}}

@@ -45,7 +45,7 @@ SQLiteDB::~SQLiteDB() {
     handle = nullptr;
 }
 
-IMM(SQLiteStmt) SQLiteDB::stmt(char const * const sql) {
+SQLiteStmt& SQLiteDB::stmt(char const * const sql) {
     auto it = statements.find(sql);
     if (it != statements.end()) {
         return it->second;
