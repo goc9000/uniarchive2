@@ -13,6 +13,8 @@
 
 #include <functional>
 #include <experimental/tuple>
+#include <unordered_set>
+#include <vector>
 
 #include <QtDebug>
 #include <QMap>
@@ -100,6 +102,38 @@ protected:
         }
     }
 
+    template<typename T, typename ...Args>
+    vector<T> mapRowsImpl(function<T (Args...)> mapper) {
+        vector<T> result;
+
+        startQuery();
+        while (hasRow()) {
+            result.push_back(experimental::apply(
+                mapper,
+                column_extraction_mechanics::generate_data_tuple<0,Args...>::execute(handle)
+            ));
+            nextRow();
+        }
+
+        return result;
+    }
+
+    template<typename T, typename ...Args>
+    unordered_set<T> mapRowsToSetImpl(function<T (Args...)> mapper) {
+        unordered_set<T> result;
+
+        startQuery();
+        while (hasRow()) {
+            result.insert(experimental::apply(
+                mapper,
+                column_extraction_mechanics::generate_data_tuple<0,Args...>::execute(handle)
+            ));
+            nextRow();
+        }
+
+        return result;
+    }
+
 public:
     SQLiteStmt(IMM(SQLiteStmt) copy_me) = delete;
     SQLiteStmt(SQLiteStmt&& move_me);
@@ -109,6 +143,16 @@ public:
     template<typename F>
     void forEachRow(F&& callback) {
         forEachRowImpl(callback_adapter(callback));
+    }
+
+    template<typename F>
+    auto mapRows(F&& callback) {
+        return mapRowsImpl(callback_adapter(callback));
+    }
+
+    template<typename F>
+    auto mapRowsToSet(F&& callback) {
+        return mapRowsToSetImpl(callback_adapter(callback));
     }
 };
 
