@@ -8,9 +8,9 @@
  * Licensed under the GPL-3
  */
 
+#include "utils/sqlite/SQLiteStmt.h"
 #include "utils/language/invariant.h"
 #include "utils/sqlite/SQLiteDB.h"
-#include "utils/sqlite/SQLiteStmt.h"
 
 namespace uniarchive2 { namespace utils { namespace sqlite {
 
