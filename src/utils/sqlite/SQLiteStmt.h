@@ -36,9 +36,14 @@ namespace uniarchive2 { namespace utils { namespace sqlite {
 class SQLiteDB;
 
 namespace column_extraction_mechanics {
-    template<typename T> static T extract_data_column(sqlite3_stmt* stmt, int column_index);
-    template<>
-    int extract_data_column<int>(sqlite3_stmt* stmt, int column_index) {
+
+template<typename T>
+struct ColumnExtractor {
+    static T execute(sqlite3_stmt* stmt, int column_index);
+};
+template<>
+struct ColumnExtractor<int> {
+    static int execute(sqlite3_stmt *stmt, int column_index) {
         int type = sqlite3_column_type(stmt, column_index);
         invariant(
             (type == SQLITE_INTEGER) || (type == SQLITE_NULL),
@@ -46,14 +51,16 @@ namespace column_extraction_mechanics {
         );
         return sqlite3_column_int(stmt, column_index);
     }
-    template<>
-    QString extract_data_column<QString>(sqlite3_stmt* stmt, int column_index) {
+};
+template<>
+struct ColumnExtractor<QString> {
+    static QString execute(sqlite3_stmt *stmt, int column_index) {
         int type = sqlite3_column_type(stmt, column_index);
         invariant(
             (type == SQLITE_TEXT) || (type == SQLITE_NULL),
             "Unexpected SQLite column type (%d instead of TEXT)", type
         );
-        char const * text_data = (char const *)sqlite3_column_text(stmt, column_index);
+        char const *text_data = (char const *) sqlite3_column_text(stmt, column_index);
 
         if (!text_data) {
             return QString();
@@ -61,12 +68,13 @@ namespace column_extraction_mechanics {
 
         return decode_utf8(QByteArray::fromRawData(text_data, sqlite3_column_bytes(stmt, column_index)));
     }
+};
 
 template<int N, typename THead, typename ...TTail>
 struct DataTupleGenerator {
     static tuple<THead, TTail...> execute(sqlite3_stmt* stmt) {
         return tuple_cat(
-            make_tuple(extract_data_column<THead>(stmt, N)),
+            make_tuple(ColumnExtractor<THead>::execute(stmt, N)),
             DataTupleGenerator<N + 1, TTail...>::execute(stmt)
         );
     }
@@ -74,7 +82,7 @@ struct DataTupleGenerator {
 template<int N, typename THead>
 struct DataTupleGenerator<N, THead> {
     static tuple<THead> execute(sqlite3_stmt* stmt) {
-        return make_tuple(extract_data_column<THead>(stmt, N));
+        return make_tuple(ColumnExtractor<THead>::execute(stmt, N));
     }
 };
 
