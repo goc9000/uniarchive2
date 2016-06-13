@@ -11,17 +11,17 @@
 #ifndef UNIARCHIVE2_UTILS_SQLITE_SQLITEDB_H
 #define UNIARCHIVE2_UTILS_SQLITE_SQLITEDB_H
 
+#include "utils/sqlite/SQLiteStmt.h"
+#include "utils/external_libs/sqlite/sqlite3.h"
+#include "utils/language/shortcuts.h"
+
 #include <map>
 
 #include <QString>
 
-#include "utils/external_libs/sqlite/sqlite3.h"
-#include "utils/language/shortcuts.h"
-#include "utils/sqlite/SQLiteStmt.h"
+namespace uniarchive2 { namespace utils { namespace sqlite {
 
 using namespace std;
-
-namespace uniarchive2 { namespace utils { namespace sqlite {
 
 class SQLiteDB {
     friend class SQLiteStmt;
