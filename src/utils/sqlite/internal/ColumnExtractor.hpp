@@ -11,6 +11,7 @@
 #ifndef UNIARCHIVE2_UTILS_SQLITE_INTERNAL_COLUMNEXTRACTOR_H
 #define UNIARCHIVE2_UTILS_SQLITE_INTERNAL_COLUMNEXTRACTOR_H
 
+#include "utils/external_libs/optional.hpp"
 #include "utils/external_libs/sqlite/sqlite3.h"
 #include "utils/text/decoding.h"
 #include "utils/language/invariant.h"
@@ -22,11 +23,24 @@
 namespace uniarchive2 { namespace utils { namespace sqlite { namespace internal {
 
 using namespace std;
+using namespace std::experimental;
 using namespace uniarchive2::utils::text;
 
 template<typename T>
 struct ColumnExtractor {
     static T execute(sqlite3_stmt* stmt, int column_index);
+};
+template<typename T>
+struct ColumnExtractor<optional<T>> {
+    static optional<T> execute(sqlite3_stmt *stmt, int column_index) {
+        optional<T> result;
+
+        if (sqlite3_column_type(stmt, column_index) != SQLITE_NULL) {
+            result = ColumnExtractor<T>::execute(stmt, column_index);
+        }
+
+        return result;
+    }
 };
 template<>
 struct ColumnExtractor<int> {
