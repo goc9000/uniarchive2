@@ -11,12 +11,6 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATION_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATION_H
 
-#include <memory>
-#include <vector>
-
-#include <QDebug>
-#include <QString>
-
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
@@ -25,13 +19,19 @@
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
+#include <memory>
+#include <vector>
+
+#include <QDebug>
+#include <QString>
+
+namespace uniarchive2 { namespace intermediate_format {
+
+using namespace std;
+using namespace std::experimental;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
-using namespace std;
-using namespace std::experimental;
-
-namespace uniarchive2 { namespace intermediate_format {
 
 class RawConversation {
 public:

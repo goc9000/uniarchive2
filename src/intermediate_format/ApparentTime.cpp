@@ -8,15 +8,15 @@
  * Licensed under the GPL-3
  */
 
+#include "intermediate_format/ApparentTime.h"
+#include "utils/language/invariant.h"
+#include "utils/qt/shortcuts.h"
+
 #include <cmath>
 
 #include <QDateTime>
 #include <QDebugStateSaver>
 #include <QTimeZone>
-
-#include "intermediate_format/ApparentTime.h"
-#include "utils/language/invariant.h"
-#include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format {
 

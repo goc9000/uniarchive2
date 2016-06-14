@@ -11,6 +11,9 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_APPARENTTIME_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_APPARENTTIME_H
 
+#include "utils/external_libs/optional.hpp"
+#include "utils/language/shortcuts.h"
+
 #include <QtDebug>
 #include <QByteArray>
 #include <QDate>
@@ -18,12 +21,9 @@
 #include <QTime>
 #include <QDateTime>
 
-#include "utils/external_libs/optional.hpp"
-#include "utils/language/shortcuts.h"
+namespace uniarchive2 { namespace intermediate_format {
 
 using namespace std::experimental;
-
-namespace uniarchive2 { namespace intermediate_format {
 
 struct ApparentTime {
 public:

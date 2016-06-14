@@ -8,9 +8,9 @@
  * Licensed under the GPL-3
  */
 
-#include <QDebugStateSaver>
-
 #include "intermediate_format/RawConversation.h"
+
+#include <QDebugStateSaver>
 
 namespace uniarchive2 { namespace intermediate_format {
 
