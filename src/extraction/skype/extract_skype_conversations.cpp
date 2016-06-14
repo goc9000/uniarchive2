@@ -8,17 +8,17 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-
 #include "extraction/skype/extract_skype_conversations.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/sqlite/SQLiteDB.h"
 
-using namespace std;
-using namespace uniarchive2::utils::sqlite;
+#include <QtDebug>
 
 namespace uniarchive2 { namespace extraction { namespace skype {
+
+using namespace std;
+using namespace uniarchive2::utils::sqlite;
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     vector<RawConversation> conversations;
