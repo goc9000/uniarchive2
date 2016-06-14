@@ -21,7 +21,7 @@
 
 #include <functional>
 #include <experimental/tuple>
-#include <unordered_set>
+#include <set>
 #include <vector>
 
 #include <QtDebug>
@@ -74,8 +74,8 @@ protected:
     }
 
     template<typename T, typename ...Args>
-    unordered_set<T> mapRowsToSetImpl(function<T (Args...)> mapper) {
-        unordered_set<T> result;
+    set<T> mapRowsToSetImpl(function<T (Args...)> mapper) {
+        set<T> result;
 
         startQuery();
         while (hasRow()) {
