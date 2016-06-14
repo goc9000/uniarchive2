@@ -18,6 +18,7 @@
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
+#include <QByteArray>
 #include <QString>
 
 namespace uniarchive2 { namespace utils { namespace sqlite { namespace internal {
@@ -68,6 +69,23 @@ struct ColumnExtractor<QString> {
         }
 
         return decode_utf8(QByteArray::fromRawData(text_data, sqlite3_column_bytes(stmt, column_index)));
+    }
+};
+template<>
+struct ColumnExtractor<QByteArray> {
+    static QByteArray execute(sqlite3_stmt *stmt, int column_index) {
+        int type = sqlite3_column_type(stmt, column_index);
+        invariant(
+            (type == SQLITE_BLOB) || (type == SQLITE_NULL),
+            "Unexpected SQLite column type (%d instead of BLOB)", type
+        );
+        char const *blob_data = (char const *) sqlite3_column_blob(stmt, column_index);
+
+        if (!blob_data) {
+            return QByteArray();
+        }
+
+        return QByteArray::fromRawData(blob_data, sqlite3_column_bytes(stmt, column_index));
     }
 };
 
