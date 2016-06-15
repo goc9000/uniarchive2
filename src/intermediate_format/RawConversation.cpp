@@ -39,6 +39,8 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     convo.fileLastModifiedTime = prototype.fileLastModifiedTime;
     convo.numConversationInFile = prototype.numConversationInFile;
     convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
+    convo.adiumVersion = prototype.adiumVersion;
+    convo.adiumBuildID = prototype.adiumBuildID;
 
     return convo;
 }
