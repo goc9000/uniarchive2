@@ -91,6 +91,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     RawConversation conversation(ArchiveFormat::WHATSAPP_EMAIL, IMProtocol::WHATSAPP);
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.shouldBeRepartitioned = true;
 
     // Note that this may be corrected later
     conversation.isConference = false;

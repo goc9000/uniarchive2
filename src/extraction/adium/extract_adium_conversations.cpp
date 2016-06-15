@@ -140,6 +140,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.shouldBeRepartitioned = false;
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
     conversation.declaredStartDate = info.convoStartDate;

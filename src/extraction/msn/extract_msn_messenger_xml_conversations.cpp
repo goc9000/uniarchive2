@@ -142,6 +142,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.shouldBeRepartitioned = true;
 
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);
     auto remote_account = parse_optionally_encoded_msn_account(base_name);

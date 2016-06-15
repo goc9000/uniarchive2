@@ -93,6 +93,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.shouldBeRepartitioned = true;
 
     return conversation;
 }

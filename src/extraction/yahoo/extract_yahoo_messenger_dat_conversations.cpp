@@ -124,6 +124,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
 
     conversation.originalFilename = full_filename;
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.shouldBeRepartitioned = true;
     conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
