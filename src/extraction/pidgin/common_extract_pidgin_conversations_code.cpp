@@ -8,11 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QDir>
-#include <QFileInfo>
-#include <QMap>
-
 #include "common_extract_pidgin_conversations_code.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/ApparentTime.h"
@@ -21,13 +16,18 @@
 #include "utils/time/parse_date_parts.h"
 #include "utils/qt/shortcuts.h"
 
+#include <QtDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QMap>
+
+namespace uniarchive2 { namespace extraction { namespace pidgin {
+
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::time;
-
-namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 struct InfoFromFilename {
     ApparentTime conversation_date;

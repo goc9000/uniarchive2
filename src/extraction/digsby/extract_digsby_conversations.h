@@ -11,14 +11,14 @@
 #ifndef UNIARCHIVE2_EXTRACTION_DIGSBY_EXTRACT_DIGSBY_CONVERSATIONS_H
 #define UNIARCHIVE2_EXTRACTION_DIGSBY_EXTRACT_DIGSBY_CONVERSATIONS_H
 
-#include <QString>
-
 #include "intermediate_format/RawConversation.h"
 #include "utils/language/shortcuts.h"
 
-using namespace uniarchive2::intermediate_format;
+#include <QString>
 
 namespace uniarchive2 { namespace extraction { namespace digsby {
+
+using namespace uniarchive2::intermediate_format;
 
 RawConversation extract_digsby_conversation(IMM(QString) filename);
 

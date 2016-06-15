@@ -8,11 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <vector>
-
-#include <QtDebug>
-#include <QStringList>
-
 #include "extraction/pidgin/extract_pidgin_txt_conversations.h"
 #include "extraction/pidgin/common_extract_pidgin_conversations_code.h"
 #include "extraction/parse_libpurple_system_message.h"
@@ -26,6 +21,13 @@
 #include "utils/text/split_into_lines.h"
 #include "utils/time/parse_date_parts.h"
 
+#include <vector>
+
+#include <QtDebug>
+#include <QStringList>
+
+namespace uniarchive2 { namespace extraction { namespace pidgin {
+
 using namespace std;
 using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format;
@@ -34,8 +36,6 @@ using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::text;
 using namespace uniarchive2::utils::time;
-
-namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 struct PreParsedEvent {
     QString raw_timestamp;

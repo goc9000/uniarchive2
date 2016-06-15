@@ -8,15 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <deque>
-
-#include <QtDebug>
-#include <QDir>
-#include <QFileInfo>
-#include <QIODevice>
-#include <QMap>
-#include <QUrl>
-
 #include "extraction/adium/extract_adium_conversations.h"
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/CSSStyleTag.h"
@@ -45,6 +36,17 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"
 
+#include <deque>
+
+#include <QtDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QMap>
+#include <QUrl>
+
+namespace uniarchive2 { namespace extraction { namespace adium {
+
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
@@ -52,8 +54,6 @@ using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::xml;
-
-namespace uniarchive2 { namespace extraction { namespace adium {
 
 static const QMap<QString, IMStatus> EVENT_TYPE_TO_STATUS {
     { "available", IMStatus::AVAILABLE },

@@ -8,10 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QDir>
-#include <QFileInfo>
-
 #include "extraction/whatsapp/extract_whatsapp_email_conversations.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/MediaAttachment.h"
@@ -28,14 +24,18 @@
 #include "utils/text/load_text_file.h"
 #include "utils/text/split_into_lines.h"
 
+#include <QtDebug>
+#include <QDir>
+#include <QFileInfo>
+
+namespace uniarchive2 { namespace extraction { namespace whatsapp {
+
 using namespace std;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::text;
-
-namespace uniarchive2 { namespace extraction { namespace whatsapp {
 
 struct PreParsedEvent {
     QString raw_timestamp;

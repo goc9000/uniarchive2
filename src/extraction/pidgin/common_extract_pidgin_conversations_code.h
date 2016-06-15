@@ -11,17 +11,17 @@
 #ifndef UNIARCHIVE2_EXTRACTION_PIDGIN_COMMON_EXTRACT_PIDGIN_CONVERSATIONS_CODE_H
 #define UNIARCHIVE2_EXTRACTION_PIDGIN_COMMON_EXTRACT_PIDGIN_CONVERSATIONS_CODE_H
 
-#include <QString>
-
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/RawConversation.h"
 #include "protocols/ArchiveFormat.h"
 #include "utils/language/shortcuts.h"
 
-using namespace uniarchive2::intermediate_format;
-using namespace uniarchive2::protocols;
+#include <QString>
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
+
+using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::protocols;
 
 RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension, ArchiveFormat format);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);

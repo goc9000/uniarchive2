@@ -8,12 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QFileInfo>
-#include <QIODevice>
-#include <QTextCodec>
-#include <QTimeZone>
-
 #include "extraction/pidgin/extract_pidgin_html_conversations.h"
 #include "extraction/pidgin/common_extract_pidgin_conversations_code.h"
 #include "extraction/parse_libpurple_system_message.h"
@@ -38,6 +32,14 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/time/parse_date_parts.h"
 
+#include <QtDebug>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QTextCodec>
+#include <QTimeZone>
+
+namespace uniarchive2 { namespace extraction { namespace pidgin {
+
 using namespace std;
 using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format;
@@ -47,8 +49,6 @@ using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::time;
-
-namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 static void verify_is_utf8_html(QTextStream& mut_stream);
 static void seek_to_start_of_events(QTextStream& mut_stream);

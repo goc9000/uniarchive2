@@ -8,15 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QDir>
-#include <QFileInfo>
-#include <QIODevice>
-#include <QStringList>
-#include <QTextCodec>
-#include <QTextStream>
-#include <QUrl>
-
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/content/BoldTag.h"
@@ -40,6 +31,17 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/text/decoding.h"
 
+#include <QtDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QStringList>
+#include <QTextCodec>
+#include <QTextStream>
+#include <QUrl>
+
+namespace uniarchive2 { namespace extraction { namespace digsby {
+
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
@@ -49,8 +51,6 @@ using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::digsby;
 using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
-
-namespace uniarchive2 { namespace extraction { namespace digsby {
 
 struct InfoFromFilename {
     FullAccountName identity;
