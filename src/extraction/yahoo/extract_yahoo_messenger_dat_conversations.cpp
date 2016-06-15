@@ -8,16 +8,10 @@
  * Licensed under the GPL-3
  */
 
-#include <memory>
-
-#include <QtDebug>
-#include <QDir>
-#include <QFile>
-
-#include "graphics/Color.h"
-#include "graphics/ANSIColor.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
+#include "graphics/Color.h"
+#include "graphics/ANSIColor.h"
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/TextSection.h"
@@ -46,14 +40,19 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/text/decoding.h"
 
+#include <memory>
+
+#include <QtDebug>
+#include <QDir>
+#include <QFile>
+
+namespace uniarchive2 { namespace extraction { namespace yahoo {
+
+using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::protocols::yahoo;
 using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
-
-using namespace std;
-
-namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 static RawConversation init_prototype(IMM(QString) filename);
 static RawConversation init_conversation(

@@ -12,9 +12,9 @@
 #include "protocols/yahoo/account_name.h"
 #include "utils/language/invariant.h"
 
-using namespace uniarchive2::protocols::yahoo;
-
 namespace uniarchive2 { namespace extraction { namespace yahoo {
+
+using namespace uniarchive2::protocols::yahoo;
 
 ExtractYahooProtocolEventsIterator::ExtractYahooProtocolEventsIterator(
     IMM(QByteArray) binary_data,

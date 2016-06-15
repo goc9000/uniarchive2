@@ -8,10 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QDir>
-#include <QFileInfo>
-
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
@@ -24,6 +20,12 @@
 #include "utils/time/parse_date_parts.h"
 #include "utils/xml/qdom_utils.h"
 
+#include <QtDebug>
+#include <QDir>
+#include <QFileInfo>
+
+namespace uniarchive2 { namespace extraction { namespace facebook {
+
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::events;
@@ -31,8 +33,6 @@ using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::facebook;
 using namespace uniarchive2::utils::time;
 using namespace uniarchive2::utils::xml;
-
-namespace uniarchive2 { namespace extraction { namespace facebook {
 
 static RawConversation init_prototype(IMM(QString) filename);
 static QString read_identity_screen_name(IMM(QDomElement) root_element);

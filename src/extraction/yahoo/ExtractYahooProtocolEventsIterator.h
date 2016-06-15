@@ -11,18 +11,17 @@
 #ifndef UNIARCHIVE2_EXTRACTION_YAHOO_EXTRACTYAHOOPROTOCOLEVENTSITERATOR_H
 #define UNIARCHIVE2_EXTRACTION_YAHOO_EXTRACTYAHOOPROTOCOLEVENTSITERATOR_H
 
-#include <QString>
-#include <QByteArray>
-
-#include <QDataStream>
-
 #include "extraction/yahoo/YahooProtocolEvent.h"
 #include "utils/language/JavaStyleIterator.h"
 #include "utils/language/shortcuts.h"
 
-using namespace uniarchive2::utils::language;
+#include <QString>
+#include <QByteArray>
+#include <QDataStream>
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
+
+using namespace uniarchive2::utils::language;
 
 class ExtractYahooProtocolEventsIterator : JavaStyleIterator<YahooProtocolEvent> {
 public:

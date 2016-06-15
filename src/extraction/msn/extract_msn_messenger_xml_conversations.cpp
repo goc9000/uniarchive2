@@ -8,15 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <cmath>
-
-#include <QtDebug>
-#include <QDateTime>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
-#include <QIODevice>
-
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
 #include "intermediate_format/content/CSSStyleTag.h"
 #include "intermediate_format/content/TextSection.h"
@@ -34,14 +25,23 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"
 
+#include <cmath>
+
+#include <QtDebug>
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QIODevice>
+
+namespace uniarchive2 { namespace extraction { namespace msn {
+
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::msn;
 using namespace uniarchive2::utils::xml;
-
-namespace uniarchive2 { namespace extraction { namespace msn {
 
 static RawConversation init_prototype(IMM(QString) filename);
 static RawConversation extract_conversation_for_session(

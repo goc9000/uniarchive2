@@ -11,10 +11,10 @@
 #ifndef UNIARCHIVE2_EXTRACTION_YAHOO_YAHOOPROTOCOLEVENT_H
 #define UNIARCHIVE2_EXTRACTION_YAHOO_YAHOOPROTOCOLEVENT_H
 
+#include "utils/language/shortcuts.h"
+
 #include <QtGlobal>
 #include <QByteArray>
-
-#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 

@@ -8,11 +8,11 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QDebugStateSaver>
-
 #include "extraction/yahoo/YahooProtocolEvent.h"
 #include "utils/qt/shortcuts.h"
+
+#include <QtDebug>
+#include <QDebugStateSaver>
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
