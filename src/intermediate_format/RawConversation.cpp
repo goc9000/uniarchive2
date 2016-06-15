@@ -41,6 +41,7 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
     convo.adiumVersion = prototype.adiumVersion;
     convo.adiumBuildID = prototype.adiumBuildID;
+    convo.shouldBeRepartitioned = prototype.shouldBeRepartitioned;
 
     return convo;
 }
@@ -98,6 +99,9 @@ QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
     }
     if (!convo.adiumBuildID.isEmpty()) {
         stream << "\tAdium build ID: " << convo.adiumBuildID << "\n";
+    }
+    if ((bool)convo.shouldBeRepartitioned) {
+        stream << "\tShould be repartitioned: " << *convo.shouldBeRepartitioned << "\n";
     }
 
     stream << "\t\n";

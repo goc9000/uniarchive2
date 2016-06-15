@@ -51,6 +51,7 @@ public:
     optional<unsigned int> conversationOffsetInFileEventBased;
     QString adiumVersion;
     QString adiumBuildID;
+    optional<bool> shouldBeRepartitioned;
 
     vector<unique_ptr<RawEvent>> events;
 
