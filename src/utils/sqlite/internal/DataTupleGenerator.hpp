@@ -25,7 +25,7 @@ struct DataTupleGenerator {
     static tuple<THead, TTail...> execute(IMM(SQLiteRow) row_handle) {
         return tuple_cat(
             make_tuple(ColumnExtractor<THead>::execute(row_handle, N)),
-            DataTupleGenerator<N + 1, TTail...>::execute(row_handle)
+            DataTupleGenerator<N + ColumnExtractor<THead>::advance, TTail...>::execute(row_handle)
         );
     }
 };

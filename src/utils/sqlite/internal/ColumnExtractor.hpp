@@ -28,6 +28,15 @@ using namespace std::experimental;
 template<typename T>
 struct ColumnExtractor {
     static T execute(IMM(SQLiteRow) row_handle, unsigned int column_index);
+    static const unsigned int advance;
+};
+
+template<>
+struct ColumnExtractor<SQLiteRow const *> {
+    static SQLiteRow const * execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+        return &row_handle;
+    }
+    static const unsigned int advance = 0;
 };
 template<typename T>
 struct ColumnExtractor<optional<T>> {
@@ -40,6 +49,7 @@ struct ColumnExtractor<optional<T>> {
 
         return result;
     }
+    static const unsigned int advance = 1;
 };
 template<>
 struct ColumnExtractor<int> {
@@ -49,18 +59,21 @@ struct ColumnExtractor<int> {
 
         return (int)result;
     }
+    static const unsigned int advance = 1;
 };
 template<>
 struct ColumnExtractor<QString> {
     static QString execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         return row_handle.utf8TextColumn(column_index);
     }
+    static const unsigned int advance = 1;
 };
 template<>
 struct ColumnExtractor<QByteArray> {
     static QByteArray execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         return row_handle.blobColumn(column_index);
     }
+    static const unsigned int advance = 1;
 };
 
 }}}}
