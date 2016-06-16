@@ -11,7 +11,6 @@
 #ifndef UNIARCHIVE2_UTILS_SQLITE_INTERNAL_COLUMNEXTRACTOR_H
 #define UNIARCHIVE2_UTILS_SQLITE_INTERNAL_COLUMNEXTRACTOR_H
 
-#include "utils/sqlite/internal/QueryConfig.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/external_libs/sqlite/sqlite3.h"
 #include "utils/text/decoding.h"
@@ -30,15 +29,15 @@ using namespace uniarchive2::utils::text;
 
 template<typename T>
 struct ColumnExtractor {
-    static T execute(IMM(SQLiteRow) row_handle, unsigned int column_index, IMM(QueryConfig) config);
+    static T execute(IMM(SQLiteRow) row_handle, unsigned int column_index);
 };
 template<typename T>
 struct ColumnExtractor<optional<T>> {
-    static optional<T> execute(IMM(SQLiteRow) row_handle, unsigned int column_index, IMM(QueryConfig) config) {
+    static optional<T> execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         optional<T> result;
 
         if (row_handle.rawColumnType(column_index) != SQLITE_NULL) {
-            result = ColumnExtractor<T>::execute(row_handle, column_index, config);
+            result = ColumnExtractor<T>::execute(row_handle, column_index);
         }
 
         return result;
@@ -46,7 +45,7 @@ struct ColumnExtractor<optional<T>> {
 };
 template<>
 struct ColumnExtractor<int> {
-    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index, IMM(QueryConfig) config) {
+    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         int type = row_handle.rawColumnType(column_index);
         invariant(
             (type == SQLITE_INTEGER) || (type == SQLITE_NULL),
@@ -57,7 +56,7 @@ struct ColumnExtractor<int> {
 };
 template<>
 struct ColumnExtractor<QString> {
-    static QString execute(IMM(SQLiteRow) row_handle, unsigned int column_index, IMM(QueryConfig) config) {
+    static QString execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         int type = row_handle.rawColumnType(column_index);
         invariant(
             (type == SQLITE_TEXT) || (type == SQLITE_NULL),
@@ -76,7 +75,7 @@ struct ColumnExtractor<QString> {
 };
 template<>
 struct ColumnExtractor<QByteArray> {
-    static QByteArray execute(IMM(SQLiteRow) row_handle, unsigned int column_index, IMM(QueryConfig) config) {
+    static QByteArray execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         int type = row_handle.rawColumnType(column_index);
         invariant(
             (type == SQLITE_BLOB) || (type == SQLITE_NULL),

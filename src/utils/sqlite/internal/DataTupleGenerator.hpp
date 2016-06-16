@@ -13,7 +13,6 @@
 
 #include <utils/sqlite/SQLiteRow.h>
 #include "utils/sqlite/internal/ColumnExtractor.hpp"
-#include "utils/sqlite/internal/QueryConfig.h"
 #include "utils/external_libs/sqlite/sqlite3.h"
 #include "utils/language/shortcuts.h"
 
@@ -23,17 +22,17 @@ using namespace std;
 
 template<unsigned int N, typename THead, typename ...TTail>
 struct DataTupleGenerator {
-    static tuple<THead, TTail...> execute(IMM(SQLiteRow) row_handle, IMM(QueryConfig) config) {
+    static tuple<THead, TTail...> execute(IMM(SQLiteRow) row_handle) {
         return tuple_cat(
-            make_tuple(ColumnExtractor<THead>::execute(row_handle, N, config)),
-            DataTupleGenerator<N + 1, TTail...>::execute(row_handle, config)
+            make_tuple(ColumnExtractor<THead>::execute(row_handle, N)),
+            DataTupleGenerator<N + 1, TTail...>::execute(row_handle)
         );
     }
 };
 template<unsigned int N, typename THead>
 struct DataTupleGenerator<N, THead> {
-    static tuple<THead> execute(IMM(SQLiteRow) row_handle, IMM(QueryConfig) config) {
-        return make_tuple(ColumnExtractor<THead>::execute(row_handle, N, config));
+    static tuple<THead> execute(IMM(SQLiteRow) row_handle) {
+        return make_tuple(ColumnExtractor<THead>::execute(row_handle, N));
     }
 };
 
