@@ -13,7 +13,6 @@
 
 #include "utils/external_libs/optional.hpp"
 #include "utils/external_libs/sqlite/sqlite3.h"
-#include "utils/text/decoding.h"
 #include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
 
@@ -25,7 +24,6 @@ namespace uniarchive2 { namespace utils { namespace sqlite { namespace internal 
 
 using namespace std;
 using namespace std::experimental;
-using namespace uniarchive2::utils::text;
 
 template<typename T>
 struct ColumnExtractor {
@@ -46,50 +44,22 @@ struct ColumnExtractor<optional<T>> {
 template<>
 struct ColumnExtractor<int> {
     static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
-        int type = row_handle.rawColumnType(column_index);
-        invariant(
-            (type == SQLITE_INTEGER) || (type == SQLITE_NULL),
-            "Unexpected SQLite column type (%d instead of INTEGER)", type
-        );
-        return sqlite3_value_int(row_handle.rawColumn(column_index));
+        int64_t result = row_handle.int64Column(column_index);
+        invariant(result <= INT_MAX, "Column value does not fit in int");
+
+        return (int)result;
     }
 };
 template<>
 struct ColumnExtractor<QString> {
     static QString execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
-        int type = row_handle.rawColumnType(column_index);
-        invariant(
-            (type == SQLITE_TEXT) || (type == SQLITE_NULL),
-            "Unexpected SQLite column type (%d instead of TEXT)", type
-        );
-
-        sqlite3_value* value = row_handle.rawColumn(column_index);
-        char const *text_data = (char const *) sqlite3_value_text(value);
-
-        if (!text_data) {
-            return QString();
-        }
-
-        return decode_utf8(QByteArray::fromRawData(text_data, sqlite3_value_bytes(value)));
+        return row_handle.utf8TextColumn(column_index);
     }
 };
 template<>
 struct ColumnExtractor<QByteArray> {
     static QByteArray execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
-        int type = row_handle.rawColumnType(column_index);
-        invariant(
-            (type == SQLITE_BLOB) || (type == SQLITE_NULL),
-            "Unexpected SQLite column type (%d instead of BLOB)", type
-        );
-
-        sqlite3_value* value = row_handle.rawColumn(column_index);
-        char const *blob_data = (char const *) sqlite3_value_blob(value);
-
-        if (!blob_data) {
-            return QByteArray();
-        }
-
-        return QByteArray::fromRawData(blob_data, sqlite3_value_bytes(value));
+        return row_handle.blobColumn(column_index);
     }
 };
 
