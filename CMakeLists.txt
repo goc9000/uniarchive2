@@ -185,6 +185,8 @@ set(SOURCE_FILES
         src/utils/sqlite/internal/QueryConfig.h
         src/utils/sqlite/SQLiteDB.cpp
         src/utils/sqlite/SQLiteDB.h
+        src/utils/sqlite/SQLiteRow.cpp
+        src/utils/sqlite/SQLiteRow.h
         src/utils/sqlite/SQLiteStmt.cpp
         src/utils/sqlite/SQLiteStmt.h
         src/utils/text/decoding.cpp

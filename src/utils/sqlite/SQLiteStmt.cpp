@@ -15,10 +15,10 @@
 namespace uniarchive2 { namespace utils { namespace sqlite {
 
 SQLiteStmt::SQLiteStmt(sqlite3_stmt* handle, SQLiteDB* parent_db)
-    : handle(handle), parentDB(parent_db) {
+    : handle(handle), parentDB(parent_db), currentRow(this) {
 }
 
-SQLiteStmt::SQLiteStmt(SQLiteStmt&& move_me) {
+SQLiteStmt::SQLiteStmt(SQLiteStmt&& move_me) : currentRow(this) {
     *this = move(move_me);
 }
 
@@ -51,6 +51,8 @@ void SQLiteStmt::startQuery() {
     sqlite3_reset(handle);
 
     nextRow();
+    currentRow.rowIndex = 0;
+    currentRow.numColumns = (unsigned int)sqlite3_column_count(handle);
 }
 
 bool SQLiteStmt::hasRow() const {
@@ -59,6 +61,7 @@ bool SQLiteStmt::hasRow() const {
 
 void SQLiteStmt::nextRow() {
     lastOpStatus = sqlite3_step(handle);
+    currentRow.rowIndex++;
     invariant(
         (lastOpStatus == SQLITE_ROW) || (lastOpStatus == SQLITE_DONE),
         "Query error: %s", sqlite3_errmsg(parentDB->handle)

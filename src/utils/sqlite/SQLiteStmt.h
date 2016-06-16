@@ -37,14 +37,18 @@ using namespace uniarchive2::utils::sqlite::internal;
 using namespace uniarchive2::utils::text;
 
 class SQLiteDB;
+class SQLiteRow;
 
 class SQLiteStmt {
     friend class SQLiteDB;
+    friend class SQLiteRow;
 
 protected:
     sqlite3_stmt* handle = nullptr;
     SQLiteDB* parentDB = nullptr;
     int lastOpStatus = SQLITE_DONE;
+
+    SQLiteRow currentRow;
     QueryConfig config;
 
     SQLiteStmt(sqlite3_stmt* handle, SQLiteDB* parent_db);
@@ -57,7 +61,7 @@ protected:
     void forEachRowImpl(function<void (Args...)> callback) {
         startQuery();
         while (hasRow()) {
-            experimental::apply(callback, DataTupleGenerator<0,Args...>::execute(handle, config));
+            experimental::apply(callback, DataTupleGenerator<0,Args...>::execute(currentRow, config));
             nextRow();
         }
     }
@@ -68,7 +72,7 @@ protected:
 
         startQuery();
         while (hasRow()) {
-            result.push_back(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(handle, config)));
+            result.push_back(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(currentRow, config)));
             nextRow();
         }
 
@@ -81,7 +85,7 @@ protected:
 
         startQuery();
         while (hasRow()) {
-            result.insert(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(handle, config)));
+            result.insert(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(currentRow, config)));
             nextRow();
         }
 
