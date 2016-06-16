@@ -13,6 +13,7 @@
 
 #include "utils/sqlite/internal/DataTupleGenerator.hpp"
 
+#include "utils/sqlite/internal/QueryConfig.h"
 #include "utils/external_libs/sqlite/sqlite3.h"
 #include "utils/text/decoding.h"
 #include "utils/language/callback_adapter.hpp"
@@ -44,6 +45,7 @@ protected:
     sqlite3_stmt* handle = nullptr;
     SQLiteDB* parentDB = nullptr;
     int lastOpStatus = SQLITE_DONE;
+    QueryConfig config;
 
     SQLiteStmt(sqlite3_stmt* handle, SQLiteDB* parent_db);
 
@@ -55,7 +57,7 @@ protected:
     void forEachRowImpl(function<void (Args...)> callback) {
         startQuery();
         while (hasRow()) {
-            experimental::apply(callback, DataTupleGenerator<0,Args...>::execute(handle));
+            experimental::apply(callback, DataTupleGenerator<0,Args...>::execute(handle, config));
             nextRow();
         }
     }
@@ -66,7 +68,7 @@ protected:
 
         startQuery();
         while (hasRow()) {
-            result.push_back(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(handle)));
+            result.push_back(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(handle, config)));
             nextRow();
         }
 
@@ -79,7 +81,7 @@ protected:
 
         startQuery();
         while (hasRow()) {
-            result.insert(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(handle)));
+            result.insert(experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(handle, config)));
             nextRow();
         }
 

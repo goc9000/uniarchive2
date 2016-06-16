@@ -11,6 +11,7 @@
 #ifndef UNIARCHIVE2_UTILS_SQLITE_INTERNAL_COLUMNEXTRACTOR_H
 #define UNIARCHIVE2_UTILS_SQLITE_INTERNAL_COLUMNEXTRACTOR_H
 
+#include "utils/sqlite/internal/QueryConfig.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/external_libs/sqlite/sqlite3.h"
 #include "utils/text/decoding.h"
@@ -29,15 +30,15 @@ using namespace uniarchive2::utils::text;
 
 template<typename T>
 struct ColumnExtractor {
-    static T execute(sqlite3_stmt* stmt, int column_index);
+    static T execute(sqlite3_stmt* stmt, int column_index, IMM(QueryConfig) config);
 };
 template<typename T>
 struct ColumnExtractor<optional<T>> {
-    static optional<T> execute(sqlite3_stmt *stmt, int column_index) {
+    static optional<T> execute(sqlite3_stmt *stmt, int column_index, IMM(QueryConfig) config) {
         optional<T> result;
 
         if (sqlite3_column_type(stmt, column_index) != SQLITE_NULL) {
-            result = ColumnExtractor<T>::execute(stmt, column_index);
+            result = ColumnExtractor<T>::execute(stmt, column_index, config);
         }
 
         return result;
@@ -45,7 +46,7 @@ struct ColumnExtractor<optional<T>> {
 };
 template<>
 struct ColumnExtractor<int> {
-    static int execute(sqlite3_stmt *stmt, int column_index) {
+    static int execute(sqlite3_stmt *stmt, int column_index, IMM(QueryConfig) config) {
         int type = sqlite3_column_type(stmt, column_index);
         invariant(
             (type == SQLITE_INTEGER) || (type == SQLITE_NULL),
@@ -56,7 +57,7 @@ struct ColumnExtractor<int> {
 };
 template<>
 struct ColumnExtractor<QString> {
-    static QString execute(sqlite3_stmt *stmt, int column_index) {
+    static QString execute(sqlite3_stmt *stmt, int column_index, IMM(QueryConfig) config) {
         int type = sqlite3_column_type(stmt, column_index);
         invariant(
             (type == SQLITE_TEXT) || (type == SQLITE_NULL),
@@ -73,7 +74,7 @@ struct ColumnExtractor<QString> {
 };
 template<>
 struct ColumnExtractor<QByteArray> {
-    static QByteArray execute(sqlite3_stmt *stmt, int column_index) {
+    static QByteArray execute(sqlite3_stmt *stmt, int column_index, IMM(QueryConfig) config) {
         int type = sqlite3_column_type(stmt, column_index);
         invariant(
             (type == SQLITE_BLOB) || (type == SQLITE_NULL),
