@@ -32,6 +32,8 @@ public:
 
     SQLiteRow(SQLiteStmt* stmt) : stmt(stmt) {}
 
+    QString columnName(unsigned int colum_index) const;
+
     sqlite3_value* rawColumn(unsigned int column_index) const;
     int rawColumnType(unsigned int column_index) const;
     int expectRawColumnType(unsigned int column_index, int expected_type, bool null_allowed = true) const;

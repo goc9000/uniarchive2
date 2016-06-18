@@ -22,6 +22,12 @@ using namespace uniarchive2::utils::text;
 static QString sqlite_type_name(int type);
 
 
+QString SQLiteRow::columnName(unsigned int column_index) const {
+    columnIndexSanityCheck(column_index);
+
+    return sqlite3_column_name(stmt->handle, column_index);
+}
+
 sqlite3_value* SQLiteRow::rawColumn(unsigned int column_index) const {
     columnIndexSanityCheck(column_index);
 
