@@ -90,6 +90,20 @@ protected:
         return result;
     }
 
+    template<typename K, typename V, typename ...Args>
+    map<K, V> mapRowsToMapImpl(function<pair<K, V> (Args...)> mapper) {
+        map<K, V> result;
+
+        startQuery();
+        while (hasRow()) {
+            pair<K, V> kv = experimental::apply(mapper, DataTupleGenerator<0,Args...>::execute(currentRow));
+            result.insert(kv);
+            nextRow();
+        }
+
+        return result;
+    }
+
 public:
     SQLiteStmt(IMM(SQLiteStmt) copy_me) = delete;
     SQLiteStmt(SQLiteStmt&& move_me);
@@ -109,6 +123,11 @@ public:
     template<typename F>
     auto mapRowsToSet(F&& callback) {
         return mapRowsToSetImpl(callback_adapter(callback));
+    }
+
+    template<typename F>
+    auto mapRowsToMap(F&& callback) {
+        return mapRowsToMapImpl(callback_adapter(callback));
     }
 };
 
