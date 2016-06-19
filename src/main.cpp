@@ -13,7 +13,14 @@
 #include "extraction/skype/extract_skype_conversations.h"
 #include "extraction/whatsapp/extract_whatsapp_email_conversations.h"
 #include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
+#include "intermediate_format/subjects/FullySpecifiedSubject.h"
+#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "utils/qt/shortcuts.h"
+#include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
+
+#include <set>
 
 using namespace std;
 using namespace uniarchive2::extraction::adium;
@@ -24,6 +31,7 @@ using namespace uniarchive2::extraction::pidgin;
 using namespace uniarchive2::extraction::skype;
 using namespace uniarchive2::extraction::whatsapp;
 using namespace uniarchive2::extraction::yahoo;
+using namespace uniarchive2::intermediate_format::subjects;
 
 
 int main(int argc, char* argv[]) {
@@ -81,12 +89,64 @@ int main(int argc, char* argv[]) {
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
 
-    int limit = 250;
+    QString base_output_path = QT_STRINGIFY(TEST_OUTPUT_DIR);
+    invariant(QDir(base_output_path).exists(), "Test dir %s does not exist", QP(base_output_path));
+
+    set<QString> already;
+
+
     for (IMM(auto) convo : convos) {
-        qDebug() << convo;
-        if (!--limit) {
-            break;
+        QStringList convo_path;
+        convo_path << name_for_im_protocol(convo.protocol);
+
+        if (
+            (convo.isConference && *convo.isConference) ||
+            (!convo.isConference && convo.declaredPeers.size() > 2)
+            ) {
+            convo_path << "Conferences";
         }
+        if (convo.declaredPeers.empty()) {
+            convo_path << "(Unknown)";
+        } else {
+            ApparentSubject* subject = convo.declaredPeers.front().get();
+            auto fss = dynamic_cast<FullySpecifiedSubject*>(subject);
+            auto sgaa = dynamic_cast<SubjectGivenAsAccount*>(subject);
+            auto sgasn = dynamic_cast<SubjectGivenAsScreenName*>(subject);
+            if (fss) {
+                convo_path << fss->accountName.accountName;
+            } else if (sgaa) {
+                convo_path << sgaa->account.accountName;
+            } else if (sgasn) {
+                convo_path << sgasn->screenName;
+            } else {
+                convo_path << "(Unknown)";
+            }
+        }
+
+        QDir(base_output_path).mkpath(convo_path.join(QDir::separator()));
+
+        QString filename;
+        QDebug ss(&filename);
+        if (convo.declaredStartDate) {
+            ss << *convo.declaredStartDate;
+        } else if (!convo.events.empty()) {
+            ss << convo.events.front()->timestamp;
+        } else {
+            ss << "(Unknown date)";
+        }
+
+        QString full_filename = base_output_path + QDir::separator() + convo_path.join(QDir::separator()) +
+            QDir::separator() + filename.trimmed() + ".txt";
+
+        invariant(!already.count(full_filename), "Duplicate convo filename '%s'", QP(full_filename));
+        already.insert(full_filename);
+
+        QFile f(full_filename);
+        f.open(QFile::WriteOnly);
+        invariant(f.isWritable(), "Could not open output file '%s'", QP(full_filename));
+
+        QDebug writer(&f);
+        convo.writeToDebugStream(writer, true);
     }
 
     return 0;

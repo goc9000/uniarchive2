@@ -205,4 +205,4 @@ add_executable(uniarchive2 ${SOURCE_FILES})
 
 target_link_libraries(uniarchive2 Qt5::Core Qt5::Xml)
 target_include_directories(uniarchive2 PRIVATE src)
-target_compile_definitions(uniarchive2 PRIVATE TEST_DATA_DIR=${TEST_DATA_DIR})
+target_compile_definitions(uniarchive2 PRIVATE TEST_DATA_DIR=${TEST_DATA_DIR} TEST_OUTPUT_DIR=${TEST_OUTPUT_DIR})
