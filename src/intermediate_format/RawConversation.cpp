@@ -46,17 +46,17 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     return convo;
 }
 
-QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
+void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const {
 #define N_CONTEXT_LINES 3
     QDebugStateSaver settings(stream);
     stream.nospace() << "RawConversation {\n";
 
-    stream << "\tFormat: " << convo.originalArchiveFormat << "\n";
-    stream << "\tProtocol: " << convo.protocol << "\n";
+    stream << "\tFormat: " << originalArchiveFormat << "\n";
+    stream << "\tProtocol: " << protocol << "\n";
 
     stream << "\tIdentity: ";
-    if (convo.identity) {
-        stream << convo.identity.get();
+    if (identity) {
+        stream << identity.get();
     } else {
         stream << "(unspecified)";
     }
@@ -64,7 +64,7 @@ QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
 
     stream << "\tDeclared peers: [";
     bool first = true;
-    for (IMM(auto) account : convo.declaredPeers) {
+    for (IMM(auto) account : declaredPeers) {
         if (!first) {
             stream << ", ";
         }
@@ -73,42 +73,43 @@ QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
     }
     stream << "]\n";
 
-    if ((bool)convo.isConference) {
-        stream << "\tIs conference: " << *convo.isConference << "\n";
+    if ((bool)isConference) {
+        stream << "\tIs conference: " << *isConference << "\n";
     }
-    if (!convo.conferenceTitle.isEmpty()) {
-        stream << "\tConference title: " << convo.conferenceTitle << "\n";
+    if (!conferenceTitle.isEmpty()) {
+        stream << "\tConference title: " << conferenceTitle << "\n";
     }
-    if ((bool)convo.declaredStartDate) {
-        stream << "\tDeclared start date: " << *convo.declaredStartDate << "\n";
+    if ((bool)declaredStartDate) {
+        stream << "\tDeclared start date: " << *declaredStartDate << "\n";
     }
-    if (!convo.originalFilename.isEmpty()) {
-        stream << "\tOriginal filename: " << convo.originalFilename << "\n";
+    if (!originalFilename.isEmpty()) {
+        stream << "\tOriginal filename: " << originalFilename << "\n";
     }
-    if ((bool)convo.fileLastModifiedTime) {
-        stream << "\tFile last modified time: " << *convo.fileLastModifiedTime << "\n";
+    if ((bool)fileLastModifiedTime) {
+        stream << "\tFile last modified time: " << *fileLastModifiedTime << "\n";
     }
-    if ((bool)convo.numConversationInFile) {
-        stream << "\tNb. conversation in file: " << *convo.numConversationInFile << "\n";
+    if ((bool)numConversationInFile) {
+        stream << "\tNb. conversation in file: " << *numConversationInFile << "\n";
     }
-    if ((bool)convo.conversationOffsetInFileEventBased) {
-        stream << "\tConversation starts at event: " << *convo.conversationOffsetInFileEventBased << "\n";
+    if ((bool)conversationOffsetInFileEventBased) {
+        stream << "\tConversation starts at event: " << *conversationOffsetInFileEventBased << "\n";
     }
-    if (!convo.adiumVersion.isEmpty()) {
-        stream << "\tAdium version: " << convo.adiumVersion << "\n";
+    if (!adiumVersion.isEmpty()) {
+        stream << "\tAdium version: " << adiumVersion << "\n";
     }
-    if (!convo.adiumBuildID.isEmpty()) {
-        stream << "\tAdium build ID: " << convo.adiumBuildID << "\n";
+    if (!adiumBuildID.isEmpty()) {
+        stream << "\tAdium build ID: " << adiumBuildID << "\n";
     }
-    if ((bool)convo.shouldBeRepartitioned) {
-        stream << "\tShould be repartitioned: " << *convo.shouldBeRepartitioned << "\n";
+    if ((bool)shouldBeRepartitioned) {
+        stream << "\tShould be repartitioned: " << *shouldBeRepartitioned << "\n";
     }
 
     stream << "\t\n";
-    stream << "\t" << convo.events.size() << " events:\n";
-    for (IMM(auto) event : convo.events) {
-        if ((event->indexInConversation >= N_CONTEXT_LINES) &&
-            (event->indexInConversation < convo.events.size() - N_CONTEXT_LINES)) {
+    stream << "\t" << events.size() << " events:\n";
+    for (IMM(auto) event : events) {
+        if (!all_messages &&
+            (event->indexInConversation >= N_CONTEXT_LINES) &&
+            (event->indexInConversation < events.size() - N_CONTEXT_LINES)) {
             if (event->indexInConversation == N_CONTEXT_LINES) {
                 stream << "\t...\n";
             }
@@ -118,7 +119,10 @@ QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
     }
 
     stream << "}";
+}
 
+QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
+    convo.writeToDebugStream(stream);
     return stream;
 }
 

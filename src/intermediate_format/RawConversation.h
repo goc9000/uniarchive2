@@ -58,6 +58,8 @@ public:
     RawConversation();
     RawConversation(ArchiveFormat format, IMProtocol protocol);
 
+    void writeToDebugStream(QDebug stream, bool all_messages = false) const;
+
     static RawConversation fromPrototype(IMM(RawConversation) prototype);
 };
 
