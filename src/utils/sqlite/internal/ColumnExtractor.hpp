@@ -69,6 +69,15 @@ struct ColumnExtractor<int64_t> {
     static const unsigned int advance = 1;
 };
 template<>
+struct ColumnExtractor<uint64_t> {
+    static uint64_t execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+        int64_t result = row_handle.int64Column(column_index);
+        invariant(result >= 0, "Column value is not positive int");
+        return (uint64_t)result;
+    }
+    static const unsigned int advance = 1;
+};
+template<>
 struct ColumnExtractor<QString> {
     static QString execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         return row_handle.utf8TextColumn(column_index);
