@@ -8,8 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/events/calls/RawOfferWebcamEvent.h"
@@ -38,12 +36,14 @@
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 
+#include <QtDebug>
+
+namespace uniarchive2 { namespace extraction {
+
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::utils::html;
-
-namespace uniarchive2 { namespace extraction {
 
 static QString strip_subject_suffix(IMM(QString) subject);
 static QString parse_filename(IMM(QString) filename, bool is_html);

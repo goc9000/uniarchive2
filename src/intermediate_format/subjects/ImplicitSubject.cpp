@@ -8,11 +8,11 @@
  * Licensed under the GPL-3
  */
 
-#include <QDebugStateSaver>
-
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
+
+#include <QDebugStateSaver>
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 

@@ -11,18 +11,18 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
 
-#include <memory>
-
-#include <QtDebug>
-
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "protocols/FullAccountName.h"
 #include "utils/language/shortcuts.h"
 
-using namespace std;
-using namespace uniarchive2::protocols;
+#include <memory>
+
+#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
+
+using namespace std;
+using namespace uniarchive2::protocols;
 
 class SubjectGivenAsAccount : public ApparentSubject {
 public:

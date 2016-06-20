@@ -11,9 +11,9 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
 
-#include <QtDebug>
-
 #include "intermediate_format/content/Markup.h"
+
+#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 

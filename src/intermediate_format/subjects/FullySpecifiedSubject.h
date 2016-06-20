@@ -11,20 +11,19 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_FULLYSPECIFIEDSUBJECT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_FULLYSPECIFIEDSUBJECT_H
 
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "protocols/FullAccountName.h"
+#include "utils/language/shortcuts.h"
+
 #include <memory>
 
 #include <QtDebug>
 #include <QString>
 
-#include "intermediate_format/subjects/ApparentSubject.h"
-#include "protocols/FullAccountName.h"
-#include "utils/language/shortcuts.h"
+namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 using namespace std;
-
 using namespace uniarchive2::protocols;
-
-namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class FullySpecifiedSubject : public ApparentSubject {
 public:

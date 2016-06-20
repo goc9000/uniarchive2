@@ -11,16 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOFADETAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOFADETAG_H
 
-#include <QtDebug>
-#include <QList>
-
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
 #include "utils/language/shortcuts.h"
 
-using namespace uniarchive2::graphics;
+#include <QtDebug>
+#include <QList>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
+
+using namespace uniarchive2::graphics;
 
 struct YahooFadeTag : Markup {
 public:

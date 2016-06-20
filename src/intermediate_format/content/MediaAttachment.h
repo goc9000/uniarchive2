@@ -11,11 +11,11 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MEDIAATTACHMENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MEDIAATTACHMENT_H
 
-#include <QtDebug>
-#include <QString>
-
 #include "intermediate_format/content/RawMessageContentItem.h"
 #include "utils/language/shortcuts.h"
+
+#include <QtDebug>
+#include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 

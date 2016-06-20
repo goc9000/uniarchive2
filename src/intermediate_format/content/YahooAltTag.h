@@ -11,17 +11,17 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOALTTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOALTTAG_H
 
-#include <QtDebug>
-
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
-using namespace uniarchive2::graphics;
-using namespace std::experimental;
+#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
+
+using namespace std::experimental;
+using namespace uniarchive2::graphics;
 
 struct YahooAltTag : Markup {
 public:

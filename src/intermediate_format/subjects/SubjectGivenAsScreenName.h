@@ -11,17 +11,17 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASSCREENNAME_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASSCREENNAME_H
 
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/language/shortcuts.h"
+
 #include <memory>
 
 #include <QtDebug>
 #include <QString>
 
-#include "intermediate_format/subjects/ApparentSubject.h"
-#include "utils/language/shortcuts.h"
+namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 using namespace std;
-
-namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class SubjectGivenAsScreenName : public ApparentSubject {
 public:

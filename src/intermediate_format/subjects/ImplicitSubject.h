@@ -11,15 +11,15 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_IMPLICITSUBJECT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_IMPLICITSUBJECT_H
 
+#include "intermediate_format/subjects/ApparentSubject.h"
+
 #include <memory>
 
 #include <QtDebug>
 
-#include "intermediate_format/subjects/ApparentSubject.h"
+namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 using namespace std;
-
-namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class ImplicitSubject : public ApparentSubject {
 public:

@@ -11,18 +11,18 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENT_H
 
-#include <vector>
-#include <memory>
+#include "intermediate_format/content/RawMessageContentItem.h"
+#include "utils/language/shortcuts.h"
 
 #include <QtDebug>
 #include <QString>
 
-#include "intermediate_format/content/RawMessageContentItem.h"
-#include "utils/language/shortcuts.h"
-
-using namespace std;
+#include <vector>
+#include <memory>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
+
+using namespace std;
 
 class RawMessageContent {
 public:

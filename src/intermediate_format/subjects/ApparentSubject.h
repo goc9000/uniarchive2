@@ -11,13 +11,13 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 
-#include <QtDebug>
-
 #include "utils/language/shortcuts.h"
 
-using namespace std;
+#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
+
+using namespace std;
 
 class ApparentSubject {
 public:

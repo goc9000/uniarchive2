@@ -11,14 +11,14 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ANSICOLORTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ANSICOLORTAG_H
 
-#include <QtDebug>
-
 #include "graphics/ANSIColor.h"
 #include "intermediate_format/content/Markup.h"
 
-using namespace uniarchive2::graphics;
+#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
+
+using namespace uniarchive2::graphics;
 
 struct ANSIColorTag : Markup {
 public:

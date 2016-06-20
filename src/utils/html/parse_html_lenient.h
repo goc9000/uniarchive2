@@ -11,17 +11,17 @@
 #ifndef UNIARCHIVE2_UTILS_HTML_PARSE_HTML_LENIENT_H
 #define UNIARCHIVE2_UTILS_HTML_PARSE_HTML_LENIENT_H
 
+#include "utils/language/shortcuts.h"
+
 #include <vector>
 
 #include <QtDebug>
 #include <QMap>
 #include <QString>
 
-#include "utils/language/shortcuts.h"
+namespace uniarchive2 { namespace utils { namespace html {
 
 using namespace std;
-
-namespace uniarchive2 { namespace utils { namespace html {
 
 struct ParsedHTMLTagInfo {
     bool valid;

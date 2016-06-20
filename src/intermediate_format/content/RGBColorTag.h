@@ -11,15 +11,15 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
 
-#include <QtDebug>
-
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
 #include "utils/language/shortcuts.h"
 
-using namespace uniarchive2::graphics;
+#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
+
+using namespace uniarchive2::graphics;
 
 struct RGBColorTag : Markup {
 public:

@@ -11,10 +11,10 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
 
+#include "intermediate_format/content/Markup.h"
+
 #include <QtDebug>
 #include <QUrl>
-
-#include "intermediate_format/content/Markup.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
