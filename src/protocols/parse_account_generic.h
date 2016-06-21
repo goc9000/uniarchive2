@@ -11,11 +11,11 @@
 #ifndef UNIARCHIVE2_PROTOCOLS_PARSE_ACCOUNT_GENERIC_H
 #define UNIARCHIVE2_PROTOCOLS_PARSE_ACCOUNT_GENERIC_H
 
-#include <QString>
-
+#include "utils/language/shortcuts.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/FullAccountName.h"
-#include "utils/language/shortcuts.h"
+
+#include <QString>
 
 namespace uniarchive2 { namespace protocols {
 

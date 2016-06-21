@@ -11,20 +11,19 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONVERSATIONEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONVERSATIONEVENT_H
 
+#include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/external_libs/optional.hpp"
+#include "utils/language/shortcuts.h"
+
 #include <memory>
 
 #include <QtDebug>
 
-#include "utils/external_libs/optional.hpp"
-
-#include "intermediate_format/events/RawEvent.h"
-#include "intermediate_format/subjects/ApparentSubject.h"
-#include "utils/language/shortcuts.h"
+namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;
 using namespace uniarchive2::intermediate_format::subjects;
-
-namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 struct RawLeaveConversationEvent : RawEvent {
 public:

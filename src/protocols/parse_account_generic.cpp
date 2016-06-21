@@ -8,8 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-
+#include "protocols/parse_account_generic.h"
 #include "protocols/digsby/account_name.h"
 #include "protocols/jabber/account_name.h"
 #include "protocols/msn/account_name.h"
@@ -18,12 +17,14 @@
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 
+#include <QtDebug>
+
+namespace uniarchive2 { namespace protocols {
+
 using namespace uniarchive2::protocols::digsby;
 using namespace uniarchive2::protocols::jabber;
 using namespace uniarchive2::protocols::msn;
 using namespace uniarchive2::protocols::yahoo;
-
-namespace uniarchive2 { namespace protocols {
 
 FullAccountName parse_account_generic(IMProtocol protocol, IMM(QString) account_name) {
     switch (protocol) {

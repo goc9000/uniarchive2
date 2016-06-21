@@ -11,11 +11,11 @@
 #ifndef UNIARCHIVE2_PROTOCOLS_FULLACCOUNTNAME_H
 #define UNIARCHIVE2_PROTOCOLS_FULLACCOUNTNAME_H
 
-#include <QDebug>
-#include <QString>
-
 #include "protocols/IMProtocol.h"
 #include "utils/language/shortcuts.h"
+
+#include <QDebug>
+#include <QString>
 
 namespace uniarchive2 { namespace protocols {
 

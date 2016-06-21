@@ -8,11 +8,11 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-#include <QDebugStateSaver>
-
 #include "protocols/FullAccountName.h"
 #include "utils/qt/shortcuts.h"
+
+#include <QtDebug>
+#include <QDebugStateSaver>
 
 namespace uniarchive2 { namespace protocols {
 

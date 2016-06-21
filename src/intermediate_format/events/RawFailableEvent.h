@@ -11,16 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWFAILABLEEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWFAILABLEEVENT_H
 
-#include <memory>
-
-#include <QtDebug>
-
 #include "intermediate_format/events/RawEvent.h"
 #include "utils/language/shortcuts.h"
 
-using namespace std;
+#include <QtDebug>
+
+#include <memory>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+using namespace std;
 
 struct RawFailableEvent : RawEvent {
 public:

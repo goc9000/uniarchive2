@@ -8,10 +8,10 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-
 #include "protocols/IMProtocol.h"
 #include "utils/qt/shortcuts.h"
+
+#include <QtDebug>
 
 namespace uniarchive2 { namespace protocols {
 

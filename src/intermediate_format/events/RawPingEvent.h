@@ -11,18 +11,18 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWPINGEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWPINGEVENT_H
 
-#include <memory>
-
-#include <QtDebug>
-
 #include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
-using namespace std;
-using namespace uniarchive2::intermediate_format::subjects;
+#include <QtDebug>
+
+#include <memory>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+using namespace std;
+using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawPingEvent : RawFailableEvent {
 public:

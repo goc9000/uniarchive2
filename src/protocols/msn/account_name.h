@@ -11,10 +11,10 @@
 #ifndef UNIARCHIVE2_PROTOCOLS_MSN_ACCOUNT_NAME_H
 #define UNIARCHIVE2_PROTOCOLS_MSN_ACCOUNT_NAME_H
 
-#include <QString>
-
 #include "protocols/FullAccountName.h"
 #include "utils/language/shortcuts.h"
+
+#include <QString>
 
 namespace uniarchive2 { namespace protocols { namespace msn {
 

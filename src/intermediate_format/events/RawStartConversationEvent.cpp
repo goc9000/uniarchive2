@@ -8,8 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QDebugStateSaver>
-
 #include "intermediate_format/events/RawStartConversationEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {

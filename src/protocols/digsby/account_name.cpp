@@ -8,12 +8,12 @@
  * Licensed under the GPL-3
  */
 
-#include <QtDebug>
-
 #include "protocols/digsby/account_name.h"
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
+
+#include <QtDebug>
 
 namespace uniarchive2 { namespace protocols { namespace digsby {
 
