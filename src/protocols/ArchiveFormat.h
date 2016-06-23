@@ -23,6 +23,7 @@ enum class ArchiveFormat {
     MSN_MESSENGER_XML,
     PIDGIN_HTML,
     PIDGIN_TXT,
+    SKYPE,
     WHATSAPP_EMAIL,
     YAHOO_MESSENGER_DAT,
 };
