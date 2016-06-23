@@ -159,6 +159,8 @@ set(SOURCE_FILES
         src/protocols/jabber/account_name.h
         src/protocols/msn/account_name.cpp
         src/protocols/msn/account_name.h
+        src/protocols/skype/account_name.cpp
+        src/protocols/skype/account_name.h
         src/protocols/yahoo/account_name.cpp
         src/protocols/yahoo/account_name.h
         src/protocols/ArchiveFormat.cpp
