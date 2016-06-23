@@ -23,6 +23,9 @@ set(SOURCE_FILES
         src/extraction/pidgin/extract_pidgin_txt_conversations.h
         src/extraction/skype/extract_skype_conversations.cpp
         src/extraction/skype/extract_skype_conversations.h
+        src/extraction/skype/internal/RawSkypeConvo.h
+        src/extraction/skype/internal/RawSkypeChat.h
+        src/extraction/skype/internal/RawSkypeIdentity.h
         src/extraction/whatsapp/extract_whatsapp_email_conversations.cpp
         src/extraction/whatsapp/extract_whatsapp_email_conversations.h
         src/extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp
