@@ -23,8 +23,14 @@ namespace uniarchive2 { namespace extraction { namespace skype { namespace inter
 using namespace std::experimental;
 
 struct RawSkypeChat {
+    enum class Type {
+        ONE_ON_ONE = 2,
+        GROUP_CHAT = 4
+    };
+
     uint64_t id;
     QString stringID;
+    Type type;
     QString friendlyName;
     uint64_t timestamp;
     optional<QString> lastTopic;
@@ -36,13 +42,14 @@ struct RawSkypeChat {
     RawSkypeChat(
         uint64_t id,
         IMM(QString) string_id,
+        Type type,
         IMM(QString) friendly_name,
         uint64_t timestamp,
         IMM(optional<QString>) last_topic,
         IMM(optional<QString>) last_topic_xml,
         uint64_t conv_dbid
-    ) : id(id), stringID(string_id), friendlyName(friendly_name), timestamp(timestamp), lastTopic(last_topic),
-        lastTopicXML(last_topic_xml), convDBID(conv_dbid) {}
+    ) : id(id), stringID(string_id), type(type), friendlyName(friendly_name), timestamp(timestamp),
+        lastTopic(last_topic), lastTopicXML(last_topic_xml), convDBID(conv_dbid) {}
 };
 
 }}}}
