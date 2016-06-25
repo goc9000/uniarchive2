@@ -184,6 +184,7 @@ set(SOURCE_FILES
         src/utils/language/invariant.h
         src/utils/language/JavaStyleIterator.h
         src/utils/language/shortcuts.h
+        src/utils/qt/debug_extras.h
         src/utils/qt/shortcuts.h
         src/utils/sqlite/internal/ColumnExtractor.hpp
         src/utils/sqlite/internal/DataTupleGenerator.hpp
