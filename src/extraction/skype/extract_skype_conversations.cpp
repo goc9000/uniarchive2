@@ -97,11 +97,12 @@ static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB& db) {
 
 static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB& db) {
     map<QString, RawSkypeChat> chats = db.stmt(
-        "SELECT id, name, friendlyname, timestamp, topic, topic_xml, conv_dbid FROM Chats"
+        "SELECT id, name, type, friendlyname, timestamp, topic, topic_xml, conv_dbid FROM Chats"
     ).mapRowsToMap(
         [](
             uint64_t id,
             QString string_id,
+            int type,
             QString friendly_name,
             uint64_t timestamp,
             optional<QString> last_topic,
@@ -110,7 +111,10 @@ static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB& db) {
         ) -> pair<QString, RawSkypeChat> {
             return make_pair(
                 string_id,
-                RawSkypeChat(id, string_id, friendly_name, timestamp, last_topic, last_topic_xml, conv_dbid)
+                RawSkypeChat(
+                    id, string_id, (RawSkypeChat::Type)type, friendly_name, timestamp, last_topic, last_topic_xml,
+                    conv_dbid
+                )
             );
         });
 
