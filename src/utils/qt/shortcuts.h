@@ -11,11 +11,11 @@
 #ifndef UNIARCHIVE2_UTILS_QT_SHORTCUTS_H
 #define UNIARCHIVE2_UTILS_QT_SHORTCUTS_H
 
-#include <QtDebug>
-#include <QRegularExpression>
-
 #include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
+
+#include <QtDebug>
+#include <QRegularExpression>
 
 #define QP qUtf8Printable
 
