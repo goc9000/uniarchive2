@@ -41,7 +41,6 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
     convo.adiumVersion = prototype.adiumVersion;
     convo.adiumBuildID = prototype.adiumBuildID;
-    convo.shouldBeRepartitioned = prototype.shouldBeRepartitioned;
 
     return convo;
 }
@@ -99,9 +98,6 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
     }
     if (!adiumBuildID.isEmpty()) {
         stream << "\tAdium build ID: " << adiumBuildID << "\n";
-    }
-    if ((bool)shouldBeRepartitioned) {
-        stream << "\tShould be repartitioned: " << *shouldBeRepartitioned << "\n";
     }
 
     stream << "\t\n";

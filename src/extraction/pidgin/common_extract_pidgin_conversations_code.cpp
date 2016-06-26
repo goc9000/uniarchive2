@@ -53,7 +53,6 @@ RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_ex
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.declaredStartDate = info.conversation_date;
     conversation.isConference = info.is_conference;
-    conversation.shouldBeRepartitioned = false;
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
     if (info.peer) {
         conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(*info.peer));
