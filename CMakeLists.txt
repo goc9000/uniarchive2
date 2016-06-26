@@ -23,6 +23,7 @@ set(SOURCE_FILES
         src/extraction/pidgin/extract_pidgin_txt_conversations.h
         src/extraction/skype/extract_skype_conversations.cpp
         src/extraction/skype/extract_skype_conversations.h
+        src/extraction/skype/internal/RawSkypeCall.h
         src/extraction/skype/internal/RawSkypeConvo.h
         src/extraction/skype/internal/RawSkypeChat.h
         src/extraction/skype/internal/RawSkypeIdentity.h

@@ -11,6 +11,7 @@
 #include "extraction/skype/extract_skype_conversations.h"
 #include "extraction/skype/internal/RawSkypeConvo.h"
 #include "extraction/skype/internal/RawSkypeChat.h"
+#include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
@@ -29,6 +30,7 @@ using namespace uniarchive2::utils::sqlite;
 static map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
 static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
 static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB &db);
+static map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB &db);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -39,6 +41,7 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<QString, RawSkypeIdentity> raw_identities = query_raw_skype_identities(db);
     map<uint64_t, RawSkypeConvo> raw_convos = query_raw_skype_convos(db);
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
+    map<uint64_t, RawSkypeCall> raw_calls = query_raw_skype_calls(db);
 
     return conversations;
 }
@@ -131,6 +134,41 @@ static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB& db) {
     );
 
     return chats;
+}
+
+static map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB& db) {
+    map<uint64_t, RawSkypeCall> calls = db.stmt(
+        "SELECT id, host_identity, is_incoming, begin_timestamp, duration, topic, name, conv_dbid "\
+        "FROM Calls"
+    ).mapRowsToMap(
+        [](
+            uint64_t id,
+            QString host_identity,
+            bool is_incoming,
+            uint64_t begin_timestamp,
+            optional<unsigned int> duration,
+            QString topic,
+            QString internal_name,
+            uint64_t conv_dbid
+        ) -> pair<uint64_t, RawSkypeCall> {
+            return make_pair(
+                id,
+                RawSkypeCall(id, host_identity, is_incoming, begin_timestamp, duration, topic, internal_name, conv_dbid)
+            );
+        });
+
+    db.stmt("SELECT call_db_id, identity, dispname FROM CallMembers").forEachRow(
+        [&calls](uint64_t call_id, QString identity, QString dispname) {
+            invariant(calls.count(call_id), "Call ID=%llu not found for participant", call_id);
+            invariant(
+                !calls.at(call_id).participants.count(identity),
+                "Dupe participant '%s' in call ID=%llu", QP(identity), call_id
+            );
+
+            calls.at(call_id).participants.emplace(identity, dispname);
+        });
+
+    return calls;
 }
 
 }}}
