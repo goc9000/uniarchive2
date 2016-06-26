@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATION_H
 
 #include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/provenance/Provenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/ArchiveFormat.h"
@@ -30,6 +31,7 @@ namespace uniarchive2 { namespace intermediate_format {
 using namespace std;
 using namespace std::experimental;
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 
@@ -45,6 +47,9 @@ public:
     optional<bool> isConference;
     QString conferenceTitle;
     optional<ApparentTime> declaredStartDate;
+
+    unique_ptr<Provenance> provenance;
+
     QString originalFilename;
     optional<ApparentTime> fileLastModifiedTime;
     optional<unsigned int> numConversationInFile;

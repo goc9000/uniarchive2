@@ -35,6 +35,11 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     convo.isConference = prototype.isConference;
     convo.conferenceTitle = prototype.conferenceTitle;
     convo.declaredStartDate = prototype.declaredStartDate;
+
+    if (prototype.provenance) {
+        convo.provenance = prototype.provenance->clone();
+    }
+
     convo.originalFilename = prototype.originalFilename;
     convo.fileLastModifiedTime = prototype.fileLastModifiedTime;
     convo.numConversationInFile = prototype.numConversationInFile;
@@ -81,6 +86,11 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
     if ((bool)declaredStartDate) {
         stream << "\tDeclared start date: " << *declaredStartDate << "\n";
     }
+
+    if (provenance) {
+        stream << "\tProvenance: " << provenance.get() << "\n";
+    }
+
     if (!originalFilename.isEmpty()) {
         stream << "\tOriginal filename: " << originalFilename << "\n";
     }
