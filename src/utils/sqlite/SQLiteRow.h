@@ -38,6 +38,7 @@ public:
     int rawColumnType(unsigned int column_index) const;
     int expectRawColumnType(unsigned int column_index, int expected_type, bool null_allowed = true) const;
 
+    bool boolColumn(unsigned int column_index) const;
     int64_t int64Column(unsigned int column_index) const;
     QString utf8TextColumn(unsigned int column_index) const;
     QByteArray blobColumn(unsigned int column_index) const;

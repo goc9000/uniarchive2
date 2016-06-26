@@ -52,12 +52,30 @@ struct ColumnExtractor<optional<T>> {
     static const unsigned int advance = 1;
 };
 template<>
+struct ColumnExtractor<bool> {
+    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+        return row_handle.boolColumn(column_index);
+    }
+    static const unsigned int advance = 1;
+};
+template<>
 struct ColumnExtractor<int> {
     static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
         int64_t result = row_handle.int64Column(column_index);
         invariant(result <= INT_MAX, "Column value does not fit in int");
 
         return (int)result;
+    }
+    static const unsigned int advance = 1;
+};
+template<>
+struct ColumnExtractor<unsigned int> {
+    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+        int64_t result = row_handle.int64Column(column_index);
+        invariant(result >= 0, "Column value is not positive int");
+        invariant(result <= UINT_MAX, "Column value does not fit in unsigned int");
+
+        return (unsigned int)result;
     }
     static const unsigned int advance = 1;
 };

@@ -52,6 +52,10 @@ int SQLiteRow::expectRawColumnType(unsigned int column_index, int expected_type,
     return type;
 }
 
+bool SQLiteRow::boolColumn(unsigned int column_index) const {
+    return !!int64Column(column_index);
+}
+
 int64_t SQLiteRow::int64Column(unsigned int column_index) const {
     expectRawColumnType(column_index, SQLITE_INTEGER);
 
