@@ -40,10 +40,17 @@ static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
 static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB &db);
 static map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB &db);
 
+static map<QString, RawConversation> convert_conversations(
+    SQLiteDB& db,
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    const map<uint64_t, RawSkypeConvo>& raw_convos,
+    const map<QString, RawSkypeChat>& raw_chats,
+    const map<uint64_t, RawSkypeCall>& raw_calls,
+    IMM(RawConversation) prototype
+);
+
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
-    vector<RawConversation> conversations;
-
     SQLiteDB db = SQLiteDB::openReadOnly(filename);
 
     RawConversation prototype = init_prototype(filename);
@@ -52,6 +59,20 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<uint64_t, RawSkypeConvo> raw_convos = query_raw_skype_convos(db);
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
     map<uint64_t, RawSkypeCall> raw_calls = query_raw_skype_calls(db);
+
+    map<QString, RawConversation> indexed_conversations = convert_conversations(
+        db,
+        raw_identities,
+        raw_convos,
+        raw_chats,
+        raw_calls,
+        prototype
+    );
+
+    vector<RawConversation> conversations;
+    for (auto& kv : indexed_conversations) {
+        conversations.push_back(move(kv.second));
+    }
 
     return conversations;
 }
@@ -191,6 +212,19 @@ static RawConversation init_prototype(IMM(QString) filename) {
     conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
 
     return conversation;
+}
+
+static map<QString, RawConversation> convert_conversations(
+    SQLiteDB& db,
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    const map<uint64_t, RawSkypeConvo>& raw_convos,
+    const map<QString, RawSkypeChat>& raw_chats,
+    const map<uint64_t, RawSkypeCall>& raw_calls,
+    IMM(RawConversation) prototype
+) {
+    map<QString, RawConversation> conversations;
+
+    return conversations;
 }
 
 }}}
