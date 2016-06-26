@@ -13,6 +13,9 @@
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
+#include "intermediate_format/RawConversation.h"
+#include "protocols/ArchiveFormat.h"
+#include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/sqlite/SQLiteDB.h"
@@ -20,12 +23,17 @@
 #include <map>
 
 #include <QtDebug>
+#include <QFileInfo>
 
 namespace uniarchive2 { namespace extraction { namespace skype {
 
 using namespace std;
 using namespace uniarchive2::extraction::skype::internal;
+using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::sqlite;
+
+static RawConversation init_prototype(IMM(QString) filename);
 
 static map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
 static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
@@ -37,6 +45,8 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     vector<RawConversation> conversations;
 
     SQLiteDB db = SQLiteDB::openReadOnly(filename);
+
+    RawConversation prototype = init_prototype(filename);
 
     map<QString, RawSkypeIdentity> raw_identities = query_raw_skype_identities(db);
     map<uint64_t, RawSkypeConvo> raw_convos = query_raw_skype_convos(db);
@@ -169,6 +179,18 @@ static map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB& db) {
         });
 
     return calls;
+}
+
+static RawConversation init_prototype(IMM(QString) filename) {
+    QFileInfo file_info(filename);
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
+
+    RawConversation conversation(ArchiveFormat::SKYPE, IMProtocol::SKYPE);
+
+    conversation.originalFilename = file_info.absoluteFilePath();
+    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+
+    return conversation;
 }
 
 }}}
