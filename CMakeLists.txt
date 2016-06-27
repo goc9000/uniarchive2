@@ -142,6 +142,8 @@ set(SOURCE_FILES
         src/intermediate_format/provenance/AdiumArchiveFileProvenance.h
         src/intermediate_format/provenance/ArchiveFileProvenance.cpp
         src/intermediate_format/provenance/ArchiveFileProvenance.h
+        src/intermediate_format/provenance/EventRangeProvenance.cpp
+        src/intermediate_format/provenance/EventRangeProvenance.h
         src/intermediate_format/provenance/Provenance.cpp
         src/intermediate_format/provenance/Provenance.h
         src/intermediate_format/subjects/ApparentSubject.cpp

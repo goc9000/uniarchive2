@@ -32,6 +32,7 @@
 #include "intermediate_format/events/RawStartConversationEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/EventRangeProvenance.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/FullAccountName.h"
@@ -57,12 +58,18 @@ using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
 
 static RawConversation init_prototype(IMM(QString) filename);
-static RawConversation init_conversation(
+static void flush_conversation(
+    vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype,
-    unsigned int num_conversation_in_file,
-    unsigned int conversation_offset_in_file
+    vector<unique_ptr<RawEvent>>&& mut_current_convo_events,
+    unsigned int start_event_index,
+    unsigned int end_event_index
 );
-static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
+static CEDE(RawEvent) convert_event(
+    IMM(YahooProtocolEvent) proto_event,
+    unsigned int event_index,
+    IMM(RawConversation) prototype
+);
 static CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
 static CEDE(ApparentSubject) parse_event_subject(
     IMM(YahooProtocolEvent) proto_event,
@@ -80,7 +87,6 @@ static CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
 vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
     vector<RawConversation> conversations;
     RawConversation prototype = init_prototype(filename);
-    RawConversation conversation = init_conversation(prototype, 1, 0);
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -88,24 +94,27 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
     }
     QByteArray data = file.readAll();
 
-    QString local_account_name = static_cast<SubjectGivenAsAccount*>(conversation.identity.get())->account.accountName;
+    QString local_account_name = static_cast<SubjectGivenAsAccount*>(prototype.identity.get())->account.accountName;
     ExtractYahooProtocolEventsIterator proto_events(data, local_account_name);
 
+    vector<unique_ptr<RawEvent>> current_events;
+    unsigned int first_event_index = 0;
     unsigned int event_index = 0;
+
     while (proto_events.hasNext()) {
         auto proto_event = proto_events.next();
-        auto event = convert_event(proto_event, conversation);
-        if (proto_event.type == YahooProtocolEvent::Type::START_CONVERSATION) {
-            if (event_index > 0) {
-                conversations.push_back(move(conversation));
-            }
-            conversation = init_conversation(prototype, (unsigned int)conversations.size() + 1, event_index);
+        if ((proto_event.type == YahooProtocolEvent::Type::START_CONVERSATION) && (event_index > 0)) {
+            flush_conversation(conversations, prototype, move(current_events), first_event_index, event_index - 1);
+            first_event_index = event_index;
         }
-        conversation.events.push_back(move(event));
+
+        current_events.push_back(convert_event(proto_event, current_events.size(), prototype));
         event_index++;
     }
 
-    conversations.push_back(move(conversation));
+    if (event_index > 0) {
+        flush_conversation(conversations, prototype, move(current_events), first_event_index, event_index - 1);
+    }
 
     return conversations;
 }
@@ -141,23 +150,33 @@ static RawConversation init_prototype(IMM(QString) filename) {
     return conversation;
 }
 
-static RawConversation init_conversation(
+static void flush_conversation(
+    vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype,
-    unsigned int num_conversation_in_file,
-    unsigned int conversation_offset_in_file
+    vector<unique_ptr<RawEvent>>&& current_convo_events,
+    unsigned int start_event_index,
+    unsigned int end_event_index
 ) {
-    auto conversation = RawConversation::fromPrototype(prototype);
-    conversation.numConversationInFile = num_conversation_in_file;
-    conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
+    RawConversation conversation = RawConversation::fromPrototype(prototype);
 
-    return conversation;
+    conversation.events = move(current_convo_events);
+    conversation.provenance = make_unique<EventRangeProvenance>(
+        prototype.provenance->clone(),
+        start_event_index,
+        end_event_index
+    );
+
+    mut_conversations.push_back(move(conversation));
 }
 
-static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation) {
+static CEDE(RawEvent) convert_event(
+    IMM(YahooProtocolEvent) proto_event,
+    unsigned int event_index,
+    IMM(RawConversation) prototype
+) {
     unique_ptr<RawEvent> event;
 
     ApparentTime timestamp = ApparentTime::fromUnixTimestamp(proto_event.timestamp);
-    unsigned int next_index = (unsigned int)conversation.events.size();
 
     switch (proto_event.type) {
         case YahooProtocolEvent::Type::START_CONVERSATION:
@@ -167,8 +186,8 @@ static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(Raw
             );
             return make_unique<RawStartConversationEvent>(
                 timestamp,
-                next_index,
-                implicit_subject(proto_event, conversation)
+                event_index,
+                implicit_subject(proto_event, prototype)
             );
         case YahooProtocolEvent::Type::CONFERENCE_JOIN:
             invariant(
@@ -177,8 +196,8 @@ static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(Raw
             );
             event = make_unique<RawJoinConferenceEvent>(
                 timestamp,
-                next_index,
-                parse_event_subject(proto_event, conversation)
+                event_index,
+                parse_event_subject(proto_event, prototype)
             );
             if (!proto_event.text.isEmpty()) {
                 ((RawJoinConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
@@ -191,8 +210,8 @@ static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(Raw
             );
             event = make_unique<RawDeclineConferenceEvent>(
                 timestamp,
-                next_index,
-                parse_event_subject(proto_event, conversation)
+                event_index,
+                parse_event_subject(proto_event, prototype)
             );
             if (!proto_event.text.isEmpty()) {
                 ((RawDeclineConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
@@ -205,8 +224,8 @@ static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(Raw
             );
             event = make_unique<RawLeaveConferenceEvent>(
                 timestamp,
-                next_index,
-                parse_event_subject(proto_event, conversation)
+                event_index,
+                parse_event_subject(proto_event, prototype)
             );
             if (!proto_event.text.isEmpty()) {
                 ((RawLeaveConferenceEvent*)event.get())->message = parse_message_content(proto_event.text);
@@ -218,8 +237,8 @@ static CEDE(RawEvent) convert_event(IMM(YahooProtocolEvent) proto_event, IMM(Raw
         case YahooProtocolEvent::Type::CONFERENCE_MESSAGE:
             event = make_unique<RawMessageEvent>(
                 timestamp,
-                next_index,
-                parse_event_subject(proto_event, conversation),
+                event_index,
+                parse_event_subject(proto_event, prototype),
                 parse_message_content(proto_event.text)
             );
             if ((proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) && !proto_event.extra.isEmpty()) {
