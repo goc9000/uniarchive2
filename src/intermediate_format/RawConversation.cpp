@@ -42,8 +42,6 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
 
     convo.numConversationInFile = prototype.numConversationInFile;
     convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
-    convo.adiumVersion = prototype.adiumVersion;
-    convo.adiumBuildID = prototype.adiumBuildID;
 
     return convo;
 }
@@ -94,12 +92,6 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
     }
     if ((bool)conversationOffsetInFileEventBased) {
         stream << "\tConversation starts at event: " << *conversationOffsetInFileEventBased << "\n";
-    }
-    if (!adiumVersion.isEmpty()) {
-        stream << "\tAdium version: " << adiumVersion << "\n";
-    }
-    if (!adiumBuildID.isEmpty()) {
-        stream << "\tAdium build ID: " << adiumBuildID << "\n";
     }
 
     stream << "\t\n";

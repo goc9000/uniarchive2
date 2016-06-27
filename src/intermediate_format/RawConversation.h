@@ -52,8 +52,6 @@ public:
 
     optional<unsigned int> numConversationInFile;
     optional<unsigned int> conversationOffsetInFileEventBased;
-    QString adiumVersion;
-    QString adiumBuildID;
 
     vector<unique_ptr<RawEvent>> events;
 

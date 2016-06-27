@@ -23,7 +23,7 @@
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawPingEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
-#include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/AdiumArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
@@ -118,9 +118,11 @@ RawConversation extract_adium_conversation(IMM(QString) filename) {
     QDomDocument xml = load_xml_file(filename);
     QDomElement root_element = get_dom_root(xml, "chat");
 
+    auto provenance = static_cast<AdiumArchiveFileProvenance*>(conversation.provenance.get());
+    provenance->adiumVersion = read_string_attr(root_element, "adiumversion");
+    provenance->adiumBuildID = read_string_attr(root_element, "buildid");
+
     verify_identity(root_element, static_cast<SubjectGivenAsAccount*>(conversation.identity.get())->account);
-    conversation.adiumVersion = read_string_attr(root_element, "adiumversion");
-    conversation.adiumBuildID = read_string_attr(root_element, "buildid");
 
     QDomElement event_element = root_element.firstChildElement();
     while (!event_element.isNull()) {
@@ -139,7 +141,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(ArchiveFormat::ADIUM, info.identity.protocol);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::ADIUM, file_info);
+    conversation.provenance = AdiumArchiveFileProvenance::fromQFileInfo(file_info);
 
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));

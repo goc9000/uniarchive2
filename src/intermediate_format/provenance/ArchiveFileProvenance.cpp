@@ -31,7 +31,11 @@ void ArchiveFileProvenance::writeToDebugStream(QDebug stream) const {
     if (lastModifiedTime.isSpecified()) {
         stream << ", last_modified=" << lastModifiedTime;
     }
+    writeArchiveDetailsToDebugStream(stream);
     stream << ")";
+}
+
+void ArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug stream) const {
 }
 
 CEDE(ArchiveFileProvenance) ArchiveFileProvenance::fromQFileInfo(
