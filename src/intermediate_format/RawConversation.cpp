@@ -40,8 +40,6 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
         convo.provenance = prototype.provenance->clone();
     }
 
-    convo.originalFilename = prototype.originalFilename;
-    convo.fileLastModifiedTime = prototype.fileLastModifiedTime;
     convo.numConversationInFile = prototype.numConversationInFile;
     convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
     convo.adiumVersion = prototype.adiumVersion;
@@ -91,12 +89,6 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
         stream << "\tProvenance: " << provenance.get() << "\n";
     }
 
-    if (!originalFilename.isEmpty()) {
-        stream << "\tOriginal filename: " << originalFilename << "\n";
-    }
-    if ((bool)fileLastModifiedTime) {
-        stream << "\tFile last modified time: " << *fileLastModifiedTime << "\n";
-    }
     if ((bool)numConversationInFile) {
         stream << "\tNb. conversation in file: " << *numConversationInFile << "\n";
     }

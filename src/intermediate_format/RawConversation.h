@@ -50,8 +50,6 @@ public:
 
     unique_ptr<Provenance> provenance;
 
-    QString originalFilename;
-    optional<ApparentTime> fileLastModifiedTime;
     optional<unsigned int> numConversationInFile;
     optional<unsigned int> conversationOffsetInFileEventBased;
     QString adiumVersion;
