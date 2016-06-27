@@ -18,6 +18,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/MSNConversationProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -49,9 +50,7 @@ static RawConversation init_prototype(IMM(QString) filename);
 static RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int session_id,
-    IMM(RawConversation) prototype,
-    unsigned int conversation_no_in_file,
-    unsigned int conversation_offset_in_file
+    IMM(RawConversation) prototype
 );
 static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
 static CEDE(RawEvent) parse_message_event(
@@ -101,19 +100,9 @@ vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) fil
 
     QDomElement next_element = root_element.firstChildElement();
     int expected_session_id = first_session_id;
-    unsigned int message_offset = 0;
 
     while (!next_element.isNull()) {
-        conversations.push_back(
-            extract_conversation_for_session(
-                next_element,
-                expected_session_id,
-                prototype,
-                (unsigned int)(conversations.size() + 1),
-                message_offset
-            )
-        );
-        expected_session_id++;
+        conversations.push_back(extract_conversation_for_session(next_element, expected_session_id++, prototype));
     }
 
     return conversations;
@@ -157,9 +146,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
 static RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int expected_session_id,
-    IMM(RawConversation) prototype,
-    unsigned int conversation_no_in_file,
-    unsigned int conversation_offset_in_file
+    IMM(RawConversation) prototype
 ) {
     invariant(!mut_next_element.isNull(), "Attempted to read session when none are left");
 
@@ -169,8 +156,7 @@ static RawConversation extract_conversation_for_session(
     );
 
     auto conversation = RawConversation::fromPrototype(prototype);
-    conversation.numConversationInFile = conversation_no_in_file;
-    conversation.conversationOffsetInFileEventBased = conversation_offset_in_file;
+    conversation.provenance = make_unique<MSNConversationProvenance>(prototype.provenance->clone(), session_id);
 
     while (!mut_next_element.isNull() && (read_int_attr(mut_next_element, "SessionID") == session_id)) {
         conversation.events.push_back(parse_event(mut_next_element, (unsigned int)conversation.events.size()));
