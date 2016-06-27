@@ -50,9 +50,6 @@ public:
 
     unique_ptr<Provenance> provenance;
 
-    optional<unsigned int> numConversationInFile;
-    optional<unsigned int> conversationOffsetInFileEventBased;
-
     vector<unique_ptr<RawEvent>> events;
 
     RawConversation();

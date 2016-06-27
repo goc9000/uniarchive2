@@ -40,9 +40,6 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
         convo.provenance = prototype.provenance->clone();
     }
 
-    convo.numConversationInFile = prototype.numConversationInFile;
-    convo.conversationOffsetInFileEventBased = prototype.conversationOffsetInFileEventBased;
-
     return convo;
 }
 
@@ -85,13 +82,6 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
 
     if (provenance) {
         stream << "\tProvenance: " << provenance.get() << "\n";
-    }
-
-    if ((bool)numConversationInFile) {
-        stream << "\tNb. conversation in file: " << *numConversationInFile << "\n";
-    }
-    if ((bool)conversationOffsetInFileEventBased) {
-        stream << "\tConversation starts at event: " << *conversationOffsetInFileEventBased << "\n";
     }
 
     stream << "\t\n";
