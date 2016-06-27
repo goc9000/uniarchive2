@@ -140,7 +140,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
 
-    RawConversation conversation(ArchiveFormat::ADIUM, info.identity.protocol);
+    RawConversation conversation(info.identity.protocol);
     conversation.provenance = AdiumArchiveFileProvenance::fromQFileInfo(file_info);
 
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);

@@ -131,7 +131,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
     );
     auto local_account = parse_yahoo_account(match.captured(1));
 
-    RawConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
+    RawConversation conversation(IMProtocol::YAHOO);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::YAHOO_MESSENGER_DAT, file_info);
 
     conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);

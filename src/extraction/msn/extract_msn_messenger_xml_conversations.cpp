@@ -129,7 +129,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
         QP(filename.section(QDir::separator(), -3, -1))
     );
 
-    RawConversation conversation(ArchiveFormat::MSN_MESSENGER_XML, IMProtocol::MSN);
+    RawConversation conversation(IMProtocol::MSN);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::MSN_MESSENGER_XML, file_info);
 
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);

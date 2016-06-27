@@ -14,16 +14,14 @@
 
 namespace uniarchive2 { namespace intermediate_format {
 
-RawConversation::RawConversation()
-    : originalArchiveFormat(ArchiveFormat::INVALID),  protocol(IMProtocol::INVALID) {
+RawConversation::RawConversation() : protocol(IMProtocol::INVALID) {
 }
 
-RawConversation::RawConversation(ArchiveFormat format, IMProtocol protocol)
-    : originalArchiveFormat(format), protocol(protocol) {
+RawConversation::RawConversation(IMProtocol protocol) : protocol(protocol) {
 }
 
 RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
-    RawConversation convo(prototype.originalArchiveFormat, prototype.protocol);
+    RawConversation convo(prototype.protocol);
 
     if (prototype.identity) {
         convo.identity = prototype.identity->clone();
@@ -48,7 +46,6 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
     QDebugStateSaver settings(stream);
     stream.nospace() << "RawConversation {\n";
 
-    stream << "\tFormat: " << originalArchiveFormat << "\n";
     stream << "\tProtocol: " << protocol << "\n";
 
     stream << "\tIdentity: ";

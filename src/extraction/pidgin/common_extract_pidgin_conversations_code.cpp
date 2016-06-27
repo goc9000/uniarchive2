@@ -49,7 +49,7 @@ RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_ex
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename, expected_extension);
 
-    RawConversation conversation(format, info.identity.protocol);
+    RawConversation conversation(info.identity.protocol);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(format, file_info);
 
     conversation.declaredStartDate = info.conversation_date;

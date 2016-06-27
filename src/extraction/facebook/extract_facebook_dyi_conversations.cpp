@@ -91,7 +91,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
         QP(filename.section(QDir::separator(), -2, -1))
     );
 
-    RawConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
+    RawConversation conversation(IMProtocol::FACEBOOK);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::FACEBOOK_DYI, file_info);
 
     return conversation;

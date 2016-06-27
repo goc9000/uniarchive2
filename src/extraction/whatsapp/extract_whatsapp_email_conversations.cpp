@@ -90,7 +90,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
         "WhatApp conversation filename should be 'WhatSapp Chat with Peer Name.txt', is instead '%s'"
     );
 
-    RawConversation conversation(ArchiveFormat::WHATSAPP_EMAIL, IMProtocol::WHATSAPP);
+    RawConversation conversation(IMProtocol::WHATSAPP);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::WHATSAPP_EMAIL, file_info);
 
     // Note that this may be corrected later

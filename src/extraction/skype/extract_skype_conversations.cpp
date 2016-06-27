@@ -208,7 +208,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
-    RawConversation conversation(ArchiveFormat::SKYPE, IMProtocol::SKYPE);
+    RawConversation conversation(IMProtocol::SKYPE);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::SKYPE, file_info);
 
     return conversation;

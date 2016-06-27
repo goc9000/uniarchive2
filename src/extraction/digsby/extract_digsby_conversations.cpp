@@ -105,7 +105,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     QString full_filename = file_info.absoluteFilePath();
     auto info = analyze_conversation_filename(full_filename);
 
-    RawConversation conversation(ArchiveFormat::DIGSBY, info.identity.protocol);
+    RawConversation conversation(info.identity.protocol);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::DIGSBY, file_info);
 
     conversation.isConference = info.isConference;

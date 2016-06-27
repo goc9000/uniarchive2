@@ -15,7 +15,6 @@
 #include "intermediate_format/provenance/Provenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
-#include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
@@ -38,7 +37,6 @@ using namespace uniarchive2::protocols;
 class RawConversation {
 public:
     // Mandatory metadata
-    ArchiveFormat originalArchiveFormat;
     IMProtocol protocol;
 
     // Optional metadata
@@ -53,7 +51,7 @@ public:
     vector<unique_ptr<RawEvent>> events;
 
     RawConversation();
-    RawConversation(ArchiveFormat format, IMProtocol protocol);
+    RawConversation(IMProtocol protocol);
 
     void writeToDebugStream(QDebug stream, bool all_messages = false) const;
 
