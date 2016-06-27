@@ -15,6 +15,7 @@
 #include "intermediate_format/events/conference/RawCreateConferenceEvent.h"
 #include "intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "protocols/ArchiveFormat.h"
@@ -33,6 +34,7 @@ namespace uniarchive2 { namespace extraction { namespace whatsapp {
 using namespace std;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::text;
@@ -89,8 +91,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     );
 
     RawConversation conversation(ArchiveFormat::WHATSAPP_EMAIL, IMProtocol::WHATSAPP);
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::WHATSAPP_EMAIL, file_info);
 
     // Note that this may be corrected later
     conversation.isConference = false;

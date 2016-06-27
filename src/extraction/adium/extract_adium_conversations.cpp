@@ -23,6 +23,7 @@
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawPingEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
@@ -51,6 +52,7 @@ using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::xml;
@@ -137,9 +139,8 @@ static RawConversation init_conversation(IMM(QString) filename) {
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(ArchiveFormat::ADIUM, info.identity.protocol);
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::ADIUM, file_info);
 
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
     conversation.declaredStartDate = info.convoStartDate;

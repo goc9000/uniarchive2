@@ -21,6 +21,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawCorruptedMessageEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/digsby/account_name.h"
 #include "protocols/FullAccountName.h"
@@ -46,6 +47,7 @@ using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::digsby;
@@ -104,9 +106,8 @@ static RawConversation init_conversation(IMM(QString) filename) {
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(ArchiveFormat::DIGSBY, info.identity.protocol);
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::DIGSBY, file_info);
 
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.isConference = info.isConference;
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));

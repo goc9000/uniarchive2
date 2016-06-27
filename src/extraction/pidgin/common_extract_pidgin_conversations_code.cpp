@@ -9,6 +9,7 @@
  */
 
 #include "common_extract_pidgin_conversations_code.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
@@ -25,6 +26,7 @@ namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::time;
@@ -48,9 +50,8 @@ RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_ex
     auto info = analyze_conversation_filename(full_filename, expected_extension);
 
     RawConversation conversation(format, info.identity.protocol);
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(format, file_info);
 
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.declaredStartDate = info.conversation_date;
     conversation.isConference = info.is_conference;
     conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
