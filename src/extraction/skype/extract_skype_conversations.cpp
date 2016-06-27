@@ -13,6 +13,7 @@
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/RawConversation.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
@@ -30,6 +31,7 @@ namespace uniarchive2 { namespace extraction { namespace skype {
 using namespace std;
 using namespace uniarchive2::extraction::skype::internal;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::sqlite;
 
@@ -207,9 +209,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
     RawConversation conversation(ArchiveFormat::SKYPE, IMProtocol::SKYPE);
-
-    conversation.originalFilename = file_info.absoluteFilePath();
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::SKYPE, file_info);
 
     return conversation;
 }

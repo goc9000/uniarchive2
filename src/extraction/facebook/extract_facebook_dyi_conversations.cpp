@@ -10,6 +10,7 @@
 
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -29,6 +30,7 @@ namespace uniarchive2 { namespace extraction { namespace facebook {
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::events;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::facebook;
 using namespace uniarchive2::utils::time;
@@ -90,9 +92,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
     );
 
     RawConversation conversation(ArchiveFormat::FACEBOOK_DYI, IMProtocol::FACEBOOK);
-
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::FACEBOOK_DYI, file_info);
 
     return conversation;
 }

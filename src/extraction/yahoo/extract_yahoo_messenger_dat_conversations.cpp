@@ -31,6 +31,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawStartConversationEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/FullAccountName.h"
@@ -50,6 +51,7 @@ namespace uniarchive2 { namespace extraction { namespace yahoo {
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::protocols::yahoo;
 using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
@@ -121,9 +123,8 @@ static RawConversation init_prototype(IMM(QString) filename) {
     auto local_account = parse_yahoo_account(match.captured(1));
 
     RawConversation conversation(ArchiveFormat::YAHOO_MESSENGER_DAT, IMProtocol::YAHOO);
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::YAHOO_MESSENGER_DAT, file_info);
 
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
     conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
     conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));

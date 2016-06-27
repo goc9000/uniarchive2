@@ -17,6 +17,7 @@
 #include "intermediate_format/events/file_transfer/RawReceiveFileEvent.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
+#include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -39,6 +40,7 @@ namespace uniarchive2 { namespace extraction { namespace msn {
 using namespace std;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
+using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::msn;
 using namespace uniarchive2::utils::xml;
@@ -139,9 +141,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
     );
 
     RawConversation conversation(ArchiveFormat::MSN_MESSENGER_XML, IMProtocol::MSN);
-
-    conversation.originalFilename = full_filename;
-    conversation.fileLastModifiedTime = ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified());
+    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::MSN_MESSENGER_XML, file_info);
 
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);
     auto remote_account = parse_optionally_encoded_msn_account(base_name);
