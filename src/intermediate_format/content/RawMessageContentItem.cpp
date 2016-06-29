@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-QDebug operator<< (QDebug stream, RawMessageContentItem const * const content_item) {
+QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) content_item) {
     QDebugStateSaver saver(stream);
     stream.nospace();
     content_item->writeToDebugStream(stream);

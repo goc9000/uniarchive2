@@ -11,6 +11,8 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENTITEM_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENTITEM_H
 
+#include "utils/language/shortcuts.h"
+
 #include <QtDebug>
 #include <QString>
 
@@ -21,7 +23,7 @@ public:
     virtual void writeToDebugStream(QDebug stream) const = 0;
 };
 
-QDebug operator<< (QDebug stream, RawMessageContentItem const * const content_item);
+QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) content_item);
 
 }}}
 

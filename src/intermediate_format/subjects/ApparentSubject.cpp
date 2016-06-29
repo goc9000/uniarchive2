@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 ApparentSubject::ApparentSubject(Hints hints) : hints(hints) {
 }
 
-QDebug operator<< (QDebug stream, ApparentSubject const * const subject) {
+QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject) {
     QDebugStateSaver save(stream);
     stream.nospace();
     subject->writeToDebugStream(stream);

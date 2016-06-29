@@ -33,7 +33,7 @@ protected:
     virtual void writeDetailsToDebugStream(QDebug stream) const;
 };
 
-QDebug operator<< (QDebug stream, RawEvent const * const event);
+QDebug operator<< (QDebug stream, CPTR(RawEvent) event);
 
 }}}
 

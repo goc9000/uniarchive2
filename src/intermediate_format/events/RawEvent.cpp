@@ -29,7 +29,7 @@ void RawEvent::writeToDebugStream(QDebug stream) const {
 void RawEvent::writeDetailsToDebugStream(QDebug stream) const {
 }
 
-QDebug operator<< (QDebug stream, RawEvent const * const event) {
+QDebug operator<< (QDebug stream, CPTR(RawEvent) event) {
     event->writeToDebugStream(stream);
     return stream;
 }

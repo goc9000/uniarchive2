@@ -26,7 +26,7 @@ public:
     virtual void writeToDebugStream(QDebug stream) const = 0;
 };
 
-QDebug operator<< (QDebug stream, Provenance const * const provenance);
+QDebug operator<< (QDebug stream, CPTR(Provenance) provenance);
 
 }}}
 

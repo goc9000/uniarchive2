@@ -37,7 +37,7 @@ public:
     virtual void writeToDebugStream(QDebug stream) const = 0;
 };
 
-QDebug operator<< (QDebug stream, ApparentSubject const * const subject);
+QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject);
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ApparentSubject::Hints);
 

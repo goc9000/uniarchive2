@@ -15,6 +15,8 @@
 
 using namespace std;
 
+#define CPTR(type) type const *
+
 // Marker for a structure parameter that is not modified
 #define IMM(type) const type&
 
