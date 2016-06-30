@@ -14,13 +14,18 @@
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/RawConversation.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
+#include "protocols/skype/account_name.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/sqlite/SQLiteDB.h"
 
+#include <set>
 #include <map>
 
 #include <QtDebug>
@@ -32,7 +37,9 @@ using namespace std;
 using namespace uniarchive2::extraction::skype::internal;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::provenance;
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
+using namespace uniarchive2::protocols::skype;
 using namespace uniarchive2::utils::sqlite;
 
 static RawConversation init_prototype(IMM(QString) filename);
@@ -49,6 +56,12 @@ static map<QString, RawConversation> convert_conversations(
     const map<QString, RawSkypeChat>& raw_chats,
     const map<uint64_t, RawSkypeCall>& raw_calls,
     IMM(RawConversation) prototype
+);
+static RawConversation convert_one_on_one_conversation(
+    IMM(RawSkypeConvo) skype_convo,
+    CPTR(RawSkypeChat) skype_chat,
+    IMM(RawConversation) prototype,
+    const map<QString, RawSkypeIdentity>& raw_identities
 );
 
 
@@ -224,7 +237,83 @@ static map<QString, RawConversation> convert_conversations(
 ) {
     map<QString, RawConversation> conversations;
 
+    db.stmt(
+        "SELECT chatname, convo_id FROM Messages "\
+        "GROUP BY chatname, convo_id"
+    ).forEachRow(
+        [&conversations, &raw_convos, &raw_chats, &raw_calls, &raw_identities, &prototype](
+            QString chat_string_id,
+            uint64_t convo_id
+        ) -> void {
+            QString key = chat_string_id.isEmpty() ? QString::number(convo_id) : chat_string_id;
+            invariant(!conversations.count(key), "Multiple conversations map to key: %s", QP(key));
+
+            IMM(RawSkypeConvo) convo = raw_convos.at(convo_id);
+            CPTR(RawSkypeChat) chat = raw_chats.count(chat_string_id) ? &raw_chats.at(chat_string_id) : nullptr;
+
+            switch (convo.type) {
+                case RawSkypeConvo::Type::ONE_ON_ONE:
+                    if (chat && chat->type != RawSkypeChat::Type::ONE_ON_ONE) {
+                        // Some group chats start with a (spurious) association with a one-on-one convo. Ignore this.
+                        return;
+                    }
+
+                    conversations.emplace(key, convert_one_on_one_conversation(convo, chat, prototype, raw_identities));
+                    return;
+                default:
+                    return;
+            }
+        });
+
     return conversations;
+}
+
+static RawConversation convert_one_on_one_conversation(
+    IMM(RawSkypeConvo) skype_convo,
+    CPTR(RawSkypeChat) skype_chat,
+    IMM(RawConversation) prototype,
+    const map<QString, RawSkypeIdentity>& raw_identities
+) {
+    invariant(skype_convo.type == RawSkypeConvo::Type::ONE_ON_ONE, "Expected 1:1 Skype convo");
+    invariant(!skype_chat || (skype_chat->type == RawSkypeChat::Type::ONE_ON_ONE), "Expected 1:1 Skype chat");
+    invariant(!skype_chat || (skype_chat->convDBID == skype_convo.id), "Chat ConvDBID mismatch");
+
+    invariant(skype_convo.participants.size() <= 2, "Expected at most 2 participants for a 1:1 conversation");
+
+    if (skype_chat) {
+        invariant(
+            includes(
+                skype_convo.participants.cbegin(),
+                skype_convo.participants.cend(),
+                skype_chat->participants.cbegin(),
+                skype_chat->participants.cend()
+            ),
+            "Expected Skype chat participants to be included in convo participants"
+        );
+    }
+
+    set<QString> participants = skype_convo.participants;
+    invariant(participants.count(skype_convo.identity), "convo.identity not found in participants");
+    participants.erase(skype_convo.identity);
+
+    QString identity = participants.empty() ? skype_convo.identity : *participants.cbegin();
+    invariant(raw_identities.count(identity), "Expected '%s' to be an identity", QP(identity));
+
+    RawConversation conversation = RawConversation::fromPrototype(prototype);
+    conversation.isConference = false;
+    conversation.identity = make_unique<FullySpecifiedSubject>(
+        parse_skype_account(identity),
+        raw_identities.at(identity).screenName
+    );
+    conversation.declaredPeers.emplace_back(
+        make_unique<SubjectGivenAsAccount>(parse_skype_account(skype_convo.identity))
+    );
+
+    if (skype_chat) {
+        conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(skype_chat->timestamp);
+    }
+
+    return conversation;
 }
 
 }}}
