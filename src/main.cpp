@@ -1,9 +1,3 @@
-#include <vector>
-
-#include <QDebug>
-#include <QDirIterator>
-#include <QString>
-
 #include "extraction/adium/extract_adium_conversations.h"
 #include "extraction/digsby/extract_digsby_conversations.h"
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
@@ -20,7 +14,12 @@
 #include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
 
-#include <set>
+#include <QDebug>
+#include <QDirIterator>
+#include <QString>
+
+#include <map>
+#include <vector>
 
 using namespace std;
 using namespace uniarchive2::extraction::adium;
@@ -92,8 +91,7 @@ int main(int argc, char* argv[]) {
     QString base_output_path = QT_STRINGIFY(TEST_OUTPUT_DIR);
     invariant(QDir(base_output_path).exists(), "Test dir %s does not exist", QP(base_output_path));
 
-    set<QString> already;
-
+    map<QString, unsigned int> filenames_used;
 
     for (IMM(auto) convo : convos) {
         QStringList convo_path;
@@ -127,19 +125,25 @@ int main(int argc, char* argv[]) {
 
         QString filename;
         QDebug ss(&filename);
+        ss.nospace();
         if (convo.declaredStartDate) {
-            ss << *convo.declaredStartDate;
+            ss << " " << *convo.declaredStartDate;
         } else if (!convo.events.empty()) {
-            ss << convo.events.front()->timestamp;
+            ss << " " << convo.events.front()->timestamp;
         } else {
-            ss << "(Unknown date)";
+            ss << " (Unknown date)";
+        }
+
+        QString base_filename = base_output_path + QDir::separator() + convo_path.join(QDir::separator()) +
+            QDir::separator() + filename.trimmed() + ".txt";
+
+        filenames_used[base_filename]++;
+        if (filenames_used[base_filename] > 1) {
+            ss << " (" << filenames_used[base_filename] << ")";
         }
 
         QString full_filename = base_output_path + QDir::separator() + convo_path.join(QDir::separator()) +
             QDir::separator() + filename.trimmed() + ".txt";
-
-        invariant(!already.count(full_filename), "Duplicate convo filename '%s'", QP(full_filename));
-        already.insert(full_filename);
 
         QFile f(full_filename);
         f.open(QFile::WriteOnly);
