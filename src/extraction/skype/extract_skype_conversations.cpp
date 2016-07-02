@@ -63,6 +63,16 @@ static RawConversation convert_one_on_one_conversation(
     IMM(RawConversation) prototype,
     const map<QString, RawSkypeIdentity>& raw_identities
 );
+static RawConversation convert_group_chat(
+    IMM(RawSkypeConvo) skype_convo,
+    CPTR(RawSkypeChat) skype_chat,
+    IMM(RawConversation) prototype,
+    const map<QString, RawSkypeIdentity>& raw_identities
+);
+static CEDE(ApparentSubject) extract_identity_from_participants(
+    set<QString>& mut_participants,
+    const map<QString, RawSkypeIdentity>& raw_identities
+);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -260,6 +270,9 @@ static map<QString, RawConversation> convert_conversations(
 
                     conversations.emplace(key, convert_one_on_one_conversation(convo, chat, prototype, raw_identities));
                     return;
+                case RawSkypeConvo::Type::GROUP_CHAT:
+                    conversations.emplace(key, convert_group_chat(convo, chat, prototype, raw_identities));
+                    return;
                 default:
                     return;
             }
@@ -314,6 +327,86 @@ static RawConversation convert_one_on_one_conversation(
     }
 
     return conversation;
+}
+
+static RawConversation convert_group_chat(
+    IMM(RawSkypeConvo) skype_convo,
+    CPTR(RawSkypeChat) skype_chat,
+    IMM(RawConversation) prototype,
+    const map<QString, RawSkypeIdentity>& raw_identities
+) {
+    invariant(skype_convo.type == RawSkypeConvo::Type::GROUP_CHAT, "Expected group Skype convo");
+    invariant(!skype_chat || (skype_chat->type == RawSkypeChat::Type::GROUP_CHAT), "Expected group Skype chat");
+    invariant(!skype_chat || (skype_chat->convDBID == skype_convo.id), "Chat ConvDBID mismatch");
+
+    if (skype_chat) {
+        invariant(
+            includes(
+                skype_convo.participants.cbegin(),
+                skype_convo.participants.cend(),
+                skype_chat->participants.cbegin(),
+                skype_chat->participants.cend()
+            ),
+            "Expected Skype chat participants to be included in convo participants"
+        );
+    }
+
+    set<QString> participants = skype_convo.participants;
+
+    RawConversation conversation = RawConversation::fromPrototype(prototype);
+    conversation.isConference = true;
+    conversation.identity = extract_identity_from_participants(participants, raw_identities);
+
+    if (skype_convo.creator) {
+        QString initiator = *skype_convo.creator;
+        if (participants.count(initiator)) {
+            participants.erase(initiator);
+            conversation.declaredPeers.emplace_back(
+                make_unique<SubjectGivenAsAccount>(parse_skype_account(initiator))
+            );
+        }
+    }
+    for (IMM(QString) participant : participants) {
+        conversation.declaredPeers.emplace_back(make_unique<SubjectGivenAsAccount>(parse_skype_account(participant)));
+    }
+
+    if (skype_chat && (skype_chat->timestamp > 1000000000)) { // sometimes the date is horseshit
+        conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(skype_chat->timestamp);
+    }
+
+    conversation.conferenceTitle = skype_chat ? skype_chat->friendlyName : skype_convo.displayName;
+    if (skype_convo.givenDisplayName) {
+        conversation.conferenceTitle = *skype_convo.givenDisplayName;
+    }
+
+    return conversation;
+}
+
+static CEDE(ApparentSubject) extract_identity_from_participants(
+    set<QString>& mut_participants,
+    const map<QString, RawSkypeIdentity>& raw_identities
+) {
+    QString identity_account;
+
+    for (IMM(QString) participant : mut_participants) {
+        if (raw_identities.count(participant)) {
+            invariant(
+                identity_account.isEmpty(),
+                "More than one identity in participant list (%s and %s)", QP(identity_account), QP(participant)
+            );
+
+            identity_account = participant;
+        }
+    }
+
+    invariant(!identity_account.isEmpty(), "No identity account found in participant list");
+
+    mut_participants.erase(identity_account);
+
+    return make_unique<FullySpecifiedSubject>(
+        parse_skype_account(identity_account),
+        raw_identities.at(identity_account).screenName
+    );
 }
 
 }}}
