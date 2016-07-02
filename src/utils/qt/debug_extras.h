@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_UTILS_QT_DEBUG_EXTRAS_H
 
 #include "utils/language/shortcuts.h"
+#include "utils/external_libs/optional.hpp"
 
 #include <QtDebug>
 
@@ -19,6 +20,17 @@
 #include <unordered_set>
 #include <set>
 #include <map>
+
+template<typename T>
+QDebug operator<< (QDebug stream, IMM(std::experimental::optional<T>) value) {
+    if (value) {
+        stream << *value;
+    } else {
+        stream << "(empty)";
+    }
+
+    return stream;
+}
 
 template<typename T>
 QDebug operator<< (QDebug stream, IMM(std::vector<T>) value) {
