@@ -41,7 +41,7 @@ public:
 
     // Optional metadata
     unique_ptr<ApparentSubject> identity;
-    vector<unique_ptr<ApparentSubject>> declaredPeers;
+    vector<unique_ptr<ApparentSubject>> declaredPeers; // Note: the identity is excluded from the peers (if recognized)
 
     optional<bool> isConference;
     QString conferenceTitle;
