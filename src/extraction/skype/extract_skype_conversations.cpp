@@ -73,6 +73,18 @@ static CEDE(ApparentSubject) extract_identity_from_participants(
     set<QString>& mut_participants,
     const map<QString, RawSkypeIdentity>& raw_identities
 );
+static CPTR(RawSkypeCall) lookup_call(
+    const map<uint64_t, RawSkypeCall>& raw_calls,
+    uint64_t skype_convo_id,
+    QString chat_string_id
+);
+static RawConversation convert_call(
+    IMM(RawSkypeConvo) skype_convo,
+    CPTR(RawSkypeCall) skype_call,
+    IMM(RawConversation) prototype,
+    const map<QString, RawSkypeIdentity>& raw_identities
+);
+static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(RawSkypeCall) skype_call);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -260,6 +272,7 @@ static map<QString, RawConversation> convert_conversations(
 
             IMM(RawSkypeConvo) convo = raw_convos.at(convo_id);
             CPTR(RawSkypeChat) chat = raw_chats.count(chat_string_id) ? &raw_chats.at(chat_string_id) : nullptr;
+            CPTR(RawSkypeCall) call = nullptr;
 
             switch (convo.type) {
                 case RawSkypeConvo::Type::ONE_ON_ONE:
@@ -273,7 +286,9 @@ static map<QString, RawConversation> convert_conversations(
                 case RawSkypeConvo::Type::GROUP_CHAT:
                     conversations.emplace(key, convert_group_chat(convo, chat, prototype, raw_identities));
                     return;
-                default:
+                case RawSkypeConvo::Type::CALL:
+                    call = lookup_call(raw_calls, convo_id, chat_string_id);
+                    conversations.emplace(key, convert_call(convo, call, prototype, raw_identities));
                     return;
             }
         });
@@ -410,6 +425,87 @@ static CEDE(ApparentSubject) extract_identity_from_participants(
         parse_skype_account(identity_account),
         raw_identities.at(identity_account).screenName
     );
+}
+
+static CPTR(RawSkypeCall) lookup_call(
+    const map<uint64_t, RawSkypeCall>& raw_calls,
+    uint64_t skype_convo_id,
+    QString chat_string_id
+) {
+    QREGEX_MATCH_CI(match, "#[^/]*/\\$\\*\\d+;(\\d+)", chat_string_id);
+    if (match.hasMatch()) {
+        uint64_t call_id = match.captured(1).toInt();
+        invariant(raw_calls.count(call_id), "Call ID=%lld not found", call_id);
+        return &raw_calls.at(call_id);
+    }
+
+    CPTR(RawSkypeCall) call = nullptr;
+
+    for (IMM(auto) kv : raw_calls) {
+        if (kv.second.convDBID == skype_convo_id) {
+            invariant(!call, "Multiple calls found for conversation ID=%lld", skype_convo_id);
+            call = &kv.second;
+        }
+    }
+
+    return call;
+}
+
+static RawConversation convert_call(
+    IMM(RawSkypeConvo) skype_convo,
+    CPTR(RawSkypeCall) skype_call,
+    IMM(RawConversation) prototype,
+    const map<QString, RawSkypeIdentity>& raw_identities
+) {
+    invariant(skype_convo.type == RawSkypeConvo::Type::CALL, "Expected call Skype convo");
+    invariant(!skype_call || (skype_call->convDBID == skype_convo.id), "Call ConvDBID mismatch");
+
+    if (skype_call) {
+        for (IMM(auto) kv : skype_call->participants) {
+            invariant(
+                skype_convo.participants.count(kv.first),
+                "Expected Skype call participants to be included in convo participants"
+            );
+        }
+    }
+
+    set<QString> participants = skype_convo.participants;
+
+    RawConversation conversation = RawConversation::fromPrototype(prototype);
+    conversation.identity = extract_identity_from_participants(participants, raw_identities);
+
+    QString initiator = skype_call ? skype_call->hostIdentity : (skype_convo.creator ? *skype_convo.creator : "");
+    if (!initiator.isEmpty()) {
+        conversation.declaredInitiator = make_call_subject(initiator, skype_call);
+        if (participants.count(initiator)) {
+            conversation.declaredPeers.emplace_back(make_call_subject(initiator, skype_call));
+            participants.erase(initiator);
+        }
+    }
+    for (IMM(QString) participant : participants) {
+        conversation.declaredPeers.emplace_back(make_call_subject(participant, skype_call));
+    }
+
+    conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(
+        skype_call ? skype_call->beginTimestamp : skype_convo.timeCreated
+    );
+
+    if (skype_call && !skype_call->topic.isEmpty()) {
+        conversation.conferenceTitle = skype_call->topic;
+    }
+
+    return conversation;
+}
+
+static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(RawSkypeCall) skype_call) {
+    if (skype_call && skype_call->participants.count(account_name)) {
+        return make_unique<FullySpecifiedSubject>(
+            parse_skype_account(account_name),
+            skype_call->participants.at(account_name)
+        );
+    }
+
+    return make_unique<SubjectGivenAsAccount>(parse_skype_account(account_name));
 }
 
 }}}
