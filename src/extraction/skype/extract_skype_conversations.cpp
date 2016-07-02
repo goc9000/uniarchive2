@@ -370,9 +370,10 @@ static RawConversation convert_group_chat(
         conversation.declaredPeers.emplace_back(make_unique<SubjectGivenAsAccount>(parse_skype_account(participant)));
     }
 
-    if (skype_chat && (skype_chat->timestamp > 1000000000)) { // sometimes the date is horseshit
-        conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(skype_chat->timestamp);
-    }
+    // The >10^9 check is necessary because sometimes the chat date is spurious
+    conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(
+        (skype_chat && (skype_chat->timestamp > 1000000000)) ? skype_chat->timestamp : skype_convo.timeCreated
+    );
 
     conversation.conferenceTitle = skype_chat ? skype_chat->friendlyName : skype_convo.displayName;
     if (skype_convo.givenDisplayName) {
