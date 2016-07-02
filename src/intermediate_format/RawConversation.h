@@ -42,9 +42,11 @@ public:
     // Optional metadata
     unique_ptr<ApparentSubject> identity;
     vector<unique_ptr<ApparentSubject>> declaredPeers;
+
     optional<bool> isConference;
     QString conferenceTitle;
     optional<ApparentTime> declaredStartDate;
+    unique_ptr<ApparentSubject> declaredInitiator;
 
     unique_ptr<Provenance> provenance;
 

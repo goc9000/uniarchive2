@@ -359,6 +359,8 @@ static RawConversation convert_group_chat(
 
     if (skype_convo.creator) {
         QString initiator = *skype_convo.creator;
+        conversation.declaredInitiator = make_unique<SubjectGivenAsAccount>(parse_skype_account(initiator));
+
         if (participants.count(initiator)) {
             participants.erase(initiator);
             conversation.declaredPeers.emplace_back(

@@ -29,6 +29,9 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     for (IMM(auto) subject : prototype.declaredPeers) {
         convo.declaredPeers.push_back(subject->clone());
     }
+    if (prototype.declaredInitiator) {
+        convo.declaredInitiator = prototype.declaredInitiator->clone();
+    }
 
     convo.isConference = prototype.isConference;
     convo.conferenceTitle = prototype.conferenceTitle;
@@ -69,6 +72,9 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
 
     if ((bool)isConference) {
         stream << "\tIs conference: " << *isConference << "\n";
+    }
+    if ((bool)declaredInitiator) {
+        stream << "\tInitiator: " << declaredInitiator.get() << "\n";
     }
     if (!conferenceTitle.isEmpty()) {
         stream << "\tConference title: " << conferenceTitle << "\n";
