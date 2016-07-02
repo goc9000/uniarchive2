@@ -73,6 +73,7 @@ static CEDE(ApparentSubject) extract_identity_from_participants(
     set<QString>& mut_participants,
     const map<QString, RawSkypeIdentity>& raw_identities
 );
+static optional<uint64_t> extract_call_id(QString chat_string_id);
 static CPTR(RawSkypeCall) lookup_call(
     const map<uint64_t, RawSkypeCall>& raw_calls,
     uint64_t skype_convo_id,
@@ -280,7 +281,6 @@ static map<QString, RawConversation> convert_conversations(
                         // Some group chats start with a (spurious) association with a one-on-one convo. Ignore this.
                         return;
                     }
-
                     conversations.emplace(key, convert_one_on_one_conversation(convo, chat, prototype, raw_identities));
                     return;
                 case RawSkypeConvo::Type::GROUP_CHAT:
@@ -427,16 +427,26 @@ static CEDE(ApparentSubject) extract_identity_from_participants(
     );
 }
 
+static optional<uint64_t> extract_call_id(QString chat_string_id) {
+    optional<uint64_t> result;
+
+    QREGEX_MATCH_CI(match, "#[^/]*/\\$\\*\\d+;(\\d+)", chat_string_id);
+    if (match.hasMatch()) {
+        result = match.captured(1).toInt();
+    }
+
+    return result;
+}
+
 static CPTR(RawSkypeCall) lookup_call(
     const map<uint64_t, RawSkypeCall>& raw_calls,
     uint64_t skype_convo_id,
     QString chat_string_id
 ) {
-    QREGEX_MATCH_CI(match, "#[^/]*/\\$\\*\\d+;(\\d+)", chat_string_id);
-    if (match.hasMatch()) {
-        uint64_t call_id = match.captured(1).toInt();
-        invariant(raw_calls.count(call_id), "Call ID=%lld not found", call_id);
-        return &raw_calls.at(call_id);
+    optional<uint64_t> call_id = extract_call_id(chat_string_id);
+    if (call_id) {
+        invariant(raw_calls.count(*call_id), "Call ID=%lld not found", *call_id);
+        return &raw_calls.at(*call_id);
     }
 
     CPTR(RawSkypeCall) call = nullptr;
