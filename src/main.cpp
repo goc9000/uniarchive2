@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 
         if (
             (convo.isConference && *convo.isConference) ||
-            (!convo.isConference && convo.declaredPeers.size() > 2)
+            (!convo.isConference && convo.declaredPeers.size() > 1)
             ) {
             convo_path << "Conferences";
         }
