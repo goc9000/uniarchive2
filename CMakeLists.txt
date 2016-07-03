@@ -148,6 +148,8 @@ set(SOURCE_FILES
         src/intermediate_format/provenance/MSNConversationProvenance.h
         src/intermediate_format/provenance/Provenance.cpp
         src/intermediate_format/provenance/Provenance.h
+        src/intermediate_format/provenance/SkypeConversationProvenance.cpp
+        src/intermediate_format/provenance/SkypeConversationProvenance.h
         src/intermediate_format/subjects/ApparentSubject.cpp
         src/intermediate_format/subjects/ApparentSubject.h
         src/intermediate_format/subjects/FullySpecifiedSubject.cpp
