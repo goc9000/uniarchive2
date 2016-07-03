@@ -68,6 +68,8 @@ set(SOURCE_FILES
         src/intermediate_format/content/MediaAttachment.h
         src/intermediate_format/content/RGBColorTag.cpp
         src/intermediate_format/content/RGBColorTag.h
+        src/intermediate_format/content/SkypeEmoticon.cpp
+        src/intermediate_format/content/SkypeEmoticon.h
         src/intermediate_format/content/TextSection.cpp
         src/intermediate_format/content/TextSection.h
         src/intermediate_format/content/UnderlineTag.cpp

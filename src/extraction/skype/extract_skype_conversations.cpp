@@ -14,6 +14,7 @@
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/SkypeEmoticon.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
@@ -639,7 +640,24 @@ static RawMessageContent parse_message_content(IMM(QString) content_xml) {
 
     for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
         if (i > 0) {
-            content.addItem(parse_markup_tag(lenient_parse_result.tags[i-1]));
+            IMM(auto) tag = lenient_parse_result.tags.at(i-1);
+            if (tag.tagName == "ss") {
+                // Special handling for this particular tag
+                invariant(tag.open && !tag.closed && (i < lenient_parse_result.tags.size()), "Malformed <ss> tag");
+                IMM(auto) next_tag = lenient_parse_result.tags.at(i);
+                invariant((next_tag.tagName == "ss") && next_tag.closed && !next_tag.open, "Malformed <ss> tag");
+
+                invariant(tag.attributes.count() == 1, "Expected only 'type' attribute for <ss> tag");
+
+                content.addItem(make_unique<SkypeEmoticon>(
+                    tag.attributes["type"],
+                    lenient_parse_result.textSections[i]
+                ));
+                content.addItem(parse_text_section(lenient_parse_result.textSections[i+1]));
+                i++;
+                continue;
+            }
+            content.addItem(parse_markup_tag(tag));
         }
         content.addItem(parse_text_section(lenient_parse_result.textSections[i]));
     }
