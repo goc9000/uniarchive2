@@ -13,6 +13,8 @@
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
+#include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
@@ -24,6 +26,7 @@
 #include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/skype/account_name.h"
+#include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/sqlite/SQLiteDB.h"
@@ -39,11 +42,13 @@ namespace uniarchive2 { namespace extraction { namespace skype {
 using namespace std;
 using namespace uniarchive2::extraction::skype::internal;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::skype;
+using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::sqlite;
 
 static map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
@@ -106,6 +111,10 @@ static CEDE(RawMessageEvent) convert_message_event(
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml
 );
+
+static RawMessageContent parse_message_content(IMM(QString) content_xml);
+static CEDE(TextSection) parse_text_section(IMM(QString) text);
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -618,11 +627,36 @@ static CEDE(RawMessageEvent) convert_message_event(
 ) {
     unique_ptr<ApparentSubject> subject =
         make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
-
-    // TODO: interpret tags
-    RawMessageContent content = RawMessageContent::fromPlainText(body_xml);
+    RawMessageContent content = parse_message_content(body_xml);
 
     return make_unique<RawMessageEvent>(event_time, event_index, move(subject), move(content));
+}
+
+static RawMessageContent parse_message_content(IMM(QString) content_xml) {
+    RawMessageContent content;
+
+    auto lenient_parse_result = parse_html_lenient(content_xml);
+
+    for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
+        if (i > 0) {
+            content.addItem(parse_markup_tag(lenient_parse_result.tags[i-1]));
+        }
+        content.addItem(parse_text_section(lenient_parse_result.textSections[i]));
+    }
+
+    return content;
+}
+
+static CEDE(TextSection) parse_text_section(IMM(QString) text) {
+    if (text.isEmpty()) {
+        return unique_ptr<TextSection>();
+    }
+    return make_unique<TextSection>(text);
+}
+
+static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    // TODO: we're skipping all for now
+    return unique_ptr<RawMessageContentItem>();
 }
 
 }}}
