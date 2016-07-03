@@ -13,6 +13,7 @@
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
+#include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
@@ -37,6 +38,7 @@ namespace uniarchive2 { namespace extraction { namespace skype {
 using namespace std;
 using namespace uniarchive2::extraction::skype::internal;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
@@ -86,6 +88,8 @@ static RawConversation convert_call(
 );
 static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(RawSkypeCall) skype_call);
 
+static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations);
+
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     QFileInfo file_info(filename);
@@ -99,14 +103,10 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
     map<uint64_t, RawSkypeCall> raw_calls = query_raw_skype_calls(db);
 
-    map<QString, RawConversation> indexed_conversations = convert_conversations(
-        db,
-        raw_identities,
-        raw_convos,
-        raw_chats,
-        raw_calls,
-        base_provenance.get()
-    );
+    map<QString, RawConversation> indexed_conversations =
+        convert_conversations(db, raw_identities, raw_convos, raw_chats, raw_calls, base_provenance.get());
+
+    convert_events(db, indexed_conversations);
 
     vector<RawConversation> conversations;
     for (auto& kv : indexed_conversations) {
@@ -538,6 +538,29 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
     }
 
     return make_unique<SubjectGivenAsAccount>(parse_skype_account(account_name));
+}
+
+static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
+    db.stmt(
+        "SELECT chatname, convo_id, timestamp FROM Messages "\
+        "ORDER BY timestamp"
+    ).forEachRow(
+        [&mut_indexed_conversations](
+            QString chat_string_id,
+            uint64_t convo_id,
+            uint64_t timestamp
+        ) -> void {
+            QString key = chat_string_id.isEmpty() ? QString::number(convo_id) : chat_string_id;
+            RawConversation& mut_conversation = mut_indexed_conversations.at(key);
+
+            QByteArray data;
+
+            mut_conversation.events.push_back(make_unique<RawUninterpretedEvent>(
+                ApparentTime::fromUnixTimestamp(timestamp),
+                mut_conversation.events.size(),
+                data
+            ));
+        });
 }
 
 }}}
