@@ -14,6 +14,7 @@
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/SkypeEmoticon.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawMessageEvent.h"
@@ -37,6 +38,7 @@
 
 #include <QtDebug>
 #include <QFileInfo>
+#include <QUrl>
 
 namespace uniarchive2 { namespace extraction { namespace skype {
 
@@ -673,6 +675,14 @@ static CEDE(TextSection) parse_text_section(IMM(QString) text) {
 }
 
 static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
+    if (tag_info.tagName == "a") {
+        if (tag_info.closed) {
+            return make_unique<LinkTag>(true);
+        } else {
+            return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
+        }
+    }
+
     // TODO: we're skipping all for now
     return unique_ptr<RawMessageContentItem>();
 }
