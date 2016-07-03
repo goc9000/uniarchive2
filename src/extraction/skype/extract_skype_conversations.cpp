@@ -348,6 +348,9 @@ static RawConversation convert_one_on_one_conversation(
         conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(skype_chat->timestamp);
     }
 
+    if (skype_chat) {
+        provenance->chatDBID = skype_chat->id;
+    }
     conversation.provenance = move(provenance);
 
     return conversation;
@@ -406,6 +409,9 @@ static RawConversation convert_group_chat(
         conversation.conferenceTitle = *skype_convo.givenDisplayName;
     }
 
+    if (skype_chat) {
+        provenance->chatDBID = skype_chat->id;
+    }
     conversation.provenance = move(provenance);
 
     return conversation;
@@ -515,6 +521,9 @@ static RawConversation convert_call(
         conversation.conferenceTitle = skype_call->topic;
     }
 
+    if (skype_call) {
+        provenance->callDBID = skype_call->id;
+    }
     conversation.provenance = move(provenance);
 
     return conversation;

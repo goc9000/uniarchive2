@@ -19,7 +19,12 @@ SkypeConversationProvenance::SkypeConversationProvenance(TAKE(Provenance) base, 
 }
 
 CEDE(Provenance) SkypeConversationProvenance::clone() const {
-    return make_unique<SkypeConversationProvenance>(base->clone(), conversationDBID, chatname);
+    unique_ptr<Provenance> dupe = make_unique<SkypeConversationProvenance>(base->clone(), conversationDBID, chatname);
+
+    static_cast<SkypeConversationProvenance*>(dupe.get())->chatDBID = chatDBID;
+    static_cast<SkypeConversationProvenance*>(dupe.get())->callDBID = callDBID;
+
+    return dupe;
 }
 
 void SkypeConversationProvenance::writeToDebugStream(QDebug stream) const {
@@ -29,6 +34,12 @@ void SkypeConversationProvenance::writeToDebugStream(QDebug stream) const {
     stream << ", convo_dbid=" << conversationDBID;
     if (!chatname.isEmpty()) {
         stream << ", chatname=" << chatname;
+    }
+    if (chatDBID) {
+        stream << ", chat_dbid=" << *chatDBID;
+    }
+    if (callDBID) {
+        stream << ", call_dbid=" << *callDBID;
     }
     stream << ")";
 }

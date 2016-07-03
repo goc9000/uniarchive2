@@ -23,6 +23,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
 using namespace std;
+using namespace std::experimental;
 
 class SkypeConversationProvenance : public Provenance {
 public:
@@ -30,6 +31,8 @@ public:
 
     uint64_t conversationDBID;
     QString chatname;
+    optional<uint64_t> chatDBID;
+    optional<uint64_t> callDBID;
 
     SkypeConversationProvenance(TAKE(Provenance) base, uint64_t convo_dbid, QString chatname);
 
