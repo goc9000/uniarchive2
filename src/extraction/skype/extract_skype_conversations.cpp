@@ -14,6 +14,7 @@
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/SkypeConversationProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
@@ -42,8 +43,6 @@ using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::skype;
 using namespace uniarchive2::utils::sqlite;
 
-static RawConversation init_prototype(IMM(QString) filename);
-
 static map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
 static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
 static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB &db);
@@ -55,19 +54,19 @@ static map<QString, RawConversation> convert_conversations(
     const map<uint64_t, RawSkypeConvo>& raw_convos,
     const map<QString, RawSkypeChat>& raw_chats,
     const map<uint64_t, RawSkypeCall>& raw_calls,
-    IMM(RawConversation) prototype
+    CPTR(Provenance) base_provenance
 );
 static RawConversation convert_one_on_one_conversation(
     IMM(RawSkypeConvo) skype_convo,
     CPTR(RawSkypeChat) skype_chat,
-    IMM(RawConversation) prototype,
-    const map<QString, RawSkypeIdentity>& raw_identities
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    TAKE(SkypeConversationProvenance) provenance
 );
 static RawConversation convert_group_chat(
     IMM(RawSkypeConvo) skype_convo,
     CPTR(RawSkypeChat) skype_chat,
-    IMM(RawConversation) prototype,
-    const map<QString, RawSkypeIdentity>& raw_identities
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    TAKE(SkypeConversationProvenance) provenance
 );
 static CEDE(ApparentSubject) extract_identity_from_participants(
     set<QString>& mut_participants,
@@ -82,17 +81,19 @@ static CPTR(RawSkypeCall) lookup_call(
 static RawConversation convert_call(
     IMM(RawSkypeConvo) skype_convo,
     CPTR(RawSkypeCall) skype_call,
-    IMM(RawConversation) prototype,
-    const map<QString, RawSkypeIdentity>& raw_identities
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    TAKE(SkypeConversationProvenance) provenance
 );
 static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(RawSkypeCall) skype_call);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
+    QFileInfo file_info(filename);
+    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
+
+    unique_ptr<Provenance> base_provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::SKYPE, file_info);
+
     SQLiteDB db = SQLiteDB::openReadOnly(filename);
-
-    RawConversation prototype = init_prototype(filename);
-
     map<QString, RawSkypeIdentity> raw_identities = query_raw_skype_identities(db);
     map<uint64_t, RawSkypeConvo> raw_convos = query_raw_skype_convos(db);
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
@@ -104,7 +105,7 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
         raw_convos,
         raw_chats,
         raw_calls,
-        prototype
+        base_provenance.get()
     );
 
     vector<RawConversation> conversations;
@@ -256,7 +257,7 @@ static map<QString, RawConversation> convert_conversations(
     const map<uint64_t, RawSkypeConvo>& raw_convos,
     const map<QString, RawSkypeChat>& raw_chats,
     const map<uint64_t, RawSkypeCall>& raw_calls,
-    IMM(RawConversation) prototype
+    CPTR(Provenance) base_provenance
 ) {
     map<QString, RawConversation> conversations;
 
@@ -264,7 +265,7 @@ static map<QString, RawConversation> convert_conversations(
         "SELECT chatname, convo_id FROM Messages "\
         "GROUP BY chatname, convo_id"
     ).forEachRow(
-        [&conversations, &raw_convos, &raw_chats, &raw_calls, &raw_identities, &prototype](
+        [&conversations, &raw_convos, &raw_chats, &raw_calls, &raw_identities, &base_provenance](
             QString chat_string_id,
             uint64_t convo_id
         ) -> void {
@@ -275,20 +276,26 @@ static map<QString, RawConversation> convert_conversations(
             CPTR(RawSkypeChat) chat = raw_chats.count(chat_string_id) ? &raw_chats.at(chat_string_id) : nullptr;
             CPTR(RawSkypeCall) call = nullptr;
 
+            unique_ptr<SkypeConversationProvenance> provenance =
+                make_unique<SkypeConversationProvenance>(base_provenance->clone(), convo_id, chat_string_id);
+
             switch (convo.type) {
                 case RawSkypeConvo::Type::ONE_ON_ONE:
                     if (chat && chat->type != RawSkypeChat::Type::ONE_ON_ONE) {
                         // Some group chats start with a (spurious) association with a one-on-one convo. Ignore this.
                         return;
                     }
-                    conversations.emplace(key, convert_one_on_one_conversation(convo, chat, prototype, raw_identities));
+                    conversations.emplace(
+                        key,
+                        convert_one_on_one_conversation(convo, chat, raw_identities, move(provenance))
+                    );
                     return;
                 case RawSkypeConvo::Type::GROUP_CHAT:
-                    conversations.emplace(key, convert_group_chat(convo, chat, prototype, raw_identities));
+                    conversations.emplace(key, convert_group_chat(convo, chat, raw_identities, move(provenance)));
                     return;
                 case RawSkypeConvo::Type::CALL:
                     call = lookup_call(raw_calls, convo_id, chat_string_id);
-                    conversations.emplace(key, convert_call(convo, call, prototype, raw_identities));
+                    conversations.emplace(key, convert_call(convo, call, raw_identities, move(provenance)));
                     return;
             }
         });
@@ -299,8 +306,8 @@ static map<QString, RawConversation> convert_conversations(
 static RawConversation convert_one_on_one_conversation(
     IMM(RawSkypeConvo) skype_convo,
     CPTR(RawSkypeChat) skype_chat,
-    IMM(RawConversation) prototype,
-    const map<QString, RawSkypeIdentity>& raw_identities
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    TAKE(SkypeConversationProvenance) provenance
 ) {
     invariant(skype_convo.type == RawSkypeConvo::Type::ONE_ON_ONE, "Expected 1:1 Skype convo");
     invariant(!skype_chat || (skype_chat->type == RawSkypeChat::Type::ONE_ON_ONE), "Expected 1:1 Skype chat");
@@ -327,7 +334,7 @@ static RawConversation convert_one_on_one_conversation(
     QString identity = participants.empty() ? skype_convo.identity : *participants.cbegin();
     invariant(raw_identities.count(identity), "Expected '%s' to be an identity", QP(identity));
 
-    RawConversation conversation = RawConversation::fromPrototype(prototype);
+    RawConversation conversation(IMProtocol::SKYPE);
     conversation.isConference = false;
     conversation.identity = make_unique<FullySpecifiedSubject>(
         parse_skype_account(identity),
@@ -341,14 +348,16 @@ static RawConversation convert_one_on_one_conversation(
         conversation.declaredStartDate = ApparentTime::fromUnixTimestamp(skype_chat->timestamp);
     }
 
+    conversation.provenance = move(provenance);
+
     return conversation;
 }
 
 static RawConversation convert_group_chat(
     IMM(RawSkypeConvo) skype_convo,
     CPTR(RawSkypeChat) skype_chat,
-    IMM(RawConversation) prototype,
-    const map<QString, RawSkypeIdentity>& raw_identities
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    TAKE(SkypeConversationProvenance) provenance
 ) {
     invariant(skype_convo.type == RawSkypeConvo::Type::GROUP_CHAT, "Expected group Skype convo");
     invariant(!skype_chat || (skype_chat->type == RawSkypeChat::Type::GROUP_CHAT), "Expected group Skype chat");
@@ -368,7 +377,7 @@ static RawConversation convert_group_chat(
 
     set<QString> participants = skype_convo.participants;
 
-    RawConversation conversation = RawConversation::fromPrototype(prototype);
+    RawConversation conversation(IMProtocol::SKYPE);
     conversation.isConference = true;
     conversation.identity = extract_identity_from_participants(participants, raw_identities);
 
@@ -396,6 +405,8 @@ static RawConversation convert_group_chat(
     if (skype_convo.givenDisplayName) {
         conversation.conferenceTitle = *skype_convo.givenDisplayName;
     }
+
+    conversation.provenance = move(provenance);
 
     return conversation;
 }
@@ -464,8 +475,8 @@ static CPTR(RawSkypeCall) lookup_call(
 static RawConversation convert_call(
     IMM(RawSkypeConvo) skype_convo,
     CPTR(RawSkypeCall) skype_call,
-    IMM(RawConversation) prototype,
-    const map<QString, RawSkypeIdentity>& raw_identities
+    const map<QString, RawSkypeIdentity>& raw_identities,
+    TAKE(SkypeConversationProvenance) provenance
 ) {
     invariant(skype_convo.type == RawSkypeConvo::Type::CALL, "Expected call Skype convo");
     invariant(!skype_call || (skype_call->convDBID == skype_convo.id), "Call ConvDBID mismatch");
@@ -481,7 +492,7 @@ static RawConversation convert_call(
 
     set<QString> participants = skype_convo.participants;
 
-    RawConversation conversation = RawConversation::fromPrototype(prototype);
+    RawConversation conversation(IMProtocol::SKYPE);
     conversation.identity = extract_identity_from_participants(participants, raw_identities);
 
     QString initiator = skype_call ? skype_call->hostIdentity : (skype_convo.creator ? *skype_convo.creator : "");
@@ -503,6 +514,8 @@ static RawConversation convert_call(
     if (skype_call && !skype_call->topic.isEmpty()) {
         conversation.conferenceTitle = skype_call->topic;
     }
+
+    conversation.provenance = move(provenance);
 
     return conversation;
 }
