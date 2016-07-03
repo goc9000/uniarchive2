@@ -13,6 +13,7 @@
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
@@ -89,6 +90,22 @@ static RawConversation convert_call(
 static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(RawSkypeCall) skype_call);
 
 static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations);
+static CEDE(RawEvent) convert_event(
+    IMM(ApparentTime) message_time,
+    unsigned int message_index,
+    int type,
+    int chatmsg_type,
+    IMM(QString) sender_account,
+    IMM(QString) sender_screen_name,
+    IMM(QString) body_xml
+);
+static CEDE(RawMessageEvent) convert_message_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    IMM(QString) sender_account,
+    IMM(QString) sender_screen_name,
+    IMM(QString) body_xml
+);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -542,25 +559,70 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 
 static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
     db.stmt(
-        "SELECT chatname, convo_id, timestamp FROM Messages "\
+        "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml FROM Messages "\
         "ORDER BY timestamp"
     ).forEachRow(
         [&mut_indexed_conversations](
             QString chat_string_id,
             uint64_t convo_id,
-            uint64_t timestamp
+            uint64_t timestamp,
+            int type,
+            int chatmsg_type,
+            QString author,
+            QString from_dispname,
+            QString body_xml
         ) -> void {
             QString key = chat_string_id.isEmpty() ? QString::number(convo_id) : chat_string_id;
             RawConversation& mut_conversation = mut_indexed_conversations.at(key);
 
-            QByteArray data;
+            ApparentTime event_time = ApparentTime::fromUnixTimestamp(timestamp);
+            unsigned int event_index = mut_conversation.events.size();
 
-            mut_conversation.events.push_back(make_unique<RawUninterpretedEvent>(
-                ApparentTime::fromUnixTimestamp(timestamp),
-                mut_conversation.events.size(),
-                data
+            mut_conversation.events.push_back(convert_event(
+                event_time,
+                event_index,
+                type,
+                chatmsg_type,
+                author,
+                from_dispname,
+                body_xml
             ));
         });
+}
+
+static CEDE(RawEvent) convert_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    int type,
+    int chatmsg_type,
+    IMM(QString) sender_account,
+    IMM(QString) sender_screen_name,
+    IMM(QString) body_xml
+) {
+    if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
+        return convert_message_event(event_time, event_index, sender_account, sender_screen_name, body_xml);
+    }
+
+    // Default
+    QByteArray data;
+
+    return make_unique<RawUninterpretedEvent>(event_time, event_index, data);
+}
+
+static CEDE(RawMessageEvent) convert_message_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    IMM(QString) sender_account,
+    IMM(QString) sender_screen_name,
+    IMM(QString) body_xml
+) {
+    unique_ptr<ApparentSubject> subject =
+        make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
+
+    // TODO: interpret tags
+    RawMessageContent content = RawMessageContent::fromPlainText(body_xml);
+
+    return make_unique<RawMessageEvent>(event_time, event_index, move(subject), move(content));
 }
 
 }}}
