@@ -28,10 +28,10 @@
 #include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/skype/account_name.h"
-#include "utils/html/parse_html_lenient.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/sqlite/SQLiteDB.h"
+#include "utils/xml/qdom_utils.h"
 
 #include <set>
 #include <map>
@@ -51,8 +51,8 @@ using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::skype;
-using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::sqlite;
+using namespace uniarchive2::utils::xml;
 
 static map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
 static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
@@ -116,8 +116,8 @@ static CEDE(RawMessageEvent) convert_message_event(
 );
 
 static RawMessageContent parse_message_content(IMM(QString) content_xml);
-static CEDE(TextSection) parse_text_section(IMM(QString) text);
-static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info);
+static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node);
+static void parse_message_content_element(RawMessageContent& mut_content, IMM(QDomElement) element);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -638,53 +638,52 @@ static CEDE(RawMessageEvent) convert_message_event(
 static RawMessageContent parse_message_content(IMM(QString) content_xml) {
     RawMessageContent content;
 
-    auto lenient_parse_result = parse_html_lenient(content_xml);
+    QDomDocument xml = xml_from_fragment_string(content_xml, "event", true);
 
-    for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
-        if (i > 0) {
-            IMM(auto) tag = lenient_parse_result.tags.at(i-1);
-            if (tag.tagName == "ss") {
-                // Special handling for this particular tag
-                invariant(tag.open && !tag.closed && (i < lenient_parse_result.tags.size()), "Malformed <ss> tag");
-                IMM(auto) next_tag = lenient_parse_result.tags.at(i);
-                invariant((next_tag.tagName == "ss") && next_tag.closed && !next_tag.open, "Malformed <ss> tag");
-
-                invariant(tag.attributes.count() == 1, "Expected only 'type' attribute for <ss> tag");
-
-                content.addItem(make_unique<SkypeEmoticon>(
-                    tag.attributes["type"],
-                    lenient_parse_result.textSections[i]
-                ));
-                content.addItem(parse_text_section(lenient_parse_result.textSections[i+1]));
-                i++;
-                continue;
-            }
-            content.addItem(parse_markup_tag(tag));
-        }
-        content.addItem(parse_text_section(lenient_parse_result.textSections[i]));
-    }
+    parse_message_content_node(content, get_dom_root(xml, "event"));
 
     return content;
 }
 
-static CEDE(TextSection) parse_text_section(IMM(QString) text) {
-    if (text.isEmpty()) {
-        return unique_ptr<TextSection>();
+static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node) {
+    if (node.isElement()) {
+        parse_message_content_element(mut_content, node.toElement());
+    } else if (node.isText()) {
+        IMM(QString) text = node.toText().data();
+        if (!text.isEmpty()) {
+            mut_content.addItem(make_unique<TextSection>(text));
+        }
+    } else {
+        invariant_violation("Expected node to be either element or text");
     }
-    return make_unique<TextSection>(text);
 }
 
-static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
-    if (tag_info.tagName == "a") {
-        if (tag_info.closed) {
-            return make_unique<LinkTag>(true);
-        } else {
-            return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
+static void parse_message_content_element(RawMessageContent& mut_content, IMM(QDomElement) element) {
+    IMM(QString) tag_name = element.tagName();
+
+    if (tag_name == "event") {
+        for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
+            parse_message_content_node(mut_content, child);
         }
+    } else if (tag_name == "ss") {
+        mut_content.addItem(make_unique<SkypeEmoticon>(
+            read_only_string_attr(element, "type"),
+            read_text_only_content(element)
+        ));
+    } else if (tag_name == "a") {
+        mut_content.addItem(make_unique<LinkTag>(QUrl(read_only_string_attr(element, "href"))));
+
+        for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
+            parse_message_content_node(mut_content, child);
+        }
+
+        mut_content.addItem(make_unique<LinkTag>(true));
     }
 
-    // TODO: we're skipping all for now
-    return unique_ptr<RawMessageContentItem>();
+    // TODO: parse other tags
+    return;
+
+    invariant_violation("Unsupported message node: <%s>", QP(tag_name));
 }
 
 }}}
