@@ -14,12 +14,13 @@
 
 #include <QFile>
 #include <QXmlInputSource>
+#include <QXmlSimpleReader>
 
 namespace uniarchive2 { namespace utils { namespace xml {
 
-static QDomDocument parse_xml(QXmlInputSource* source, IMM(QString) source_name="XML");
+static QDomDocument parse_xml(QXmlInputSource* source, bool keep_whitespace, IMM(QString) source_name="XML");
 
-QDomDocument load_xml_file(IMM(QString) filename) {
+QDomDocument load_xml_file(IMM(QString) filename, bool keep_whitespace) {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         qFatal("Can't open file: %s", QP(filename));
@@ -27,22 +28,25 @@ QDomDocument load_xml_file(IMM(QString) filename) {
 
     QXmlInputSource source(&file);
 
-    return parse_xml(&source, "XML file '" + filename + "'");
+    return parse_xml(&source, keep_whitespace, "XML file '" + filename + "'");
 }
 
-QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data) {
+QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data, bool keep_whitespace) {
     QXmlInputSource source;
     source.setData(raw_data);
 
-    return parse_xml(&source);
+    return parse_xml(&source, keep_whitespace);
 }
 
-static QDomDocument parse_xml(QXmlInputSource* source, IMM(QString) source_name) {
+static QDomDocument parse_xml(QXmlInputSource* source, bool keep_whitespace, IMM(QString) source_name) {
     QDomDocument xml;
     QString error_message;
     int error_line, error_column;
 
-    if (!xml.setContent(source, false, &error_message, &error_line, &error_column)) {
+    QXmlSimpleReader reader;
+    reader.setFeature("http://qt-project.org/xml/features/report-whitespace-only-CharData", keep_whitespace);
+
+    if (!xml.setContent(source, &reader, &error_message, &error_line, &error_column)) {
         qFatal(
             "Error parsing %s: %s (at line %d, column %d)",
             QP(source_name), QP(error_message), error_line, error_column
