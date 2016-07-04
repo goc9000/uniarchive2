@@ -31,6 +31,17 @@ QDomDocument load_xml_file(IMM(QString) filename, bool keep_whitespace) {
     return parse_xml(&source, keep_whitespace, "XML file '" + filename + "'");
 }
 
+QDomDocument xml_from_string(IMM(QString) xml_string, bool keep_whitespace) {
+    QXmlInputSource source;
+    source.setData(xml_string);
+
+    return parse_xml(&source, keep_whitespace);
+}
+
+QDomDocument xml_from_fragment_string(IMM(QString) xml_string, IMM(QString) root_node, bool keep_whitespace) {
+    return xml_from_string("<" + root_node + ">" + xml_string + "</" + root_node + ">", keep_whitespace);
+}
+
 QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data, bool keep_whitespace) {
     QXmlInputSource source;
     source.setData(raw_data);

@@ -22,6 +22,8 @@
 namespace uniarchive2 { namespace utils { namespace xml {
 
 QDomDocument load_xml_file(IMM(QString) filename, bool keep_whitespace=false);
+QDomDocument xml_from_string(IMM(QString) xml_string, bool keep_whitespace=false);
+QDomDocument xml_from_fragment_string(IMM(QString) xml_string, IMM(QString) root_node, bool keep_whitespace=false);
 QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data, bool keep_whitespace=false);
 
 QDomElement get_dom_root(IMM(QDomDocument) document, IMM(QString) expected_root_name);
