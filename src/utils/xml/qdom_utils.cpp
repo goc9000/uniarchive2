@@ -8,13 +8,16 @@
  * Licensed under the GPL-3
  */
 
-#include <QFile>
-
+#include "utils/xml/qdom_utils.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
-#include "utils/xml/qdom_utils.h"
+
+#include <QFile>
+#include <QXmlInputSource>
 
 namespace uniarchive2 { namespace utils { namespace xml {
+
+static QDomDocument parse_xml(QXmlInputSource* source, IMM(QString) source_name="XML");
 
 QDomDocument load_xml_file(IMM(QString) filename) {
     QFile file(filename);
@@ -22,30 +25,28 @@ QDomDocument load_xml_file(IMM(QString) filename) {
         qFatal("Can't open file: %s", QP(filename));
     }
 
-    QDomDocument xml;
-    QString error_message;
-    int error_line, error_column;
+    QXmlInputSource source(&file);
 
-    if (!xml.setContent(&file, false, &error_message, &error_line, &error_column)) {
-        qFatal(
-            "Error reading XML file '%s': %s (at line %d, column %d)",
-            QP(filename),
-            QP(error_message),
-            error_line,
-            error_column
-        );
-    }
-
-    return xml;
+    return parse_xml(&source, "XML file '" + filename + "'");
 }
 
 QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data) {
+    QXmlInputSource source;
+    source.setData(raw_data);
+
+    return parse_xml(&source);
+}
+
+static QDomDocument parse_xml(QXmlInputSource* source, IMM(QString) source_name) {
     QDomDocument xml;
     QString error_message;
     int error_line, error_column;
 
-    if (!xml.setContent(raw_data, false, &error_message, &error_line, &error_column)) {
-        qFatal("Error parsing XML: %s (at line %d, column %d)", QP(error_message), error_line, error_column);
+    if (!xml.setContent(source, false, &error_message, &error_line, &error_column)) {
+        qFatal(
+            "Error parsing %s: %s (at line %d, column %d)",
+            QP(source_name), QP(error_message), error_line, error_column
+        );
     }
 
     return xml;
