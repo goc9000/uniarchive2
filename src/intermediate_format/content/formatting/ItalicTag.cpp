@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/EmphasisTag.cpp
+ * intermediate_format/content/formatting/ItalicTag.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,19 +8,19 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/EmphasisTag.h"
+#include "intermediate_format/content/formatting/ItalicTag.h"
 
 #include <QDebugStateSaver>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-EmphasisTag::EmphasisTag(bool closed) : closed(closed) {
+ItalicTag::ItalicTag(bool closed) : closed(closed) {
 }
 
-void EmphasisTag::writeToDebugStream(QDebug stream) const {
+void ItalicTag::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
 
-    stream.nospace() << "[" << (closed ? "/" : "") << "EM]";
+    stream.nospace() << "[" << (closed ? "/" : "") << "I]";
 }
 
 }}}

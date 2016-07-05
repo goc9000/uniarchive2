@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/CSSStyleTag.h
+ * intermediate_format/content/formatting/RGBColorTag.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,27 +8,28 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_CSSSTYLETAG_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_CSSSTYLETAG_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
 
+#include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
-#include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct CSSStyleTag : Markup {
+using namespace uniarchive2::graphics;
+
+struct RGBColorTag : Markup {
 public:
-    QString css;
+    Color color;
     bool closed;
 
-    CSSStyleTag(IMM(QString) css);
-    CSSStyleTag(bool closed);
+    RGBColorTag(IMM(Color) color, bool closed = false);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_CSSSTYLETAG_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H

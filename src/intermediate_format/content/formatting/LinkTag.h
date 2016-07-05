@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/EmphasisTag.h
+ * intermediate_format/content/formatting/LinkTag.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,23 +8,27 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_EMPHASISTAG_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_EMPHASISTAG_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
 
 #include "intermediate_format/content/Markup.h"
 
 #include <QtDebug>
+#include <QUrl>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct EmphasisTag : Markup {
+struct LinkTag : Markup {
 public:
+    QUrl url;
     bool closed;
 
-    EmphasisTag(bool closed = false);
+    LinkTag(QUrl url);
+    LinkTag(bool closed);
+
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_EMPHASISTAG_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H

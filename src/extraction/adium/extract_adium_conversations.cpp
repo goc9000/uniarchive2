@@ -10,9 +10,9 @@
 
 #include "extraction/adium/extract_adium_conversations.h"
 #include "extraction/parse_libpurple_system_message.h"
-#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/formatting/CSSStyleTag.h"
+#include "intermediate_format/content/formatting/LinkTag.h"
 #include "intermediate_format/content/LineBreakTag.h"
-#include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/status/RawDisconnectedEvent.h"
 #include "intermediate_format/events/status/RawConnectedEvent.h"

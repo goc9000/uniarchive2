@@ -41,45 +41,45 @@ set(SOURCE_FILES
         src/graphics/ANSIColor.h
         src/graphics/Color.cpp
         src/graphics/Color.h
-        src/intermediate_format/content/ANSIColorTag.cpp
-        src/intermediate_format/content/ANSIColorTag.h
-        src/intermediate_format/content/ANSIResetTag.cpp
-        src/intermediate_format/content/ANSIResetTag.h
-        src/intermediate_format/content/BoldTag.cpp
-        src/intermediate_format/content/BoldTag.h
-        src/intermediate_format/content/CSSStyleTag.cpp
-        src/intermediate_format/content/CSSStyleTag.h
-        src/intermediate_format/content/EmphasisTag.cpp
-        src/intermediate_format/content/EmphasisTag.h
-        src/intermediate_format/content/FontTag.cpp
-        src/intermediate_format/content/FontTag.h
+        src/intermediate_format/content/formatting/ANSIColorTag.cpp
+        src/intermediate_format/content/formatting/ANSIColorTag.h
+        src/intermediate_format/content/formatting/ANSIResetTag.cpp
+        src/intermediate_format/content/formatting/ANSIResetTag.h
+        src/intermediate_format/content/formatting/BoldTag.cpp
+        src/intermediate_format/content/formatting/BoldTag.h
+        src/intermediate_format/content/formatting/CSSStyleTag.cpp
+        src/intermediate_format/content/formatting/CSSStyleTag.h
+        src/intermediate_format/content/formatting/EmphasisTag.cpp
+        src/intermediate_format/content/formatting/EmphasisTag.h
+        src/intermediate_format/content/formatting/FontTag.cpp
+        src/intermediate_format/content/formatting/FontTag.h
+        src/intermediate_format/content/formatting/ItalicTag.cpp
+        src/intermediate_format/content/formatting/ItalicTag.h
+        src/intermediate_format/content/formatting/LinkTag.cpp
+        src/intermediate_format/content/formatting/LinkTag.h
+        src/intermediate_format/content/formatting/RGBColorTag.cpp
+        src/intermediate_format/content/formatting/RGBColorTag.h
+        src/intermediate_format/content/formatting/UnderlineTag.cpp
+        src/intermediate_format/content/formatting/UnderlineTag.h
+        src/intermediate_format/content/formatting/YahooAltTag.cpp
+        src/intermediate_format/content/formatting/YahooAltTag.h
+        src/intermediate_format/content/formatting/YahooFadeTag.cpp
+        src/intermediate_format/content/formatting/YahooFadeTag.h
         src/intermediate_format/content/RawMessageContent.cpp
         src/intermediate_format/content/RawMessageContent.h
         src/intermediate_format/content/RawMessageContentItem.cpp
         src/intermediate_format/content/RawMessageContentItem.h
-        src/intermediate_format/content/ItalicTag.cpp
-        src/intermediate_format/content/ItalicTag.h
         src/intermediate_format/content/LineBreakTag.cpp
         src/intermediate_format/content/LineBreakTag.h
-        src/intermediate_format/content/LinkTag.cpp
-        src/intermediate_format/content/LinkTag.h
         src/intermediate_format/content/Markup.h
         src/intermediate_format/content/MediaAttachment.cpp
         src/intermediate_format/content/MediaAttachment.h
-        src/intermediate_format/content/RGBColorTag.cpp
-        src/intermediate_format/content/RGBColorTag.h
         src/intermediate_format/content/SkypeEmoticon.cpp
         src/intermediate_format/content/SkypeEmoticon.h
         src/intermediate_format/content/SkypeQuote.cpp
         src/intermediate_format/content/SkypeQuote.h
         src/intermediate_format/content/TextSection.cpp
         src/intermediate_format/content/TextSection.h
-        src/intermediate_format/content/UnderlineTag.cpp
-        src/intermediate_format/content/UnderlineTag.h
-        src/intermediate_format/content/YahooAltTag.cpp
-        src/intermediate_format/content/YahooAltTag.h
-        src/intermediate_format/content/YahooFadeTag.cpp
-        src/intermediate_format/content/YahooFadeTag.h
         src/intermediate_format/events/calls/RawAnswerCallEvent.cpp
         src/intermediate_format/events/calls/RawAnswerCallEvent.h
         src/intermediate_format/events/calls/RawOfferCallEvent.cpp

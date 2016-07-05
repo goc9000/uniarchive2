@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/YahooAltTag.h
+ * intermediate_format/content/formatting/YahooAltTag.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *

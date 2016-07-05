@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/CSSStyleTag.cpp
+ * intermediate_format/content/formatting/CSSStyleTag.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/formatting/CSSStyleTag.h"
 #include "utils/qt/shortcuts.h"
 
 #include <QDebugStateSaver>

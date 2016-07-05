@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/BoldTag.cpp
+ * intermediate_format/content/formatting/BoldTag.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/BoldTag.h"
+#include "intermediate_format/content/formatting/BoldTag.h"
 
 #include <QDebugStateSaver>
 

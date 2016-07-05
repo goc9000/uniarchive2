@@ -9,7 +9,7 @@
  */
 
 #include "extraction/msn/extract_msn_messenger_xml_conversations.h"
-#include "intermediate_format/content/CSSStyleTag.h"
+#include "intermediate_format/content/formatting/CSSStyleTag.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/calls/RawAnswerCallEvent.h"
 #include "intermediate_format/events/calls/RawOfferCallEvent.h"

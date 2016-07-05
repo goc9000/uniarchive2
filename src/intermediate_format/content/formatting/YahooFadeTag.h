@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/RGBColorTag.h
+ * intermediate_format/content/formatting/YahooFadeTag.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,28 +8,29 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOFADETAG_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOFADETAG_H
 
 #include "graphics/Color.h"
 #include "intermediate_format/content/Markup.h"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
+#include <QList>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace uniarchive2::graphics;
 
-struct RGBColorTag : Markup {
+struct YahooFadeTag : Markup {
 public:
-    Color color;
+    QList<Color> colors;
     bool closed;
 
-    RGBColorTag(IMM(Color) color, bool closed = false);
+    YahooFadeTag(bool closed, IMM(QList<Color>) colors = QList<Color>());
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOFADETAG_H

@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/YahooAltTag.cpp
+ * intermediate_format/content/formatting/YahooAltTag.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/YahooAltTag.h"
+#include "intermediate_format/content/formatting/YahooAltTag.h"
 #include "utils/language/invariant.h"
 
 #include <QDebugStateSaver>

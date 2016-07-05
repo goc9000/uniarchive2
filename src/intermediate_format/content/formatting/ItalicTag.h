@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/UnderlineTag.h
+ * intermediate_format/content/formatting/ItalicTag.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_UNDERLINETAG_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_UNDERLINETAG_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ITALICTAG_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ITALICTAG_H
 
 #include "intermediate_format/content/Markup.h"
 
@@ -17,14 +17,14 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct UnderlineTag : Markup {
+struct ItalicTag : Markup {
 public:
     bool closed;
 
-    UnderlineTag(bool closed = false);
+    ItalicTag(bool closed = false);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_UNDERLINETAG_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ITALICTAG_H

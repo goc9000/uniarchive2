@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/UnderlineTag.cpp
+ * intermediate_format/content/formatting/UnderlineTag.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/UnderlineTag.h"
+#include "intermediate_format/content/formatting/UnderlineTag.h"
 
 #include <QDebugStateSaver>
 

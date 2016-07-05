@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/YahooFadeTag.cpp
+ * intermediate_format/content/formatting/YahooFadeTag.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/YahooFadeTag.h"
+#include "intermediate_format/content/formatting/YahooFadeTag.h"
 #include "utils/language/invariant.h"
 
 #include <QDebugStateSaver>

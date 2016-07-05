@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/LinkTag.h
+ * intermediate_format/content/formatting/BoldTag.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,27 +8,23 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
 
 #include "intermediate_format/content/Markup.h"
 
 #include <QtDebug>
-#include <QUrl>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct LinkTag : Markup {
+struct BoldTag : Markup {
 public:
-    QUrl url;
     bool closed;
 
-    LinkTag(QUrl url);
-    LinkTag(bool closed);
-
+    BoldTag(bool closed = false);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
