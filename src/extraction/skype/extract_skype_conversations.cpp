@@ -19,6 +19,7 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/SkypeQuote.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/events/conference/RawChangeTopicEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
@@ -641,6 +642,13 @@ static CEDE(RawEvent) convert_event(
             body_xml,
             edited_by,
             edited_timestamp
+        );
+    } else if ((type == 2) && (chatmsg_type == 5)) {
+        event = make_unique<RawChangeTopicEvent>(
+            event_time,
+            event_index,
+            move(subject),
+            parse_message_content(body_xml)
         );
     } else {
         // Default

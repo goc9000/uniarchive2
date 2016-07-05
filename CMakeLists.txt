@@ -90,6 +90,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/calls/RawOfferWebcamEvent.h
         src/intermediate_format/events/conference/RawAddToConferenceEvent.cpp
         src/intermediate_format/events/conference/RawAddToConferenceEvent.h
+        src/intermediate_format/events/conference/RawChangeTopicEvent.cpp
+        src/intermediate_format/events/conference/RawChangeTopicEvent.h
         src/intermediate_format/events/conference/RawCreateConferenceEvent.cpp
         src/intermediate_format/events/conference/RawCreateConferenceEvent.h
         src/intermediate_format/events/conference/RawDeclineConferenceEvent.cpp
