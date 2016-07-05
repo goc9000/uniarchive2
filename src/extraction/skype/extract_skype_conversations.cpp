@@ -114,8 +114,7 @@ static CEDE(RawEvent) convert_event(
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index,
-    IMM(QString) sender_account,
-    IMM(QString) sender_screen_name,
+    TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     optional<QString> edited_by,
     optional<uint64_t> edited_timestamp
@@ -629,14 +628,16 @@ static CEDE(RawEvent) convert_event(
     optional<QString> edited_by,
     optional<uint64_t> edited_timestamp
 ) {
+    auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
+
     unique_ptr<RawEvent> event;
+
 
     if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
         event = convert_message_event(
             event_time,
             event_index,
-            sender_account,
-            sender_screen_name,
+            move(subject),
             body_xml,
             edited_by,
             edited_timestamp
@@ -658,18 +659,17 @@ static CEDE(RawEvent) convert_event(
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index,
-    IMM(QString) sender_account,
-    IMM(QString) sender_screen_name,
+    TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     optional<QString> edited_by,
     optional<uint64_t> edited_timestamp
 ) {
-    unique_ptr<ApparentSubject> subject =
-        make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
-    RawMessageContent content = parse_message_content(body_xml);
-
-    unique_ptr<RawMessageEvent> message =
-        make_unique<RawMessageEvent>(event_time, event_index, move(subject), move(content));
+    unique_ptr<RawMessageEvent> message = make_unique<RawMessageEvent>(
+        event_time,
+        event_index,
+        move(subject),
+        parse_message_content(body_xml)
+    );
 
     if (edited_by) {
         invariant(edited_timestamp, "Edit timestamp not specified!");
