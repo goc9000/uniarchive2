@@ -14,8 +14,9 @@
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
 #include "intermediate_format/content/formatting/LinkTag.h"
+#include "intermediate_format/content/symbols/SkypeEmoticon.h"
+#include "intermediate_format/content/symbols/FlagIcon.h"
 #include "intermediate_format/content/RawMessageContent.h"
-#include "intermediate_format/content/SkypeEmoticon.h"
 #include "intermediate_format/content/SkypeQuote.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawMessageEvent.h"
@@ -632,7 +633,6 @@ static CEDE(RawEvent) convert_event(
 
     unique_ptr<RawEvent> event;
 
-
     if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
         event = convert_message_event(
             event_time,
@@ -715,6 +715,11 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
     } else if (tag_name == "ss") {
         mut_content.addItem(make_unique<SkypeEmoticon>(
             read_only_string_attr(element, "type"),
+            read_text_only_content(element)
+        ));
+    } else if (tag_name == "flag") {
+        mut_content.addItem(make_unique<FlagIcon>(
+            read_only_string_attr(element, "country"),
             read_text_only_content(element)
         ));
     } else if (tag_name == "a") {

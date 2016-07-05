@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/SkypeEmoticon.h
+ * intermediate_format/content/symbols/FlagIcon.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_SKYPEEMOTICON_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_SKYPEEMOTICON_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_FLAGICON_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_FLAGICON_H
 
 #include "intermediate_format/content/RawMessageContentItem.h"
 #include "utils/language/shortcuts.h"
@@ -19,15 +19,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct SkypeEmoticon : RawMessageContentItem {
+struct FlagIcon : RawMessageContentItem {
 public:
-    QString semantics;
+    QString countryCode;
     QString textEquivalent;
 
-    SkypeEmoticon(IMM(QString) semantics, IMM(QString) text_equivalent);
+    FlagIcon(IMM(QString) country_code, IMM(QString) text_equivalent);
     virtual void writeToDebugStream(QDebug stream) const;
 };
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_SKYPEEMOTICON_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_FLAGICON_H

@@ -65,6 +65,10 @@ set(SOURCE_FILES
         src/intermediate_format/content/formatting/YahooAltTag.h
         src/intermediate_format/content/formatting/YahooFadeTag.cpp
         src/intermediate_format/content/formatting/YahooFadeTag.h
+        src/intermediate_format/content/symbols/SkypeEmoticon.cpp
+        src/intermediate_format/content/symbols/SkypeEmoticon.h
+        src/intermediate_format/content/symbols/FlagIcon.cpp
+        src/intermediate_format/content/symbols/FlagIcon.h
         src/intermediate_format/content/RawMessageContent.cpp
         src/intermediate_format/content/RawMessageContent.h
         src/intermediate_format/content/RawMessageContentItem.cpp
@@ -74,8 +78,6 @@ set(SOURCE_FILES
         src/intermediate_format/content/Markup.h
         src/intermediate_format/content/MediaAttachment.cpp
         src/intermediate_format/content/MediaAttachment.h
-        src/intermediate_format/content/SkypeEmoticon.cpp
-        src/intermediate_format/content/SkypeEmoticon.h
         src/intermediate_format/content/SkypeQuote.cpp
         src/intermediate_format/content/SkypeQuote.h
         src/intermediate_format/content/TextSection.cpp
