@@ -81,7 +81,7 @@ QByteArray SQLiteRow::blobColumn(unsigned int column_index) const {
         return QByteArray();
     }
 
-    return QByteArray::fromRawData(blob_data, sqlite3_column_bytes(stmt->handle, column_index));
+    return QByteArray(blob_data, sqlite3_column_bytes(stmt->handle, column_index));
 }
 
 void SQLiteRow::columnIndexSanityCheck(unsigned int column_index) const {
