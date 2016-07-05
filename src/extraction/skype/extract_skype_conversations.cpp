@@ -106,14 +106,18 @@ static CEDE(RawEvent) convert_event(
     int chatmsg_type,
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
-    IMM(QString) body_xml
+    IMM(QString) body_xml,
+    optional<QString> edited_by,
+    optional<uint64_t> edited_timestamp
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
-    IMM(QString) body_xml
+    IMM(QString) body_xml,
+    optional<QString> edited_by,
+    optional<uint64_t> edited_timestamp
 );
 
 static RawMessageContent parse_message_content(IMM(QString) content_xml);
@@ -573,7 +577,9 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 
 static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
     db.stmt(
-        "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml FROM Messages "\
+        "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
+        "       edited_by, edited_timestamp "\
+        "FROM Messages "\
         "ORDER BY timestamp"
     ).forEachRow(
         [&mut_indexed_conversations](
@@ -584,7 +590,9 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
             int chatmsg_type,
             QString author,
             QString from_dispname,
-            QString body_xml
+            QString body_xml,
+            optional<QString> edited_by,
+            optional<uint64_t> edited_timestamp
         ) -> void {
             QString key = chat_string_id.isEmpty() ? QString::number(convo_id) : chat_string_id;
             RawConversation& mut_conversation = mut_indexed_conversations.at(key);
@@ -599,7 +607,9 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
                 chatmsg_type,
                 author,
                 from_dispname,
-                body_xml
+                body_xml,
+                edited_by,
+                edited_timestamp
             ));
         });
 }
@@ -611,10 +621,20 @@ static CEDE(RawEvent) convert_event(
     int chatmsg_type,
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
-    IMM(QString) body_xml
+    IMM(QString) body_xml,
+    optional<QString> edited_by,
+    optional<uint64_t> edited_timestamp
 ) {
     if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
-        return convert_message_event(event_time, event_index, sender_account, sender_screen_name, body_xml);
+        return convert_message_event(
+            event_time,
+            event_index,
+            sender_account,
+            sender_screen_name,
+            body_xml,
+            edited_by,
+            edited_timestamp
+        );
     }
 
     // Default
@@ -628,13 +648,26 @@ static CEDE(RawMessageEvent) convert_message_event(
     unsigned int event_index,
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
-    IMM(QString) body_xml
+    IMM(QString) body_xml,
+    optional<QString> edited_by,
+    optional<uint64_t> edited_timestamp
 ) {
     unique_ptr<ApparentSubject> subject =
         make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
     RawMessageContent content = parse_message_content(body_xml);
 
-    return make_unique<RawMessageEvent>(event_time, event_index, move(subject), move(content));
+    unique_ptr<RawMessageEvent> message =
+        make_unique<RawMessageEvent>(event_time, event_index, move(subject), move(content));
+
+    if (edited_by) {
+        invariant(edited_timestamp, "Edit timestamp not specified!");
+
+        message->isEdited = true;
+        message->editedBy = make_unique<SubjectGivenAsAccount>(parse_skype_account(*edited_by));
+        message->timeEdited = ApparentTime::fromUnixTimestamp(*edited_timestamp);
+    }
+
+    return message;
 }
 
 static RawMessageContent parse_message_content(IMM(QString) content_xml) {
@@ -682,12 +715,11 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
         mut_content.addItem(make_unique<LinkTag>(true));
     } else if (tag_name == "quote") {
         mut_content.addItem(parse_quote_element(element));
+    } else if (tag_name == "e_m") {
+        // Ignore this tag (a redundant edit marker)
+    } else {
+        invariant_violation("Unsupported message node: <%s>", QP(tag_name));
     }
-
-    // TODO: parse other tags
-    return;
-
-    invariant_violation("Unsupported message node: <%s>", QP(tag_name));
 }
 
 static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {

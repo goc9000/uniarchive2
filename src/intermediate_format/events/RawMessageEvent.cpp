@@ -17,7 +17,7 @@ RawMessageEvent::RawMessageEvent(
     unsigned int index,
     TAKE(ApparentSubject) sender,
     RawMessageContent&& content
-): RawEvent(timestamp, index), sender(move(sender)), content(move(content)), isOffline(false) {
+): RawEvent(timestamp, index), sender(move(sender)), content(move(content)) {
 }
 
 QString RawMessageEvent::eventName() const {
@@ -28,11 +28,21 @@ void RawMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (isOffline) {
         stream << " OFFLINE";
     }
+    if (isEdited) {
+        stream << " EDITED";
+    }
     stream << " sender=" << sender.get();
     if (receiver) {
         stream << " receiver=" << receiver.get();
     }
     stream << " content=" << content;
+
+    if (editedBy) {
+        stream << " edited_by=" << editedBy.get();
+    }
+    if (timeEdited.isSpecified()) {
+        stream << " time_edited=" << timeEdited;
+    }
 }
 
 }}}

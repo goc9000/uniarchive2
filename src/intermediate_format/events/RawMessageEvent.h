@@ -24,6 +24,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;
+using namespace std::experimental;
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::subjects;
 
@@ -32,7 +33,12 @@ public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> receiver;
     RawMessageContent content;
-    bool isOffline;
+
+    bool isOffline = false;
+
+    bool isEdited = false;
+    unique_ptr<ApparentSubject> editedBy;
+    ApparentTime timeEdited;
 
     RawMessageEvent(
         IMM(ApparentTime) timestamp,
