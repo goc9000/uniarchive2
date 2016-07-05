@@ -107,6 +107,7 @@ static CEDE(RawEvent) convert_event(
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml,
+    optional<QByteArray> skype_guid,
     optional<QString> edited_by,
     optional<uint64_t> edited_timestamp
 );
@@ -578,7 +579,7 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
     db.stmt(
         "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
-        "       edited_by, edited_timestamp "\
+        "       guid, edited_by, edited_timestamp "\
         "FROM Messages "\
         "ORDER BY timestamp"
     ).forEachRow(
@@ -591,6 +592,7 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
             QString author,
             QString from_dispname,
             QString body_xml,
+            optional<QByteArray> skype_guid,
             optional<QString> edited_by,
             optional<uint64_t> edited_timestamp
         ) -> void {
@@ -608,6 +610,7 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
                 author,
                 from_dispname,
                 body_xml,
+                skype_guid,
                 edited_by,
                 edited_timestamp
             ));
@@ -622,11 +625,14 @@ static CEDE(RawEvent) convert_event(
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml,
+    optional<QByteArray> skype_guid,
     optional<QString> edited_by,
     optional<uint64_t> edited_timestamp
 ) {
+    unique_ptr<RawEvent> event;
+
     if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
-        return convert_message_event(
+        event = convert_message_event(
             event_time,
             event_index,
             sender_account,
@@ -635,12 +641,18 @@ static CEDE(RawEvent) convert_event(
             edited_by,
             edited_timestamp
         );
+    } else {
+        // Default
+        QByteArray data;
+
+        event = make_unique<RawUninterpretedEvent>(event_time, event_index, data);
     }
 
-    // Default
-    QByteArray data;
+    if (skype_guid) {
+        event->skypeGUID = *skype_guid;
+    }
 
-    return make_unique<RawUninterpretedEvent>(event_time, event_index, data);
+    return event;
 }
 
 static CEDE(RawMessageEvent) convert_message_event(

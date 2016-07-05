@@ -12,17 +12,23 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWEVENT_H
 
 #include "intermediate_format/ApparentTime.h"
+#include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
+#include <QByteArray>
 #include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+using namespace std::experimental;
 
 struct RawEvent {
 public:
     ApparentTime timestamp;
     unsigned int indexInConversation;
+
+    optional<QByteArray> skypeGUID;
 
     RawEvent(IMM(ApparentTime) timestamp, unsigned int index);
 

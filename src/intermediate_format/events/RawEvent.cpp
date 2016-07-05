@@ -24,6 +24,10 @@ void RawEvent::writeToDebugStream(QDebug stream) const {
     stream << "[" << timestamp << "] ";
     stream << QP(eventName());
     writeDetailsToDebugStream(stream);
+
+    if (skypeGUID) {
+        stream << " skype_guid=" << *skypeGUID;
+    }
 }
 
 void RawEvent::writeDetailsToDebugStream(QDebug stream) const {
