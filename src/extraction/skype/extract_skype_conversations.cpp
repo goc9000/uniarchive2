@@ -16,6 +16,7 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/LinkTag.h"
 #include "intermediate_format/content/SkypeEmoticon.h"
+#include "intermediate_format/content/SkypeQuote.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
@@ -118,6 +119,7 @@ static CEDE(RawMessageEvent) convert_message_event(
 static RawMessageContent parse_message_content(IMM(QString) content_xml);
 static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node);
 static void parse_message_content_element(RawMessageContent& mut_content, IMM(QDomElement) element);
+static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -678,12 +680,48 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
         }
 
         mut_content.addItem(make_unique<LinkTag>(true));
+    } else if (tag_name == "quote") {
+        mut_content.addItem(parse_quote_element(element));
     }
 
     // TODO: parse other tags
     return;
 
     invariant_violation("Unsupported message node: <%s>", QP(tag_name));
+}
+
+static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {
+    IMM(QDomNodeList) children = element.childNodes();
+
+    invariant(children.count() >= 2, "Expected <quote> to have at least 2 subnodes");
+    invariant(
+        element.firstChild().isElement() &&
+        (element.firstChild().toElement().tagName() == "legacyquote"),
+        "Expected first element in <quote> to be <legacyquote>"
+    );
+    invariant(
+        element.lastChild().isElement() &&
+        (element.lastChild().toElement().tagName() == "legacyquote") &&
+        (read_text_only_content(element.lastChild().toElement()).trimmed() == "<<<"),
+        "Expected last element in <quote> to be <legacyquote> containing the text '<<<'"
+    );
+
+    RawMessageContent quote_content;
+    for (int i = 1; i < children.count() - 1; i++) {
+        parse_message_content_node(quote_content, children.at(i));
+    }
+
+    return make_unique<SkypeQuote>(
+        read_string_attr(element, "conversation"),
+        read_string_attr(element, "guid"),
+        make_unique<FullySpecifiedSubject>(
+            parse_skype_account(read_string_attr(element, "author")),
+            read_string_attr(element, "authorname")
+        ),
+        ApparentTime::fromUnixTimestamp(read_int_attr(element, "timestamp")),
+        read_text_only_content(element.firstChild().toElement()),
+        move(quote_content)
+    );
 }
 
 }}}
