@@ -132,6 +132,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawChangeScreenNameEvent.h
         src/intermediate_format/events/RawContactRequestEvent.cpp
         src/intermediate_format/events/RawContactRequestEvent.h
+        src/intermediate_format/events/RawContactRequestAcceptEvent.cpp
+        src/intermediate_format/events/RawContactRequestAcceptEvent.h
         src/intermediate_format/events/RawCorruptedMessageEvent.cpp
         src/intermediate_format/events/RawCorruptedMessageEvent.h
         src/intermediate_format/events/RawFailableEvent.cpp

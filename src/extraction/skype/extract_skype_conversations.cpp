@@ -22,6 +22,7 @@
 #include "intermediate_format/events/conference/RawChangeConferencePictureEvent.h"
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
 #include "intermediate_format/events/RawContactRequestEvent.h"
+#include "intermediate_format/events/RawContactRequestAcceptEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
@@ -669,6 +670,14 @@ static CEDE(RawEvent) convert_event(
             move(subject),
             move(identities.front()),
             parse_message_content(body_xml)
+        );
+    } else if ((type == 51) && (chatmsg_type == 18)) {
+        invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
+        event = make_unique<RawContactRequestAcceptEvent>(
+            event_time,
+            event_index,
+            move(subject),
+            move(identities.front())
         );
     } else {
         // Default
