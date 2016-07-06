@@ -21,6 +21,7 @@
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/conference/RawChangeConferencePictureEvent.h"
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
+#include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
@@ -110,6 +111,7 @@ static CEDE(RawEvent) convert_event(
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml,
+    IMM(optional<QString>) serialized_identities,
     IMM(optional<QByteArray>) skype_guid,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp
@@ -122,6 +124,8 @@ static CEDE(RawMessageEvent) convert_message_event(
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp
 );
+
+static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString>) serialized_identities);
 
 static RawMessageContent parse_message_content(IMM(QString) content_xml);
 static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node);
@@ -581,7 +585,7 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
     db.stmt(
         "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
-        "       guid, edited_by, edited_timestamp "\
+        "       identities, guid, edited_by, edited_timestamp "\
         "FROM Messages "\
         "ORDER BY timestamp"
     ).forEachRow(
@@ -594,6 +598,7 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
             QString author,
             QString from_dispname,
             QString body_xml,
+            optional<QString> serialized_identities,
             optional<QByteArray> skype_guid,
             optional<QString> edited_by,
             optional<uint64_t> edited_timestamp
@@ -612,6 +617,7 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
                 author,
                 from_dispname,
                 body_xml,
+                serialized_identities,
                 skype_guid,
                 edited_by,
                 edited_timestamp
@@ -627,11 +633,13 @@ static CEDE(RawEvent) convert_event(
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml,
+    IMM(optional<QString>) serialized_identities,
     IMM(optional<QByteArray>) skype_guid,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp
 ) {
     auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
+    vector<unique_ptr<ApparentSubject>> identities = deserialize_identities(serialized_identities);
 
     unique_ptr<RawEvent> event;
 
@@ -653,6 +661,15 @@ static CEDE(RawEvent) convert_event(
         );
     } else if ((type == 2) && (chatmsg_type == 15)) {
         event = make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
+    } else if ((type == 50) && (chatmsg_type == 0)) {
+        invariant(identities.size() == 1, "Expected exactly 1 receiver for friend request");
+        event = make_unique<RawContactRequestEvent>(
+            event_time,
+            event_index,
+            move(subject),
+            move(identities.front()),
+            parse_message_content(body_xml)
+        );
     } else {
         // Default
         QByteArray data;
@@ -665,6 +682,18 @@ static CEDE(RawEvent) convert_event(
     }
 
     return event;
+}
+
+static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString>) serialized_identities) {
+    vector<unique_ptr<ApparentSubject>> result;
+
+    if (serialized_identities && !serialized_identities->isEmpty()) {
+        for (IMM(QString) item : serialized_identities->split(" ")) {
+            result.push_back(make_unique<SubjectGivenAsAccount>(parse_skype_account(item)));
+        }
+    }
+
+    return result;
 }
 
 static CEDE(RawMessageEvent) convert_message_event(
