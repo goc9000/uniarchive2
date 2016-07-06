@@ -8,11 +8,19 @@
  * Licensed under the GPL-3
  */
 
-#include <QDebugStateSaver>
-
 #include "intermediate_format/events/conference/RawAddToConferenceEvent.h"
 
+#include <QDebugStateSaver>
+
 namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+RawAddToConferenceEvent::RawAddToConferenceEvent(
+    IMM(ApparentTime) timestamp,
+    unsigned int index,
+    TAKE(ApparentSubject) adder,
+    TAKE(ApparentSubject) addee
+): RawEvent(timestamp, index), adder(move(adder)), addee(move(addee)) {
+}
 
 RawAddToConferenceEvent::RawAddToConferenceEvent(
     IMM(ApparentTime) timestamp,

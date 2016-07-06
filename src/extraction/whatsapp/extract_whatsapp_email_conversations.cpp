@@ -174,14 +174,12 @@ static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, unsigned i
             match.captured("grp_create_name")
         );
     } else if (match.capturedLength("grp_add_you")) {
-        unique_ptr<RawEvent> event = make_unique<RawAddToConferenceEvent>(
+        return make_unique<RawAddToConferenceEvent>(
             timestamp,
             event_index,
+            parse_subject(match.captured("grp_add_you")),
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
         );
-        static_cast<RawAddToConferenceEvent*>(event.get())->adder = parse_subject(match.captured("grp_add_you"));
-
-        return event;
     }
 
     invariant_violation("Unsupported WhatsApp system message: %s", QP(content));
