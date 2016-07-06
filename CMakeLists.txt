@@ -102,6 +102,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/conference/RawJoinConferenceEvent.h
         src/intermediate_format/events/conference/RawLeaveConferenceEvent.cpp
         src/intermediate_format/events/conference/RawLeaveConferenceEvent.h
+        src/intermediate_format/events/conference/RawRemoveFromConferenceEvent.cpp
+        src/intermediate_format/events/conference/RawRemoveFromConferenceEvent.h
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.cpp
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h
         src/intermediate_format/events/file_transfer/RawOfferFileEvent.cpp
