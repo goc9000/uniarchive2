@@ -110,17 +110,17 @@ static CEDE(RawEvent) convert_event(
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml,
-    optional<QByteArray> skype_guid,
-    optional<QString> edited_by,
-    optional<uint64_t> edited_timestamp
+    IMM(optional<QByteArray>) skype_guid,
+    IMM(optional<QString>) edited_by,
+    IMM(optional<uint64_t>) edited_timestamp
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
-    optional<QString> edited_by,
-    optional<uint64_t> edited_timestamp
+    IMM(optional<QString>) edited_by,
+    IMM(optional<uint64_t>) edited_timestamp
 );
 
 static RawMessageContent parse_message_content(IMM(QString) content_xml);
@@ -627,9 +627,9 @@ static CEDE(RawEvent) convert_event(
     IMM(QString) sender_account,
     IMM(QString) sender_screen_name,
     IMM(QString) body_xml,
-    optional<QByteArray> skype_guid,
-    optional<QString> edited_by,
-    optional<uint64_t> edited_timestamp
+    IMM(optional<QByteArray>) skype_guid,
+    IMM(optional<QString>) edited_by,
+    IMM(optional<uint64_t>) edited_timestamp
 ) {
     auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
 
@@ -672,8 +672,8 @@ static CEDE(RawMessageEvent) convert_message_event(
     unsigned int event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
-    optional<QString> edited_by,
-    optional<uint64_t> edited_timestamp
+    IMM(optional<QString>) edited_by,
+    IMM(optional<uint64_t>) edited_timestamp
 ) {
     unique_ptr<RawMessageEvent> message = make_unique<RawMessageEvent>(
         event_time,
