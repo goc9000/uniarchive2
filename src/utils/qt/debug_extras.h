@@ -22,6 +22,17 @@
 #include <map>
 
 template<typename T>
+QDebug operator<< (QDebug stream, IMM(std::unique_ptr<T>) value) {
+    if (value) {
+        stream << value.get();
+    } else {
+        stream << "(unset)";
+    }
+
+    return stream;
+}
+
+template<typename T>
 QDebug operator<< (QDebug stream, IMM(std::experimental::optional<T>) value) {
     if (value) {
         stream << *value;
