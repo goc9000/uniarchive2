@@ -19,8 +19,10 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/SkypeQuote.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/events/conference/RawAddToConferenceEvent.h"
 #include "intermediate_format/events/conference/RawChangeConferencePictureEvent.h"
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
+#include "intermediate_format/events/conference/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/conference/RawRemoveFromConferenceEvent.h"
 #include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawContactRequestAcceptEvent.h"
@@ -680,6 +682,10 @@ static CEDE(RawEvent) convert_event(
             move(subject),
             move(identities.front())
         );
+    } else if ((type == 10) && ((chatmsg_type == 1) || (chatmsg_type == 2))) {
+        invariant(identities.size() > 0, "Expected at least one subject for conference add");
+        event = make_unique<RawAddToConferenceEvent>(event_time, event_index, move(subject), move(identities));
+        static_cast<RawAddToConferenceEvent*>(event.get())->asModerator = (chatmsg_type == 2);
     } else if ((type == 12) && (chatmsg_type == 11)) {
         invariant(identities.size() == 1, "Expected exactly 1 subject for kick");
         event = make_unique<RawRemoveFromConferenceEvent>(
@@ -688,6 +694,8 @@ static CEDE(RawEvent) convert_event(
             move(subject),
             move(identities.front())
         );
+    } else if ((type == 13) && (chatmsg_type == 4)) {
+        event = make_unique<RawLeaveConferenceEvent>(event_time, event_index, move(subject));
     } else {
         // Default
         QByteArray data;
