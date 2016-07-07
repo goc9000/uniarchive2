@@ -13,20 +13,32 @@
 
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
 
+#include <vector>
+
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;
+using namespace std::experimental;
 using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawAddToConferenceEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> adder;
-    unique_ptr<ApparentSubject> addee;
+    vector<unique_ptr<ApparentSubject>> addees;
 
+    optional<bool> asModerator;
+
+    RawAddToConferenceEvent(
+        IMM(ApparentTime) timestamp,
+        unsigned int index,
+        TAKE(ApparentSubject) adder,
+        vector<unique_ptr<ApparentSubject>>&& addees
+    );
     RawAddToConferenceEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
