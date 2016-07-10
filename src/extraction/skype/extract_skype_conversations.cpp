@@ -22,11 +22,13 @@
 #include "intermediate_format/events/conference/RawAddToConferenceEvent.h"
 #include "intermediate_format/events/conference/RawChangeConferencePictureEvent.h"
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
+#include "intermediate_format/events/conference/RawJoinConferenceEvent.h"
 #include "intermediate_format/events/conference/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/conference/RawRemoveFromConferenceEvent.h"
 #include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 #include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawContactRequestAcceptEvent.h"
+#include "intermediate_format/events/RawJoinConversationEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawSendContactsEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
@@ -119,7 +121,8 @@ static CEDE(RawEvent) convert_event(
     vector<unique_ptr<ApparentSubject>>&& identities,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
-    IMM(optional<int>) new_role
+    IMM(optional<int>) new_role,
+    IMM(RawConversation) home_conversation
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
@@ -635,7 +638,8 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
                 move(identities),
                 edited_by,
                 edited_timestamp,
-                new_role
+                new_role,
+                mut_conversation
             );
 
             if (skype_guid) {
@@ -656,7 +660,8 @@ static CEDE(RawEvent) convert_event(
     TAKE_VEC(ApparentSubject) identities,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
-    IMM(optional<int>) new_role
+    IMM(optional<int>) new_role,
+    IMM(RawConversation) home_conversation
 ) {
     if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
         return convert_message_event(
@@ -737,6 +742,13 @@ static CEDE(RawEvent) convert_event(
     }
     if ((type == 63) && (chatmsg_type == 8)) {
         return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
+    }
+    if ((type == 0) && (chatmsg_type == 100)) {
+        if (*home_conversation.isConference) {
+            return make_unique<RawJoinConferenceEvent>(event_time, event_index, move(subject));
+        } else {
+            return make_unique<RawJoinConversationEvent>(event_time, event_index, move(subject));
+        }
     }
 
     // Default

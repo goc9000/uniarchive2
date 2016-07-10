@@ -142,6 +142,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawCorruptedMessageEvent.h
         src/intermediate_format/events/RawFailableEvent.cpp
         src/intermediate_format/events/RawFailableEvent.h
+        src/intermediate_format/events/RawJoinConversationEvent.cpp
+        src/intermediate_format/events/RawJoinConversationEvent.h
         src/intermediate_format/events/RawLeaveConversationEvent.cpp
         src/intermediate_format/events/RawLeaveConversationEvent.h
         src/intermediate_format/events/RawMessageEvent.cpp
