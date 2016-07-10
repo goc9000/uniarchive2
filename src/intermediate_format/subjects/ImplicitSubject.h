@@ -12,8 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_IMPLICITSUBJECT_H
 
 #include "intermediate_format/subjects/ApparentSubject.h"
-
-#include <memory>
+#include "utils/language/shortcuts.h"
 
 #include <QtDebug>
 

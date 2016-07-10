@@ -19,7 +19,6 @@
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
-#include <memory>
 #include <vector>
 
 #include <QDebug>

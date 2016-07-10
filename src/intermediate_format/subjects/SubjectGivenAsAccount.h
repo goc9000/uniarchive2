@@ -15,8 +15,6 @@
 #include "protocols/FullAccountName.h"
 #include "utils/language/shortcuts.h"
 
-#include <memory>
-
 #include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {

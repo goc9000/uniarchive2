@@ -42,8 +42,6 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/text/decoding.h"
 
-#include <memory>
-
 #include <QtDebug>
 #include <QDir>
 #include <QFile>

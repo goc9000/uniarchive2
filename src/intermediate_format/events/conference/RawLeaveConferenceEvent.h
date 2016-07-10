@@ -11,8 +11,6 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONFERENCEEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLEAVECONFERENCEEVENT_H
 
-#include <memory>
-
 #include <QtDebug>
 
 #include "utils/external_libs/optional.hpp"

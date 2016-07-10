@@ -16,8 +16,6 @@
 
 #include <QtDebug>
 
-#include <memory>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;

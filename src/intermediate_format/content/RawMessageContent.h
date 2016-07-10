@@ -18,7 +18,6 @@
 #include <QString>
 
 #include <vector>
-#include <memory>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 

@@ -11,8 +11,6 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERWEBCAMEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERWEBCAMEVENT_H
 
-#include <memory>
-
 #include <QtDebug>
 
 #include "intermediate_format/events/RawFailableEvent.h"

@@ -14,8 +14,6 @@
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
-#include <memory>
-
 #include <QtDebug>
 #include <QString>
 
