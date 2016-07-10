@@ -140,6 +140,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawContactRequestAcceptEvent.h
         src/intermediate_format/events/RawCorruptedMessageEvent.cpp
         src/intermediate_format/events/RawCorruptedMessageEvent.h
+        src/intermediate_format/events/RawEditedPreviousMessageEvent.cpp
+        src/intermediate_format/events/RawEditedPreviousMessageEvent.h
         src/intermediate_format/events/RawFailableEvent.cpp
         src/intermediate_format/events/RawFailableEvent.h
         src/intermediate_format/events/RawJoinConversationEvent.cpp

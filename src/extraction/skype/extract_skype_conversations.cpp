@@ -28,6 +28,7 @@
 #include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 #include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawContactRequestAcceptEvent.h"
+#include "intermediate_format/events/RawEditedPreviousMessageEvent.h"
 #include "intermediate_format/events/RawJoinConversationEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawSendContactsEvent.h"
@@ -748,6 +749,8 @@ static CEDE(RawEvent) convert_event(
             } else {
                 return make_unique<RawJoinConversationEvent>(event_time, event_index, move(subject));
             }
+        case COMBINED_TYPE(0, 103):
+            return make_unique<RawEditedPreviousMessageEvent>(event_time, event_index, move(subject));
     }
 
     // Default
