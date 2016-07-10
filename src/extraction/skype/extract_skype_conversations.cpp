@@ -32,6 +32,7 @@
 #include "intermediate_format/events/RawJoinConversationEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawSendContactsEvent.h"
+#include "intermediate_format/events/RawStartConversationEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
@@ -751,6 +752,14 @@ static CEDE(RawEvent) convert_event(
             }
         case COMBINED_TYPE(0, 103):
             return make_unique<RawEditedPreviousMessageEvent>(event_time, event_index, move(subject));
+        case COMBINED_TYPE(100, 2):
+            invariant(identities.size() == 1, "Expected exactly 1 peer for start conversation");
+            return make_unique<RawStartConversationEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front())
+            );
     }
 
     // Default

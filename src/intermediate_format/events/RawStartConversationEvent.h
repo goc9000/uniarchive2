@@ -25,9 +25,16 @@ using namespace uniarchive2::intermediate_format::subjects;
 struct RawStartConversationEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> initiator;
+    unique_ptr<ApparentSubject> peer;
 
     RawStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index);
     RawStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) initiator);
+    RawStartConversationEvent(
+        IMM(ApparentTime) timestamp,
+        unsigned int index,
+        TAKE(ApparentSubject) initiator,
+        TAKE(ApparentSubject) peer
+    );
 
     virtual QString eventName() const;
 

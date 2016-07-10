@@ -23,6 +23,14 @@ RawStartConversationEvent::RawStartConversationEvent(
 ): RawEvent(timestamp, index), initiator(move(initiator)) {
 }
 
+RawStartConversationEvent::RawStartConversationEvent(
+    IMM(ApparentTime) timestamp,
+    unsigned int index,
+    TAKE(ApparentSubject) initiator,
+    TAKE(ApparentSubject) peer
+): RawEvent(timestamp, index), initiator(move(initiator)), peer(move(peer)) {
+}
+
 QString RawStartConversationEvent::eventName() const {
     return "StartConversation";
 }
@@ -30,6 +38,9 @@ QString RawStartConversationEvent::eventName() const {
 void RawStartConversationEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (initiator) {
         stream << " initiator=" << initiator.get();
+    }
+    if (peer) {
+        stream << " peer=" << peer.get();
     }
 }
 
