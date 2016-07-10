@@ -113,11 +113,9 @@ static CEDE(RawEvent) convert_event(
     unsigned int message_index,
     int type,
     int chatmsg_type,
-    IMM(QString) sender_account,
-    IMM(QString) sender_screen_name,
+    TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
-    IMM(optional<QString>) serialized_identities,
-    IMM(optional<QByteArray>) skype_guid,
+    vector<unique_ptr<ApparentSubject>>&& identities,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
     IMM(optional<int>) new_role
@@ -616,20 +614,27 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
             ApparentTime event_time = ApparentTime::fromUnixTimestamp(timestamp);
             unsigned int event_index = mut_conversation.events.size();
 
-            mut_conversation.events.push_back(convert_event(
+            auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(author), from_dispname);
+            auto identities = deserialize_identities(serialized_identities);
+
+            auto event = convert_event(
                 event_time,
                 event_index,
                 type,
                 chatmsg_type,
-                author,
-                from_dispname,
+                move(subject),
                 body_xml,
-                serialized_identities,
-                skype_guid,
+                move(identities),
                 edited_by,
                 edited_timestamp,
                 new_role
-            ));
+            );
+
+            if (skype_guid) {
+                event->skypeGUID = *skype_guid;
+            }
+
+            mut_conversation.events.push_back(move(event));
         });
 }
 
@@ -638,22 +643,15 @@ static CEDE(RawEvent) convert_event(
     unsigned int event_index,
     int type,
     int chatmsg_type,
-    IMM(QString) sender_account,
-    IMM(QString) sender_screen_name,
+    TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
-    IMM(optional<QString>) serialized_identities,
-    IMM(optional<QByteArray>) skype_guid,
+    TAKE_VEC(ApparentSubject) identities,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
     IMM(optional<int>) new_role
 ) {
-    auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
-    vector<unique_ptr<ApparentSubject>> identities = deserialize_identities(serialized_identities);
-
-    unique_ptr<RawEvent> event;
-
     if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
-        event = convert_message_event(
+        return convert_message_event(
             event_time,
             event_index,
             move(subject),
@@ -661,70 +659,79 @@ static CEDE(RawEvent) convert_event(
             edited_by,
             edited_timestamp
         );
-    } else if ((type == 2) && (chatmsg_type == 5)) {
-        event = make_unique<RawChangeTopicEvent>(
+    }
+    if ((type == 2) && (chatmsg_type == 5)) {
+        return make_unique<RawChangeTopicEvent>(
             event_time,
             event_index,
             move(subject),
             parse_message_content(body_xml)
         );
-    } else if ((type == 2) && (chatmsg_type == 15)) {
-        event = make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
-    } else if ((type == 50) && (chatmsg_type == 0)) {
+    }
+    if ((type == 2) && (chatmsg_type == 15)) {
+        return make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
+    }
+    if ((type == 50) && (chatmsg_type == 0)) {
         invariant(identities.size() == 1, "Expected exactly 1 receiver for friend request");
-        event = make_unique<RawContactRequestEvent>(
+        return make_unique<RawContactRequestEvent>(
             event_time,
             event_index,
             move(subject),
             move(identities.front()),
             parse_message_content(body_xml)
         );
-    } else if ((type == 51) && (chatmsg_type == 18)) {
+    }
+    if ((type == 51) && (chatmsg_type == 18)) {
         invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
-        event = make_unique<RawContactRequestAcceptEvent>(
+        return make_unique<RawContactRequestAcceptEvent>(
             event_time,
             event_index,
             move(subject),
             move(identities.front())
         );
-    } else if ((type == 10) && ((chatmsg_type == 1) || (chatmsg_type == 2))) {
+    }
+    if ((type == 10) && ((chatmsg_type == 1) || (chatmsg_type == 2))) {
         invariant(identities.size() > 0, "Expected at least one subject for conference add");
-        event = make_unique<RawAddToConferenceEvent>(event_time, event_index, move(subject), move(identities));
+        unique_ptr<RawEvent> event = make_unique<RawAddToConferenceEvent>(
+            event_time,
+            event_index,
+            move(subject),
+            move(identities)
+        );
         static_cast<RawAddToConferenceEvent*>(event.get())->asModerator = (chatmsg_type == 2);
-    } else if ((type == 12) && (chatmsg_type == 11)) {
+
+        return event;
+    }
+    if ((type == 12) && (chatmsg_type == 11)) {
         invariant(identities.size() == 1, "Expected exactly 1 subject for kick");
-        event = make_unique<RawRemoveFromConferenceEvent>(
+        return make_unique<RawRemoveFromConferenceEvent>(
             event_time,
             event_index,
             move(subject),
             move(identities.front())
         );
-    } else if ((type == 13) && (chatmsg_type == 4)) {
-        event = make_unique<RawLeaveConferenceEvent>(event_time, event_index, move(subject));
-    } else if ((type == 21) && (chatmsg_type == 10)) {
+    }
+    if ((type == 13) && (chatmsg_type == 4)) {
+        return make_unique<RawLeaveConferenceEvent>(event_time, event_index, move(subject));
+    }
+    if ((type == 21) && (chatmsg_type == 10)) {
         invariant(identities.size() == 1, "Expected exactly 1 subject for set role");
         invariant(new_role, "new_role needs to be set for 'set role' event");
         invariant((*new_role >= 1) && (*new_role <= 5), "invalid new_role: %d", *new_role);
 
-        event = make_unique<RawSetSkypeChatRoleEvent>(
+        return make_unique<RawSetSkypeChatRoleEvent>(
             event_time,
             event_index,
             move(subject),
             move(identities.front()),
             (SkypeChatRole)(*new_role)
         );
-    } else {
-        // Default
-        QByteArray data;
-
-        event = make_unique<RawUninterpretedEvent>(event_time, event_index, data);
     }
+    
+    // Default
+    QByteArray data;
 
-    if (skype_guid) {
-        event->skypeGUID = *skype_guid;
-    }
-
-    return event;
+    return make_unique<RawUninterpretedEvent>(event_time, event_index, data);
 }
 
 static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString>) serialized_identities) {

@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_UTILS_LANGUAGE_SHORTCUTS_H
 
 #include <memory>
+#include <vector>
 
 using namespace std;
 
@@ -22,6 +23,9 @@ using namespace std;
 
 // Marker for a structure passed by unique pointer, whose ownership will be taken by the called function
 #define TAKE(type) unique_ptr<type>
+
+// Same, for a vector of unique_ptr's
+#define TAKE_VEC(type) vector<unique_ptr<type>>&&
 
 // Marker for a return value passed by unique pointer, whose ownership is ceded to the caller
 #define CEDE(type) unique_ptr<type>
