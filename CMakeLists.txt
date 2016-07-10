@@ -104,6 +104,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/conference/RawLeaveConferenceEvent.h
         src/intermediate_format/events/conference/RawRemoveFromConferenceEvent.cpp
         src/intermediate_format/events/conference/RawRemoveFromConferenceEvent.h
+        src/intermediate_format/events/conference/RawSetSkypeChatRoleEvent.cpp
+        src/intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.cpp
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h
         src/intermediate_format/events/file_transfer/RawOfferFileEvent.cpp
@@ -190,6 +192,8 @@ set(SOURCE_FILES
         src/protocols/msn/account_name.h
         src/protocols/skype/account_name.cpp
         src/protocols/skype/account_name.h
+        src/protocols/skype/SkypeChatRole.cpp
+        src/protocols/skype/SkypeChatRole.h
         src/protocols/yahoo/account_name.cpp
         src/protocols/yahoo/account_name.h
         src/protocols/ArchiveFormat.cpp

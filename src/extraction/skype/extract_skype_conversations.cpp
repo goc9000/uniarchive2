@@ -24,6 +24,7 @@
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
 #include "intermediate_format/events/conference/RawLeaveConferenceEvent.h"
 #include "intermediate_format/events/conference/RawRemoveFromConferenceEvent.h"
+#include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 #include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawContactRequestAcceptEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
@@ -118,7 +119,8 @@ static CEDE(RawEvent) convert_event(
     IMM(optional<QString>) serialized_identities,
     IMM(optional<QByteArray>) skype_guid,
     IMM(optional<QString>) edited_by,
-    IMM(optional<uint64_t>) edited_timestamp
+    IMM(optional<uint64_t>) edited_timestamp,
+    IMM(optional<int>) new_role
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
@@ -589,7 +591,7 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
     db.stmt(
         "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
-        "       identities, guid, edited_by, edited_timestamp "\
+        "       identities, guid, edited_by, edited_timestamp, newrole "\
         "FROM Messages "\
         "ORDER BY timestamp"
     ).forEachRow(
@@ -605,7 +607,8 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
             optional<QString> serialized_identities,
             optional<QByteArray> skype_guid,
             optional<QString> edited_by,
-            optional<uint64_t> edited_timestamp
+            optional<uint64_t> edited_timestamp,
+            optional<int> new_role
         ) -> void {
             QString key = chat_string_id.isEmpty() ? QString::number(convo_id) : chat_string_id;
             RawConversation& mut_conversation = mut_indexed_conversations.at(key);
@@ -624,7 +627,8 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
                 serialized_identities,
                 skype_guid,
                 edited_by,
-                edited_timestamp
+                edited_timestamp,
+                new_role
             ));
         });
 }
@@ -640,7 +644,8 @@ static CEDE(RawEvent) convert_event(
     IMM(optional<QString>) serialized_identities,
     IMM(optional<QByteArray>) skype_guid,
     IMM(optional<QString>) edited_by,
-    IMM(optional<uint64_t>) edited_timestamp
+    IMM(optional<uint64_t>) edited_timestamp,
+    IMM(optional<int>) new_role
 ) {
     auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(sender_account), sender_screen_name);
     vector<unique_ptr<ApparentSubject>> identities = deserialize_identities(serialized_identities);
@@ -696,6 +701,18 @@ static CEDE(RawEvent) convert_event(
         );
     } else if ((type == 13) && (chatmsg_type == 4)) {
         event = make_unique<RawLeaveConferenceEvent>(event_time, event_index, move(subject));
+    } else if ((type == 21) && (chatmsg_type == 10)) {
+        invariant(identities.size() == 1, "Expected exactly 1 subject for set role");
+        invariant(new_role, "new_role needs to be set for 'set role' event");
+        invariant((*new_role >= 1) && (*new_role <= 5), "invalid new_role: %d", *new_role);
+
+        event = make_unique<RawSetSkypeChatRoleEvent>(
+            event_time,
+            event_index,
+            move(subject),
+            move(identities.front()),
+            (SkypeChatRole)(*new_role)
+        );
     } else {
         // Default
         QByteArray data;
