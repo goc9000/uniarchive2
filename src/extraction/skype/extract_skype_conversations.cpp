@@ -28,6 +28,7 @@
 #include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawContactRequestAcceptEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
+#include "intermediate_format/events/RawSendContactsEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
@@ -135,6 +136,13 @@ static RawMessageContent parse_message_content(IMM(QString) content_xml);
 static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node);
 static void parse_message_content_element(RawMessageContent& mut_content, IMM(QDomElement) element);
 static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element);
+
+static CEDE(RawSendContactsEvent) convert_send_contacts_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    TAKE(ApparentSubject) subject,
+    IMM(QString) body_xml
+);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -727,7 +735,10 @@ static CEDE(RawEvent) convert_event(
             (SkypeChatRole)(*new_role)
         );
     }
-    
+    if ((type == 63) && (chatmsg_type == 8)) {
+        return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
+    }
+
     // Default
     QByteArray data;
 
@@ -861,6 +872,32 @@ static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {
         read_text_only_content(element.firstChild().toElement()),
         move(quote_content)
     );
+}
+
+static CEDE(RawSendContactsEvent) convert_send_contacts_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    TAKE(ApparentSubject) subject,
+    IMM(QString) body_xml
+) {
+    QDomDocument xml = xml_from_fragment_string(body_xml, "event");
+
+    vector<unique_ptr<ApparentSubject>> contacts;
+    for (
+        QDomElement element = only_child_elem(get_dom_root(xml, "event"), "contacts").firstChildElement();
+        !element.isNull();
+        element = element.nextSiblingElement()
+    ) {
+        invariant(element.tagName() == "c", "Expected <contacts> to contain only <c> tags");
+        invariant(read_string_attr(element, "t") == "s", "Can handle only <c t=\"s\" ...> contact tags");
+
+        contacts.push_back(make_unique<FullySpecifiedSubject>(
+            parse_skype_account(read_string_attr(element, "s")),
+            read_string_attr(element, "f")
+        ));
+    }
+
+    return make_unique<RawSendContactsEvent>(event_time, event_index, move(subject), move(contacts));
 }
 
 }}}

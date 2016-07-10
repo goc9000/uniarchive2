@@ -150,6 +150,8 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawMessageSendFailedEvent.h
         src/intermediate_format/events/RawPingEvent.cpp
         src/intermediate_format/events/RawPingEvent.h
+        src/intermediate_format/events/RawSendContactsEvent.cpp
+        src/intermediate_format/events/RawSendContactsEvent.h
         src/intermediate_format/events/RawStartConversationEvent.cpp
         src/intermediate_format/events/RawStartConversationEvent.h
         src/intermediate_format/events/RawUninterpretedEvent.cpp
