@@ -663,98 +663,98 @@ static CEDE(RawEvent) convert_event(
     IMM(optional<int>) new_role,
     IMM(RawConversation) home_conversation
 ) {
-    if ((type == 61) && ((chatmsg_type == 3) || (chatmsg_type == 0))) {
-        return convert_message_event(
-            event_time,
-            event_index,
-            move(subject),
-            body_xml,
-            edited_by,
-            edited_timestamp
-        );
-    }
-    if ((type == 2) && (chatmsg_type == 5)) {
-        return make_unique<RawChangeTopicEvent>(
-            event_time,
-            event_index,
-            move(subject),
-            parse_message_content(body_xml)
-        );
-    }
-    if ((type == 2) && (chatmsg_type == 15)) {
-        return make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
-    }
-    if ((type == 50) && (chatmsg_type == 0)) {
-        invariant(identities.size() == 1, "Expected exactly 1 receiver for friend request");
-        return make_unique<RawContactRequestEvent>(
-            event_time,
-            event_index,
-            move(subject),
-            move(identities.front()),
-            parse_message_content(body_xml)
-        );
-    }
-    if ((type == 51) && (chatmsg_type == 18)) {
-        invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
-        return make_unique<RawContactRequestAcceptEvent>(
-            event_time,
-            event_index,
-            move(subject),
-            move(identities.front())
-        );
-    }
-    if ((type == 10) && ((chatmsg_type == 1) || (chatmsg_type == 2))) {
-        invariant(identities.size() > 0, "Expected at least one subject for conference add");
-        unique_ptr<RawEvent> event = make_unique<RawAddToConferenceEvent>(
-            event_time,
-            event_index,
-            move(subject),
-            move(identities)
-        );
-        static_cast<RawAddToConferenceEvent*>(event.get())->asModerator = (chatmsg_type == 2);
+#define COMBINED_TYPE(t, ct) ((t << 8) + ct)
+    invariant((type >= 0) && (type <= 255), "Expected message type to be a byte, found %d", type);
+    invariant((chatmsg_type >= 0) && (chatmsg_type <= 255), "Expected byte for chatmsg_type, found %d", chatmsg_type);
 
-        return event;
-    }
-    if ((type == 12) && (chatmsg_type == 11)) {
-        invariant(identities.size() == 1, "Expected exactly 1 subject for kick");
-        return make_unique<RawRemoveFromConferenceEvent>(
-            event_time,
-            event_index,
-            move(subject),
-            move(identities.front())
-        );
-    }
-    if ((type == 13) && (chatmsg_type == 4)) {
-        return make_unique<RawLeaveConferenceEvent>(event_time, event_index, move(subject));
-    }
-    if ((type == 21) && (chatmsg_type == 10)) {
-        invariant(identities.size() == 1, "Expected exactly 1 subject for set role");
-        invariant(new_role, "new_role needs to be set for 'set role' event");
-        invariant((*new_role >= 1) && (*new_role <= 5), "invalid new_role: %d", *new_role);
+    unique_ptr<RawEvent> event;
 
-        return make_unique<RawSetSkypeChatRoleEvent>(
-            event_time,
-            event_index,
-            move(subject),
-            move(identities.front()),
-            (SkypeChatRole)(*new_role)
-        );
-    }
-    if ((type == 63) && (chatmsg_type == 8)) {
-        return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
-    }
-    if ((type == 0) && (chatmsg_type == 100)) {
-        if (*home_conversation.isConference) {
-            return make_unique<RawJoinConferenceEvent>(event_time, event_index, move(subject));
-        } else {
-            return make_unique<RawJoinConversationEvent>(event_time, event_index, move(subject));
-        }
+    switch (COMBINED_TYPE(type, chatmsg_type)) {
+        case COMBINED_TYPE(61, 3):
+        case COMBINED_TYPE(61, 0):
+            return convert_message_event(
+                event_time,
+                event_index,
+                move(subject),
+                body_xml,
+                edited_by,
+                edited_timestamp
+            );
+        case COMBINED_TYPE(2, 5):
+            return make_unique<RawChangeTopicEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                parse_message_content(body_xml)
+            );
+        case COMBINED_TYPE(2,15):
+            return make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
+        case COMBINED_TYPE(50, 0):
+            invariant(identities.size() == 1, "Expected exactly 1 receiver for friend request");
+            return make_unique<RawContactRequestEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front()),
+                parse_message_content(body_xml)
+            );
+        case COMBINED_TYPE(51, 18):
+            invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
+            return make_unique<RawContactRequestAcceptEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front())
+            );
+        case COMBINED_TYPE(10, 1):
+        case COMBINED_TYPE(10, 2):
+            invariant(identities.size() > 0, "Expected at least one subject for conference add");
+            event = make_unique<RawAddToConferenceEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities)
+            );
+            static_cast<RawAddToConferenceEvent*>(event.get())->asModerator = (chatmsg_type == 2);
+
+            return event;
+        case COMBINED_TYPE(12, 11):
+            invariant(identities.size() == 1, "Expected exactly 1 subject for kick");
+            return make_unique<RawRemoveFromConferenceEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front())
+            );
+        case COMBINED_TYPE(13, 4):
+            return make_unique<RawLeaveConferenceEvent>(event_time, event_index, move(subject));
+        case COMBINED_TYPE(21, 10):
+            invariant(identities.size() == 1, "Expected exactly 1 subject for set role");
+            invariant(new_role, "new_role needs to be set for 'set role' event");
+            invariant((*new_role >= 1) && (*new_role <= 5), "invalid new_role: %d", *new_role);
+
+            return make_unique<RawSetSkypeChatRoleEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front()),
+                (SkypeChatRole)(*new_role)
+            );
+        case COMBINED_TYPE(63, 8):
+            return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
+        case COMBINED_TYPE(0, 100):
+            if (*home_conversation.isConference) {
+                return make_unique<RawJoinConferenceEvent>(event_time, event_index, move(subject));
+            } else {
+                return make_unique<RawJoinConversationEvent>(event_time, event_index, move(subject));
+            }
     }
 
     // Default
-    QByteArray data;
+    QString tmp;
+    QDebug dbg(&tmp);
 
-    return make_unique<RawUninterpretedEvent>(event_time, event_index, data);
+    return make_unique<RawUninterpretedEvent>(event_time, event_index, tmp.toUtf8());
 }
 
 static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString>) serialized_identities) {
