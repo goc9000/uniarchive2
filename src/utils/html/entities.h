@@ -11,14 +11,14 @@
 #ifndef UNIARCHIVE2_UTILS_HTML_ENTITIES_H
 #define UNIARCHIVE2_UTILS_HTML_ENTITIES_H
 
+#include "utils/language/shortcuts.h"
+
 #include <QChar>
 #include <QString>
 
-#include "utils/language/shortcuts.h"
+namespace uniarchive2 { namespace utils { namespace html {
 
 using namespace std;
-
-namespace uniarchive2 { namespace utils { namespace html {
 
 QString decode_html_entities(IMM(QString) html_text);
 QChar html_entity_for_name(IMM(QString) entity_name);

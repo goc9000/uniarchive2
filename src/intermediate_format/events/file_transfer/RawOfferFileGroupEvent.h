@@ -11,17 +11,17 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERFILEGROUPEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWOFFERFILEGROUPEVENT_H
 
-#include <QtDebug>
-#include <QString>
-
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
-using namespace std;
-using namespace uniarchive2::intermediate_format::subjects;
+#include <QtDebug>
+#include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+using namespace std;
+using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawOfferFileGroupEvent : RawEvent {
 public:
