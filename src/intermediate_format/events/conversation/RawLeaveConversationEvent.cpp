@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawLeaveConversationEvent.cpp
+ * intermediate_format/events/conversation/RawLeaveConversationEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/events/RawLeaveConversationEvent.h"
+#include "intermediate_format/events/conversation/RawLeaveConversationEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 

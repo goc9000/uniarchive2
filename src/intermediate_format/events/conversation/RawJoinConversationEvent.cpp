@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawJoinConversationEvent.cpp
+ * intermediate_format/events/conversation/RawJoinConversationEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/events/RawJoinConversationEvent.h"
+#include "intermediate_format/events/conversation/RawJoinConversationEvent.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 

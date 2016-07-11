@@ -106,6 +106,12 @@ set(SOURCE_FILES
         src/intermediate_format/events/conference/RawRemoveFromConferenceEvent.h
         src/intermediate_format/events/conference/RawSetSkypeChatRoleEvent.cpp
         src/intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h
+        src/intermediate_format/events/conversation/RawJoinConversationEvent.cpp
+        src/intermediate_format/events/conversation/RawJoinConversationEvent.h
+        src/intermediate_format/events/conversation/RawLeaveConversationEvent.cpp
+        src/intermediate_format/events/conversation/RawLeaveConversationEvent.h
+        src/intermediate_format/events/conversation/RawStartConversationEvent.cpp
+        src/intermediate_format/events/conversation/RawStartConversationEvent.h
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.cpp
         src/intermediate_format/events/file_transfer/RawCancelFileTransferEvent.h
         src/intermediate_format/events/file_transfer/RawOfferFileEvent.cpp
@@ -144,10 +150,6 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawEditedPreviousMessageEvent.h
         src/intermediate_format/events/RawFailableEvent.cpp
         src/intermediate_format/events/RawFailableEvent.h
-        src/intermediate_format/events/RawJoinConversationEvent.cpp
-        src/intermediate_format/events/RawJoinConversationEvent.h
-        src/intermediate_format/events/RawLeaveConversationEvent.cpp
-        src/intermediate_format/events/RawLeaveConversationEvent.h
         src/intermediate_format/events/RawMessageEvent.cpp
         src/intermediate_format/events/RawMessageEvent.h
         src/intermediate_format/events/RawMessageSendFailedEvent.cpp
@@ -156,8 +158,6 @@ set(SOURCE_FILES
         src/intermediate_format/events/RawPingEvent.h
         src/intermediate_format/events/RawSendContactsEvent.cpp
         src/intermediate_format/events/RawSendContactsEvent.h
-        src/intermediate_format/events/RawStartConversationEvent.cpp
-        src/intermediate_format/events/RawStartConversationEvent.h
         src/intermediate_format/events/RawUninterpretedEvent.cpp
         src/intermediate_format/events/RawUninterpretedEvent.h
         src/intermediate_format/events/RawEvent.cpp
