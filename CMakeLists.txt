@@ -188,20 +188,20 @@ set(SOURCE_FILES
         src/intermediate_format/ApparentTime.h
         src/intermediate_format/RawConversation.cpp
         src/intermediate_format/RawConversation.h
-        src/protocols/digsby/account_name.cpp
-        src/protocols/digsby/account_name.h
-        src/protocols/facebook/account_name.cpp
-        src/protocols/facebook/account_name.h
-        src/protocols/jabber/account_name.cpp
-        src/protocols/jabber/account_name.h
-        src/protocols/msn/account_name.cpp
-        src/protocols/msn/account_name.h
-        src/protocols/skype/account_name.cpp
-        src/protocols/skype/account_name.h
+        src/protocols/digsby/digsby_account_name.cpp
+        src/protocols/digsby/digsby_account_name.h
+        src/protocols/facebook/facebook_account_name.cpp
+        src/protocols/facebook/facebook_account_name.h
+        src/protocols/jabber/jabber_account_name.cpp
+        src/protocols/jabber/jabber_account_name.h
+        src/protocols/msn/msn_account_name.cpp
+        src/protocols/msn/msn_account_name.h
+        src/protocols/skype/skype_account_name.cpp
+        src/protocols/skype/skype_account_name.h
         src/protocols/skype/SkypeChatRole.cpp
         src/protocols/skype/SkypeChatRole.h
-        src/protocols/yahoo/account_name.cpp
-        src/protocols/yahoo/account_name.h
+        src/protocols/yahoo/yahoo_account_name.cpp
+        src/protocols/yahoo/yahoo_account_name.h
         src/protocols/ArchiveFormat.cpp
         src/protocols/ArchiveFormat.h
         src/protocols/FullAccountName.cpp

@@ -9,7 +9,7 @@
  */
 
 #include "extraction/yahoo/ExtractYahooProtocolEventsIterator.h"
-#include "protocols/yahoo/account_name.h"
+#include "protocols/yahoo/yahoo_account_name.h"
 #include "utils/language/invariant.h"
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {

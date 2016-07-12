@@ -22,7 +22,7 @@
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
-#include "protocols/msn/account_name.h"
+#include "protocols/msn/msn_account_name.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/xml/qdom_utils.h"

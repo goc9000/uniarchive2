@@ -23,7 +23,7 @@
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "protocols/digsby/account_name.h"
+#include "protocols/digsby/digsby_account_name.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/parse_account_generic.h"

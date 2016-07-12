@@ -1,5 +1,5 @@
 /**
- * protocols/skype/account_name.cpp
+ * protocols/skype/skype_account_name.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "protocols/skype/account_name.h"
+#include "protocols/skype/skype_account_name.h"
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"

@@ -1,5 +1,5 @@
 /**
- * protocols/msn/account_name.cpp
+ * protocols/msn/msn_account_name.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "protocols/msn/account_name.h"
+#include "protocols/msn/msn_account_name.h"
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"

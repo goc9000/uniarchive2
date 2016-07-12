@@ -9,10 +9,10 @@
  */
 
 #include "protocols/parse_account_generic.h"
-#include "protocols/digsby/account_name.h"
-#include "protocols/jabber/account_name.h"
-#include "protocols/msn/account_name.h"
-#include "protocols/yahoo/account_name.h"
+#include "protocols/digsby/digsby_account_name.h"
+#include "protocols/jabber/jabber_account_name.h"
+#include "protocols/msn/msn_account_name.h"
+#include "protocols/yahoo/yahoo_account_name.h"
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"

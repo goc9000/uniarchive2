@@ -15,7 +15,7 @@
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "intermediate_format/events/RawMessageEvent.h"
-#include "protocols/facebook/account_name.h"
+#include "protocols/facebook/facebook_account_name.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/time/parse_date_parts.h"

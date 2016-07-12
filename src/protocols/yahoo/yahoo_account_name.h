@@ -1,5 +1,5 @@
 /**
- * protocols/yahoo/account_name.h
+ * protocols/yahoo/yahoo_account_name.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_PROTOCOLS_YAHOO_ACCOUNT_NAME_H
-#define UNIARCHIVE2_PROTOCOLS_YAHOO_ACCOUNT_NAME_H
+#ifndef UNIARCHIVE2_PROTOCOLS_YAHOO_YAHOO_ACCOUNT_NAME_H
+#define UNIARCHIVE2_PROTOCOLS_YAHOO_YAHOO_ACCOUNT_NAME_H
 
 #include "protocols/FullAccountName.h"
 #include "utils/language/shortcuts.h"
@@ -24,4 +24,4 @@ FullAccountName parse_yahoo_account(IMM(QString) account_name);
 
 }}}
 
-#endif //UNIARCHIVE2_PROTOCOLS_YAHOO_ACCOUNT_NAME_H
+#endif //UNIARCHIVE2_PROTOCOLS_YAHOO_YAHOO_ACCOUNT_NAME_H
