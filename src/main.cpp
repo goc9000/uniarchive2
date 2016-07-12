@@ -32,64 +32,67 @@ using namespace uniarchive2::extraction::whatsapp;
 using namespace uniarchive2::extraction::yahoo;
 using namespace uniarchive2::intermediate_format::subjects;
 
-
 int main(int argc, char* argv[]) {
     // Temporary test harness
+
+    invariant(argc >= 3, "Usage: %s <TEST_DATA_DIR> <TEST_OUTPUT_DIR>", argv[0]);
+
+    QString base_input_path(argv[1]);
+    QString base_output_path(argv[2]);
+    invariant(QDir(base_input_path).exists(), "Test input dir %s does not exist", QP(base_input_path));
+    invariant(QDir(base_output_path).exists(), "Test output dir %s does not exist", QP(base_output_path));
 
     vector<RawConversation> convos;
 
     qDebug() << "Skype";
-    QDirIterator skype_files(QT_STRINGIFY(TEST_DATA_DIR) "/skype", QStringList() << "main.db", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator skype_files(base_input_path + "/skype", QStringList() << "main.db", QDir::Files, QDirIterator::Subdirectories);
     while (skype_files.hasNext()) {
         auto file_convos = extract_skype_conversations(skype_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
     qDebug() << "WhatsApp";
-    QDirIterator whatsapp_files(QT_STRINGIFY(TEST_DATA_DIR) "/whatsapp", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator whatsapp_files(base_input_path + "/whatsapp", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
     while (whatsapp_files.hasNext()) {
         convos.push_back(extract_whatsapp_email_conversation(whatsapp_files.next()));
     }
     qDebug() << "Pidgin TXT";
-    QDirIterator pidgin_txt_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator pidgin_txt_files(base_input_path + "/pidgin", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
     while (pidgin_txt_files.hasNext()) {
         convos.push_back(extract_pidgin_txt_conversation(pidgin_txt_files.next()));
     }
     qDebug() << "Pidgin HTML";
-    QDirIterator pidgin_html_files(QT_STRINGIFY(TEST_DATA_DIR) "/pidgin", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator pidgin_html_files(base_input_path + "/pidgin", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
     while (pidgin_html_files.hasNext()) {
         convos.push_back(extract_pidgin_html_conversation(pidgin_html_files.next()));
     }
     qDebug() << "Adium";
-    QDirIterator adium_files(QT_STRINGIFY(TEST_DATA_DIR) "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator adium_files(base_input_path + "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
     while (adium_files.hasNext()) {
         convos.push_back(extract_adium_conversation(adium_files.next()));
     }
     qDebug() << "Digsby";
-    QDirIterator digsby_files(QT_STRINGIFY(TEST_DATA_DIR) "/digsby", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator digsby_files(base_input_path + "/digsby", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
     while (digsby_files.hasNext()) {
         convos.push_back(extract_digsby_conversation(digsby_files.next()));
     }
     qDebug() << "Facebook";
-    QDirIterator fb_files(QT_STRINGIFY(TEST_DATA_DIR) "/facebook", QStringList() << "messages.htm", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator fb_files(base_input_path + "/facebook", QStringList() << "messages.htm", QDir::Files, QDirIterator::Subdirectories);
     while (fb_files.hasNext()) {
         auto file_convos = extract_facebook_dyi_conversations(fb_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
     qDebug() << "Yahoo";
-    QDirIterator yahoo_files(QT_STRINGIFY(TEST_DATA_DIR) "/yahoo", QStringList() << "*.dat", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator yahoo_files(base_input_path + "/yahoo", QStringList() << "*.dat", QDir::Files, QDirIterator::Subdirectories);
     while (yahoo_files.hasNext()) {
         auto file_convos = extract_yahoo_messenger_dat_conversations(yahoo_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
     qDebug() << "MSN";
-    QDirIterator msn_files(QT_STRINGIFY(TEST_DATA_DIR) "/msn", QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator msn_files(base_input_path + "/msn", QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
     while (msn_files.hasNext()) {
         auto file_convos = extract_msn_messenger_xml_conversations(msn_files.next());
         move(file_convos.begin(), file_convos.end(), back_inserter(convos));
     }
-
-    QString base_output_path = QT_STRINGIFY(TEST_OUTPUT_DIR);
-    invariant(QDir(base_output_path).exists(), "Test dir %s does not exist", QP(base_output_path));
 
     map<QString, unsigned int> filenames_used;
 
