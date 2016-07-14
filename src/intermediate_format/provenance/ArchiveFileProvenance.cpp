@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "utils/language/shortcuts.h"
 
 #include <QDebugStateSaver>
 
@@ -35,7 +36,7 @@ void ArchiveFileProvenance::writeToDebugStream(QDebug stream) const {
     stream << ")";
 }
 
-void ArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug stream) const {
+void ArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug UNUSED stream) const {
 }
 
 CEDE(ArchiveFileProvenance) ArchiveFileProvenance::fromQFileInfo(

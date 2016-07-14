@@ -16,6 +16,8 @@
 
 using namespace std;
 
+#define UNUSED __attribute__((unused))
+
 #define CPTR(type) type const *
 
 // Marker for a structure parameter that is not modified

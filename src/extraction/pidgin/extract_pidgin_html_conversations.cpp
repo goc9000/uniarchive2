@@ -122,7 +122,7 @@ static void verify_is_utf8_html(QTextStream& mut_stream) {
 
     invariant(
          actual_header == expected_header,
-         "Expected header to be \"\", found \"\"", qPrintable(expected_header), qPrintable(actual_header)
+         "Expected header to be \"%s\", found \"%s\"", qPrintable(expected_header), qPrintable(actual_header)
     );
 
     mut_stream.setCodec(QTextCodec::codecForName("UTF-8"));
@@ -190,7 +190,7 @@ static RawMessageContent parse_message_content(IMM(QString) content_html) {
 
     auto lenient_parse_result = parse_html_lenient(content_html);
 
-    for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
+    for (size_t i = 0; i < lenient_parse_result.textSections.size(); i++) {
         if (i > 0) {
             content.addItem(parse_markup_tag(lenient_parse_result.tags[i-1]));
         }

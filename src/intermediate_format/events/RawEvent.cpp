@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/events/RawEvent.h"
+#include "utils/language/shortcuts.h"
 #include "utils/qt/shortcuts.h"
 
 #include <QDebugStateSaver>
@@ -30,7 +31,7 @@ void RawEvent::writeToDebugStream(QDebug stream) const {
     }
 }
 
-void RawEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawEvent::writeDetailsToDebugStream(QDebug UNUSED stream) const {
 }
 
 QDebug operator<< (QDebug stream, CPTR(RawEvent) event) {

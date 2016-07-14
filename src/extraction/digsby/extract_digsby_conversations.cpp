@@ -63,7 +63,6 @@ struct InfoFromFilename {
 static RawConversation init_conversation(IMM(QString) filename);
 static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
-static FullAccountName parse_account(IMProtocol protocol, IMM(QString) account_name);
 
 static void verify_xml_header(QTextStream& mut_stream);
 static void seek_start_of_events(QTextStream& mut_stream);
@@ -256,7 +255,7 @@ static CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) 
         ApparentTime::fromQDateTime(datetime),
         conversation.events.size(),
         make_unique<SubjectGivenAsAccount>(parse_account_generic(conversation.protocol, match.captured(4))),
-        move(parse_message_content(match.captured(5)))
+        parse_message_content(match.captured(5))
     );
 }
 
@@ -265,7 +264,7 @@ static RawMessageContent parse_message_content(IMM(QString) content_html) {
 
     auto lenient_parse_result = parse_html_lenient(content_html);
 
-    for (int i = 0; i < lenient_parse_result.textSections.size(); i++) {
+    for (size_t i = 0; i < lenient_parse_result.textSections.size(); i++) {
         if (i > 0) {
             content.addItem(parse_markup_tag(lenient_parse_result.tags[i-1]));
         }

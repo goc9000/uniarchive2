@@ -164,7 +164,7 @@ QDebug operator<< (QDebug stream, IMM(ParsedHTMLInfo) parse_info) {
 
     stream << "[\n";
 
-    for (int i = 0; i < parse_info.tags.size(); i++) {
+    for (size_t i = 0; i < parse_info.tags.size(); i++) {
         stream << "    " << parse_info.textSections[i] << "\n";
         stream << "    " << parse_info.tags[i] << "\n";
     }

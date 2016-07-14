@@ -11,6 +11,7 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/events/system/RawWindowOpenedEvent.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
@@ -22,7 +23,7 @@ QString RawWindowOpenedEvent::eventName() const {
     return "WindowOpened";
 }
 
-void RawWindowOpenedEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawWindowOpenedEvent::writeDetailsToDebugStream(QDebug UNUSED stream) const {
 }
 
 }}}

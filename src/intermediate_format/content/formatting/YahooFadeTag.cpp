@@ -16,7 +16,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 YahooFadeTag::YahooFadeTag(bool closed, IMM(QList<Color>) colors)
-    : closed(closed), colors(colors) {
+    : colors(colors), closed(closed) {
 }
 
 void YahooFadeTag::writeToDebugStream(QDebug stream) const {

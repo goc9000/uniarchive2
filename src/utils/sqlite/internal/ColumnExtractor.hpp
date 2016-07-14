@@ -33,7 +33,7 @@ struct ColumnExtractor {
 
 template<>
 struct ColumnExtractor<CPTR(SQLiteRow)> {
-    static CPTR(SQLiteRow) execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static CPTR(SQLiteRow) execute(IMM(SQLiteRow) row_handle, unsigned int UNUSED column_index) {
         return &row_handle;
     }
     static const unsigned int advance = 0;

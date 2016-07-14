@@ -55,7 +55,7 @@ QByteArray ExtractYahooProtocolEventsIterator::readRawString() {
     invariant(length <= reader.device()->bytesAvailable(), "Corrupt binary data in Yahoo Messenger archive");
 
     QByteArray raw_string = reader.device()->read(length);
-    invariant(raw_string.length() == length, "Read failure while parsing Yahoo Messenger archive");
+    invariant((quint32)raw_string.length() == length, "Read failure while parsing Yahoo Messenger archive");
 
     return raw_string;
 }

@@ -11,6 +11,7 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/events/system/RawLoggingStoppedEvent.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
@@ -22,7 +23,7 @@ QString RawLoggingStoppedEvent::eventName() const {
     return "LoggingStopped";
 }
 
-void RawLoggingStoppedEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawLoggingStoppedEvent::writeDetailsToDebugStream(QDebug UNUSED stream) const {
 }
 
 }}}

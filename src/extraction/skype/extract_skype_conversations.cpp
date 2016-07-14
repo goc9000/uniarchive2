@@ -300,16 +300,6 @@ static map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB& db) {
     return calls;
 }
 
-static RawConversation init_prototype(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    RawConversation conversation(IMProtocol::SKYPE);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::SKYPE, file_info);
-
-    return conversation;
-}
-
 static map<QString, RawConversation> convert_conversations(
     SQLiteDB& db,
     const map<QString, RawSkypeIdentity>& raw_identities,

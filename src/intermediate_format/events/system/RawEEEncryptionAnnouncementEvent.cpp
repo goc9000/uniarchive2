@@ -11,6 +11,7 @@
 #include <QDebugStateSaver>
 
 #include "intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.h"
+#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
@@ -22,7 +23,7 @@ QString RawEEEncryptionAnnouncementEvent::eventName() const {
     return "EEEncryptionAnnouncement";
 }
 
-void RawEEEncryptionAnnouncementEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawEEEncryptionAnnouncementEvent::writeDetailsToDebugStream(QDebug UNUSED stream) const {
 }
 
 }}}

@@ -81,8 +81,7 @@ static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element,
 static CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
-    TAKE(ApparentSubject) event_subject
+    unsigned int event_index
 );
 static CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
@@ -213,7 +212,7 @@ static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConvers
     unsigned int event_index = (unsigned int)conversation.events.size();
 
     if (event_element.tagName() == "event") {
-        return parse_system_event(event_element, event_time, event_index, move(event_subject));
+        return parse_system_event(event_element, event_time, event_index);
     } else if (event_element.tagName() == "message") {
         return parse_message_event(event_element, event_time, event_index, move(event_subject));
     } else if (event_element.tagName() == "status") {
@@ -241,8 +240,7 @@ static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element,
 static CEDE(RawEvent) parse_system_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
-    TAKE(ApparentSubject) event_subject
+    unsigned int event_index
 ) {
     QString event_type = read_string_attr(event_element, "type");
 
@@ -265,7 +263,7 @@ static CEDE(RawMessageEvent) parse_message_event(
         event_time,
         event_index,
         move(event_subject),
-        move(parse_event_content(event_element))
+        parse_event_content(event_element)
     );
 }
 

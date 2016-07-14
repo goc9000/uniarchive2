@@ -125,7 +125,7 @@ static RawConversation init_prototype(IMM(QString) filename) {
 
     QREGEX_MUST_MATCH_CI(
         match, "^\\d{8}-(.+)[.]dat$", filename.section(QDir::separator(), -1, -1),
-        "Yahoo archive filename does not have the form \"YYYYMMDD-account_name.dat\""
+        "Yahoo archive filename does not have the form \"YYYYMMDD-account_name.dat\", it is \"%s\""
     );
     auto local_account = parse_yahoo_account(match.captured(1));
 
