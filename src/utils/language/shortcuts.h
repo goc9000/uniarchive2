@@ -24,7 +24,7 @@ using namespace std;
 #define IMM(type) const type&
 
 // Marker for a structure passed by unique pointer, whose ownership will be taken by the called function
-#define TAKE(type) unique_ptr<type>
+#define TAKE(type) unique_ptr<type>&&
 
 // Same, for a vector of unique_ptr's
 #define TAKE_VEC(type) vector<unique_ptr<type>>&&
