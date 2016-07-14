@@ -594,7 +594,7 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
         "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
         "       identities, guid, edited_by, edited_timestamp, newrole "\
         "FROM Messages "\
-        "ORDER BY timestamp"
+        "ORDER BY timestamp, id"
     ).forEachRow(
         [&mut_indexed_conversations](
             QString chat_string_id,
