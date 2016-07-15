@@ -65,12 +65,11 @@ RawConversation extract_whatsapp_email_conversation(IMM(QString)filename) {
     for (IMM(auto) raw_event : pre_parse_events(load_utf8_text_file(filename))) {
         unique_ptr<RawEvent> event = parse_event(raw_event, (unsigned int)conversation.events.size());
 
-        auto as_group_create = dynamic_cast<RawCreateConferenceEvent*>(event.get());
-        if (as_group_create) {
+        if (event->is<RawCreateConferenceEvent>()) {
             conversation.isConference = true;
             conversation.declaredPeers.clear();
-            conversation.declaredPeers.push_back(as_group_create->creator->clone());
-            conversation.conferenceTitle = as_group_create->conferenceName;
+            conversation.declaredPeers.push_back(event->as<RawCreateConferenceEvent>()->creator->clone());
+            conversation.conferenceTitle = event->as<RawCreateConferenceEvent>()->conferenceName;
         }
 
         conversation.events.push_back(move(event));
@@ -208,11 +207,11 @@ static CEDE(RawEvent) parse_message(
 
     if (match.capturedLength("filename")) {
         unique_ptr<RawMessageContentItem> media = make_unique<MediaAttachment>();
-        static_cast<MediaAttachment*>(media.get())->filename = match.captured("filename");
+        media->as<MediaAttachment>()->filename = match.captured("filename");
         content.addItem(move(media));
     } else if (match.capturedLength("omitted")) {
         unique_ptr<RawMessageContentItem> media = make_unique<MediaAttachment>();
-        static_cast<MediaAttachment*>(media.get())->error = MediaAttachment::MediaError::OMITTED;
+        media->as<MediaAttachment>()->error = MediaAttachment::MediaError::OMITTED;
         content.addItem(move(media));
     } else {
         content = RawMessageContent::fromPlainText(text_content);

@@ -111,7 +111,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             parse_filename(match.captured("xfer_file"), is_html)
         );
-        static_cast<RawStartFileTransferEvent*>(xfer_event.get())->sender =
+        xfer_event->as<RawStartFileTransferEvent>()->sender =
             parse_libpurple_subject(match.captured("xfer_from"), protocol, is_html);
 
         return xfer_event;
@@ -121,7 +121,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             parse_filename(match.captured("cancel_file"), is_html)
         );
-        static_cast<RawCancelFileTransferEvent*>(xfer_event.get())->actor =
+        xfer_event->as<RawCancelFileTransferEvent>()->actor =
             match.capturedLength("cancel_you")
                 ? make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
                 : parse_libpurple_subject(match.captured("cancel_who"), protocol, is_html);
@@ -148,7 +148,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
             parse_filename(match.captured("you_offer_file"), is_html)
         );
-        static_cast<RawOfferFileEvent*>(offer_event.get())->recipient =
+        offer_event->as<RawOfferFileEvent>()->recipient =
             parse_libpurple_subject(match.captured("you_offer_to"), protocol, is_html);
 
         return offer_event;
@@ -160,7 +160,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         );
 
         if (match.capturedLength("buzz_to")) {
-            static_cast<RawPingEvent *>(ping_event.get())->pingee =
+            ping_event->as<RawPingEvent>()->pingee =
                 parse_libpurple_subject(match.captured("buzz_to"), protocol, is_html);
         }
 
@@ -171,10 +171,9 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
         );
-        static_cast<RawPingEvent*>(ping_event.get())->pingee =
+        ping_event->as<RawPingEvent>()->pingee =
             parse_libpurple_subject(match.captured("buzz_to_fail"), protocol, is_html);
-        static_cast<RawPingEvent*>(ping_event.get())->reasonFailed =
-            RawFailableEvent::FailReason::FAILED_BLOCKED_OR_UNSUPPORTED;
+        ping_event->as<RawPingEvent>()->reasonFailed = RawFailableEvent::FailReason::FAILED_BLOCKED_OR_UNSUPPORTED;
 
         return ping_event;
     } else if (match.capturedLength("buzz_from")) {
@@ -274,8 +273,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             parse_libpurple_subject(match.captured("unsup_webcam_from"), protocol, is_html)
         );
-        static_cast<RawOfferWebcamEvent*>(cam_event.get())->reasonFailed =
-            RawFailableEvent::FailReason::FAILED_UNSUPPORTED;
+        cam_event->as<RawOfferWebcamEvent>()->reasonFailed = RawFailableEvent::FailReason::FAILED_UNSUPPORTED;
 
         return cam_event;
     } else if (match.capturedLength("log_started")) {

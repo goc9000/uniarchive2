@@ -235,7 +235,7 @@ static CEDE(RawEvent) parse_message_event(
         parse_event_actor(event_element, "From"),
         parse_event_text(event_element)
     );
-    static_cast<RawMessageEvent*>(event.get())->receiver = parse_event_actor(event_element, "To");
+    event->as<RawMessageEvent>()->receiver = parse_event_actor(event_element, "To");
 
     return event;
 }
@@ -290,7 +290,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
                 filename
             );
-            static_cast<RawReceiveFileEvent*>(event.get())->sender = move(subject);
+            event->as<RawReceiveFileEvent>()->sender = move(subject);
 
             return event;
         } else if (pat_transfer_complete.match(text).hasMatch()) {
@@ -321,7 +321,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
                 event_index,
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
             );
-            static_cast<RawAnswerCallEvent*>(event.get())->caller = move(subject);
+            event->as<RawAnswerCallEvent>()->caller = move(subject);
 
             return event;
         }

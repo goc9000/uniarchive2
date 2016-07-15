@@ -21,8 +21,8 @@ SkypeConversationProvenance::SkypeConversationProvenance(TAKE(Provenance) base, 
 CEDE(Provenance) SkypeConversationProvenance::clone() const {
     unique_ptr<Provenance> dupe = make_unique<SkypeConversationProvenance>(base->clone(), conversationDBID, chatname);
 
-    static_cast<SkypeConversationProvenance*>(dupe.get())->chatDBID = chatDBID;
-    static_cast<SkypeConversationProvenance*>(dupe.get())->callDBID = callDBID;
+    dupe->as<SkypeConversationProvenance>()->chatDBID = chatDBID;
+    dupe->as<SkypeConversationProvenance>()->callDBID = callDBID;
 
     return dupe;
 }

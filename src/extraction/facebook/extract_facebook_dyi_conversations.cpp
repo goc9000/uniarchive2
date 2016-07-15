@@ -169,7 +169,7 @@ static void populate_thread_participants(
             mut_conversation.declaredPeers.push_back(
                 make_unique<SubjectGivenAsAccount>(parse_facebook_account(name))
             );
-        } else if (name != static_cast<SubjectGivenAsScreenName*>(prototype.identity.get())->screenName) {
+        } else if (name != prototype.identity->as<SubjectGivenAsScreenName>()->screenName) {
             mut_conversation.declaredPeers.push_back(make_unique<SubjectGivenAsScreenName>(name));
         }
     }

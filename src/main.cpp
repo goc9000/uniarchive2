@@ -110,15 +110,12 @@ int main(int argc, char* argv[]) {
             convo_path << "(Unknown)";
         } else {
             ApparentSubject* subject = convo.declaredPeers.front().get();
-            auto fss = dynamic_cast<FullySpecifiedSubject*>(subject);
-            auto sgaa = dynamic_cast<SubjectGivenAsAccount*>(subject);
-            auto sgasn = dynamic_cast<SubjectGivenAsScreenName*>(subject);
-            if (fss) {
-                convo_path << fss->accountName.accountName;
-            } else if (sgaa) {
-                convo_path << sgaa->account.accountName;
-            } else if (sgasn) {
-                convo_path << sgasn->screenName;
+            if (subject->is<FullySpecifiedSubject>()) {
+                convo_path << subject->as<FullySpecifiedSubject>()->accountName.accountName;
+            } else if (subject->is<SubjectGivenAsAccount>()) {
+                convo_path << subject->as<SubjectGivenAsAccount>()->account.accountName;
+            } else if (subject->is<SubjectGivenAsScreenName>()) {
+                convo_path << subject->as<SubjectGivenAsScreenName>()->screenName;
             } else {
                 convo_path << "(Unknown)";
             }

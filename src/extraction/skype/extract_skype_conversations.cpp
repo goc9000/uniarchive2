@@ -707,7 +707,7 @@ static CEDE(RawEvent) convert_event(
                 move(subject),
                 move(identities)
             );
-            static_cast<RawAddToConferenceEvent*>(event.get())->asModerator = (chatmsg_type == 2);
+            event->as<RawAddToConferenceEvent>()->asModerator = (chatmsg_type == 2);
 
             return event;
         case COMBINED_TYPE(12, 11):

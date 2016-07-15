@@ -24,8 +24,8 @@ AdiumArchiveFileProvenance::AdiumArchiveFileProvenance(
 CEDE(Provenance) AdiumArchiveFileProvenance::clone() const {
     unique_ptr<Provenance> provenance = make_unique<AdiumArchiveFileProvenance>(fullFilename, lastModifiedTime);
 
-    static_cast<AdiumArchiveFileProvenance*>(provenance.get())->adiumVersion = adiumVersion;
-    static_cast<AdiumArchiveFileProvenance*>(provenance.get())->adiumBuildID = adiumBuildID;
+    provenance->as<AdiumArchiveFileProvenance>()->adiumVersion = adiumVersion;
+    provenance->as<AdiumArchiveFileProvenance>()->adiumBuildID = adiumBuildID;
 
     return provenance;
 }

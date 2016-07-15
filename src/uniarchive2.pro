@@ -248,4 +248,5 @@ HEADERS += \
     protocols/skype/skype_account_name.h \
     protocols/msn/msn_account_name.h \
     protocols/jabber/jabber_account_name.h \
-    protocols/facebook/facebook_account_name.h
+    protocols/facebook/facebook_account_name.h \
+    utils/language/polymorphic_helpers.h

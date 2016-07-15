@@ -11,6 +11,7 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_PROVENANCE_PROVENANCE_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_PROVENANCE_PROVENANCE_H
 
+#include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
@@ -21,6 +22,8 @@ using namespace std;
 
 class Provenance {
 public:
+    POLYMORPHIC_HELPERS
+
     virtual CEDE(Provenance) clone() const = 0;
 
     virtual void writeToDebugStream(QDebug stream) const = 0;

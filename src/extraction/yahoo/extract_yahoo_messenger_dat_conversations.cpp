@@ -92,7 +92,7 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
     }
     QByteArray data = file.readAll();
 
-    QString local_account_name = static_cast<SubjectGivenAsAccount*>(prototype.identity.get())->account.accountName;
+    QString local_account_name = prototype.identity->as<SubjectGivenAsAccount>()->account.accountName;
     ExtractYahooProtocolEventsIterator proto_events(data, local_account_name);
 
     vector<unique_ptr<RawEvent>> current_events;

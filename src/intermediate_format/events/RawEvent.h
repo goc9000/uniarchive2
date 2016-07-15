@@ -13,6 +13,7 @@
 
 #include "intermediate_format/ApparentTime.h"
 #include "utils/external_libs/optional.hpp"
+#include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
@@ -31,6 +32,8 @@ public:
     optional<QByteArray> skypeGUID;
 
     RawEvent(IMM(ApparentTime) timestamp, unsigned int index);
+
+    POLYMORPHIC_HELPERS
 
     virtual QString eventName() const = 0;
     void writeToDebugStream(QDebug stream) const;

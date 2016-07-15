@@ -117,11 +117,11 @@ RawConversation extract_adium_conversation(IMM(QString) filename) {
     QDomDocument xml = load_xml_file(filename);
     QDomElement root_element = get_dom_root(xml, "chat");
 
-    auto provenance = static_cast<AdiumArchiveFileProvenance*>(conversation.provenance.get());
+    auto provenance = conversation.provenance->as<AdiumArchiveFileProvenance>();
     provenance->adiumVersion = read_string_attr(root_element, "adiumversion");
     provenance->adiumBuildID = read_string_attr(root_element, "buildid");
 
-    verify_identity(root_element, static_cast<SubjectGivenAsAccount*>(conversation.identity.get())->account);
+    verify_identity(root_element, conversation.identity->as<SubjectGivenAsAccount>()->account);
 
     QDomElement event_element = root_element.firstChildElement();
     while (!event_element.isNull()) {
