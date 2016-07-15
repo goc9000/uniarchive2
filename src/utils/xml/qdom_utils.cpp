@@ -55,6 +55,7 @@ static QDomDocument parse_xml(QXmlInputSource* source, bool keep_whitespace, IMM
     int error_line, error_column;
 
     QXmlSimpleReader reader;
+    reader.setFeature("http://xml.org/sax/features/namespaces", false);
     reader.setFeature("http://qt-project.org/xml/features/report-whitespace-only-CharData", keep_whitespace);
 
     if (!xml.setContent(source, &reader, &error_message, &error_line, &error_column)) {
