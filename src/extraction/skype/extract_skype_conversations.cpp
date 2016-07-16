@@ -29,6 +29,7 @@
 #include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 #include "intermediate_format/events/conversation/RawJoinConversationEvent.h"
 #include "intermediate_format/events/conversation/RawStartConversationEvent.h"
+#include "intermediate_format/events/RawContactDeleteEvent.h"
 #include "intermediate_format/events/RawContactRequestEvent.h"
 #include "intermediate_format/events/RawContactRequestAcceptEvent.h"
 #include "intermediate_format/events/RawEditedPreviousMessageEvent.h"
@@ -770,6 +771,14 @@ static CEDE(RawEvent) convert_event(
                 move(subject),
                 move(identities),
                 home_conversation
+            );
+        case COMBINED_TYPE(110, 0):
+            invariant(identities.size() == 1, "Expected exactly 1 identity for unfriend event");
+            return make_unique<RawContactDeleteEvent>(
+                event_time,
+                event_index,
+                move(identities.front()),
+                move(subject)
             );
     }
 
