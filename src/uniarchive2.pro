@@ -121,7 +121,8 @@ SOURCES += main.cpp \
     protocols/jabber/jabber_account_name.cpp \
     protocols/msn/msn_account_name.cpp \
     protocols/skype/skype_account_name.cpp \
-    protocols/yahoo/yahoo_account_name.cpp
+    protocols/yahoo/yahoo_account_name.cpp \
+    intermediate_format/events/conference/RawRejoinConferenceEvent.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -249,4 +250,5 @@ HEADERS += \
     protocols/msn/msn_account_name.h \
     protocols/jabber/jabber_account_name.h \
     protocols/facebook/facebook_account_name.h \
-    utils/language/polymorphic_helpers.h
+    utils/language/polymorphic_helpers.h \
+    intermediate_format/events/conference/RawRejoinConferenceEvent.h

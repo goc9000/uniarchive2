@@ -24,6 +24,7 @@
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
 #include "intermediate_format/events/conference/RawJoinConferenceEvent.h"
 #include "intermediate_format/events/conference/RawLeaveConferenceEvent.h"
+#include "intermediate_format/events/conference/RawRejoinConferenceEvent.h"
 #include "intermediate_format/events/conference/RawRemoveFromConferenceEvent.h"
 #include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 #include "intermediate_format/events/conversation/RawJoinConversationEvent.h"
@@ -147,6 +148,14 @@ static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     unsigned int event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
+);
+
+static CEDE(RawEvent) convert_complex_join_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    TAKE(ApparentSubject) subject,
+    TAKE_VEC(ApparentSubject) identities,
+    IMM(RawConversation) home_conversation
 );
 
 
@@ -634,6 +643,10 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
                 mut_conversation
             );
 
+            if (!event) {
+                return;
+            }
+
             if (skype_guid) {
                 event->skypeGUID = *skype_guid;
             }
@@ -749,6 +762,14 @@ static CEDE(RawEvent) convert_event(
                 event_index,
                 move(subject),
                 move(identities.front())
+            );
+        case COMBINED_TYPE(100, 6):
+            return convert_complex_join_event(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities),
+                home_conversation
             );
     }
 
@@ -912,6 +933,39 @@ static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     }
 
     return make_unique<RawSendContactsEvent>(event_time, event_index, move(subject), move(contacts));
+}
+
+static CEDE(RawEvent) convert_complex_join_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    TAKE(ApparentSubject) subject,
+    TAKE_VEC(ApparentSubject) identities,
+    IMM(RawConversation) home_conversation
+) {
+    QString subject_account = subject->as<FullySpecifiedSubject>()->accountName.accountName;
+
+    for (auto id = identities.begin(); id != identities.end(); id++) {
+        if ((*id)->as<SubjectGivenAsAccount>()->account.accountName == subject_account) {
+            identities.erase(id);
+            break;
+        }
+    }
+
+    if (!*home_conversation.isConference) {
+        invariant(identities.size() == 1, "Expected exactly 1 peer identity for 1:1 convo rejoin event");
+        invariant(home_conversation.declaredPeers.size() == 1, "Expected exactly 1 peer identity for conversation");
+        invariant(
+            identities.front()->as<SubjectGivenAsAccount>()->account.accountName ==
+            home_conversation.declaredPeers.front()->as<SubjectGivenAsAccount>()->account.accountName,
+            "Identity should be the same as the unique peer for 1:1 convo rejoin events"
+        );
+
+        // Ignore this event as it will always be redundant with a RawJoinConversationEvent occuring at most
+        // several seconds later
+        return unique_ptr<RawEvent>();
+    }
+
+    return make_unique<RawRejoinConferenceEvent>(event_time, event_index, move(subject), move(identities));
 }
 
 }}}

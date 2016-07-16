@@ -20,7 +20,7 @@ RawAddToConferenceEvent::RawAddToConferenceEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) adder,
-    vector<unique_ptr<ApparentSubject>>&& addees
+    TAKE_VEC(ApparentSubject) addees
 ): RawEvent(timestamp, index), adder(move(adder)), addees(move(addees)) {
 }
 

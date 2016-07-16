@@ -37,7 +37,7 @@ public:
         IMM(ApparentTime) timestamp,
         unsigned int index,
         TAKE(ApparentSubject) adder,
-        vector<unique_ptr<ApparentSubject>>&& addees
+        TAKE_VEC(ApparentSubject) addees
     );
     RawAddToConferenceEvent(
         IMM(ApparentTime) timestamp,
