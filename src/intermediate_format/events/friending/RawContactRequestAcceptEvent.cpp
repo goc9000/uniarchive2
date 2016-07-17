@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawContactRequestAcceptEvent.cpp
+ * intermediate_format/events/friending/RawContactRequestAcceptEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/events/RawContactRequestAcceptEvent.h"
+#include "intermediate_format/events/friending/RawContactRequestAcceptEvent.h"
 
 #include <QDebugStateSaver>
 

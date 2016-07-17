@@ -75,8 +75,8 @@ SOURCES += main.cpp \
     intermediate_format/events/system/RawWindowClosedEvent.cpp \
     intermediate_format/events/system/RawWindowOpenedEvent.cpp \
     intermediate_format/events/RawChangeScreenNameEvent.cpp \
-    intermediate_format/events/RawContactRequestAcceptEvent.cpp \
-    intermediate_format/events/RawContactRequestEvent.cpp \
+    intermediate_format/events/friending/RawContactRequestAcceptEvent.cpp \
+    intermediate_format/events/friending/RawContactRequestEvent.cpp \
     intermediate_format/events/RawCorruptedMessageEvent.cpp \
     intermediate_format/events/RawEditedPreviousMessageEvent.cpp \
     intermediate_format/events/RawEvent.cpp \
@@ -123,7 +123,7 @@ SOURCES += main.cpp \
     protocols/skype/skype_account_name.cpp \
     protocols/yahoo/yahoo_account_name.cpp \
     intermediate_format/events/conference/RawRejoinConferenceEvent.cpp \
-    intermediate_format/events/RawContactDeleteEvent.cpp
+    intermediate_format/events/friending/RawContactDeleteEvent.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -198,8 +198,8 @@ HEADERS += \
     intermediate_format/events/system/RawWindowClosedEvent.h \
     intermediate_format/events/system/RawWindowOpenedEvent.h \
     intermediate_format/events/RawChangeScreenNameEvent.h \
-    intermediate_format/events/RawContactRequestAcceptEvent.h \
-    intermediate_format/events/RawContactRequestEvent.h \
+    intermediate_format/events/friending/RawContactRequestAcceptEvent.h \
+    intermediate_format/events/friending/RawContactRequestEvent.h \
     intermediate_format/events/RawCorruptedMessageEvent.h \
     intermediate_format/events/RawEditedPreviousMessageEvent.h \
     intermediate_format/events/RawEvent.h \
@@ -253,4 +253,4 @@ HEADERS += \
     protocols/facebook/facebook_account_name.h \
     utils/language/polymorphic_helpers.h \
     intermediate_format/events/conference/RawRejoinConferenceEvent.h \
-    intermediate_format/events/RawContactDeleteEvent.h
+    intermediate_format/events/friending/RawContactDeleteEvent.h

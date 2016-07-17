@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawContactDeleteEvent.cpp
+ * intermediate_format/events/friending/RawContactDeleteEvent.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,7 +8,7 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/events/RawContactDeleteEvent.h"
+#include "intermediate_format/events/friending/RawContactDeleteEvent.h"
 
 #include <QDebugStateSaver>
 

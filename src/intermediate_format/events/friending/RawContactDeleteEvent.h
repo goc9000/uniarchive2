@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/RawContactRequestAcceptAcceptEvent.h
+ * intermediate_format/events/friending/RawContactDeleteEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCONTACTREQUESTACCEPTEVENT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCONTACTREQUESTACCEPTEVENT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCONTACTDELETEEVENT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCONTACTDELETEEVENT_H
 
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
@@ -22,16 +22,16 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 using namespace std;
 using namespace uniarchive2::intermediate_format::subjects;
 
-struct RawContactRequestAcceptEvent : RawEvent {
+struct RawContactDeleteEvent : RawEvent {
 public:
-    unique_ptr<ApparentSubject> acceptor;
-    unique_ptr<ApparentSubject> acceptee;
+    unique_ptr<ApparentSubject> deleter;
+    unique_ptr<ApparentSubject> deletee;
 
-    RawContactRequestAcceptEvent(
+    RawContactDeleteEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
-        TAKE(ApparentSubject) acceptor,
-        TAKE(ApparentSubject) acceptee
+        TAKE(ApparentSubject) deleter,
+        TAKE(ApparentSubject) deletee
     );
 
     virtual QString eventName() const;
@@ -42,4 +42,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCONTACTREQUESTACCEPTEVENT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWCONTACTDELETEEVENT_H
