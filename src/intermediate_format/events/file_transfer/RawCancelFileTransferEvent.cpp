@@ -14,11 +14,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
+RawCancelFileTransferEvent::RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index)
+    : RawEvent(timestamp, index) {
+}
+
 RawCancelFileTransferEvent::RawCancelFileTransferEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
-    IMM(QString) filename
-): RawEvent(timestamp, index), filename(filename) {
+    IMM(RawTransferredFile) file
+): RawEvent(timestamp, index), file(file) {
 }
 
 QString RawCancelFileTransferEvent::eventName() const {
@@ -29,7 +33,9 @@ void RawCancelFileTransferEvent::writeDetailsToDebugStream(QDebug stream) const 
     if (actor) {
         stream << " actor=" << actor.get();
     }
-    stream << " file=" << filename;
+    if (file) {
+        stream << " file=" << *file;
+    }
 }
 
 }}}

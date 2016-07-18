@@ -123,7 +123,8 @@ SOURCES += main.cpp \
     protocols/skype/skype_account_name.cpp \
     protocols/yahoo/yahoo_account_name.cpp \
     intermediate_format/events/conference/RawRejoinConferenceEvent.cpp \
-    intermediate_format/events/friending/RawContactDeleteEvent.cpp
+    intermediate_format/events/friending/RawContactDeleteEvent.cpp \
+    intermediate_format/RawTransferredFile.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -253,4 +254,5 @@ HEADERS += \
     protocols/facebook/facebook_account_name.h \
     utils/language/polymorphic_helpers.h \
     intermediate_format/events/conference/RawRejoinConferenceEvent.h \
-    intermediate_format/events/friending/RawContactDeleteEvent.h
+    intermediate_format/events/friending/RawContactDeleteEvent.h \
+    intermediate_format/RawTransferredFile.h

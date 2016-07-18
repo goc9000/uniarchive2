@@ -18,8 +18,8 @@ RawReceiveFileEvent::RawReceiveFileEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) receiver,
-    IMM(QString) filename
-): RawEvent(timestamp, index), receiver(move(receiver)), filename(filename) {
+    IMM(RawTransferredFile) file
+): RawEvent(timestamp, index), receiver(move(receiver)), file(file) {
 }
 
 QString RawReceiveFileEvent::eventName() const {
@@ -31,7 +31,7 @@ void RawReceiveFileEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (sender) {
         stream << " sender=" << sender.get();
     }
-    stream << " file=" << filename;
+    stream << " file=" << file;
 }
 
 }}}

@@ -22,6 +22,7 @@
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/RawTransferredFile.h"
 #include "protocols/msn/msn_account_name.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
@@ -71,7 +72,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     bool is_response,
     TAKE(ApparentSubject) subject,
     IMM(QString) text,
-    IMM(QString) filename
+    IMM(RawTransferredFile) file
 );
 static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
@@ -251,9 +252,9 @@ static CEDE(RawEvent) parse_invitation_or_response_event(
 
     QDomElement file_element = event_element.firstChildElement("File");
     if (!file_element.isNull()) {
-        QString filename = read_text_only_content(file_element);
+        RawTransferredFile file(read_text_only_content(file_element));
         return parse_invitation_or_response_event_with_file(
-            event_element, event_time, event_index, is_response, move(subject), text, filename
+            event_element, event_time, event_index, is_response, move(subject), text, file
         );
     }
     QDomElement app_element = event_element.firstChildElement("Application");
@@ -274,13 +275,13 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     bool is_response,
     TAKE(ApparentSubject) subject,
     IMM(QString) text,
-    IMM(QString) filename
+    IMM(RawTransferredFile) file
 ) {
     QREGEX_CI(pat_transfer_complete, "^Transfer of .* is complete[.]$");
 
     if (!is_response) {
         if (text.contains(" sends ")) {
-            return make_unique<RawOfferFileEvent>(event_time, event_index, move(subject), filename);
+            return make_unique<RawOfferFileEvent>(event_time, event_index, move(subject), file);
         }
     } else {
         if (text.contains("You have successfully received ")) {
@@ -288,13 +289,13 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
                 event_time,
                 event_index,
                 make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
-                filename
+                file
             );
             event->as<RawReceiveFileEvent>()->sender = move(subject);
 
             return event;
         } else if (pat_transfer_complete.match(text).hasMatch()) {
-            return make_unique<RawReceiveFileEvent>(event_time, event_index, move(subject), filename);
+            return make_unique<RawReceiveFileEvent>(event_time, event_index, move(subject), file);
         }
     }
 

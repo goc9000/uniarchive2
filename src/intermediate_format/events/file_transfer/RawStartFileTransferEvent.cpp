@@ -17,8 +17,8 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 RawStartFileTransferEvent::RawStartFileTransferEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
-    IMM(QString) filename
-): RawEvent(timestamp, index), filename(filename) {
+    IMM(RawTransferredFile) file
+): RawEvent(timestamp, index), file(file) {
 }
 
 QString RawStartFileTransferEvent::eventName() const {
@@ -29,7 +29,7 @@ void RawStartFileTransferEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (sender) {
         stream << " sender=" << sender.get();
     }
-    stream << " file=" << filename;
+    stream << " file=" << file;
 }
 
 }}}

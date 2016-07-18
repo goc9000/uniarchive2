@@ -18,8 +18,8 @@ RawOfferFileEvent::RawOfferFileEvent(
     IMM(ApparentTime) timestamp,
     unsigned int index,
     TAKE(ApparentSubject) sender,
-    IMM(QString) filename
-): RawEvent(timestamp, index), sender(move(sender)), filename(filename) {
+    IMM(RawTransferredFile) file
+): RawEvent(timestamp, index), sender(move(sender)), file(file) {
 }
 
 QString RawOfferFileEvent::eventName() const {
@@ -27,7 +27,7 @@ QString RawOfferFileEvent::eventName() const {
 }
 
 void RawOfferFileEvent::writeDetailsToDebugStream(QDebug stream) const {
-    stream << " sender=" << sender.get() << " file=" << filename;
+    stream << " sender=" << sender.get() << " file=" << file;
     if (recipient) {
         stream << " recipient=" << recipient.get();
     }

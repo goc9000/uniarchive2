@@ -13,27 +13,28 @@
 
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/RawTransferredFile.h"
 #include "utils/language/shortcuts.h"
 
 #include <QtDebug>
-#include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;
+using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawOfferFileEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> recipient;
-    QString filename;
+    RawTransferredFile file;
 
     RawOfferFileEvent(
         IMM(ApparentTime) timestamp,
         unsigned int index,
         TAKE(ApparentSubject) sender,
-        IMM(QString) filename
+        IMM(RawTransferredFile) file
     );
 
     virtual QString eventName() const;

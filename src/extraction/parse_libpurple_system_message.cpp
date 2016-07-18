@@ -31,6 +31,7 @@
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/RawTransferredFile.h"
 #include "protocols/parse_account_generic.h"
 #include "utils/html/entities.h"
 #include "utils/language/invariant.h"
@@ -43,10 +44,11 @@ namespace uniarchive2 { namespace extraction {
 using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::subjects;
+using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::utils::html;
 
 static QString strip_subject_suffix(IMM(QString) subject);
-static QString parse_filename(IMM(QString) filename, bool is_html);
+static RawTransferredFile parse_file(IMM(QString) filename_html, bool is_html);
 
 
 CEDE(RawEvent) parse_libpurple_system_message(
@@ -103,13 +105,13 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_time,
             event_index,
             parse_libpurple_subject(match.captured("offer_who"), protocol, is_html),
-            parse_filename(match.captured("offer_file"), is_html)
+            parse_file(match.captured("offer_file"), is_html)
         );
     } else if (match.capturedLength("xfer_file")) {
         unique_ptr<RawEvent> xfer_event = make_unique<RawStartFileTransferEvent>(
             event_time,
             event_index,
-            parse_filename(match.captured("xfer_file"), is_html)
+            parse_file(match.captured("xfer_file"), is_html)
         );
         xfer_event->as<RawStartFileTransferEvent>()->sender =
             parse_libpurple_subject(match.captured("xfer_from"), protocol, is_html);
@@ -119,7 +121,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> xfer_event = make_unique<RawCancelFileTransferEvent>(
             event_time,
             event_index,
-            parse_filename(match.captured("cancel_file"), is_html)
+            parse_file(match.captured("cancel_file"), is_html)
         );
         xfer_event->as<RawCancelFileTransferEvent>()->actor =
             match.capturedLength("cancel_you")
@@ -128,17 +130,13 @@ CEDE(RawEvent) parse_libpurple_system_message(
 
         return xfer_event;
     } else if (match.capturedLength("cancel_undef")) {
-        return make_unique<RawCancelFileTransferEvent>(
-            event_time,
-            event_index,
-            ""
-        );
+        return make_unique<RawCancelFileTransferEvent>(event_time, event_index);
     } else if (match.capturedLength("recv_file")) {
         return make_unique<RawReceiveFileEvent>(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::FILE_RECEIVER),
-            parse_filename(match.captured("recv_file"), is_html)
+            parse_file(match.captured("recv_file"), is_html)
         );
 
     } else if (match.capturedLength("you_offer_file")) {
@@ -146,7 +144,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
-            parse_filename(match.captured("you_offer_file"), is_html)
+            parse_file(match.captured("you_offer_file"), is_html)
         );
         offer_event->as<RawOfferFileEvent>()->recipient =
             parse_libpurple_subject(match.captured("you_offer_to"), protocol, is_html);
@@ -309,18 +307,17 @@ static QString strip_subject_suffix(IMM(QString) subject) {
     return match.hasMatch() ? match.captured(1) : subject;
 }
 
-static QString parse_filename(IMM(QString) filename, bool is_html) {
-    if (!is_html) {
-        return filename;
+static RawTransferredFile parse_file(IMM(QString) filename_html, bool is_html) {
+    QString decoded_filename;
+
+    if (is_html) {
+        QREGEX_MATCH_CI(link_match, "^<a href=\"(.*)\">.*</a>$", filename_html);
+        decoded_filename = decode_html_entities(link_match.hasMatch() ? link_match.captured(1) : filename_html);
+    } else {
+        decoded_filename = filename_html;
     }
 
-    QREGEX_MATCH_CI(link_match, "^<a href=\"(.*)\">.*</a>$", filename);
-
-    if (link_match.hasMatch()) {
-        return decode_html_entities(link_match.captured(1));
-    }
-
-    return decode_html_entities(filename);
+    return RawTransferredFile(decoded_filename);
 }
 
 }}
