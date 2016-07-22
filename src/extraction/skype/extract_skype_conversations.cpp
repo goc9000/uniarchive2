@@ -29,6 +29,7 @@
 #include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 #include "intermediate_format/events/conversation/RawJoinConversationEvent.h"
 #include "intermediate_format/events/conversation/RawStartConversationEvent.h"
+#include "intermediate_format/events/file_transfer/RawTransferFilesEvent.h"
 #include "intermediate_format/events/friending/RawContactDeleteEvent.h"
 #include "intermediate_format/events/friending/RawContactRequestEvent.h"
 #include "intermediate_format/events/friending/RawContactRequestAcceptEvent.h"
@@ -157,6 +158,13 @@ static CEDE(RawEvent) convert_complex_join_event(
     TAKE(ApparentSubject) subject,
     TAKE_VEC(ApparentSubject) identities,
     IMM(RawConversation) home_conversation
+);
+
+static CEDE(RawEvent) convert_file_transfer_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    TAKE(ApparentSubject) subject,
+    IMM(QString) body_xml
 );
 
 
@@ -780,6 +788,10 @@ static CEDE(RawEvent) convert_event(
                 move(identities.front()),
                 move(subject)
             );
+        case COMBINED_TYPE(68, 0):
+        case COMBINED_TYPE(68, 7):
+        case COMBINED_TYPE(68, 18):
+            return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
     }
 
     // Default
@@ -975,6 +987,29 @@ static CEDE(RawEvent) convert_complex_join_event(
     }
 
     return make_unique<RawRejoinConferenceEvent>(event_time, event_index, move(subject), move(identities));
+}
+
+static CEDE(RawEvent) convert_file_transfer_event(
+    IMM(ApparentTime) event_time,
+    unsigned int event_index,
+    TAKE(ApparentSubject) subject,
+    IMM(QString) body_xml
+) {
+    QDomDocument xml = xml_from_fragment_string(body_xml, "root");
+    QDomElement files_elem = only_child_elem(get_dom_root(xml, "root"), "files");
+
+    vector<RawTransferredFile> files;
+
+    for (
+         QDomElement file_elem = files_elem.firstChildElement();
+         !file_elem.isNull();
+         file_elem = file_elem.nextSiblingElement()
+    ) {
+        invariant(file_elem.tagName() == "file", "Expected only <file> children in <files>");
+        files.emplace_back(read_text_only_content(file_elem), (uint64_t)read_int_attr(file_elem, "size"));
+    }
+
+    return make_unique<RawTransferFilesEvent>(event_time, event_index, move(subject), files);
 }
 
 }}}

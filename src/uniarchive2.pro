@@ -124,7 +124,8 @@ SOURCES += main.cpp \
     protocols/yahoo/yahoo_account_name.cpp \
     intermediate_format/events/conference/RawRejoinConferenceEvent.cpp \
     intermediate_format/events/friending/RawContactDeleteEvent.cpp \
-    intermediate_format/RawTransferredFile.cpp
+    intermediate_format/RawTransferredFile.cpp \
+    intermediate_format/events/file_transfer/RawTransferFilesEvent.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -255,4 +256,5 @@ HEADERS += \
     utils/language/polymorphic_helpers.h \
     intermediate_format/events/conference/RawRejoinConferenceEvent.h \
     intermediate_format/events/friending/RawContactDeleteEvent.h \
-    intermediate_format/RawTransferredFile.h
+    intermediate_format/RawTransferredFile.h \
+    intermediate_format/events/file_transfer/RawTransferFilesEvent.h
