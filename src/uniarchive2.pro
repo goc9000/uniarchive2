@@ -125,7 +125,9 @@ SOURCES += main.cpp \
     intermediate_format/events/conference/RawRejoinConferenceEvent.cpp \
     intermediate_format/events/friending/RawContactDeleteEvent.cpp \
     intermediate_format/RawTransferredFile.cpp \
-    intermediate_format/events/file_transfer/RawTransferFilesEvent.cpp
+    intermediate_format/events/file_transfer/RawTransferFilesEvent.cpp \
+    intermediate_format/events/calls/RawStartCallEvent.cpp \
+    intermediate_format/events/calls/RawEndCallEvent.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -257,4 +259,6 @@ HEADERS += \
     intermediate_format/events/conference/RawRejoinConferenceEvent.h \
     intermediate_format/events/friending/RawContactDeleteEvent.h \
     intermediate_format/RawTransferredFile.h \
-    intermediate_format/events/file_transfer/RawTransferFilesEvent.h
+    intermediate_format/events/file_transfer/RawTransferFilesEvent.h \
+    intermediate_format/events/calls/RawStartCallEvent.h \
+    intermediate_format/events/calls/RawEndCallEvent.h

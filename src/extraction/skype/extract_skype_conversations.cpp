@@ -19,6 +19,8 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/SkypeQuote.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/events/calls/RawEndCallEvent.h"
+#include "intermediate_format/events/calls/RawStartCallEvent.h"
 #include "intermediate_format/events/conference/RawAddToConferenceEvent.h"
 #include "intermediate_format/events/conference/RawChangeConferencePictureEvent.h"
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
@@ -72,6 +74,23 @@ using namespace uniarchive2::protocols::skype;
 using namespace uniarchive2::utils::sqlite;
 using namespace uniarchive2::utils::xml;
 
+struct CallEventData {
+    uint64_t eventID;
+    uint64_t timestamp;
+    uint64_t convoID;
+    QString authorAccount;
+    QString authorScreenName;
+    QString bodyXML;
+    QString identities;
+    QString dialogPartner;
+    QString failReason;
+    optional<QString> callGUID;
+
+    bool matches(uint64_t convo_id, IMM(QString) dialog_partner, IMM(optional<QString>) call_guid) {
+        return (convoID == convo_id) && (dialogPartner == dialog_partner) && (callGUID == call_guid);
+    }
+};
+
 static map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
 static map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
 static map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB &db);
@@ -115,7 +134,11 @@ static RawConversation convert_call(
 );
 static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(RawSkypeCall) skype_call);
 
-static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations);
+static void convert_events(
+    SQLiteDB& db,
+    map<QString, RawConversation>& mut_indexed_conversations,
+    map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events
+);
 static CEDE(RawEvent) convert_event(
     IMM(ApparentTime) message_time,
     unsigned int message_index,
@@ -151,7 +174,6 @@ static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
-
 static CEDE(RawEvent) convert_complex_join_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index,
@@ -159,13 +181,36 @@ static CEDE(RawEvent) convert_complex_join_event(
     TAKE_VEC(ApparentSubject) identities,
     IMM(RawConversation) home_conversation
 );
-
 static CEDE(RawEvent) convert_file_transfer_event(
     IMM(ApparentTime) event_time,
     unsigned int event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
+
+static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
+    SQLiteDB& db,
+    const map<uint64_t, RawSkypeCall>& raw_calls
+);
+static void create_call_events(
+    map<uint64_t, unique_ptr<RawEvent>>& mut_prescanned_call_events,
+    IMM(CallEventData) start_event_data,
+    IMM(CallEventData) end_event_data,
+    const map<uint64_t, RawSkypeCall>& raw_calls
+);
+static CPTR(RawSkypeCall) find_corresponding_call(
+    const map<uint64_t, RawSkypeCall>& raw_calls,
+    uint64_t start_timestamp,
+    uint64_t end_timestamp,
+    uint64_t convo_id
+);
+static vector<CEDE(ApparentSubject)> get_call_event_peers(
+   IMM(CallEventData) start_event_data,
+   IMM(CallEventData) end_event_data,
+   CPTR(RawSkypeCall) skype_call
+);
+static RawStartCallEvent::FailReason parse_start_failure_reason(IMM(QString) raw_reason);
+static RawEndCallEvent::FailReason parse_end_failure_reason(IMM(QString) raw_reason);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -180,10 +225,12 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
     map<uint64_t, RawSkypeCall> raw_calls = query_raw_skype_calls(db);
 
+    map<uint64_t, unique_ptr<RawEvent>> prescanned_call_events = prescan_call_events(db, raw_calls);
+
     map<QString, RawConversation> indexed_conversations =
         convert_conversations(db, raw_identities, raw_convos, raw_chats, raw_calls, base_provenance.get());
 
-    convert_events(db, indexed_conversations);
+    convert_events(db, indexed_conversations, move(prescanned_call_events));
 
     vector<RawConversation> conversations;
     for (auto& kv : indexed_conversations) {
@@ -607,16 +654,21 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
     return make_unique<SubjectGivenAsAccount>(parse_skype_account(account_name));
 }
 
-static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_indexed_conversations) {
+static void convert_events(
+    SQLiteDB& db,
+    map<QString, RawConversation>& mut_indexed_conversations,
+    map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events
+) {
     db.stmt(
-        "SELECT chatname, convo_id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
+        "SELECT chatname, convo_id, id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
         "       identities, guid, edited_by, edited_timestamp, newrole "\
         "FROM Messages "\
         "ORDER BY timestamp, id"
     ).forEachRow(
-        [&mut_indexed_conversations](
+        [&mut_indexed_conversations, &prescanned_call_events](
             QString chat_string_id,
             uint64_t convo_id,
+            uint64_t event_id,
             uint64_t timestamp,
             int type,
             int chatmsg_type,
@@ -638,19 +690,29 @@ static void convert_events(SQLiteDB& db, map<QString, RawConversation>& mut_inde
             auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(author), from_dispname);
             auto identities = deserialize_identities(serialized_identities);
 
-            auto event = convert_event(
-                event_time,
-                event_index,
-                type,
-                chatmsg_type,
-                move(subject),
-                body_xml,
-                move(identities),
-                edited_by,
-                edited_timestamp,
-                new_role,
-                mut_conversation
-            );
+            unique_ptr<RawEvent> event;
+
+            if (prescanned_call_events.count(event_id)) {
+                event = move(prescanned_call_events.at(event_id));
+                if (event) {
+                    event->indexInConversation = event_index;
+                }
+                prescanned_call_events.erase(event_id);
+            } else {
+                event = convert_event(
+                    event_time,
+                    event_index,
+                    type,
+                    chatmsg_type,
+                    move(subject),
+                    body_xml,
+                    move(identities),
+                    edited_by,
+                    edited_timestamp,
+                    new_role,
+                    mut_conversation
+                );
+            }
 
             if (!event) {
                 return;
@@ -1010,6 +1072,241 @@ static CEDE(RawEvent) convert_file_transfer_event(
     }
 
     return make_unique<RawTransferFilesEvent>(event_time, event_index, move(subject), files);
+}
+
+static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
+    SQLiteDB& db,
+    const map<uint64_t, RawSkypeCall>& raw_calls
+) {
+    map<uint64_t, unique_ptr<RawEvent>> prescanned_call_events;
+    vector<CallEventData> open_events;
+
+    db.stmt(
+        "SELECT id, type, timestamp, convo_id, author, from_dispname, body_xml, identities, dialog_partner, reason, "\
+        "       call_guid "\
+        "FROM Messages "\
+        "WHERE type IN (30, 39) "\
+        "ORDER BY timestamp, id"
+    ).forEachRow(
+        [&open_events, &raw_calls, &prescanned_call_events](
+            uint64_t event_id,
+            int type,
+            uint64_t timestamp,
+            uint64_t convo_id,
+            QString author,
+            QString from_dispname,
+            QString body_xml,
+            QString identities,
+            QString dialog_partner,
+            QString fail_reason,
+            optional<QString> call_guid
+        ) -> void {
+            CallEventData event_data {
+                .eventID = event_id,
+                .timestamp = timestamp,
+                .convoID = convo_id,
+                .authorAccount = author,
+                .authorScreenName = from_dispname,
+                .bodyXML = body_xml,
+                .identities = identities,
+                .dialogPartner = dialog_partner,
+                .failReason = fail_reason,
+                .callGUID = call_guid
+            };
+            if (type == 30) {
+                open_events.push_back(event_data);
+            } else {
+                int index = -1;
+                for (size_t i = 0; i < open_events.size(); i++) {
+                    if (open_events.at(i).matches(convo_id, dialog_partner, call_guid)) {
+                        invariant(index == -1, "Multiple start call events match");
+                        index = i;
+                    }
+                }
+                invariant(index != -1, "No start call event matches");
+
+                create_call_events(prescanned_call_events, open_events.at(index), event_data, raw_calls);
+
+                open_events.erase(open_events.begin() + index);
+            }
+        });
+
+    invariant(open_events.empty(), "Not all start call events were matched!");
+
+    return prescanned_call_events;
+}
+
+static void create_call_events(
+    map<uint64_t, unique_ptr<RawEvent>>& mut_prescanned_call_events,
+    IMM(CallEventData) start_event_data,
+    IMM(CallEventData) end_event_data,
+    const map<uint64_t, RawSkypeCall>& raw_calls
+) {
+    CPTR(RawSkypeCall) skype_call = find_corresponding_call(
+        raw_calls,
+        start_event_data.timestamp,
+        end_event_data.timestamp,
+        start_event_data.convoID
+    );
+
+    unique_ptr<ApparentSubject> initiator = make_unique<FullySpecifiedSubject>(
+       parse_skype_account(start_event_data.authorAccount),
+       start_event_data.authorScreenName
+    );
+    unique_ptr<ApparentSubject> ender = make_unique<FullySpecifiedSubject>(
+        parse_skype_account(end_event_data.authorAccount),
+        end_event_data.authorScreenName
+    );
+
+    auto peers = get_call_event_peers(start_event_data, end_event_data, skype_call);
+
+    auto start_event = make_unique<RawStartCallEvent>(
+        ApparentTime::fromUnixTimestamp(start_event_data.timestamp),
+        0,
+        move(initiator),
+        move(peers)
+    );
+    auto end_event = make_unique<RawEndCallEvent>(
+        ApparentTime::fromUnixTimestamp(end_event_data.timestamp),
+        0
+    );
+    end_event->ender = move(ender);
+
+    if (start_event_data.callGUID) {
+        start_event->skypeCallGUID = *start_event_data.callGUID;
+        end_event->skypeCallGUID = *start_event_data.callGUID;
+    } else {
+        QString synthetic_guid = QString("%1:%2").arg(start_event_data.dialogPartner).arg(start_event_data.timestamp);
+        start_event->syntheticCallGUID = synthetic_guid;
+        end_event->syntheticCallGUID = synthetic_guid;
+    }
+    if (skype_call) {
+        start_event->correspondingSkypeCallID = skype_call->id;
+        end_event->correspondingSkypeCallID = skype_call->id;
+    }
+
+    unsigned int actual_duration = end_event_data.timestamp - start_event_data.timestamp;
+    if (actual_duration >= 5) {
+        start_event->durationSeconds = actual_duration;
+
+        if (!start_event_data.failReason.isEmpty()) {
+            end_event->reasonFailed = parse_end_failure_reason(start_event_data.failReason);
+        }
+    } else {
+        start_event->reasonFailed = parse_start_failure_reason(start_event_data.failReason);
+
+        // Absorb the end call event if the call failed
+        end_event.reset();
+    }
+
+    mut_prescanned_call_events[start_event_data.eventID] = move(start_event);
+    mut_prescanned_call_events[end_event_data.eventID] = move(end_event);
+}
+
+static inline uint64_t abs_difference(uint64_t a, uint64_t b) {
+    return (b > a) ? (b - a) : (a - b);
+}
+
+static CPTR(RawSkypeCall) find_corresponding_call(
+    const map<uint64_t, RawSkypeCall>& raw_calls,
+    uint64_t start_timestamp,
+    uint64_t end_timestamp,
+    uint64_t convo_id
+) {
+    invariant(start_timestamp <= end_timestamp, "start_timestamp must be less than end_timestamp");
+    uint64_t actual_duration = end_timestamp - start_timestamp;
+
+    CPTR(RawSkypeCall) closest_call = nullptr;
+
+    for (IMM(auto) kv : raw_calls) {
+        if (
+            (kv.second.convDBID != convo_id) ||
+            (abs_difference(kv.second.duration ? *kv.second.duration : 0, actual_duration) > 50) ||
+            (abs_difference(kv.second.beginTimestamp, start_timestamp) > 7200)
+        ) {
+            continue;
+        }
+
+        if (!closest_call || (
+            abs_difference(start_timestamp, kv.second.beginTimestamp) <
+            abs_difference(start_timestamp, closest_call->beginTimestamp)
+        )) {
+            closest_call = &raw_calls.at(kv.first);
+        }
+    }
+
+    return closest_call;
+}
+
+static vector<CEDE(ApparentSubject)> get_call_event_peers(
+   IMM(CallEventData) start_event_data,
+   IMM(CallEventData) end_event_data,
+   CPTR(RawSkypeCall) skype_call
+) {
+    // This is a complete mess. Peers may or may not appear in any of these places depending on the Skype version,
+    // whether the call failed or not, etc. We gather all of the intended peers on a best-effort basis.
+
+    map<QString, QString> peers;
+
+    if (!start_event_data.identities.isEmpty()) {
+        for (IMM(QString) account : start_event_data.identities.split(" ")) {
+            peers[account] = "";
+        }
+    }
+
+    if (skype_call) {
+        for (IMM(auto) kv : skype_call->participants) {
+            peers[kv.first] = kv.second;
+        }
+    }
+
+    QDomDocument xml = xml_from_string(start_event_data.bodyXML);
+    QDomElement root = get_dom_root(xml, "partlist");
+
+    for (
+        QDomElement part_elem = root.firstChildElement();
+        !part_elem.isNull();
+        part_elem = part_elem.nextSiblingElement()
+    ) {
+        invariant(part_elem.tagName() == "part", "Expected <partlist> to have <part> children");
+        peers[read_string_attr(part_elem, "identity")] = read_text_only_content(child_elem(part_elem, "name"));
+    }
+
+    peers[end_event_data.authorAccount] = end_event_data.authorScreenName;
+
+    peers.erase(start_event_data.authorAccount);
+
+    vector<unique_ptr<ApparentSubject>> peers_vector;
+
+    for (IMM(auto) kv : peers) {
+        peers_vector.push_back(make_unique<FullySpecifiedSubject>(parse_skype_account(kv.first), kv.second));
+    }
+
+    return peers_vector;
+}
+
+static RawStartCallEvent::FailReason parse_start_failure_reason(IMM(QString) raw_reason) {
+    static const map<QString, RawStartCallEvent::FailReason> lookup {
+        { "", RawStartCallEvent::FailReason::UNDETERMINED },
+        { "no_answer", RawStartCallEvent::FailReason::NO_ANSWER },
+        { "busy", RawStartCallEvent::FailReason::BUSY },
+        { "blocked_by_privacy_settings", RawStartCallEvent::FailReason::PRIVACY_BLOCKED },
+        { "manual", RawStartCallEvent::FailReason::CALL_REJECTED }
+    };
+
+    invariant(lookup.count(raw_reason), "Could not parse call failure reason: %s", QP(raw_reason));
+
+    return lookup.at(raw_reason);
+}
+
+static RawEndCallEvent::FailReason parse_end_failure_reason(IMM(QString) raw_reason) {
+    static const map<QString, RawEndCallEvent::FailReason> lookup {
+        { "connection_dropped", RawEndCallEvent::FailReason::CONNECTION_DROPPED }
+    };
+
+    invariant(lookup.count(raw_reason), "Could not parse mid-call failure reason: %s", QP(raw_reason));
+
+    return lookup.at(raw_reason);
 }
 
 }}}
