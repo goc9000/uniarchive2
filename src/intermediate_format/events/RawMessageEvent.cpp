@@ -30,19 +30,22 @@ void RawMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
     }
     if (isEdited) {
         stream << " EDITED";
+        if (editedBy || timeEdited.isSpecified()) {
+            stream << "(";
+            if (editedBy) {
+                stream << "edited_by=" << editedBy.get();
+            }
+            if (timeEdited.isSpecified()) {
+                stream << (editedBy ? " " : "") << "time_edited=" << timeEdited;
+            }
+            stream << ")";
+        }
     }
     stream << " sender=" << sender.get();
     if (receiver) {
         stream << " receiver=" << receiver.get();
     }
     stream << " content=" << content;
-
-    if (editedBy) {
-        stream << " edited_by=" << editedBy.get();
-    }
-    if (timeEdited.isSpecified()) {
-        stream << " time_edited=" << timeEdited;
-    }
 }
 
 }}}
