@@ -29,12 +29,9 @@ QString RawStartCallEvent::eventName() const {
 
 void RawStartCallEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (reasonFailed) {
-        switch (*reasonFailed) {
-            case FailReason::UNDETERMINED: stream << " FAILED(UNDETERMINED)"; break;
-            case FailReason::NO_ANSWER: stream << " FAILED(NO ANSWER)"; break;
-            case FailReason::BUSY: stream << " FAILED(BUSY)"; break;
-            case FailReason::PRIVACY_BLOCKED: stream << " FAILED(PRIVACY BLOCKED)"; break;
-            case FailReason::CALL_REJECTED: stream << " FAILED(CALL REJECTED)"; break;
+        stream << " FAILED";
+        if (*reasonFailed != StartCallFailReason::UNDETERMINED) {
+            stream << "(" << *reasonFailed << ")";
         }
     }
 

@@ -19,6 +19,8 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/SkypeQuote.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/errors/CurrentCallFailReason.h"
+#include "intermediate_format/errors/StartCallFailReason.h"
 #include "intermediate_format/events/calls/RawEndCallEvent.h"
 #include "intermediate_format/events/calls/RawStartCallEvent.h"
 #include "intermediate_format/events/conference/RawAddToConferenceEvent.h"
@@ -66,6 +68,7 @@ using namespace std;
 using namespace uniarchive2::extraction::skype::internal;
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::content;
+using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
@@ -210,8 +213,8 @@ static vector<CEDE(ApparentSubject)> get_call_event_peers(
    IMM(CallEventData) end_event_data,
    CPTR(RawSkypeCall) skype_call
 );
-static RawStartCallEvent::FailReason parse_start_failure_reason(IMM(QString) raw_reason);
-static RawEndCallEvent::FailReason parse_end_failure_reason(IMM(QString) raw_reason);
+static StartCallFailReason parse_start_call_fail_reason(IMM(QString) raw_reason);
+static CurrentCallFailReason parse_current_call_fail_reason(IMM(QString) raw_reason);
 
 
 vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
@@ -1192,10 +1195,10 @@ static void create_call_events(
         start_event->durationSeconds = actual_duration;
 
         if (!start_event_data.failReason.isEmpty()) {
-            end_event->reasonFailed = parse_end_failure_reason(start_event_data.failReason);
+            end_event->reasonFailed = parse_current_call_fail_reason(start_event_data.failReason);
         }
     } else {
-        start_event->reasonFailed = parse_start_failure_reason(start_event_data.failReason);
+        start_event->reasonFailed = parse_start_call_fail_reason(start_event_data.failReason);
 
         // Absorb the end call event if the call failed
         end_event.reset();
@@ -1287,13 +1290,13 @@ static vector<CEDE(ApparentSubject)> get_call_event_peers(
     return peers_vector;
 }
 
-static RawStartCallEvent::FailReason parse_start_failure_reason(IMM(QString) raw_reason) {
-    static const map<QString, RawStartCallEvent::FailReason> lookup {
-        { "", RawStartCallEvent::FailReason::UNDETERMINED },
-        { "no_answer", RawStartCallEvent::FailReason::NO_ANSWER },
-        { "busy", RawStartCallEvent::FailReason::BUSY },
-        { "blocked_by_privacy_settings", RawStartCallEvent::FailReason::PRIVACY_BLOCKED },
-        { "manual", RawStartCallEvent::FailReason::CALL_REJECTED }
+static StartCallFailReason parse_start_call_fail_reason(IMM(QString) raw_reason) {
+    static const map<QString, StartCallFailReason> lookup {
+        { "", StartCallFailReason::UNDETERMINED },
+        { "no_answer", StartCallFailReason::NO_ANSWER },
+        { "busy", StartCallFailReason::BUSY },
+        { "blocked_by_privacy_settings", StartCallFailReason::PRIVACY_BLOCKED },
+        { "manual", StartCallFailReason::CALL_REJECTED }
     };
 
     invariant(lookup.count(raw_reason), "Could not parse call failure reason: %s", QP(raw_reason));
@@ -1301,9 +1304,9 @@ static RawStartCallEvent::FailReason parse_start_failure_reason(IMM(QString) raw
     return lookup.at(raw_reason);
 }
 
-static RawEndCallEvent::FailReason parse_end_failure_reason(IMM(QString) raw_reason) {
-    static const map<QString, RawEndCallEvent::FailReason> lookup {
-        { "connection_dropped", RawEndCallEvent::FailReason::CONNECTION_DROPPED }
+static CurrentCallFailReason parse_current_call_fail_reason(IMM(QString) raw_reason) {
+    static const map<QString, CurrentCallFailReason> lookup {
+        { "connection_dropped", CurrentCallFailReason::CONNECTION_DROPPED }
     };
 
     invariant(lookup.count(raw_reason), "Could not parse mid-call failure reason: %s", QP(raw_reason));

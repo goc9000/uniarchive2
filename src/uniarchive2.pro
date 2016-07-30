@@ -127,7 +127,9 @@ SOURCES += main.cpp \
     intermediate_format/RawTransferredFile.cpp \
     intermediate_format/events/file_transfer/RawTransferFilesEvent.cpp \
     intermediate_format/events/calls/RawStartCallEvent.cpp \
-    intermediate_format/events/calls/RawEndCallEvent.cpp
+    intermediate_format/events/calls/RawEndCallEvent.cpp \
+    intermediate_format/errors/StartCallFailReason.cpp \
+    intermediate_format/errors/CurrentCallFailReason.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -261,4 +263,6 @@ HEADERS += \
     intermediate_format/RawTransferredFile.h \
     intermediate_format/events/file_transfer/RawTransferFilesEvent.h \
     intermediate_format/events/calls/RawStartCallEvent.h \
-    intermediate_format/events/calls/RawEndCallEvent.h
+    intermediate_format/events/calls/RawEndCallEvent.h \
+    intermediate_format/errors/StartCallFailReason.h \
+    intermediate_format/errors/CurrentCallFailReason.h

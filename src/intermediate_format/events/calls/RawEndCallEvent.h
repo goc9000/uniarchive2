@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWENDCALLEVENT_H
 
 #include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/errors/CurrentCallFailReason.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
@@ -22,18 +23,14 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;
 using namespace std::experimental;
+using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawEndCallEvent : RawEvent {
 public:
-    enum class FailReason {
-        UNDETERMINED = 0,
-        CONNECTION_DROPPED
-    };
-
     unique_ptr<ApparentSubject> ender;
 
-    optional<FailReason> reasonFailed;
+    optional<CurrentCallFailReason> reasonFailed;
 
     optional<QString> skypeCallGUID;
     optional<QString> syntheticCallGUID;

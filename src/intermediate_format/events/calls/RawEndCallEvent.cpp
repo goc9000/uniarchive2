@@ -23,9 +23,9 @@ QString RawEndCallEvent::eventName() const {
 
 void RawEndCallEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (reasonFailed) {
-        switch (*reasonFailed) {
-            case FailReason::UNDETERMINED: stream << " FAILED(UNDETERMINED)"; break;
-            case FailReason::CONNECTION_DROPPED: stream << " FAILED(CONNECTION DROPPED)"; break;
+        stream << " FAILED";
+        if (*reasonFailed != CurrentCallFailReason::UNDETERMINED) {
+            stream << "(" << *reasonFailed << ")";
         }
     }
 
