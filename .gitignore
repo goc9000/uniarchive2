@@ -1,5 +1,11 @@
+# Build directory
+build
+
 # JetBrains IDE projects
 .idea
+
+# Local QtCreator settings
+*.pro.user
 
 # OS X trash
 .DS_Store
