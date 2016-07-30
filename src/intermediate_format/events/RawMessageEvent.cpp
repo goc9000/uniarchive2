@@ -21,7 +21,7 @@ RawMessageEvent::RawMessageEvent(
 }
 
 QString RawMessageEvent::eventName() const {
-    return "Message";
+    return isAction ? "ActionMessage" : "Message";
 }
 
 void RawMessageEvent::writeDetailsToDebugStream(QDebug stream) const {

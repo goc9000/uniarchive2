@@ -33,6 +33,11 @@ public:
     RawMessageContent content;
 
     bool isOffline = false;
+    /**
+     * Action messages represent a supposed action or status of the subject, as opposed to the verbatim content of an
+     * utterance. Example: <subject> *runs and hides*
+     */
+    bool isAction = false;
 
     bool isEdited = false;
     unique_ptr<ApparentSubject> editedBy;

@@ -157,6 +157,7 @@ static CEDE(RawMessageEvent) convert_message_event(
     unsigned int event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
+    bool is_action_message,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp
 );
@@ -748,11 +749,13 @@ static CEDE(RawEvent) convert_event(
     switch (COMBINED_TYPE(type, chatmsg_type)) {
         case COMBINED_TYPE(61, 3):
         case COMBINED_TYPE(61, 0):
+        case COMBINED_TYPE(60, 7):
             return convert_message_event(
                 event_time,
                 event_index,
                 move(subject),
                 body_xml,
+                (type == 60), // is_action_message
                 edited_by,
                 edited_timestamp
             );
@@ -856,11 +859,7 @@ static CEDE(RawEvent) convert_event(
             return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
     }
 
-    // Default
-    QString tmp;
-    QDebug dbg(&tmp);
-
-    return make_unique<RawUninterpretedEvent>(event_time, event_index, tmp.toUtf8());
+    invariant_violation("Unsupported Skype event type (type=%d, chatmsg_type=%d)", type, chatmsg_type);
 }
 
 static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString>) serialized_identities) {
@@ -880,6 +879,7 @@ static CEDE(RawMessageEvent) convert_message_event(
     unsigned int event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
+    bool is_action_message,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp
 ) {
@@ -889,6 +889,8 @@ static CEDE(RawMessageEvent) convert_message_event(
         move(subject),
         parse_message_content(body_xml)
     );
+
+    message->isAction = is_action_message;
 
     if (edited_by) {
         invariant(edited_timestamp, "Edit timestamp not specified!");
