@@ -28,6 +28,12 @@ void RawMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
     if (isOffline) {
         stream << " OFFLINE";
     }
+    if (reasonFailed) {
+        stream << " FAILED";
+        if (*reasonFailed != SendMessageFailReason::UNDETERMINED) {
+            stream << "(" << *reasonFailed << ")";
+        }
+    }
     if (isEdited) {
         stream << " EDITED";
         if (editedBy || timeEdited.isSpecified()) {

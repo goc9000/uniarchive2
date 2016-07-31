@@ -82,7 +82,6 @@ SOURCES += main.cpp \
     intermediate_format/events/RawEvent.cpp \
     intermediate_format/events/RawFailableEvent.cpp \
     intermediate_format/events/RawMessageEvent.cpp \
-    intermediate_format/events/RawMessageSendFailedEvent.cpp \
     intermediate_format/events/RawPingEvent.cpp \
     intermediate_format/events/RawSendContactsEvent.cpp \
     intermediate_format/events/RawUninterpretedEvent.cpp \
@@ -129,7 +128,8 @@ SOURCES += main.cpp \
     intermediate_format/events/calls/RawStartCallEvent.cpp \
     intermediate_format/events/calls/RawEndCallEvent.cpp \
     intermediate_format/errors/StartCallFailReason.cpp \
-    intermediate_format/errors/CurrentCallFailReason.cpp
+    intermediate_format/errors/CurrentCallFailReason.cpp \
+    intermediate_format/errors/SendMessageFailReason.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -211,7 +211,6 @@ HEADERS += \
     intermediate_format/events/RawEvent.h \
     intermediate_format/events/RawFailableEvent.h \
     intermediate_format/events/RawMessageEvent.h \
-    intermediate_format/events/RawMessageSendFailedEvent.h \
     intermediate_format/events/RawPingEvent.h \
     intermediate_format/events/RawSendContactsEvent.h \
     intermediate_format/events/RawUninterpretedEvent.h \
@@ -265,4 +264,5 @@ HEADERS += \
     intermediate_format/events/calls/RawStartCallEvent.h \
     intermediate_format/events/calls/RawEndCallEvent.h \
     intermediate_format/errors/StartCallFailReason.h \
-    intermediate_format/errors/CurrentCallFailReason.h
+    intermediate_format/errors/CurrentCallFailReason.h \
+    intermediate_format/errors/SendMessageFailReason.h

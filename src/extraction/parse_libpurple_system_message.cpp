@@ -10,6 +10,7 @@
 
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/errors/SendMessageFailReason.h"
 #include "intermediate_format/events/calls/RawOfferWebcamEvent.h"
 #include "intermediate_format/events/conference/RawJoinConferenceEvent.h"
 #include "intermediate_format/events/conference/RawLeaveConferenceEvent.h"
@@ -25,7 +26,7 @@
 #include "intermediate_format/events/system/RawLoggingStartedEvent.h"
 #include "intermediate_format/events/system/RawLoggingStoppedEvent.h"
 #include "intermediate_format/events/RawChangeScreenNameEvent.h"
-#include "intermediate_format/events/RawMessageSendFailedEvent.h"
+#include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawPingEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
@@ -239,32 +240,34 @@ CEDE(RawEvent) parse_libpurple_system_message(
             IMStatus::AVAILABLE
         );
     } else if (match.capturedLength("msg_too_large")) {
-        return make_unique<RawMessageSendFailedEvent>(
+        unique_ptr<RawEvent> event = make_unique<RawMessageEvent>(
             event_time,
             event_index,
             make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
-            RawMessageSendFailedEvent::SendFailReason::MESSAGE_TOO_LARGE,
             RawMessageContent()
         );
+        event->as<RawMessageEvent>()->reasonFailed = SendMessageFailReason::MESSAGE_TOO_LARGE;
+
+        return event;
     } else if (match.capturedLength("msg_not_sent")) {
         invariant(!is_html, "'Message could not be sent' events not supported in HTML mode");
 
-        auto fail_reason = RawMessageSendFailedEvent::SendFailReason::UNKNOWN;
+        unique_ptr<RawEvent> event = make_unique<RawMessageEvent>(
+            event_time,
+            event_index,
+            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+            RawMessageContent::fromPlainText(match.captured("unsent_msg"))
+        );
+
         if (match.capturedLength("fail_user_offline")) {
-            fail_reason = RawMessageSendFailedEvent::SendFailReason::RECIPIENT_OFFLINE;
+            event->as<RawMessageEvent>()->reasonFailed = SendMessageFailReason::RECIPIENT_OFFLINE;
         } else if (match.capturedLength("fail_conn_err")) {
-            fail_reason = RawMessageSendFailedEvent::SendFailReason::CONNECTION_ERROR;
+            event->as<RawMessageEvent>()->reasonFailed = SendMessageFailReason::CONNECTION_ERROR;
         } else {
             never_reached();
         }
 
-        return make_unique<RawMessageSendFailedEvent>(
-            event_time,
-            event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
-            fail_reason,
-            RawMessageContent::fromPlainText(match.captured("unsent_msg"))
-        );
+        return event;
     } else if (match.capturedLength("unsup_webcam_from")) {
         unique_ptr<RawEvent> cam_event = make_unique<RawOfferWebcamEvent>(
             event_time,

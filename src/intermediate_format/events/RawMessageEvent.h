@@ -13,6 +13,7 @@
 
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/errors/SendMessageFailReason.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
@@ -24,6 +25,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 using namespace std;
 using namespace std::experimental;
 using namespace uniarchive2::intermediate_format::content;
+using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawMessageEvent : RawEvent {
@@ -31,6 +33,8 @@ public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> receiver;
     RawMessageContent content;
+
+    optional<SendMessageFailReason> reasonFailed;
 
     bool isOffline = false;
     /**
