@@ -11,6 +11,7 @@ Supported Formats Status
 | MSN Messenger   | XML            | MSN Messenger              | **Done**      |
 | Pidgin          | TXT            | Jabber, MSN, Yahoo         | **Done**      |
 | Pidgin          | HTML           | Jabber, MSN, Yahoo         | **Done**      |
-| Skype           |                | Skype                      | Planned       |
-| Whatsapp        | Email          | Whatsapp                   | *In Progress* |
+| Skype           |                | Skype                      | Documenting   |
+| Viber           | Email          | Viber                      | Planned       |
+| Whatsapp        | Email          | Whatsapp                   | **Done**      |
 | Yahoo Messenger | DAT            | Yahoo Messenger            | **Done**      |
