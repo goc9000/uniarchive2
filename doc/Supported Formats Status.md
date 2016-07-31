@@ -13,5 +13,5 @@ Supported Formats Status
 | Pidgin          | HTML           | Jabber, MSN, Yahoo         | **Done**      |
 | Skype           |                | Skype                      | Documenting   |
 | Viber           | Email          | Viber                      | Planned       |
-| Whatsapp        | Email          | Whatsapp                   | **Done**      |
+| Whatsapp        | Email          | Whatsapp                   | Documenting   |
 | Yahoo Messenger | DAT            | Yahoo Messenger            | **Done**      |
