@@ -750,6 +750,8 @@ static CEDE(RawEvent) convert_event(
     unique_ptr<RawEvent> event;
 
     switch (COMBINED_TYPE(type, chatmsg_type)) {
+        // Basic
+
         case COMBINED_TYPE(61, 3):
         case COMBINED_TYPE(61, 0):
         case COMBINED_TYPE(60, 7):
@@ -761,33 +763,16 @@ static CEDE(RawEvent) convert_event(
                 (type == 60), // is_action_message
                 edited_by,
                 edited_timestamp
-            );
-        case COMBINED_TYPE(2, 5):
-            return make_unique<RawChangeTopicEvent>(
-                event_time,
-                event_index,
-                move(subject),
-                parse_message_content(body_xml)
-            );
-        case COMBINED_TYPE(2,15):
-            return make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
-        case COMBINED_TYPE(50, 0):
-            invariant(identities.size() == 1, "Expected exactly 1 receiver for friend request");
-            return make_unique<RawContactRequestEvent>(
-                event_time,
-                event_index,
-                move(subject),
-                move(identities.front()),
-                parse_message_content(body_xml)
-            );
-        case COMBINED_TYPE(51, 18):
-            invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
-            return make_unique<RawContactRequestAcceptEvent>(
-                event_time,
-                event_index,
-                move(subject),
-                move(identities.front())
-            );
+            );            
+        case COMBINED_TYPE(68, 0):
+        case COMBINED_TYPE(68, 7):
+        case COMBINED_TYPE(68, 18):
+            return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
+        case COMBINED_TYPE(0, 103):
+            return make_unique<RawEditedPreviousMessageEvent>(event_time, event_index, move(subject));
+
+        // Conference
+
         case COMBINED_TYPE(10, 1):
         case COMBINED_TYPE(10, 2):
             invariant(identities.size() > 0, "Expected at least one subject for conference add");
@@ -822,16 +807,24 @@ static CEDE(RawEvent) convert_event(
                 move(identities.front()),
                 (SkypeChatRole)(*new_role)
             );
-        case COMBINED_TYPE(63, 8):
-            return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
+        case COMBINED_TYPE(2, 5):
+            return make_unique<RawChangeTopicEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                parse_message_content(body_xml)
+            );
+        case COMBINED_TYPE(2,15):
+            return make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
+
+        // Joining
+
         case COMBINED_TYPE(0, 100):
             if (*home_conversation.isConference) {
                 return make_unique<RawJoinConferenceEvent>(event_time, event_index, move(subject));
             } else {
                 return make_unique<RawJoinConversationEvent>(event_time, event_index, move(subject));
             }
-        case COMBINED_TYPE(0, 103):
-            return make_unique<RawEditedPreviousMessageEvent>(event_time, event_index, move(subject));
         case COMBINED_TYPE(100, 2):
             invariant(identities.size() == 1, "Expected exactly 1 peer for start conversation");
             return make_unique<RawStartConversationEvent>(
@@ -848,6 +841,26 @@ static CEDE(RawEvent) convert_event(
                 move(identities),
                 home_conversation
             );
+
+        // Friending
+
+        case COMBINED_TYPE(50, 0):
+            invariant(identities.size() == 1, "Expected exactly 1 receiver for friend request");
+            return make_unique<RawContactRequestEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front()),
+                parse_message_content(body_xml)
+            );
+        case COMBINED_TYPE(51, 18):
+            invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
+            return make_unique<RawContactRequestAcceptEvent>(
+                event_time,
+                event_index,
+                move(subject),
+                move(identities.front())
+            );
         case COMBINED_TYPE(110, 0):
             invariant(identities.size() == 1, "Expected exactly 1 identity for unfriend event");
             return make_unique<RawContactDeleteEvent>(
@@ -856,10 +869,11 @@ static CEDE(RawEvent) convert_event(
                 move(identities.front()),
                 move(subject)
             );
-        case COMBINED_TYPE(68, 0):
-        case COMBINED_TYPE(68, 7):
-        case COMBINED_TYPE(68, 18):
-            return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
+
+       // Misc
+
+       case COMBINED_TYPE(63, 8):
+            return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
     }
 
     invariant_violation("Unsupported Skype event type (type=%d, chatmsg_type=%d)", type, chatmsg_type);
