@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWPINGEVENT_H
 
 #include "intermediate_format/events/RawFailableEvent.h"
+#include "intermediate_format/errors/PingFailReason.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
@@ -20,9 +21,10 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace std;
+using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::subjects;
 
-struct RawPingEvent : RawFailableEvent {
+struct RawPingEvent : RawFailableEvent<PingFailReason> {
 public:
     unique_ptr<ApparentSubject> pinger;
     unique_ptr<ApparentSubject> pingee;

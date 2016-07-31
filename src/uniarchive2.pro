@@ -80,7 +80,6 @@ SOURCES += main.cpp \
     intermediate_format/events/RawCorruptedMessageEvent.cpp \
     intermediate_format/events/RawEditedPreviousMessageEvent.cpp \
     intermediate_format/events/RawEvent.cpp \
-    intermediate_format/events/RawFailableEvent.cpp \
     intermediate_format/events/RawMessageEvent.cpp \
     intermediate_format/events/RawPingEvent.cpp \
     intermediate_format/events/RawSendContactsEvent.cpp \
@@ -129,7 +128,9 @@ SOURCES += main.cpp \
     intermediate_format/events/calls/RawEndCallEvent.cpp \
     intermediate_format/errors/StartCallFailReason.cpp \
     intermediate_format/errors/CurrentCallFailReason.cpp \
-    intermediate_format/errors/SendMessageFailReason.cpp
+    intermediate_format/errors/SendMessageFailReason.cpp \
+    intermediate_format/errors/OfferWebcamFailReason.cpp \
+    intermediate_format/errors/PingFailReason.cpp
 
 HEADERS += \
     utils/language/invariant.h \
@@ -265,4 +266,6 @@ HEADERS += \
     intermediate_format/events/calls/RawEndCallEvent.h \
     intermediate_format/errors/StartCallFailReason.h \
     intermediate_format/errors/CurrentCallFailReason.h \
-    intermediate_format/errors/SendMessageFailReason.h
+    intermediate_format/errors/SendMessageFailReason.h \
+    intermediate_format/errors/OfferWebcamFailReason.h \
+    intermediate_format/errors/PingFailReason.h

@@ -20,21 +20,14 @@ RawStartCallEvent::RawStartCallEvent(
     unsigned int index,
     TAKE(ApparentSubject) initiator,
     TAKE_VEC(ApparentSubject) peers
-) : RawEvent(timestamp, index), initiator(move(initiator)), peers(move(peers)) {
+) : RawFailableEvent(timestamp, index), initiator(move(initiator)), peers(move(peers)) {
 }
 
 QString RawStartCallEvent::eventName() const {
     return "StartCall";
 }
 
-void RawStartCallEvent::writeDetailsToDebugStream(QDebug stream) const {
-    if (reasonFailed) {
-        stream << " FAILED";
-        if (*reasonFailed != StartCallFailReason::UNDETERMINED) {
-            stream << "(" << *reasonFailed << ")";
-        }
-    }
-
+void RawStartCallEvent::writeFailableEventDetailsToDebugStream(QDebug stream) const {
     stream << " initiator=" << initiator.get();
 
     if (peers.size() == 1) {

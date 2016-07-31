@@ -11,7 +11,7 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWSTARTCALLEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWSTARTCALLEVENT_H
 
-#include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/errors/StartCallFailReason.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/external_libs/optional.hpp"
@@ -26,14 +26,12 @@ using namespace std::experimental;
 using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::subjects;
 
-struct RawStartCallEvent : RawEvent {
+struct RawStartCallEvent : RawFailableEvent<StartCallFailReason> {
 public:
     unique_ptr<ApparentSubject> initiator;
     vector<unique_ptr<ApparentSubject>> peers;
 
     optional<unsigned int> durationSeconds;
-
-    optional<StartCallFailReason> reasonFailed;
 
     optional<QString> skypeCallGUID;
     optional<QString> syntheticCallGUID;
@@ -49,7 +47,7 @@ public:
     virtual QString eventName() const;
 
 protected:
-    virtual void writeDetailsToDebugStream(QDebug stream) const;
+    virtual void writeFailableEventDetailsToDebugStream(QDebug stream) const;
 };
 
 }}}

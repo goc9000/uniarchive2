@@ -12,7 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWMESSAGEEVENT_H
 
 #include "intermediate_format/content/RawMessageContent.h"
-#include "intermediate_format/events/RawEvent.h"
+#include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/errors/SendMessageFailReason.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/external_libs/optional.hpp"
@@ -28,13 +28,11 @@ using namespace uniarchive2::intermediate_format::content;
 using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::subjects;
 
-struct RawMessageEvent : RawEvent {
+struct RawMessageEvent : RawFailableEvent<SendMessageFailReason> {
 public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> receiver;
     RawMessageContent content;
-
-    optional<SendMessageFailReason> reasonFailed;
 
     bool isOffline = false;
     /**
@@ -57,7 +55,7 @@ public:
     virtual QString eventName() const;
 
 protected:
-    virtual void writeDetailsToDebugStream(QDebug stream) const;
+    virtual void writeFailableEventDetailsToDebugStream(QDebug stream) const;
 };
 
 }}}

@@ -30,7 +30,7 @@ struct RawEndCallEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> ender;
 
-    optional<CurrentCallFailReason> reasonFailed;
+    optional<CurrentCallFailReason> reasonCallFailed;
 
     optional<QString> skypeCallGUID;
     optional<QString> syntheticCallGUID;

@@ -10,6 +10,8 @@
 
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/errors/OfferWebcamFailReason.h"
+#include "intermediate_format/errors/PingFailReason.h"
 #include "intermediate_format/errors/SendMessageFailReason.h"
 #include "intermediate_format/events/calls/RawOfferWebcamEvent.h"
 #include "intermediate_format/events/conference/RawJoinConferenceEvent.h"
@@ -172,7 +174,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         );
         ping_event->as<RawPingEvent>()->pingee =
             parse_libpurple_subject(match.captured("buzz_to_fail"), protocol, is_html);
-        ping_event->as<RawPingEvent>()->reasonFailed = RawFailableEvent::FailReason::FAILED_BLOCKED_OR_UNSUPPORTED;
+        ping_event->as<RawPingEvent>()->reasonFailed = PingFailReason::BLOCKED_OR_UNSUPPORTED;
 
         return ping_event;
     } else if (match.capturedLength("buzz_from")) {
@@ -274,7 +276,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
             event_index,
             parse_libpurple_subject(match.captured("unsup_webcam_from"), protocol, is_html)
         );
-        cam_event->as<RawOfferWebcamEvent>()->reasonFailed = RawFailableEvent::FailReason::FAILED_UNSUPPORTED;
+        cam_event->as<RawOfferWebcamEvent>()->reasonFailed = OfferWebcamFailReason::UNSUPPORTED;
 
         return cam_event;
     } else if (match.capturedLength("log_started")) {

@@ -17,22 +17,16 @@ RawMessageEvent::RawMessageEvent(
     unsigned int index,
     TAKE(ApparentSubject) sender,
     RawMessageContent&& content
-): RawEvent(timestamp, index), sender(move(sender)), content(move(content)) {
+): RawFailableEvent(timestamp, index), sender(move(sender)), content(move(content)) {
 }
 
 QString RawMessageEvent::eventName() const {
     return isAction ? "ActionMessage" : "Message";
 }
 
-void RawMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
+void RawMessageEvent::writeFailableEventDetailsToDebugStream(QDebug stream) const {
     if (isOffline) {
         stream << " OFFLINE";
-    }
-    if (reasonFailed) {
-        stream << " FAILED";
-        if (*reasonFailed != SendMessageFailReason::UNDETERMINED) {
-            stream << "(" << *reasonFailed << ")";
-        }
     }
     if (isEdited) {
         stream << " EDITED";

@@ -22,15 +22,11 @@ QString RawEndCallEvent::eventName() const {
 }
 
 void RawEndCallEvent::writeDetailsToDebugStream(QDebug stream) const {
-    if (reasonFailed) {
-        stream << " FAILED";
-        if (*reasonFailed != CurrentCallFailReason::UNDETERMINED) {
-            stream << "(" << *reasonFailed << ")";
-        }
-    }
-
     if (ender) {
         stream << " ender=" << ender.get();
+    }
+    if (reasonCallFailed) {
+        stream << " reason_call_failed=" << *reasonCallFailed;
     }
     if (skypeCallGUID) {
         stream << " skype_call_guid=" << *skypeCallGUID;

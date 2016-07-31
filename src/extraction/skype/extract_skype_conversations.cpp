@@ -1195,7 +1195,7 @@ static void create_call_events(
         start_event->durationSeconds = actual_duration;
 
         if (!start_event_data.failReason.isEmpty()) {
-            end_event->reasonFailed = parse_current_call_fail_reason(start_event_data.failReason);
+            end_event->reasonCallFailed = parse_current_call_fail_reason(start_event_data.failReason);
         }
     } else {
         start_event->reasonFailed = parse_start_call_fail_reason(start_event_data.failReason);
