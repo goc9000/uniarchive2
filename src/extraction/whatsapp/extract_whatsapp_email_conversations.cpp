@@ -86,7 +86,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
 
     QREGEX_MUST_MATCH(
         name_match, "^WhatsApp Chat with (.+)[.]txt$", full_filename.section(QDir::separator(), -1, -1),
-        "WhatApp conversation filename should be 'WhatSapp Chat with Peer Name.txt', is instead '%s'"
+        "WhatApp conversation filename should be 'WhatsApp Chat with Peer Name.txt', is instead '%s'"
     );
 
     RawConversation conversation(IMProtocol::WHATSAPP);
