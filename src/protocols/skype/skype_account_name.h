@@ -18,6 +18,10 @@
 
 namespace uniarchive2 { namespace protocols { namespace skype {
 
+bool is_valid_pure_skype_account_name(IMM(QString) account_name);
+void assert_valid_pure_skype_account_name(IMM(QString) account_name);
+FullAccountName parse_pure_skype_account(IMM(QString) account_name);
+
 bool is_valid_skype_account_name(IMM(QString) account_name);
 void assert_valid_skype_account_name(IMM(QString) account_name);
 FullAccountName parse_skype_account(IMM(QString) account_name);
