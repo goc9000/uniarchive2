@@ -1,0 +1,79 @@
+enums:
+  graphics/ANSIColor:
+    - black = 0
+    - red = 1
+    - green = 2
+    - yellow = 3
+    - blue = 4
+    - magenta = 5
+    - cyan = 6
+    - white = 7
+    - extended = 8
+
+  intermediate_format/errors:
+    SendMessageFailReason:
+      - undetermined = 0
+      - message too large
+      - recipient offline
+      - connection error
+    StartCallFailReason:
+      - undetermined = 0
+      - no answer
+      - peer busy
+      - text: blocked by privacy settings
+        constant: PRIVACY_BLOCKED
+      - call rejected
+      - connection dropped
+    CurrentCallFailReason:
+      - undetermined = 0
+      - connection dropped
+    OfferWebcamFailReason:
+      - undetermined = 0
+      - unsupported
+    PingFailReason:
+      - undetermined = 0
+      - blocked/unsupported
+
+  protocols:
+    ArchiveFormat:
+      - (invalid) = 0
+      - Adium
+      - Digsby
+      - text: Facebook (DYI archive)
+        constant: FACEBOOK_DYI
+      - text: MSN Messenger (XML format)
+        constant: MSN_MESSENGER_XML
+      - text: Pidgin (HTML format)
+        constant: PIDGIN_HTML
+      - text: Pidgin (TXT format)
+        constant: PIDGIN_TXT
+      - Skype
+      - text: WhatsApp (Email format)
+        constant: WHATSAPP_EMAIL
+      - text: Yahoo Messenger (DAT format)        
+        constant: YAHOO_MESSENGER_DAT
+
+    IMProtocol:
+      - (invalid) = 0
+      - Digsby
+      - Facebook
+      - Jabber
+      - MSN
+      - Skype
+      - WhatsApp
+      - Yahoo
+
+    IMStatus:
+      - (invalid) = 0
+      - available
+      - away
+      - idle
+      - offline
+
+    skype/SkypeChatRole:
+      - (invalid) = 0
+      - creator
+      - master
+      - helper
+      - regular user
+      - listener
