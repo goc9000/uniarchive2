@@ -1239,7 +1239,7 @@ static CPTR(RawSkypeCall) find_corresponding_call(
 
     for (IMM(auto) kv : raw_calls) {
         if (
-            (kv.second.convDBID != convo_id) ||
+            (kv.second.convDBID && (kv.second.convDBID != convo_id)) ||
             (abs_difference(kv.second.duration ? *kv.second.duration : 0, actual_duration) > 50) ||
             (abs_difference(kv.second.beginTimestamp, start_timestamp) > 7200)
         ) {
