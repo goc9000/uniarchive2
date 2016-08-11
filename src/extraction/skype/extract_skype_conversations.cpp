@@ -87,6 +87,7 @@ struct CallEventData {
     QString identities;
     QString dialogPartner;
     QString failReason;
+    optional<uint64_t> duration;
     optional<QString> callGUID;
 
     bool matches(uint64_t convo_id, IMM(QString) dialog_partner, IMM(optional<QString>) call_guid) {
@@ -763,7 +764,7 @@ static CEDE(RawEvent) convert_event(
                 (type == 60), // is_action_message
                 edited_by,
                 edited_timestamp
-            );            
+            );
         case COMBINED_TYPE(68, 0):
         case COMBINED_TYPE(68, 7):
         case COMBINED_TYPE(68, 18):
@@ -1102,7 +1103,7 @@ static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
 
     db.stmt(
         "SELECT id, type, timestamp, convo_id, author, from_dispname, body_xml, identities, dialog_partner, reason, "\
-        "       call_guid "\
+        "       param_value, call_guid "\
         "FROM Messages "\
         "WHERE type IN (30, 39) "\
         "ORDER BY timestamp, id"
@@ -1118,6 +1119,7 @@ static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
             QString identities,
             QString dialog_partner,
             QString fail_reason,
+            optional<uint64_t> duration,
             optional<QString> call_guid
         ) -> void {
             CallEventData event_data {
@@ -1130,6 +1132,7 @@ static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
                 .identities = identities,
                 .dialogPartner = dialog_partner,
                 .failReason = fail_reason,
+                .duration = duration,
                 .callGUID = call_guid
             };
             if (type == 30) {
@@ -1161,9 +1164,14 @@ static void create_call_events(
     IMM(CallEventData) end_event_data,
     const map<uint64_t, RawSkypeCall>& raw_calls
 ) {
+    uint64_t adjusted_start_timestamp = start_event_data.timestamp;
+    if (start_event_data.duration && (start_event_data.timestamp == end_event_data.timestamp)) {
+        adjusted_start_timestamp = end_event_data.timestamp - *start_event_data.duration;
+    }
+
     CPTR(RawSkypeCall) skype_call = find_corresponding_call(
         raw_calls,
-        start_event_data.timestamp,
+        adjusted_start_timestamp,
         end_event_data.timestamp,
         start_event_data.convoID
     );
@@ -1180,7 +1188,7 @@ static void create_call_events(
     auto peers = get_call_event_peers(start_event_data, end_event_data, skype_call);
 
     auto start_event = make_unique<RawStartCallEvent>(
-        ApparentTime::fromUnixTimestamp(start_event_data.timestamp),
+        ApparentTime::fromUnixTimestamp(adjusted_start_timestamp),
         0,
         move(initiator),
         move(peers)
@@ -1195,7 +1203,7 @@ static void create_call_events(
         start_event->skypeCallGUID = *start_event_data.callGUID;
         end_event->skypeCallGUID = *start_event_data.callGUID;
     } else {
-        QString synthetic_guid = QString("%1:%2").arg(start_event_data.dialogPartner).arg(start_event_data.timestamp);
+        QString synthetic_guid = QString("%1:%2").arg(start_event_data.dialogPartner).arg(adjusted_start_timestamp);
         start_event->syntheticCallGUID = synthetic_guid;
         end_event->syntheticCallGUID = synthetic_guid;
     }
@@ -1204,7 +1212,7 @@ static void create_call_events(
         end_event->correspondingSkypeCallID = skype_call->id;
     }
 
-    unsigned int actual_duration = end_event_data.timestamp - start_event_data.timestamp;
+    unsigned int actual_duration = end_event_data.timestamp - adjusted_start_timestamp;
     if (actual_duration >= 5) {
         start_event->durationSeconds = actual_duration;
 
