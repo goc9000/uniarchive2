@@ -10,7 +10,7 @@ General Notes
   - An excellent example of nearly every possible failure of normalization
   - The same information is often present in multiple redundant forms, all of them potentially missing or contradictory
   - Example:
-    - Calls are represented both as individual entries in the `Calls` table, and as pairs of type=30/39 messages
+    - Calls are represented both as individual entries in the `Calls` table, and as pairs of type=30/39 events
     - The two are in close, but not exact (!) correspondence
     - Said correspondence is not reflected by any explicit foreign key link, but needs to be inferred by matching using start timestamp and duration, which almost never correspond exactly, requiring guesswork on part of the algorithm
     - The peers of the call are represented in at least three, contradictory places:
