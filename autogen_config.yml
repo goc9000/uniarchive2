@@ -20,8 +20,7 @@ enums:
       - undetermined = 0
       - no answer
       - peer busy
-      - text: blocked by privacy settings
-        constant: PRIVACY_BLOCKED
+      - blocked by privacy settings as PRIVACY_BLOCKED
       - call rejected
       - connection dropped
     CurrentCallFailReason:
@@ -39,19 +38,13 @@ enums:
       - (invalid) = 0
       - Adium
       - Digsby
-      - text: Facebook (DYI archive)
-        constant: FACEBOOK_DYI
-      - text: MSN Messenger (XML format)
-        constant: MSN_MESSENGER_XML
-      - text: Pidgin (HTML format)
-        constant: PIDGIN_HTML
-      - text: Pidgin (TXT format)
-        constant: PIDGIN_TXT
+      - Facebook (DYI archive) as FACEBOOK_DYI
+      - MSN Messenger (XML format) as MSN_MESSENGER_XML
+      - Pidgin (HTML format) as PIDGIN_HTML
+      - Pidgin (TXT format) as PIDGIN_TXT
       - Skype
-      - text: WhatsApp (Email format)
-        constant: WHATSAPP_EMAIL
-      - text: Yahoo Messenger (DAT format)        
-        constant: YAHOO_MESSENGER_DAT
+      - WhatsApp (Email format) as WHATSAPP_EMAIL
+      - Yahoo Messenger (DAT format) as YAHOO_MESSENGER_DAT
 
     IMProtocol:
       - (invalid) = 0
