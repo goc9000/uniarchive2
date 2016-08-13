@@ -22,7 +22,6 @@ enums:
       - peer busy
       - blocked by privacy settings as PRIVACY_BLOCKED
       - call rejected
-      - connection dropped
     CurrentCallFailReason:
       - undetermined = 0
       - connection dropped
@@ -31,7 +30,7 @@ enums:
       - unsupported
     PingFailReason:
       - undetermined = 0
-      - blocked/unsupported
+      - blocked or unsupported
 
   protocols:
     ArchiveFormat:
@@ -64,9 +63,10 @@ enums:
       - offline
 
     skype/SkypeChatRole:
+      - internal comment: "As described on: https://support.skype.com/en/faq/FA10042/what-are-chat-commands-and-roles"
       - (invalid) = 0
-      - creator
-      - master
-      - helper
+      - creator        // can promote others to master
+      - master         // can promote others to helper (at most)
+      - helper         // slightly privileged user (e.g. exempt from USERS_ARE_LISTENERS option)
       - regular user
-      - listener
+      - listener       // cannot post
