@@ -18,6 +18,10 @@ class VirtualPath:
     def basename(self):
         return self.elements[-1]
 
+    def extension(self):
+        _, extension = os.path.splitext(self.basename())
+        return extension
+
     def parent(self):
         return VirtualPath(self.elements[:-1])
 
@@ -29,6 +33,9 @@ class VirtualPath:
 
     def append(self, other_path):
         return VirtualPath(self.elements + other_path.elements)
+
+    def replace_basename(self, new_name):
+        return self.parent().add(new_name)
 
     def relative_to(self, other_path):
         assert self.elements[:len(other_path.elements)] == other_path.elements
