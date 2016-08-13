@@ -21,7 +21,7 @@ QString name_for_start_call_fail_reason(StartCallFailReason reason) {
             return "undetermined";
         case StartCallFailReason::NO_ANSWER:
             return "no answer";
-        case StartCallFailReason::BUSY:
+        case StartCallFailReason::PEER_BUSY:
             return "peer busy";
         case StartCallFailReason::PRIVACY_BLOCKED:
             return "blocked by privacy settings";

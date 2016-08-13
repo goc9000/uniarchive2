@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace errors {
 enum class StartCallFailReason {
     UNDETERMINED = 0,
     NO_ANSWER,
-    BUSY,
+    PEER_BUSY,
     PRIVACY_BLOCKED,
     CALL_REJECTED,
 };

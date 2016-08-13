@@ -1316,7 +1316,7 @@ static StartCallFailReason parse_start_call_fail_reason(IMM(QString) raw_reason)
     static const map<QString, StartCallFailReason> lookup {
         { "", StartCallFailReason::UNDETERMINED },
         { "no_answer", StartCallFailReason::NO_ANSWER },
-        { "busy", StartCallFailReason::BUSY },
+        { "busy", StartCallFailReason::PEER_BUSY },
         { "blocked_by_privacy_settings", StartCallFailReason::PRIVACY_BLOCKED },
         { "manual", StartCallFailReason::CALL_REJECTED }
     };
