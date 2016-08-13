@@ -10,7 +10,7 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp \
+SOURCES += \
     extraction/adium/extract_adium_conversations.cpp \
     extraction/digsby/extract_digsby_conversations.cpp \
     extraction/facebook/extract_facebook_dyi_conversations.cpp \
@@ -20,9 +20,9 @@ SOURCES += main.cpp \
     extraction/pidgin/extract_pidgin_txt_conversations.cpp \
     extraction/skype/extract_skype_conversations.cpp \
     extraction/whatsapp/extract_whatsapp_email_conversations.cpp \
-    extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp \
     extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp \
     extraction/yahoo/YahooProtocolEvent.cpp \
+    extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp \
     extraction/parse_libpurple_system_message.cpp \
     graphics/ANSIColor.cpp \
     graphics/Color.cpp \
@@ -46,9 +46,16 @@ SOURCES += main.cpp \
     intermediate_format/content/RawMessageContentItem.cpp \
     intermediate_format/content/SkypeQuote.cpp \
     intermediate_format/content/TextSection.cpp \
+    intermediate_format/errors/CurrentCallFailReason.cpp \
+    intermediate_format/errors/OfferWebcamFailReason.cpp \
+    intermediate_format/errors/PingFailReason.cpp \
+    intermediate_format/errors/SendMessageFailReason.cpp \
+    intermediate_format/errors/StartCallFailReason.cpp \
     intermediate_format/events/calls/RawAnswerCallEvent.cpp \
+    intermediate_format/events/calls/RawEndCallEvent.cpp \
     intermediate_format/events/calls/RawOfferCallEvent.cpp \
     intermediate_format/events/calls/RawOfferWebcamEvent.cpp \
+    intermediate_format/events/calls/RawStartCallEvent.cpp \
     intermediate_format/events/conference/RawAddToConferenceEvent.cpp \
     intermediate_format/events/conference/RawChangeConferencePictureEvent.cpp \
     intermediate_format/events/conference/RawChangeTopicEvent.cpp \
@@ -56,6 +63,7 @@ SOURCES += main.cpp \
     intermediate_format/events/conference/RawDeclineConferenceEvent.cpp \
     intermediate_format/events/conference/RawJoinConferenceEvent.cpp \
     intermediate_format/events/conference/RawLeaveConferenceEvent.cpp \
+    intermediate_format/events/conference/RawRejoinConferenceEvent.cpp \
     intermediate_format/events/conference/RawRemoveFromConferenceEvent.cpp \
     intermediate_format/events/conference/RawSetSkypeChatRoleEvent.cpp \
     intermediate_format/events/conversation/RawJoinConversationEvent.cpp \
@@ -66,6 +74,10 @@ SOURCES += main.cpp \
     intermediate_format/events/file_transfer/RawOfferFileGroupEvent.cpp \
     intermediate_format/events/file_transfer/RawReceiveFileEvent.cpp \
     intermediate_format/events/file_transfer/RawStartFileTransferEvent.cpp \
+    intermediate_format/events/file_transfer/RawTransferFilesEvent.cpp \
+    intermediate_format/events/friending/RawContactDeleteEvent.cpp \
+    intermediate_format/events/friending/RawContactRequestAcceptEvent.cpp \
+    intermediate_format/events/friending/RawContactRequestEvent.cpp \
     intermediate_format/events/status/RawConnectedEvent.cpp \
     intermediate_format/events/status/RawDisconnectedEvent.cpp \
     intermediate_format/events/status/RawStatusChangeEvent.cpp \
@@ -75,8 +87,6 @@ SOURCES += main.cpp \
     intermediate_format/events/system/RawWindowClosedEvent.cpp \
     intermediate_format/events/system/RawWindowOpenedEvent.cpp \
     intermediate_format/events/RawChangeScreenNameEvent.cpp \
-    intermediate_format/events/friending/RawContactRequestAcceptEvent.cpp \
-    intermediate_format/events/friending/RawContactRequestEvent.cpp \
     intermediate_format/events/RawCorruptedMessageEvent.cpp \
     intermediate_format/events/RawEditedPreviousMessageEvent.cpp \
     intermediate_format/events/RawEvent.cpp \
@@ -97,12 +107,20 @@ SOURCES += main.cpp \
     intermediate_format/subjects/SubjectGivenAsScreenName.cpp \
     intermediate_format/ApparentTime.cpp \
     intermediate_format/RawConversation.cpp \
+    intermediate_format/RawTransferredFile.cpp \
+    protocols/digsby/digsby_account_name.cpp \
+    protocols/facebook/facebook_account_name.cpp \
+    protocols/jabber/jabber_account_name.cpp \
+    protocols/msn/msn_account_name.cpp \
     protocols/skype/SkypeChatRole.cpp \
+    protocols/skype/skype_account_name.cpp \
+    protocols/yahoo/yahoo_account_name.cpp \
     protocols/ArchiveFormat.cpp \
     protocols/FullAccountName.cpp \
     protocols/IMProtocol.cpp \
     protocols/IMStatus.cpp \
     protocols/parse_account_generic.cpp \
+    utils/external_libs/sqlite/sqlite3.c \
     utils/html/entities.cpp \
     utils/html/parse_html_lenient.cpp \
     utils/sqlite/SQLiteDB.cpp \
@@ -113,29 +131,9 @@ SOURCES += main.cpp \
     utils/text/split_into_lines.cpp \
     utils/time/parse_date_parts.cpp \
     utils/xml/qdom_utils.cpp \
-    utils/external_libs/sqlite/sqlite3.c \
-    protocols/digsby/digsby_account_name.cpp \
-    protocols/facebook/facebook_account_name.cpp \
-    protocols/jabber/jabber_account_name.cpp \
-    protocols/msn/msn_account_name.cpp \
-    protocols/skype/skype_account_name.cpp \
-    protocols/yahoo/yahoo_account_name.cpp \
-    intermediate_format/events/conference/RawRejoinConferenceEvent.cpp \
-    intermediate_format/events/friending/RawContactDeleteEvent.cpp \
-    intermediate_format/RawTransferredFile.cpp \
-    intermediate_format/events/file_transfer/RawTransferFilesEvent.cpp \
-    intermediate_format/events/calls/RawStartCallEvent.cpp \
-    intermediate_format/events/calls/RawEndCallEvent.cpp \
-    intermediate_format/errors/StartCallFailReason.cpp \
-    intermediate_format/errors/CurrentCallFailReason.cpp \
-    intermediate_format/errors/SendMessageFailReason.cpp \
-    intermediate_format/errors/OfferWebcamFailReason.cpp \
-    intermediate_format/errors/PingFailReason.cpp
+    main.cpp
 
 HEADERS += \
-    utils/language/invariant.h \
-    utils/qt/shortcuts.h \
-    utils/language/shortcuts.h \
     extraction/adium/extract_adium_conversations.h \
     extraction/digsby/extract_digsby_conversations.h \
     extraction/facebook/extract_facebook_dyi_conversations.h \
@@ -149,9 +147,9 @@ HEADERS += \
     extraction/skype/internal/RawSkypeIdentity.h \
     extraction/skype/extract_skype_conversations.h \
     extraction/whatsapp/extract_whatsapp_email_conversations.h \
-    extraction/yahoo/extract_yahoo_messenger_dat_conversations.h \
     extraction/yahoo/ExtractYahooProtocolEventsIterator.h \
     extraction/yahoo/YahooProtocolEvent.h \
+    extraction/yahoo/extract_yahoo_messenger_dat_conversations.h \
     extraction/parse_libpurple_system_message.h \
     graphics/ANSIColor.h \
     graphics/Color.h \
@@ -176,9 +174,16 @@ HEADERS += \
     intermediate_format/content/RawMessageContentItem.h \
     intermediate_format/content/SkypeQuote.h \
     intermediate_format/content/TextSection.h \
+    intermediate_format/errors/CurrentCallFailReason.h \
+    intermediate_format/errors/OfferWebcamFailReason.h \
+    intermediate_format/errors/PingFailReason.h \
+    intermediate_format/errors/SendMessageFailReason.h \
+    intermediate_format/errors/StartCallFailReason.h \
     intermediate_format/events/calls/RawAnswerCallEvent.h \
+    intermediate_format/events/calls/RawEndCallEvent.h \
     intermediate_format/events/calls/RawOfferCallEvent.h \
     intermediate_format/events/calls/RawOfferWebcamEvent.h \
+    intermediate_format/events/calls/RawStartCallEvent.h \
     intermediate_format/events/conference/RawAddToConferenceEvent.h \
     intermediate_format/events/conference/RawChangeConferencePictureEvent.h \
     intermediate_format/events/conference/RawChangeTopicEvent.h \
@@ -186,6 +191,7 @@ HEADERS += \
     intermediate_format/events/conference/RawDeclineConferenceEvent.h \
     intermediate_format/events/conference/RawJoinConferenceEvent.h \
     intermediate_format/events/conference/RawLeaveConferenceEvent.h \
+    intermediate_format/events/conference/RawRejoinConferenceEvent.h \
     intermediate_format/events/conference/RawRemoveFromConferenceEvent.h \
     intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h \
     intermediate_format/events/conversation/RawJoinConversationEvent.h \
@@ -196,6 +202,10 @@ HEADERS += \
     intermediate_format/events/file_transfer/RawOfferFileGroupEvent.h \
     intermediate_format/events/file_transfer/RawReceiveFileEvent.h \
     intermediate_format/events/file_transfer/RawStartFileTransferEvent.h \
+    intermediate_format/events/file_transfer/RawTransferFilesEvent.h \
+    intermediate_format/events/friending/RawContactDeleteEvent.h \
+    intermediate_format/events/friending/RawContactRequestAcceptEvent.h \
+    intermediate_format/events/friending/RawContactRequestEvent.h \
     intermediate_format/events/status/RawConnectedEvent.h \
     intermediate_format/events/status/RawDisconnectedEvent.h \
     intermediate_format/events/status/RawStatusChangeEvent.h \
@@ -205,8 +215,6 @@ HEADERS += \
     intermediate_format/events/system/RawWindowClosedEvent.h \
     intermediate_format/events/system/RawWindowOpenedEvent.h \
     intermediate_format/events/RawChangeScreenNameEvent.h \
-    intermediate_format/events/friending/RawContactRequestAcceptEvent.h \
-    intermediate_format/events/friending/RawContactRequestEvent.h \
     intermediate_format/events/RawCorruptedMessageEvent.h \
     intermediate_format/events/RawEditedPreviousMessageEvent.h \
     intermediate_format/events/RawEvent.h \
@@ -228,7 +236,14 @@ HEADERS += \
     intermediate_format/subjects/SubjectGivenAsScreenName.h \
     intermediate_format/ApparentTime.h \
     intermediate_format/RawConversation.h \
+    intermediate_format/RawTransferredFile.h \
+    protocols/digsby/digsby_account_name.h \
+    protocols/facebook/facebook_account_name.h \
+    protocols/jabber/jabber_account_name.h \
+    protocols/msn/msn_account_name.h \
     protocols/skype/SkypeChatRole.h \
+    protocols/skype/skype_account_name.h \
+    protocols/yahoo/yahoo_account_name.h \
     protocols/ArchiveFormat.h \
     protocols/FullAccountName.h \
     protocols/IMProtocol.h \
@@ -238,9 +253,13 @@ HEADERS += \
     utils/external_libs/optional.hpp \
     utils/html/entities.h \
     utils/html/parse_html_lenient.h \
-    utils/language/callback_adapter.hpp \
     utils/language/JavaStyleIterator.h \
+    utils/language/callback_adapter.hpp \
+    utils/language/invariant.h \
+    utils/language/polymorphic_helpers.h \
+    utils/language/shortcuts.h \
     utils/qt/debug_extras.h \
+    utils/qt/shortcuts.h \
     utils/sqlite/internal/ColumnExtractor.hpp \
     utils/sqlite/internal/DataTupleGenerator.hpp \
     utils/sqlite/SQLiteDB.h \
@@ -250,22 +269,4 @@ HEADERS += \
     utils/text/load_text_file.h \
     utils/text/split_into_lines.h \
     utils/time/parse_date_parts.h \
-    utils/xml/qdom_utils.h \
-    protocols/digsby/digsby_account_name.h \
-    protocols/yahoo/yahoo_account_name.h \
-    protocols/skype/skype_account_name.h \
-    protocols/msn/msn_account_name.h \
-    protocols/jabber/jabber_account_name.h \
-    protocols/facebook/facebook_account_name.h \
-    utils/language/polymorphic_helpers.h \
-    intermediate_format/events/conference/RawRejoinConferenceEvent.h \
-    intermediate_format/events/friending/RawContactDeleteEvent.h \
-    intermediate_format/RawTransferredFile.h \
-    intermediate_format/events/file_transfer/RawTransferFilesEvent.h \
-    intermediate_format/events/calls/RawStartCallEvent.h \
-    intermediate_format/events/calls/RawEndCallEvent.h \
-    intermediate_format/errors/StartCallFailReason.h \
-    intermediate_format/errors/CurrentCallFailReason.h \
-    intermediate_format/errors/SendMessageFailReason.h \
-    intermediate_format/errors/OfferWebcamFailReason.h \
-    intermediate_format/errors/PingFailReason.h
+    utils/xml/qdom_utils.h
