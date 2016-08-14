@@ -23,6 +23,7 @@ SOURCES += \
     extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp \
     extraction/yahoo/YahooProtocolEvent.cpp \
     extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp \
+    extraction/extract_conversations_generic.cpp \
     extraction/parse_libpurple_system_message.cpp \
     graphics/ANSIColor.cpp \
     graphics/Color.cpp \
@@ -152,6 +153,7 @@ HEADERS += \
     extraction/yahoo/ExtractYahooProtocolEventsIterator.h \
     extraction/yahoo/YahooProtocolEvent.h \
     extraction/yahoo/extract_yahoo_messenger_dat_conversations.h \
+    extraction/extract_conversations_generic.h \
     extraction/parse_libpurple_system_message.h \
     graphics/ANSIColor.h \
     graphics/Color.h \

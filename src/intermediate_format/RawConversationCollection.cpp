@@ -14,6 +14,22 @@
 
 namespace uniarchive2 { namespace intermediate_format {
 
+RawConversationCollection RawConversationCollection::from(RawConversation&& conversation) {
+    RawConversationCollection collection;
+
+    collection.take(move(conversation));
+
+    return collection;
+}
+
+RawConversationCollection RawConversationCollection::from(vector<RawConversation>&& conversations) {
+    RawConversationCollection collection;
+
+    collection.take(move(conversations));
+
+    return collection;
+}
+
 void RawConversationCollection::take(RawConversation&& conversation) {
     conversations.push_back(move(conversation));
 }

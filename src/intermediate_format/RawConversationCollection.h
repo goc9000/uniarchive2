@@ -33,6 +33,9 @@ public:
     vector<RawConversation>::const_iterator end() const;
 
     void writeToDebugStream(QDebug stream, bool summarize_conversations = true) const;
+
+    static RawConversationCollection from(RawConversation&& conversation);
+    static RawConversationCollection from(vector<RawConversation>&& conversations);
 };
 
 QDebug operator<< (QDebug stream, IMM(RawConversationCollection) conversations);
