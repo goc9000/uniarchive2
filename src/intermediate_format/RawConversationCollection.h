@@ -28,6 +28,7 @@ public:
 
     void take(RawConversation&& conversation);
     void take(vector<RawConversation>&& conversations);
+    void take(RawConversationCollection&& collection);
 
     vector<RawConversation>::const_iterator begin() const;
     vector<RawConversation>::const_iterator end() const;

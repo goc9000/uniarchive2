@@ -39,6 +39,10 @@ void RawConversationCollection::take(vector<RawConversation>&& conversations) {
     conversations.clear();
 }
 
+void RawConversationCollection::take(RawConversationCollection&& collection) {
+    take(move(collection.conversations));
+}
+
 vector<RawConversation>::const_iterator RawConversationCollection::begin() const {
     return conversations.cbegin();
 }

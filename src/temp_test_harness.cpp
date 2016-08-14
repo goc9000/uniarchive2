@@ -9,15 +9,7 @@
  */
 
 #include "temp_test_harness.h"
-#include "extraction/adium/extract_adium_conversations.h"
-#include "extraction/digsby/extract_digsby_conversations.h"
-#include "extraction/facebook/extract_facebook_dyi_conversations.h"
-#include "extraction/msn/extract_msn_messenger_xml_conversations.h"
-#include "extraction/pidgin/extract_pidgin_html_conversations.h"
-#include "extraction/pidgin/extract_pidgin_txt_conversations.h"
-#include "extraction/skype/extract_skype_conversations.h"
-#include "extraction/whatsapp/extract_whatsapp_email_conversations.h"
-#include "extraction/yahoo/extract_yahoo_messenger_dat_conversations.h"
+#include "extraction/extract_conversations_generic.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/SubjectGivenAsAccount.h"
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
@@ -38,14 +30,7 @@
 namespace uniarchive2 {
 
 using namespace std;
-using namespace uniarchive2::extraction::adium;
-using namespace uniarchive2::extraction::digsby;
-using namespace uniarchive2::extraction::facebook;
-using namespace uniarchive2::extraction::msn;
-using namespace uniarchive2::extraction::pidgin;
-using namespace uniarchive2::extraction::skype;
-using namespace uniarchive2::extraction::whatsapp;
-using namespace uniarchive2::extraction::yahoo;
+using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format::subjects;
 
 QString remove_trailing_slash(IMM(QString) path);
@@ -80,50 +65,29 @@ QString remove_trailing_slash(IMM(QString) path) {
 RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
     RawConversationCollection convos;
 
-    qDebug() << "Skype";
-    QDirIterator skype_files(base_input_path + "/skype", QStringList() << "main.db", QDir::Files, QDirIterator::Subdirectories);
-    while (skype_files.hasNext()) {
-        convos.take(extract_skype_conversations(skype_files.next()));
-    }
-    qDebug() << "WhatsApp";
-    QDirIterator whatsapp_files(base_input_path + "/whatsapp", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
-    while (whatsapp_files.hasNext()) {
-        convos.take(extract_whatsapp_email_conversation(whatsapp_files.next()));
-    }
-    qDebug() << "Pidgin TXT";
-    QDirIterator pidgin_txt_files(base_input_path + "/pidgin", QStringList() << "*.txt", QDir::Files, QDirIterator::Subdirectories);
-    while (pidgin_txt_files.hasNext()) {
-        convos.take(extract_pidgin_txt_conversation(pidgin_txt_files.next()));
-    }
-    qDebug() << "Pidgin HTML";
-    QDirIterator pidgin_html_files(base_input_path + "/pidgin", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
-    while (pidgin_html_files.hasNext()) {
-        convos.take(extract_pidgin_html_conversation(pidgin_html_files.next()));
-    }
-    qDebug() << "Adium";
-    QDirIterator adium_files(base_input_path + "/adium", QStringList() << "*).xml", QDir::Files, QDirIterator::Subdirectories);
-    while (adium_files.hasNext()) {
-        convos.take(extract_adium_conversation(adium_files.next()));
-    }
-    qDebug() << "Digsby";
-    QDirIterator digsby_files(base_input_path + "/digsby", QStringList() << "*.html", QDir::Files, QDirIterator::Subdirectories);
-    while (digsby_files.hasNext()) {
-        convos.take(extract_digsby_conversation(digsby_files.next()));
-    }
-    qDebug() << "Facebook";
-    QDirIterator fb_files(base_input_path + "/facebook", QStringList() << "messages.htm", QDir::Files, QDirIterator::Subdirectories);
-    while (fb_files.hasNext()) {
-        convos.take(extract_facebook_dyi_conversations(fb_files.next()));
-    }
-    qDebug() << "Yahoo";
-    QDirIterator yahoo_files(base_input_path + "/yahoo", QStringList() << "*.dat", QDir::Files, QDirIterator::Subdirectories);
-    while (yahoo_files.hasNext()) {
-        convos.take(extract_yahoo_messenger_dat_conversations(yahoo_files.next()));
-    }
-    qDebug() << "MSN";
-    QDirIterator msn_files(base_input_path + "/msn", QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
-    while (msn_files.hasNext()) {
-        convos.take(extract_msn_messenger_xml_conversations(msn_files.next()));
+    vector<tuple<ArchiveFormat, QString, QString>> inputs {
+        { ArchiveFormat::SKYPE,               "skype",    "main.db" },
+        { ArchiveFormat::WHATSAPP_EMAIL,      "whatsapp", "*.txt" },
+        { ArchiveFormat::PIDGIN_TXT,          "pidgin",   "*.txt" },
+        { ArchiveFormat::PIDGIN_HTML,         "pidgin",   "*.html" },
+        { ArchiveFormat::ADIUM,               "adium",    "*).xml" },
+        { ArchiveFormat::DIGSBY,              "digsby",   "*.html" },
+        { ArchiveFormat::FACEBOOK_DYI,        "facebook", "messages.htm" },
+        { ArchiveFormat::YAHOO_MESSENGER_DAT, "yahoo",    "*.dat" },
+        { ArchiveFormat::MSN_MESSENGER_XML,   "msn",      "*xml" },
+    };
+
+    for (IMM(auto) format_path_glob : inputs) {
+        qDebug() << get<ArchiveFormat>(format_path_glob);
+        QDirIterator files(
+            base_input_path + "/" + get<1>(format_path_glob),
+            QStringList() << get<2>(format_path_glob),
+            QDir::Files,
+            QDirIterator::Subdirectories
+        );
+        while (files.hasNext()) {
+            convos.take(extract_conversations_generic(get<ArchiveFormat>(format_path_glob), files.next()));
+        }
     }
 
     return convos;
