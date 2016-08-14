@@ -131,7 +131,8 @@ SOURCES += \
     utils/text/split_into_lines.cpp \
     utils/time/parse_date_parts.cpp \
     utils/xml/qdom_utils.cpp \
-    main.cpp
+    main.cpp \
+    temp_test_harness.cpp
 
 HEADERS += \
     extraction/adium/extract_adium_conversations.h \
@@ -269,4 +270,5 @@ HEADERS += \
     utils/text/load_text_file.h \
     utils/text/split_into_lines.h \
     utils/time/parse_date_parts.h \
-    utils/xml/qdom_utils.h
+    utils/xml/qdom_utils.h \
+    temp_test_harness.h

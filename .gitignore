@@ -1,6 +1,9 @@
 # Build directory
 build
 
+# Test config
+test_config.json
+
 # JetBrains IDE projects
 .idea
 
