@@ -107,6 +107,7 @@ SOURCES += \
     intermediate_format/subjects/SubjectGivenAsScreenName.cpp \
     intermediate_format/ApparentTime.cpp \
     intermediate_format/RawConversation.cpp \
+    intermediate_format/RawConversationCollection.cpp \
     intermediate_format/RawTransferredFile.cpp \
     protocols/digsby/digsby_account_name.cpp \
     protocols/facebook/facebook_account_name.cpp \
@@ -237,6 +238,7 @@ HEADERS += \
     intermediate_format/subjects/SubjectGivenAsScreenName.h \
     intermediate_format/ApparentTime.h \
     intermediate_format/RawConversation.h \
+    intermediate_format/RawConversationCollection.h \
     intermediate_format/RawTransferredFile.h \
     protocols/digsby/digsby_account_name.h \
     protocols/facebook/facebook_account_name.h \
