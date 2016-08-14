@@ -101,7 +101,7 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
         stream << "\t" << event.get() << "\n";
     }
 
-    stream << "}";
+    stream << "}" << "\n";
 }
 
 QDebug operator<< (QDebug stream, IMM(RawConversation) convo) {
