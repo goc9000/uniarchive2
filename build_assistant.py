@@ -50,6 +50,23 @@ def classname_to_varname(name):
     return camelcase_to_underscore(name).split('_')[-1]
 
 
+def visit_hierarchy(config, process_leaf):
+    def visit_hierarchy_rec(config_view, base_path):
+        for yaml_path, subconfig in config_view.items():
+            path = VirtualPath.from_text(yaml_path)
+            if subconfig is None:
+                subconfig = dict()
+
+            basename = path.basename()
+
+            if basename[0].isupper():
+                process_leaf(basename, base_path.append(path.parent()), subconfig)
+            else:
+                visit_hierarchy_rec(subconfig, base_path.append(path))
+
+    visit_hierarchy_rec(config, VirtualPath([]))
+
+
 def gen_enums(config):
     def text_to_constant_name(text):
         return '_'.join(word.upper() for word in re.findall('[a-z0-9]+', text, flags=re.IGNORECASE))
@@ -133,18 +150,14 @@ def gen_enums(config):
         h_source.commit(BASE_SRC_DIR)
         cpp_source.commit(BASE_SRC_DIR)
 
-    def gen_enums_rec(config_view, base_path):
-        for yaml_path, subconfig in config_view.items():
-            path = VirtualPath.from_text(yaml_path)
+    visit_hierarchy(config['enums'], gen_enum)
 
-            basename = path.basename()
 
-            if basename[0].isupper():
-                gen_enum(basename, base_path.append(path.parent()), subconfig)
-            else:
-                gen_enums_rec(subconfig, base_path.append(path))
+def gen_raw_events(config):
+    def gen_raw_event(name, path, raw_event_config):
+        pass
 
-    gen_enums_rec(config['enums'], VirtualPath([]))
+    visit_hierarchy(config['raw events'], gen_raw_event)
 
 
 def autogenerate_code():
@@ -152,6 +165,7 @@ def autogenerate_code():
         config = yaml.load(f)
 
     gen_enums(config)
+    gen_raw_events(config)
 
 
 def cleanup_pro_file():

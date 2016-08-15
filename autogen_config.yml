@@ -70,3 +70,56 @@ enums:
       - helper         // slightly privileged user (e.g. exempt from USERS_ARE_LISTENERS option)
       - regular user
       - listener       // cannot post
+
+raw events:
+  calls:
+    AnswerCall:
+    EndCall:
+    OfferCall:
+    OfferWebcam:
+    StartCall:
+  conference:
+    AddToConference:
+    ChangeConferencePicture:
+    ChangeTopic:
+    CreateConference:
+    DeclineConference:
+    JoinConference:
+    LeaveConference:
+    RejoinConference:
+    RemoveFromConference:
+    SetSkypeChatRole:
+  conversation:
+    JoinConversation:
+    LeaveConversation:
+    StartConversation:  
+  file_transfer:
+    CancelFileTransfer:
+    OfferFile:
+    OfferFileGroup:
+    ReceiveFile:
+    StartFileTransfer:
+    TransferFiles:
+  friending:
+    ContactDelete:
+    ContactRequestAccept:
+    ContactRequest:
+  status:
+    Connected:
+    Disconnected:
+    StatusChange:
+  system:
+    EEEncryptionAnnouncement:
+    LoggingStarted:
+    LoggingStopped:
+    WindowClosed:
+    WindowOpened:
+  
+  Base:
+  ChangeScreenName:
+  CorruptedMessage:
+  EditedPreviousMessage:
+  Message:
+  Ping:
+  SendContacts:
+  Uninterpreted:
