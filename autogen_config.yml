@@ -72,13 +72,13 @@ enums:
       - listener       // cannot post
 
 raw events:
-  calls:
+  (calls):
     AnswerCall:
     EndCall:
     OfferCall:
     OfferWebcam:
     StartCall:
-  conference:
+  (conference):
     AddToConference:
     ChangeConferencePicture:
     ChangeTopic:
@@ -89,26 +89,26 @@ raw events:
     RejoinConference:
     RemoveFromConference:
     SetSkypeChatRole:
-  conversation:
+  (conversation):
     JoinConversation:
     LeaveConversation:
     StartConversation:  
-  file_transfer:
+  (file_transfer):
     CancelFileTransfer:
     OfferFile:
     OfferFileGroup:
     ReceiveFile:
     StartFileTransfer:
     TransferFiles:
-  friending:
+  (friending):
     ContactDelete:
     ContactRequestAccept:
     ContactRequest:
-  status:
+  (status):
     Connected:
     Disconnected:
     StatusChange:
-  system:
+  (system):
     EEEncryptionAnnouncement:
     LoggingStarted:
     LoggingStopped:
