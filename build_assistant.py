@@ -72,8 +72,7 @@ def gen_enums(config):
         return '_'.join(word.upper() for word in re.findall('[a-z0-9]+', text, flags=re.IGNORECASE))
 
     def parse_enum_value(value_config):
-        PATTERN = ''.join(['^', '(.*?)', '(?:\s+as\s+([A-Z_]+))?', '(?:\s*=\s*(\d+))?', '(?:\s*//\s*(.*))?', '$'])
-        match = re.match(PATTERN, value_config)
+        match = re.match('^(.*?)(?:\s+as\s+([A-Z_]+))?(?:\s*=\s*(\d+))?(?:\s*//\s*(.*))?$', value_config)
         assert match is not None
 
         text, constant, int_value, comment = match.groups()
