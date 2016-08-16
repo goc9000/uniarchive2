@@ -71,6 +71,8 @@ enums:
       - regular user
       - listener       // cannot post
 
+base raw event:
+
 raw events:
   (calls):
     AnswerCall:
@@ -115,7 +117,6 @@ raw events:
     WindowClosed:
     WindowOpened:
   
-  Base:
   ChangeScreenName:
   CorruptedMessage:
   EditedPreviousMessage:
