@@ -22,6 +22,10 @@ from build_assistant.util import fail, scan_files
 
 
 AppMetadata = namedtuple('AppMetadata', ['app_name', 'copyright_text', 'license_text'])
+
+GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'options'])
+GenericEntityFieldConfig = namedtuple('GenericEntityFieldConfig', ['expression', 'options'])
+
 EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
 EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment'])
 
@@ -67,13 +71,33 @@ def visit_hierarchy(config, process_leaf):
     visit_hierarchy_rec(config, VirtualPath([]))
 
 
+def preparse_entity(entity_config, field_name):
+    raw_fields = list()
+    raw_options = dict()
+
+    for subconfig in entity_config:
+        if isinstance(subconfig, str):
+            raw_fields.append(GenericEntityFieldConfig(expression=subconfig, options=dict()))
+        elif field_name in subconfig:
+            raw_fields.append(
+                GenericEntityFieldConfig(
+                    expression=subconfig[field_name],
+                    options={k: v for k, v in subconfig.items() if k != field_name}
+                )
+            )
+        else:
+            raw_options.update(**subconfig)
+
+    return GenericEntityConfig(fields=raw_fields, options=raw_options)
+
+
 def gen_enums(config):
     def text_to_constant_name(text):
         return '_'.join(word.upper() for word in re.findall('[a-z0-9]+', text, flags=re.IGNORECASE))
 
-    def parse_enum_value(value_config):
-        match = re.match('^(.*?)(?:\s+as\s+([A-Z_]+))?(?:\s*=\s*(\d+))?(?:\s*//\s*(.*))?$', value_config)
-        assert match is not None
+    def parse_enum_value(preparsed_field):
+        match = re.match(r'^(.*?)(?:\s+as\s+([A-Z_]+))?(?:\s*=\s*(\d+))?(?:\s*//\s*(.*))?$', preparsed_field.expression)
+        assert match is not None, "Invalid enum value expression: " + preparsed_field.expression
 
         text, constant, int_value, comment = match.groups()
 
@@ -85,18 +109,11 @@ def gen_enums(config):
         )
 
     def parse_enum_config(enum_config):
-        values = list()
-        options = dict()
-
-        for subconfig in enum_config:
-            if isinstance(subconfig, str):
-                values.append(parse_enum_value(subconfig))
-            else:
-                options.update(**subconfig)
+        preparsed = preparse_entity(enum_config, 'value')
 
         return EnumConfig(
-            values=values,
-            internal_comment=options.get('internal comment')
+            values=[parse_enum_value(field) for field in preparsed.fields],
+            internal_comment=preparsed.options.get('internal comment')
         )
 
     def gen_enum(name, path, enum_config):
@@ -163,7 +180,6 @@ def gen_raw_events(config):
 
         h_source.commit(BASE_SRC_DIR)
         cpp_source.commit(BASE_SRC_DIR)
-
 
     visit_hierarchy(config['raw events'], gen_raw_event)
 
