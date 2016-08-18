@@ -202,6 +202,7 @@ raw events:
   EditedPreviousMessage:
     - subject subject
   Message:
+    - failable: SendMessageFailReason
     - subject sender
     - ?subject receiver
     - content content

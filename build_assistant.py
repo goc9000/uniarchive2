@@ -29,6 +29,11 @@ GenericEntityFieldConfig = namedtuple('GenericEntityFieldConfig', ['expression',
 EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
 EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment'])
 
+RawEventConfig = namedtuple('RawEventConfig', ['fields', 'fail_reason_enum'])
+RawEventFieldConfig = namedtuple(
+    'RawEventConfig', ['name', 'base_type', 'is_optional', 'is_list', 'short_name', 'default_value']
+)
+
 
 APP_METADATA = AppMetadata(
     app_name='UniArchive II',
@@ -170,7 +175,40 @@ def gen_enums(config):
 
 
 def gen_raw_events(config):
+    def parse_raw_event_field(field_config):
+        if field_config.expression == '..':
+            return None
+
+        match = re.match(
+            r'^(\?)?([a-zA-Z0-9_]+)(\[\])?\s+([a-zA-Z0-9_]+)(?:\s+as\s+([a-zA-Z0-9_]+))?(?:\s*=\s*(\w+))?$',
+            field_config.expression.strip()
+        )
+        assert match is not None, "Invalid field config: " + field_config.expression
+
+        optional, base_type, vectorial, name, short_name, default_value = match.groups()
+
+        return RawEventFieldConfig(
+            name=name,
+            base_type=base_type,
+            is_optional=(optional is not None),
+            is_list=(vectorial is not None),
+            short_name=short_name,
+            default_value=default_value
+        )
+
+    def parse_raw_event_config(raw_event_config):
+        preparsed = preparse_entity(raw_event_config, 'field')
+
+        return RawEventConfig(
+            fields=[parse_raw_event_field(preparsed) for preparsed in preparsed.fields],
+            fail_reason_enum=preparsed.options.get('failable')
+        )
+
+    base_event_config = parse_raw_event_config(config['base raw event'])
+
     def gen_raw_event(name, path, raw_event_config):
+        event_info = parse_raw_event_config(raw_event_config)
+
         path = VirtualPath(['intermediate_format', 'events']).append(path)
         class_name = 'Raw' + name + 'Event'
 
