@@ -72,44 +72,121 @@ enums:
       - listener       // cannot post
 
 base raw event:
+  - time timestamp
+  - uint indexInConversation as index
+  - ?bytes skypeGUID
 
 raw events:
   (calls):
-    AnswerCall:
-    EndCall:
     OfferCall:
+      - subject caller
+    AnswerCall:
+      - subject receiver
+      - ?subject caller
     OfferWebcam:
+      - failable: OfferWebcamFailReason
+      - subject sender
     StartCall:
+      - failable: StartCallFailReason
+      - subject initiator
+      - subject[] peers
+      - ..
+      - ?uint durationSeconds
+      - ..
+      - ?string skypeCallGUID
+      - ?string syntheticCallGUID
+      - ?uint64_t correspondingSkypeCallID
+    EndCall:
+      - subject ender
+      - ..
+      - ?CurrentCallFailReason reasonCallFailed
+      - ..
+      - ?string skypeCallGUID
+      - ?string syntheticCallGUID
+      - ?uint64_t correspondingSkypeCallID
   (conference):
-    AddToConference:
-    ChangeConferencePicture:
-    ChangeTopic:
-    CreateConference:
-    DeclineConference:
     JoinConference:
-    LeaveConference:
+      - subject subject
+      - ?content message
     RejoinConference:
+      - subject subject
+      - subject[] peers
+    DeclineConference:
+      - subject subject
+      - ?content message
+    LeaveConference:
+      - subject subject
+      - ?content message
+    CreateConference:
+      - subject creator
+      - string conferenceName
+    AddToConference:
+      - ?subject adder
+      - subject[] addees
+      - ?bool asModerator
     RemoveFromConference:
+      - ?subject remover
+      - subject removee
+    ChangeConferencePicture:
+      - subject subject
+    ChangeTopic:
+      - subject subject
+      - content topic
     SetSkypeChatRole:
+      - ?subject setter
+      - subject target
+      - SkypeChatRole role
   (conversation):
+    StartConversation:
+      - ?subject initiator
+      - ?subject peer
     JoinConversation:
+      - subject subject
     LeaveConversation:
-    StartConversation:  
+      - subject subject
   (file_transfer):
-    CancelFileTransfer:
     OfferFile:
+      - subject sender
+      - ?subject recipient
+      - file file
     OfferFileGroup:
+      - subject sender
+      - ?subject recipient
+      - uint numFiles
     ReceiveFile:
+      - subject receiver
+      - ?subject sender
+      - file file
     StartFileTransfer:
+      - file file
+      - ?subject sender
+    CancelFileTransfer:
+      - ?file file
+      - ?subject actor
     TransferFiles:
+      - subject sender
+      - ?subject recipient
+      - file[] files
   (friending):
     ContactDelete:
+      - subject deleter
+      - subject deletee
     ContactRequestAccept:
+      - subject acceptor
+      - subject acceptee
     ContactRequest:
+      - subject sender
+      - subject receiver
+      - content message
   (status):
     Connected:
+      - subject subject
     Disconnected:
+      - subject subject
     StatusChange:
+      - subject subject
+      - status status
+      - ?content message
   (system):
     EEEncryptionAnnouncement:
     LoggingStarted:
@@ -118,9 +195,31 @@ raw events:
     WindowOpened:
   
   ChangeScreenName:
+    - subject from
+    - subject to
   CorruptedMessage:
+    - bytes rawData
   EditedPreviousMessage:
+    - subject subject
   Message:
+    - subject sender
+    - ?subject receiver
+    - content content
+    - ..
+    - bool isOffline = false
+    - field: bool isAction = false
+      comment: |
+        Action messages represent a supposed action or status of the subject, as opposed to the verbatim content of an
+        utterance. Example: <subject> *runs and hides*
+    - ..
+    - bool isEdited = false
+    - ?subject editedBy
+    - ?time timeEdited
   Ping:
+    - subject pinger
+    - ?subject pingee
   SendContacts:
+    - subject sender
+    - subject[] contacts
   Uninterpreted:
+    - bytes rawData
