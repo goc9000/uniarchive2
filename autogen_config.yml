@@ -72,121 +72,121 @@ enums:
       - listener       // cannot post
 
 base raw event:
-  - time timestamp
+  - ApparentTime timestamp
   - uint indexInConversation as index
-  - ?bytes skypeGUID
+  - ?QByteArray skypeGUID
 
 raw events:
   (calls):
     OfferCall:
-      - subject caller
+      - ApparentSubject caller
     AnswerCall:
-      - subject receiver
-      - ?subject caller
+      - ApparentSubject receiver
+      - ?ApparentSubject caller
     OfferWebcam:
       - failable: OfferWebcamFailReason
-      - subject sender
+      - ApparentSubject sender
     StartCall:
       - failable: StartCallFailReason
-      - subject initiator
-      - subject[] peers
+      - ApparentSubject initiator
+      - ApparentSubject[] peers
       - ..
       - ?uint durationSeconds
       - ..
-      - ?string skypeCallGUID
-      - ?string syntheticCallGUID
+      - ?QString skypeCallGUID
+      - ?QString syntheticCallGUID
       - ?uint64_t correspondingSkypeCallID
     EndCall:
-      - subject ender
+      - ApparentSubject ender
       - ..
       - ?CurrentCallFailReason reasonCallFailed
       - ..
-      - ?string skypeCallGUID
-      - ?string syntheticCallGUID
+      - ?QString skypeCallGUID
+      - ?QString syntheticCallGUID
       - ?uint64_t correspondingSkypeCallID
   (conference):
     JoinConference:
-      - subject subject
-      - ?content message
+      - ApparentSubject subject
+      - ?RawMessageContent message
     RejoinConference:
-      - subject subject
-      - subject[] peers
+      - ApparentSubject subject
+      - ApparentSubject[] peers
     DeclineConference:
-      - subject subject
-      - ?content message
+      - ApparentSubject subject
+      - ?RawMessageContent message
     LeaveConference:
-      - subject subject
-      - ?content message
+      - ApparentSubject subject
+      - ?RawMessageContent message
     CreateConference:
-      - subject creator
-      - string conferenceName
+      - ApparentSubject creator
+      - QString conferenceName
     AddToConference:
-      - ?subject adder
-      - subject[] addees
+      - ?ApparentSubject adder
+      - ApparentSubject[] addees
       - ?bool asModerator
     RemoveFromConference:
-      - ?subject remover
-      - subject removee
+      - ?ApparentSubject remover
+      - ApparentSubject removee
     ChangeConferencePicture:
-      - subject subject
+      - ApparentSubject subject
     ChangeTopic:
-      - subject subject
-      - content topic
+      - ApparentSubject subject
+      - RawMessageContent topic
     SetSkypeChatRole:
-      - ?subject setter
-      - subject target
+      - ?ApparentSubject setter
+      - ApparentSubject target
       - SkypeChatRole role
   (conversation):
     StartConversation:
-      - ?subject initiator
-      - ?subject peer
+      - ?ApparentSubject initiator
+      - ?ApparentSubject peer
     JoinConversation:
-      - subject subject
+      - ApparentSubject subject
     LeaveConversation:
-      - subject subject
+      - ApparentSubject subject
   (file_transfer):
     OfferFile:
-      - subject sender
-      - ?subject recipient
-      - file file
+      - ApparentSubject sender
+      - ?ApparentSubject recipient
+      - RawTransferredFile file
     OfferFileGroup:
-      - subject sender
-      - ?subject recipient
+      - ApparentSubject sender
+      - ?ApparentSubject recipient
       - uint numFiles
     ReceiveFile:
-      - subject receiver
-      - ?subject sender
-      - file file
+      - ApparentSubject receiver
+      - ?ApparentSubject sender
+      - RawTransferredFile file
     StartFileTransfer:
-      - file file
-      - ?subject sender
+      - RawTransferredFile file
+      - ?ApparentSubject sender
     CancelFileTransfer:
-      - ?file file
-      - ?subject actor
+      - ?RawTransferredFile file
+      - ?ApparentSubject actor
     TransferFiles:
-      - subject sender
-      - ?subject recipient
-      - file[] files
+      - ApparentSubject sender
+      - ?ApparentSubject recipient
+      - RawTransferredFile[] files
   (friending):
     ContactDelete:
-      - subject deleter
-      - subject deletee
+      - ApparentSubject deleter
+      - ApparentSubject deletee
     ContactRequestAccept:
-      - subject acceptor
-      - subject acceptee
+      - ApparentSubject acceptor
+      - ApparentSubject acceptee
     ContactRequest:
-      - subject sender
-      - subject receiver
-      - content message
+      - ApparentSubject sender
+      - ApparentSubject receiver
+      - RawMessageContent message
   (status):
     Connected:
-      - subject subject
+      - ApparentSubject subject
     Disconnected:
-      - subject subject
+      - ApparentSubject subject
     StatusChange:
-      - subject subject
-      - status status
-      - ?content message
+      - ApparentSubject subject
+      - IMStatus status
+      - ?RawMessageContent message
   (system):
     EEEncryptionAnnouncement:
     LoggingStarted:
@@ -195,17 +195,17 @@ raw events:
     WindowOpened:
   
   ChangeScreenName:
-    - subject from
-    - subject to
+    - ApparentSubject from
+    - ApparentSubject to
   CorruptedMessage:
-    - bytes rawData
+    - QByteArray rawData
   EditedPreviousMessage:
-    - subject subject
+    - ApparentSubject subject
   Message:
     - failable: SendMessageFailReason
-    - subject sender
-    - ?subject receiver
-    - content content
+    - ApparentSubject sender
+    - ?ApparentSubject receiver
+    - RawMessageContent content
     - ..
     - bool isOffline = false
     - field: bool isAction = false
@@ -214,13 +214,13 @@ raw events:
         utterance. Example: <subject> *runs and hides*
     - ..
     - bool isEdited = false
-    - ?subject editedBy
-    - ?time timeEdited
+    - ?ApparentSubject editedBy
+    - ?ApparentTime timeEdited
   Ping:
-    - subject pinger
-    - ?subject pingee
+    - ApparentSubject pinger
+    - ?ApparentSubject pingee
   SendContacts:
-    - subject sender
-    - subject[] contacts
+    - ApparentSubject sender
+    - ApparentSubject[] contacts
   Uninterpreted:
-    - bytes rawData
+    - QByteArray rawData
