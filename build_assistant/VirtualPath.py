@@ -51,6 +51,9 @@ class VirtualPath:
     def __str__(self):
         return self.to_text()
 
+    def __repr__(self):
+        return "{0}({1})".format(self.__class__.__name__, self.elements.__repr__())
+
     @staticmethod
     def from_text(path_text):
         return VirtualPath(elem for elem in path_text.split('/') if elem != '')
