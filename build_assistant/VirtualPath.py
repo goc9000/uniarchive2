@@ -31,8 +31,14 @@ class VirtualPath:
     def add(self, element):
         return VirtualPath(self.elements + [element])
 
+    def add_front(self, element):
+        return VirtualPath([element] + self.elements)
+
     def append(self, other_path):
         return VirtualPath(self.elements + other_path.elements)
+
+    def prepend(self, other_path):
+        return VirtualPath(other_path.elements + self.elements)
 
     def replace_basename(self, new_name):
         return self.parent().add(new_name)
