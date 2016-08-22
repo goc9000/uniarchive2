@@ -13,7 +13,13 @@ class VirtualPath:
     elements = None
 
     def __init__(self, elements):
-        self.elements = list(elements)
+        self.elements = tuple(elements)
+
+    def __eq__(self, other):
+        return self.elements == other.elements
+
+    def __hash__(self):
+        return self.elements.__hash__()
 
     def basename(self):
         return self.elements[-1]
@@ -29,10 +35,10 @@ class VirtualPath:
         return len(self.elements)
 
     def add(self, element):
-        return VirtualPath(self.elements + [element])
+        return VirtualPath(self.elements + (element,))
 
     def add_front(self, element):
-        return VirtualPath([element] + self.elements)
+        return VirtualPath((element,) + self.elements)
 
     def append(self, other_path):
         return VirtualPath(self.elements + other_path.elements)
