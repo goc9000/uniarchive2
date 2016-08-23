@@ -104,11 +104,7 @@ def gen_enums(enums_config, type_registry):
 
 
 def gen_raw_events(autogen_config, type_registry):
-    def render_field(block, field_config):
-        if field_config is None:
-            block.nl()
-            return
-
+    def as_field_decl(field_config):
         base_type = field_config.base_type
         type_info = type_registry.lookup(base_type)
         assert type_info.kind != TypeKind.DECORATION, 'Cannot use {0} as a base type'.format(base_type)
@@ -126,7 +122,7 @@ def gen_raw_events(autogen_config, type_registry):
         if use_optional:
             cpp_type = 'optional<{0}>'.format(cpp_type)
 
-        block.field(cpp_type, field_config.name)
+        return cpp_type, field_config.name
 
     for path, name, event_config in autogen_config.raw_events:
         path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
@@ -140,8 +136,14 @@ def gen_raw_events(autogen_config, type_registry):
 
         with h_source.struct_block(class_name, inherits=[parent_class]) as struct:
             with struct.public_block() as block:
-                for field in event_config.fields:
-                    render_field(block, field)
+                if len(event_config.fields) > 0:
+                    for field in event_config.fields:
+                        if field is None:
+                            block.nl()
+                        else:
+                            block.field(*as_field_decl(field))
+
+                    block.nl()
 
             struct.nl()
 
