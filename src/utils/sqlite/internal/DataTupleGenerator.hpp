@@ -20,7 +20,7 @@ namespace uniarchive2 { namespace utils { namespace sqlite { namespace internal 
 
 using namespace std;
 
-template<unsigned int N, typename THead, typename ...TTail>
+template<uint N, typename THead, typename ...TTail>
 struct DataTupleGenerator {
     static tuple<THead, TTail...> execute(IMM(SQLiteRow) row_handle) {
         return tuple_cat(
@@ -29,7 +29,7 @@ struct DataTupleGenerator {
         );
     }
 };
-template<unsigned int N, typename THead>
+template<uint N, typename THead>
 struct DataTupleGenerator<N, THead> {
     static tuple<THead> execute(IMM(SQLiteRow) row_handle) {
         return make_tuple(ColumnExtractor<THead>::execute(row_handle, N));

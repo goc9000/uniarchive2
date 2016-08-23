@@ -29,7 +29,7 @@ public:
 
     RawContactDeleteEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) deleter,
         TAKE(ApparentSubject) deletee
     );

@@ -55,7 +55,7 @@ static RawTransferredFile parse_file(IMM(QString) filename_html, bool is_html);
 
 
 CEDE(RawEvent) parse_libpurple_system_message(
-    unsigned int event_index,
+    uint event_index,
     IMM(ApparentTime) event_time,
     IMM(QString) content,
     bool is_html,

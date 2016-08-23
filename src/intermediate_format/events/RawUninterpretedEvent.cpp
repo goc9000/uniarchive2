@@ -12,7 +12,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawUninterpretedEvent::RawUninterpretedEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QByteArray) raw_data)
+RawUninterpretedEvent::RawUninterpretedEvent(IMM(ApparentTime) timestamp, uint index, IMM(QByteArray) raw_data)
     : RawEvent(timestamp, index), rawData(raw_data) {
 }
 

@@ -26,7 +26,7 @@ struct RawJoinConversationEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
 
-    RawJoinConversationEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
+    RawJoinConversationEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

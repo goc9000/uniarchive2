@@ -27,7 +27,7 @@ struct RawFailableEvent : RawEvent {
 public:
     optional<TReason> reasonFailed;
 
-    RawFailableEvent(IMM(ApparentTime) timestamp, unsigned int index) : RawEvent(timestamp, index) {}
+    RawFailableEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {}
 
 protected:
     void writeDetailsToDebugStream(QDebug stream) const {

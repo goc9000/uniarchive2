@@ -14,13 +14,13 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawCancelFileTransferEvent::RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index)
+RawCancelFileTransferEvent::RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, uint index)
     : RawEvent(timestamp, index) {
 }
 
 RawCancelFileTransferEvent::RawCancelFileTransferEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     IMM(RawTransferredFile) file
 ): RawEvent(timestamp, index), file(file) {
 }

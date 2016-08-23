@@ -23,7 +23,7 @@ using namespace std;
 
 struct RawWindowOpenedEvent : RawEvent {
 public:
-    RawWindowOpenedEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawWindowOpenedEvent(IMM(ApparentTime) timestamp, uint index);
 
     virtual QString eventName() const;
 

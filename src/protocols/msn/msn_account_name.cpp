@@ -62,16 +62,16 @@ FullAccountName parse_encoded_msn_account(IMM(QString) account_name) {
 
     QREGEX_WILL_MATCH_CI(match, "^([a-z][a-z0-9_.-]*?)[0-9]+$", account_name);
 
-    unsigned int assumed_length = (unsigned int)match.capturedLength(1);
-    unsigned int full_length = (unsigned int)account_name.length();
+    uint assumed_length = (uint)match.capturedLength(1);
+    uint full_length = (uint)account_name.length();
 
     quint32 base_hash = 0;
-    for (unsigned int i = 0; i < assumed_length; i++) {
+    for (uint i = 0; i < assumed_length; i++) {
         base_hash = update_messenger_hash(base_hash, account_name[i]);
     }
 
     for (; assumed_length < full_length; base_hash = update_messenger_hash(base_hash, account_name[assumed_length++])) {
-        unsigned int expected_hash_length = full_length - assumed_length;
+        uint expected_hash_length = full_length - assumed_length;
         if (expected_hash_length > 10) {
             // The hash is a 32-bit number, so it cannot possibly be longer than 10 characters
             continue;

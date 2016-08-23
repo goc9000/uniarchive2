@@ -60,12 +60,12 @@ static void flush_conversation(
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype,
     vector<unique_ptr<RawEvent>>&& mut_current_convo_events,
-    unsigned int start_event_index,
-    unsigned int end_event_index
+    uint start_event_index,
+    uint end_event_index
 );
 static CEDE(RawEvent) convert_event(
     IMM(YahooProtocolEvent) proto_event,
-    unsigned int event_index,
+    uint event_index,
     IMM(RawConversation) prototype
 );
 static CEDE(ApparentSubject) implicit_subject(IMM(YahooProtocolEvent) proto_event, IMM(RawConversation) conversation);
@@ -96,8 +96,8 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
     ExtractYahooProtocolEventsIterator proto_events(data, local_account_name);
 
     vector<unique_ptr<RawEvent>> current_events;
-    unsigned int first_event_index = 0;
-    unsigned int event_index = 0;
+    uint first_event_index = 0;
+    uint event_index = 0;
 
     while (proto_events.hasNext()) {
         auto proto_event = proto_events.next();
@@ -152,8 +152,8 @@ static void flush_conversation(
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype,
     vector<unique_ptr<RawEvent>>&& current_convo_events,
-    unsigned int start_event_index,
-    unsigned int end_event_index
+    uint start_event_index,
+    uint end_event_index
 ) {
     RawConversation conversation = RawConversation::fromPrototype(prototype);
 
@@ -169,7 +169,7 @@ static void flush_conversation(
 
 static CEDE(RawEvent) convert_event(
     IMM(YahooProtocolEvent) proto_event,
-    unsigned int event_index,
+    uint event_index,
     IMM(RawConversation) prototype
 ) {
     unique_ptr<RawEvent> event;

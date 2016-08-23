@@ -52,6 +52,7 @@
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/qt/debug_extras.h"
 #include "utils/sqlite/SQLiteDB.h"
 #include "utils/xml/qdom_utils.h"
 
@@ -144,8 +145,8 @@ static void convert_events(
     map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events
 );
 static CEDE(RawEvent) convert_event(
-    IMM(ApparentTime) message_time,
-    unsigned int message_index,
+    IMM(ApparentTime) event_time,
+    uint event_index,
     int type,
     int chatmsg_type,
     TAKE(ApparentSubject) subject,
@@ -158,7 +159,7 @@ static CEDE(RawEvent) convert_event(
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     bool is_action_message,
@@ -175,20 +176,20 @@ static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element);
 
 static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
 static CEDE(RawEvent) convert_complex_join_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     TAKE_VEC(ApparentSubject) identities,
     IMM(RawConversation) home_conversation
 );
 static CEDE(RawEvent) convert_file_transfer_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
@@ -345,7 +346,7 @@ static map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB& db) {
             QString host_identity,
             bool is_incoming,
             uint64_t begin_timestamp,
-            optional<unsigned int> duration,
+            optional<uint> duration,
             QString topic,
             QString internal_name,
             uint64_t conv_dbid
@@ -690,7 +691,7 @@ static void convert_events(
             RawConversation& mut_conversation = mut_indexed_conversations.at(key);
 
             ApparentTime event_time = ApparentTime::fromUnixTimestamp(timestamp);
-            unsigned int event_index = mut_conversation.events.size();
+            uint event_index = mut_conversation.events.size();
 
             auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(author), from_dispname);
             auto identities = deserialize_identities(serialized_identities);
@@ -733,7 +734,7 @@ static void convert_events(
 
 static CEDE(RawEvent) convert_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     int type,
     int chatmsg_type,
     TAKE(ApparentSubject) subject,
@@ -877,6 +878,26 @@ static CEDE(RawEvent) convert_event(
             return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
     }
 
+
+
+// ADD new MESSAGES
+
+// FIX CALLS (delta timestamp != param)
+
+
+
+
+    // Default
+    QString tmp;
+    QDebug dbg(&tmp);
+
+    return make_unique<RawUninterpretedEvent>(event_time, event_index, tmp.toUtf8() + "?");
+
+
+
+
+
+
     invariant_violation("Unsupported Skype event type (type=%d, chatmsg_type=%d)", type, chatmsg_type);
 }
 
@@ -894,7 +915,7 @@ static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString
 
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     bool is_action_message,
@@ -1014,7 +1035,7 @@ static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {
 
 static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 ) {
@@ -1040,7 +1061,7 @@ static CEDE(RawSendContactsEvent) convert_send_contacts_event(
 
 static CEDE(RawEvent) convert_complex_join_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     TAKE_VEC(ApparentSubject) identities,
     IMM(RawConversation) home_conversation
@@ -1073,7 +1094,7 @@ static CEDE(RawEvent) convert_complex_join_event(
 
 static CEDE(RawEvent) convert_file_transfer_event(
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 ) {
@@ -1212,7 +1233,7 @@ static void create_call_events(
         end_event->correspondingSkypeCallID = skype_call->id;
     }
 
-    unsigned int actual_duration = end_event_data.timestamp - adjusted_start_timestamp;
+    uint actual_duration = end_event_data.timestamp - adjusted_start_timestamp;
     if (actual_duration >= 5) {
         start_event->durationSeconds = actual_duration;
 

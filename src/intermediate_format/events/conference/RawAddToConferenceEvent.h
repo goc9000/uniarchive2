@@ -35,21 +35,17 @@ public:
 
     RawAddToConferenceEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) adder,
         TAKE_VEC(ApparentSubject) addees
     );
     RawAddToConferenceEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) adder,
         TAKE(ApparentSubject) addee
     );
-    RawAddToConferenceEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) addee
-    );
+    RawAddToConferenceEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) addee);
 
     virtual QString eventName() const;
 

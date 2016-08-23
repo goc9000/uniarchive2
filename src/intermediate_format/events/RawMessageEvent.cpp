@@ -14,7 +14,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawMessageEvent::RawMessageEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) sender,
     RawMessageContent&& content
 ): RawFailableEvent(timestamp, index), sender(move(sender)), content(move(content)) {

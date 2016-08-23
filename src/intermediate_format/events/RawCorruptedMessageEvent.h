@@ -25,7 +25,7 @@ struct RawCorruptedMessageEvent : RawEvent {
 public:
     QByteArray rawData;
 
-    RawCorruptedMessageEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QByteArray) raw_data);
+    RawCorruptedMessageEvent(IMM(ApparentTime) timestamp, uint index, IMM(QByteArray) raw_data);
 
     virtual QString eventName() const;
 

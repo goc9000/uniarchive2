@@ -23,10 +23,10 @@ using namespace std;
 class EventRangeProvenance : public Provenance {
 public:
     unique_ptr<Provenance> base;
-    unsigned int firstEventIndex;
-    unsigned int lastEventIndex;
+    uint firstEventIndex;
+    uint lastEventIndex;
 
-    EventRangeProvenance(TAKE(Provenance) base, unsigned int first_event_index, unsigned int last_event_index);
+    EventRangeProvenance(TAKE(Provenance) base, uint first_event_index, uint last_event_index);
 
     virtual CEDE(Provenance) clone() const;
 

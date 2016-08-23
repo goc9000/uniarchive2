@@ -23,7 +23,7 @@ using namespace std;
 
 struct RawEEEncryptionAnnouncementEvent : RawEvent {
 public:
-    RawEEEncryptionAnnouncementEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawEEEncryptionAnnouncementEvent(IMM(ApparentTime) timestamp, uint index);
 
     virtual QString eventName() const;
 

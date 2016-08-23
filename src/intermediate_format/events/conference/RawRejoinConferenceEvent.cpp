@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawRejoinConferenceEvent::RawRejoinConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) subject,
     TAKE_VEC(ApparentSubject) peers
 ): RawEvent(timestamp, index), subject(move(subject)), peers(move(peers)) {
@@ -26,7 +26,7 @@ RawRejoinConferenceEvent::RawRejoinConferenceEvent(
 
 RawRejoinConferenceEvent::RawRejoinConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) subject
 ): RawEvent(timestamp, index) {
     peers.push_back(move(subject));

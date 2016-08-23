@@ -27,24 +27,24 @@ class SQLiteStmt;
 class SQLiteRow {
 public:
     SQLiteStmt* stmt;
-    unsigned int rowIndex = 0;
-    unsigned int numColumns = 0;
+    uint rowIndex = 0;
+    uint numColumns = 0;
 
     SQLiteRow(SQLiteStmt* stmt) : stmt(stmt) {}
 
-    QString columnName(unsigned int colum_index) const;
+    QString columnName(uint colum_index) const;
 
-    sqlite3_value* rawColumn(unsigned int column_index) const;
-    int rawColumnType(unsigned int column_index) const;
-    int expectRawColumnType(unsigned int column_index, int expected_type, bool null_allowed = true) const;
+    sqlite3_value* rawColumn(uint column_index) const;
+    int rawColumnType(uint column_index) const;
+    int expectRawColumnType(uint column_index, int expected_type, bool null_allowed = true) const;
 
-    bool boolColumn(unsigned int column_index) const;
-    int64_t int64Column(unsigned int column_index) const;
-    QString utf8TextColumn(unsigned int column_index) const;
-    QByteArray blobColumn(unsigned int column_index) const;
+    bool boolColumn(uint column_index) const;
+    int64_t int64Column(uint column_index) const;
+    QString utf8TextColumn(uint column_index) const;
+    QByteArray blobColumn(uint column_index) const;
 
 private:
-    void columnIndexSanityCheck(unsigned int column_index) const;
+    void columnIndexSanityCheck(uint column_index) const;
 };
 
 }}}

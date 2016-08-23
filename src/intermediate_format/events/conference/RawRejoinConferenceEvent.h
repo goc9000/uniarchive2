@@ -31,15 +31,11 @@ public:
 
     RawRejoinConferenceEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) subject,
         TAKE_VEC(ApparentSubject) peers
     );
-    RawRejoinConferenceEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) subject
-    );
+    RawRejoinConferenceEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

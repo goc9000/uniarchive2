@@ -55,7 +55,7 @@ static void seek_to_start_of_events(QTextStream& mut_stream);
 
 static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 static CEDE(RawMessageEvent) parse_message(
-    unsigned int index,
+    uint index,
     IMM(QString) color,
     IMM(ApparentTime) timestamp,
     IMM(QString) sender,
@@ -147,7 +147,7 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
 
     if (!event_match.capturedLength("system_message")) {
         return parse_message(
-            (unsigned int)conversation.events.size(),
+            (uint)conversation.events.size(),
             color,
             timestamp,
             decode_html_entities(event_match.captured("sender")),
@@ -157,7 +157,7 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
     } else {
         invariant(color == "" || color == "#FF0000", "Expected color to be absent or #FF0000 for system message");
         return parse_libpurple_system_message(
-            (unsigned int)conversation.events.size(),
+            (uint)conversation.events.size(),
             timestamp,
             event_match.captured("system_message"),
             true,
@@ -167,7 +167,7 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
 }
 
 static CEDE(RawMessageEvent) parse_message(
-    unsigned int index,
+    uint index,
     IMM(QString) color,
     IMM(ApparentTime) timestamp,
     IMM(QString) sender,

@@ -29,7 +29,7 @@ public:
 
     RawContactRequestAcceptEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) acceptor,
         TAKE(ApparentSubject) acceptee
     );

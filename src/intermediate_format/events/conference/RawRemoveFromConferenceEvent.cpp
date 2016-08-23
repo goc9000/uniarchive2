@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawRemoveFromConferenceEvent::RawRemoveFromConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) remover,
     TAKE(ApparentSubject) removee
 ): RawEvent(timestamp, index), remover(move(remover)), removee(move(removee)) {
@@ -24,7 +24,7 @@ RawRemoveFromConferenceEvent::RawRemoveFromConferenceEvent(
 
 RawRemoveFromConferenceEvent::RawRemoveFromConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) removee
 ): RawEvent(timestamp, index), removee(move(removee)) {
 }

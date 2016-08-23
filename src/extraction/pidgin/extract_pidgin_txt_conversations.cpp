@@ -119,7 +119,7 @@ CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, IMM(RawConversation) c
 
     if (raw_event.raw_screen_name.isEmpty()) {
         return parse_libpurple_system_message(
-            (unsigned int)conversation.events.size(),
+            (uint)conversation.events.size(),
             timestamp,
             raw_event.raw_content,
             false,
@@ -128,7 +128,7 @@ CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, IMM(RawConversation) c
     } else {
         return make_unique<RawMessageEvent>(
             timestamp,
-            (unsigned int)conversation.events.size(),
+            (uint)conversation.events.size(),
             parse_libpurple_subject(raw_event.raw_screen_name, conversation.protocol, false),
             RawMessageContent::fromPlainText(raw_event.raw_content)
         );

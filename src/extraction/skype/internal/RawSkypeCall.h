@@ -27,7 +27,7 @@ struct RawSkypeCall {
     QString hostIdentity;
     bool isIncoming;
     uint64_t beginTimestamp;
-    optional<unsigned int> duration;
+    optional<uint> duration;
     QString topic;
     QString internalName;
     uint64_t convDBID;
@@ -39,7 +39,7 @@ struct RawSkypeCall {
         IMM(QString) host_identity,
         bool is_incoming,
         uint64_t begin_timestamp,
-        IMM(optional<unsigned int>) duration,
+        IMM(optional<uint>) duration,
         QString topic,
         QString internal_name,
         uint64_t conv_dbid

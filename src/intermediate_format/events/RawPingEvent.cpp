@@ -12,7 +12,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawPingEvent::RawPingEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) pinger)
+RawPingEvent::RawPingEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) pinger)
     : RawFailableEvent(timestamp, index), pinger(move(pinger)) {
 }
 

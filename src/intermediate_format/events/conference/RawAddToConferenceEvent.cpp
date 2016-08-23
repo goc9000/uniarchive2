@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawAddToConferenceEvent::RawAddToConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) adder,
     TAKE_VEC(ApparentSubject) addees
 ): RawEvent(timestamp, index), adder(move(adder)), addees(move(addees)) {
@@ -26,18 +26,15 @@ RawAddToConferenceEvent::RawAddToConferenceEvent(
 
 RawAddToConferenceEvent::RawAddToConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) adder,
     TAKE(ApparentSubject) addee
 ): RawEvent(timestamp, index), adder(move(adder)) {
     addees.push_back(move(addee));
 }
 
-RawAddToConferenceEvent::RawAddToConferenceEvent(
-    IMM(ApparentTime) timestamp,
-    unsigned int index,
-    TAKE(ApparentSubject) addee
-): RawEvent(timestamp, index) {
+RawAddToConferenceEvent::RawAddToConferenceEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) addee)
+    : RawEvent(timestamp, index) {
     addees.push_back(move(addee));
 }
 

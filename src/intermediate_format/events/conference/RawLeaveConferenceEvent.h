@@ -30,7 +30,7 @@ public:
     unique_ptr<ApparentSubject> subject;
     optional<RawMessageContent> message;
 
-    RawLeaveConferenceEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
+    RawLeaveConferenceEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

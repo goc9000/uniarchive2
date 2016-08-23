@@ -31,7 +31,7 @@ public:
 
     RawChangeTopicEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) subject,
         RawMessageContent&& topic
     );

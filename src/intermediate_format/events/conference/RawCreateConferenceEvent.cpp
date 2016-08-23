@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawCreateConferenceEvent::RawCreateConferenceEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) creator,
     IMM(QString) conferenceName
 ): RawEvent(timestamp, index), creator(move(creator)), conferenceName(conferenceName) {

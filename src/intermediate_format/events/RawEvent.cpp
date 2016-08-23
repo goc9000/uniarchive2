@@ -16,8 +16,8 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawEvent::RawEvent(IMM(ApparentTime) timestamp, unsigned int index) : timestamp(timestamp), indexInConversation(index) {
-};
+RawEvent::RawEvent(IMM(ApparentTime) timestamp, uint index) : timestamp(timestamp), indexInConversation(index) {
+}
 
 void RawEvent::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);

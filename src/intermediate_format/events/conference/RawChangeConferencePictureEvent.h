@@ -26,11 +26,7 @@ struct RawChangeConferencePictureEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
 
-    RawChangeConferencePictureEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) subject
-    );
+    RawChangeConferencePictureEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

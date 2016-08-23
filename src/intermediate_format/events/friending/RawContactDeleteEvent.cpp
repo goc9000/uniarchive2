@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawContactDeleteEvent::RawContactDeleteEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) deleter,
     TAKE(ApparentSubject) deletee
 ): RawEvent(timestamp, index), deleter(move(deleter)), deletee(move(deletee)) {

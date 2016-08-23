@@ -33,12 +33,7 @@ public:
     IMStatus status;
     optional<RawMessageContent> message;
 
-    RawStatusChangeEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) subject,
-        IMStatus status
-    );
+    RawStatusChangeEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject, IMStatus status);
 
     virtual QString eventName() const;
 

@@ -32,7 +32,7 @@ public:
 
     RawOfferFileEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) sender,
         IMM(RawTransferredFile) file
     );

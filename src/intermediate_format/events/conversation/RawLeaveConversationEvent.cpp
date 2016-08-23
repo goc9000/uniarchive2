@@ -14,7 +14,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawLeaveConversationEvent::RawLeaveConversationEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) subject
 ): RawEvent(timestamp, index), subject(move(subject)) {
 }

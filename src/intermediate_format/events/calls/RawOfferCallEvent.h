@@ -26,7 +26,7 @@ struct RawOfferCallEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> caller;
 
-    RawOfferCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) caller);
+    RawOfferCallEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) caller);
 
     virtual QString eventName() const;
 

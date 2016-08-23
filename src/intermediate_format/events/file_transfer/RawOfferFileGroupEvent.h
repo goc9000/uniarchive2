@@ -27,14 +27,9 @@ struct RawOfferFileGroupEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> recipient;
-    unsigned int num_files;
+    uint num_files;
 
-    RawOfferFileGroupEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) sender,
-        unsigned int num_files
-    );
+    RawOfferFileGroupEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) sender, uint num_files);
 
     virtual QString eventName() const;
 

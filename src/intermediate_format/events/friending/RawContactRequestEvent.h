@@ -32,7 +32,7 @@ public:
 
     RawContactRequestEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) sender,
         TAKE(ApparentSubject) receiver,
         RawMessageContent&& message

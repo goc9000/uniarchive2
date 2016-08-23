@@ -34,7 +34,7 @@ public:
 
     RawTransferFilesEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) sender,
         IMM(vector<RawTransferredFile>) files
     );

@@ -26,7 +26,7 @@ struct RawEditedPreviousMessageEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
 
-    RawEditedPreviousMessageEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
+    RawEditedPreviousMessageEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

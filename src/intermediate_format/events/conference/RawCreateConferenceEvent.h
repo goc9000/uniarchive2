@@ -29,7 +29,7 @@ public:
 
     RawCreateConferenceEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) creator,
         IMM(QString) conferenceName = ""
     );

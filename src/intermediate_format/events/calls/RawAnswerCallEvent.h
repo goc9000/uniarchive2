@@ -27,7 +27,7 @@ public:
     unique_ptr<ApparentSubject> receiver;
     unique_ptr<ApparentSubject> caller;
 
-    RawAnswerCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) receiver);
+    RawAnswerCallEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) receiver);
 
     virtual QString eventName() const;
 

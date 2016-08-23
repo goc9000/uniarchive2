@@ -15,8 +15,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawLoggingStoppedEvent::RawLoggingStoppedEvent(IMM(ApparentTime) timestamp, unsigned int index)
-    : RawEvent(timestamp, index) {
+RawLoggingStoppedEvent::RawLoggingStoppedEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {
 }
 
 QString RawLoggingStoppedEvent::eventName() const {

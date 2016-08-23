@@ -27,7 +27,7 @@ using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::protocols;
 
 CEDE(RawEvent) parse_libpurple_system_message(
-    unsigned int event_index,
+    uint event_index,
     IMM(ApparentTime) event_time,
     IMM(QString) content,
     bool is_html,

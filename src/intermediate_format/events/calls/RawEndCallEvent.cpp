@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawEndCallEvent::RawEndCallEvent(IMM(ApparentTime) timestamp, unsigned int index) : RawEvent(timestamp, index) {
+RawEndCallEvent::RawEndCallEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {
 }
 
 QString RawEndCallEvent::eventName() const {

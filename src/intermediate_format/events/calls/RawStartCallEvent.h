@@ -31,7 +31,7 @@ public:
     unique_ptr<ApparentSubject> initiator;
     vector<unique_ptr<ApparentSubject>> peers;
 
-    optional<unsigned int> durationSeconds;
+    optional<uint> durationSeconds;
 
     optional<QString> skypeCallGUID;
     optional<QString> syntheticCallGUID;
@@ -39,7 +39,7 @@ public:
 
     RawStartCallEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) initiator,
         TAKE_VEC(ApparentSubject) peers
     );

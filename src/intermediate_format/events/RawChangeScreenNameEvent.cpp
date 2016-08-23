@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawChangeScreenNameEvent::RawChangeScreenNameEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) from,
     TAKE(ApparentSubject) to
 ) : RawEvent(timestamp, index), from(move(from)), to(move(to)) {

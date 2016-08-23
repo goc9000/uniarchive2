@@ -52,7 +52,7 @@ void SQLiteStmt::startQuery() {
 
     nextRow();
     currentRow.rowIndex = 0;
-    currentRow.numColumns = (unsigned int)sqlite3_column_count(handle);
+    currentRow.numColumns = (uint)sqlite3_column_count(handle);
 }
 
 bool SQLiteStmt::hasRow() const {

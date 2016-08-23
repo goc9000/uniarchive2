@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawOfferWebcamEvent::RawOfferWebcamEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) sender)
+RawOfferWebcamEvent::RawOfferWebcamEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) sender)
     : RawFailableEvent(timestamp, index), sender(move(sender)) {
 }
 

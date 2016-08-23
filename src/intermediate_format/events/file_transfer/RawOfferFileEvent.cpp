@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawOfferFileEvent::RawOfferFileEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) sender,
     IMM(RawTransferredFile) file
 ): RawEvent(timestamp, index), sender(move(sender)), file(file) {

@@ -15,8 +15,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawWindowOpenedEvent::RawWindowOpenedEvent(IMM(ApparentTime) timestamp, unsigned int index)
-    : RawEvent(timestamp, index) {
+RawWindowOpenedEvent::RawWindowOpenedEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {
 }
 
 QString RawWindowOpenedEvent::eventName() const {

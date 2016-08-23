@@ -36,7 +36,7 @@ public:
     optional<QString> syntheticCallGUID;
     optional<uint64_t> correspondingSkypeCallID;
 
-    RawEndCallEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawEndCallEvent(IMM(ApparentTime) timestamp, uint index);
 
     virtual QString eventName() const;
 

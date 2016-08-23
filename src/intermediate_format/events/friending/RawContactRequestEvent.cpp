@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawContactRequestEvent::RawContactRequestEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) sender,
     TAKE(ApparentSubject) receiver,
     RawMessageContent&& message

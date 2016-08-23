@@ -78,28 +78,24 @@ static void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) 
 
 static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
 static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element, IMM(RawConversation) conversation);
-static CEDE(RawEvent) parse_system_event(
-    IMM(QDomElement) event_element,
-    ApparentTime event_time,
-    unsigned int event_index
-);
+static CEDE(RawEvent) parse_system_event(IMM(QDomElement) event_element, ApparentTime event_time, uint event_index);
 static CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) event_subject
 );
 static CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) event_subject,
     IMProtocol protocol
 );
 static CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) event_subject
 );
 static RawMessageContent parse_event_content(IMM(QDomElement) event_element);
@@ -209,7 +205,7 @@ static void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) 
 static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, IMM(RawConversation) conversation) {
     ApparentTime event_time = ApparentTime::fromQDateTime(read_iso_date_attr(event_element, "time"));
     unique_ptr<ApparentSubject> event_subject = parse_event_subject(event_element, conversation);
-    unsigned int event_index = (unsigned int)conversation.events.size();
+    uint event_index = (uint)conversation.events.size();
 
     if (event_element.tagName() == "event") {
         return parse_system_event(event_element, event_time, event_index);
@@ -237,11 +233,7 @@ static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element,
     return make_unique<SubjectGivenAsAccount>(account);
 }
 
-static CEDE(RawEvent) parse_system_event(
-    IMM(QDomElement) event_element,
-    ApparentTime event_time,
-    unsigned int event_index
-) {
+static CEDE(RawEvent) parse_system_event(IMM(QDomElement) event_element, ApparentTime event_time, uint event_index) {
     QString event_type = read_string_attr(event_element, "type");
 
     if (event_type == "windowOpened") {
@@ -256,7 +248,7 @@ static CEDE(RawEvent) parse_system_event(
 static CEDE(RawMessageEvent) parse_message_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) event_subject
 ) {
     return make_unique<RawMessageEvent>(
@@ -281,7 +273,7 @@ static void expect_event_text(IMM(QDomElement) event_element, IMM(QString) expec
 static CEDE(RawEvent) parse_status_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) event_subject,
     IMProtocol protocol
 ) {
@@ -330,7 +322,7 @@ static CEDE(RawEvent) parse_status_event(
 static CEDE(RawStatusChangeEvent) parse_status_change_event(
     IMM(QDomElement) event_element,
     ApparentTime event_time,
-    unsigned int event_index,
+    uint event_index,
     TAKE(ApparentSubject) event_subject
 ) {
     IMStatus status = EVENT_TYPE_TO_STATUS[event_element.attribute("type")];

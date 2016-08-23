@@ -29,7 +29,7 @@ public:
 
     RawChangeScreenNameEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) from,
         TAKE(ApparentSubject) to
     );

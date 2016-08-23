@@ -12,20 +12,20 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawStartConversationEvent::RawStartConversationEvent(IMM(ApparentTime) timestamp, unsigned int index)
+RawStartConversationEvent::RawStartConversationEvent(IMM(ApparentTime) timestamp, uint index)
     : RawEvent(timestamp, index) {
 }
 
 RawStartConversationEvent::RawStartConversationEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) initiator
 ): RawEvent(timestamp, index), initiator(move(initiator)) {
 }
 
 RawStartConversationEvent::RawStartConversationEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) initiator,
     TAKE(ApparentSubject) peer
 ): RawEvent(timestamp, index), initiator(move(initiator)), peer(move(peer)) {

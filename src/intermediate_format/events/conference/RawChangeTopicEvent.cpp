@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawChangeTopicEvent::RawChangeTopicEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) subject,
     RawMessageContent&& topic
 ): RawEvent(timestamp, index), subject(move(subject)), topic(move(topic)) {

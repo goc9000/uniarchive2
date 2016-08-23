@@ -25,7 +25,7 @@ struct RawUninterpretedEvent : RawEvent {
 public:
     QByteArray rawData;
 
-    RawUninterpretedEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(QByteArray) raw_data);
+    RawUninterpretedEvent(IMM(ApparentTime) timestamp, uint index, IMM(QByteArray) rawData);
 
     virtual QString eventName() const;
 

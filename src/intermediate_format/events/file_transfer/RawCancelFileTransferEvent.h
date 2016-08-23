@@ -29,8 +29,8 @@ public:
     optional<RawTransferredFile> file;
     unique_ptr<ApparentSubject> actor;
 
-    RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index);
-    RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(RawTransferredFile) file);
+    RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, uint index);
+    RawCancelFileTransferEvent(IMM(ApparentTime) timestamp, uint index, IMM(RawTransferredFile) file);
 
     virtual QString eventName() const;
 

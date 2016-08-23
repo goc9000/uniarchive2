@@ -29,15 +29,11 @@ public:
 
     RawRemoveFromConferenceEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) remover,
         TAKE(ApparentSubject) removee
     );
-    RawRemoveFromConferenceEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) removee
-    );
+    RawRemoveFromConferenceEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) removee);
 
     virtual QString eventName() const;
 

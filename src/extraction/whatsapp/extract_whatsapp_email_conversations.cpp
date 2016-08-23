@@ -47,13 +47,13 @@ struct PreParsedEvent {
 
 static RawConversation init_conversation(IMM(QString) filename);
 static vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data);
-static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, unsigned int event_index);
+static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint event_index);
 static ApparentTime parse_timestamp(IMM(QString) time_text);
-static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, unsigned int event_index, IMM(QString) content);
+static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint event_index, IMM(QString) content);
 static CEDE(ApparentSubject) parse_subject(IMM(QString) raw_subject);
 static CEDE(RawEvent) parse_message(
     IMM(ApparentTime) timestamp,
-    unsigned int event_index,
+    uint event_index,
     IMM(QString) raw_subject,
     IMM(QString) content
 );
@@ -63,7 +63,7 @@ RawConversation extract_whatsapp_email_conversation(IMM(QString)filename) {
     RawConversation conversation = init_conversation(filename);
 
     for (IMM(auto) raw_event : pre_parse_events(load_utf8_text_file(filename))) {
-        unique_ptr<RawEvent> event = parse_event(raw_event, (unsigned int)conversation.events.size());
+        unique_ptr<RawEvent> event = parse_event(raw_event, (uint)conversation.events.size());
 
         if (event->is<RawCreateConferenceEvent>()) {
             conversation.isConference = true;
@@ -134,7 +134,7 @@ vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data) {
     return raw_events;
 }
 
-static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, unsigned int event_index) {
+static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint event_index) {
     ApparentTime timestamp = parse_timestamp(raw_event.raw_timestamp);
 
     return raw_event.raw_screen_name.isEmpty()
@@ -152,7 +152,7 @@ static ApparentTime parse_timestamp(IMM(QString) time_text) {
     return timestamp;
 }
 
-static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, unsigned int event_index, IMM(QString) content) {
+static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint event_index, IMM(QString) content) {
     QREGEX_MATCH_CI(
         match,
         "^("\
@@ -190,7 +190,7 @@ static CEDE(ApparentSubject) parse_subject(IMM(QString) raw_subject) {
 
 static CEDE(RawEvent) parse_message(
     IMM(ApparentTime) timestamp,
-    unsigned int event_index,
+    uint event_index,
     IMM(QString) raw_subject,
     IMM(QString) text_content
 ) {

@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawSendContactsEvent::RawSendContactsEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) sender,
     TAKE_VEC(ApparentSubject) contacts
 ): RawEvent(timestamp, index), sender(move(sender)), contacts(move(contacts)) {

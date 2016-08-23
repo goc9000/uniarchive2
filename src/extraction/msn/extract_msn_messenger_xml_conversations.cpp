@@ -53,22 +53,22 @@ static RawConversation extract_conversation_for_session(
     int session_id,
     IMM(RawConversation) prototype
 );
-static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index);
+static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, uint event_index);
 static CEDE(RawEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index
+    uint event_index
 );
 static CEDE(RawEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     bool is_response
 );
 static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     bool is_response,
     TAKE(ApparentSubject) subject,
     IMM(QString) text,
@@ -77,7 +77,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
 static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     bool is_response,
     TAKE(ApparentSubject) subject,
     IMM(QString) text,
@@ -160,14 +160,14 @@ static RawConversation extract_conversation_for_session(
     conversation.provenance = make_unique<MSNConversationProvenance>(prototype.provenance->clone(), session_id);
 
     while (!mut_next_element.isNull() && (read_int_attr(mut_next_element, "SessionID") == session_id)) {
-        conversation.events.push_back(parse_event(mut_next_element, (unsigned int)conversation.events.size()));
+        conversation.events.push_back(parse_event(mut_next_element, (uint)conversation.events.size()));
         mut_next_element = mut_next_element.nextSiblingElement();
     }
 
     return conversation;
 }
 
-static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, unsigned int event_index) {
+static CEDE(RawEvent) parse_event(IMM(QDomElement) event_element, uint event_index) {
     ApparentTime event_time = parse_event_time(event_element);
 
     if (event_element.tagName() == "Message") {
@@ -228,7 +228,7 @@ static RawMessageContent parse_event_text(IMM(QDomElement) event_element) {
 static CEDE(RawEvent) parse_message_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index
+    uint event_index
 ) {
     unique_ptr<RawEvent> event = make_unique<RawMessageEvent>(
         event_time,
@@ -244,7 +244,7 @@ static CEDE(RawEvent) parse_message_event(
 static CEDE(RawEvent) parse_invitation_or_response_event(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     bool is_response
 ) {
     unique_ptr<ApparentSubject> subject = parse_event_actor(event_element, "From");
@@ -271,7 +271,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event(
 static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     bool is_response,
     TAKE(ApparentSubject) subject,
     IMM(QString) text,
@@ -305,7 +305,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
 static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
     IMM(QDomElement) event_element,
     IMM(ApparentTime) event_time,
-    unsigned int event_index,
+    uint event_index,
     bool is_response,
     TAKE(ApparentSubject) subject,
     IMM(QString) text,

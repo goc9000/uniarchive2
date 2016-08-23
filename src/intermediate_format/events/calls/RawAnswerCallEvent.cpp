@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawAnswerCallEvent::RawAnswerCallEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) receiver)
+RawAnswerCallEvent::RawAnswerCallEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) receiver)
     : RawEvent(timestamp, index), receiver(move(receiver)) {
 }
 

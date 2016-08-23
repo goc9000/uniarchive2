@@ -27,7 +27,7 @@ struct RawConnectedEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> subject;
 
-    RawConnectedEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) subject);
+    RawConnectedEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject);
 
     virtual QString eventName() const;
 

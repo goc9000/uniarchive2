@@ -27,11 +27,11 @@ using namespace std::experimental;
 struct RawEvent {
 public:
     ApparentTime timestamp;
-    unsigned int indexInConversation;
+    uint indexInConversation;
 
     optional<QByteArray> skypeGUID;
 
-    RawEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawEvent(IMM(ApparentTime) timestamp, uint index);
 
     POLYMORPHIC_HELPERS
 

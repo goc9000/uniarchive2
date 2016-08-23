@@ -23,7 +23,7 @@ using namespace std;
 
 struct RawLoggingStartedEvent : RawEvent {
 public:
-    RawLoggingStartedEvent(IMM(ApparentTime) timestamp, unsigned int index);
+    RawLoggingStartedEvent(IMM(ApparentTime) timestamp, uint index);
 
     virtual QString eventName() const;
 

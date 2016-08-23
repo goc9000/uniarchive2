@@ -18,7 +18,7 @@ using namespace protocols::skype;
 
 RawSetSkypeChatRoleEvent::RawSetSkypeChatRoleEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) setter,
     TAKE(ApparentSubject) target,
     SkypeChatRole role
@@ -27,7 +27,7 @@ RawSetSkypeChatRoleEvent::RawSetSkypeChatRoleEvent(
 
 RawSetSkypeChatRoleEvent::RawSetSkypeChatRoleEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) target,
     SkypeChatRole role
 ): RawEvent(timestamp, index), target(move(target)), role(role) {

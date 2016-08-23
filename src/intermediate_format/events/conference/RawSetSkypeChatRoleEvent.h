@@ -32,14 +32,14 @@ public:
 
     RawSetSkypeChatRoleEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) setter,
         TAKE(ApparentSubject) target,
         SkypeChatRole role
     );
     RawSetSkypeChatRoleEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) target,
         SkypeChatRole role
     );

@@ -32,7 +32,7 @@ public:
 
     RawReceiveFileEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) receiver,
         IMM(RawTransferredFile) file
     );

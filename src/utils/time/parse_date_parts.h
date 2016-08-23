@@ -17,7 +17,7 @@
 
 namespace uniarchive2 { namespace utils { namespace time {
 
-unsigned int parse_english_month_name(IMM(QString) month_text);
+uint parse_english_month_name(IMM(QString) month_text);
 int parse_timezone_offset_in_quarters(IMM(QString) offset_text);
 
 }}}

@@ -45,12 +45,7 @@ public:
     unique_ptr<ApparentSubject> editedBy;
     ApparentTime timeEdited;
 
-    RawMessageEvent(
-        IMM(ApparentTime) timestamp,
-        unsigned int index,
-        TAKE(ApparentSubject) sender,
-        RawMessageContent&& content
-    );
+    RawMessageEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) sender, RawMessageContent&& content);
 
     virtual QString eventName() const;
 

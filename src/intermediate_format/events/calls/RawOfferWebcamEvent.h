@@ -28,7 +28,7 @@ struct RawOfferWebcamEvent : RawFailableEvent<OfferWebcamFailReason> {
 public:
     unique_ptr<ApparentSubject> sender;
 
-    RawOfferWebcamEvent(IMM(ApparentTime) timestamp, unsigned int index, TAKE(ApparentSubject) sender);
+    RawOfferWebcamEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) sender);
 
     virtual QString eventName() const;
 

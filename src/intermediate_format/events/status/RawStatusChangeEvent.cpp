@@ -16,7 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawStatusChangeEvent::RawStatusChangeEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) subject,
     IMStatus status
 ): RawEvent(timestamp, index), subject(move(subject)), status(status) {

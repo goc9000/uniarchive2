@@ -22,25 +22,25 @@ using namespace uniarchive2::utils::text;
 static QString sqlite_type_name(int type);
 
 
-QString SQLiteRow::columnName(unsigned int column_index) const {
+QString SQLiteRow::columnName(uint column_index) const {
     columnIndexSanityCheck(column_index);
 
     return sqlite3_column_name(stmt->handle, column_index);
 }
 
-sqlite3_value* SQLiteRow::rawColumn(unsigned int column_index) const {
+sqlite3_value* SQLiteRow::rawColumn(uint column_index) const {
     columnIndexSanityCheck(column_index);
 
     return sqlite3_column_value(stmt->handle, column_index);
 }
 
-int SQLiteRow::rawColumnType(unsigned int column_index) const {
+int SQLiteRow::rawColumnType(uint column_index) const {
     columnIndexSanityCheck(column_index);
 
     return sqlite3_column_type(stmt->handle, column_index);
 }
 
-int SQLiteRow::expectRawColumnType(unsigned int column_index, int expected_type, bool null_allowed) const {
+int SQLiteRow::expectRawColumnType(uint column_index, int expected_type, bool null_allowed) const {
     int type = rawColumnType(column_index);
 
     invariant(
@@ -52,17 +52,17 @@ int SQLiteRow::expectRawColumnType(unsigned int column_index, int expected_type,
     return type;
 }
 
-bool SQLiteRow::boolColumn(unsigned int column_index) const {
+bool SQLiteRow::boolColumn(uint column_index) const {
     return !!int64Column(column_index);
 }
 
-int64_t SQLiteRow::int64Column(unsigned int column_index) const {
+int64_t SQLiteRow::int64Column(uint column_index) const {
     expectRawColumnType(column_index, SQLITE_INTEGER);
 
     return sqlite3_column_int64(stmt->handle, column_index);
 }
 
-QString SQLiteRow::utf8TextColumn(unsigned int column_index) const {
+QString SQLiteRow::utf8TextColumn(uint column_index) const {
     expectRawColumnType(column_index, SQLITE_TEXT);
 
     char const *text_data = (char const *) sqlite3_column_text(stmt->handle, column_index);
@@ -73,7 +73,7 @@ QString SQLiteRow::utf8TextColumn(unsigned int column_index) const {
     return decode_utf8(QByteArray::fromRawData(text_data, sqlite3_column_bytes(stmt->handle, column_index)));
 }
 
-QByteArray SQLiteRow::blobColumn(unsigned int column_index) const {
+QByteArray SQLiteRow::blobColumn(uint column_index) const {
     expectRawColumnType(column_index, SQLITE_BLOB);
 
     char const *blob_data = (char const *) sqlite3_column_blob(stmt->handle, column_index);
@@ -84,7 +84,7 @@ QByteArray SQLiteRow::blobColumn(unsigned int column_index) const {
     return QByteArray(blob_data, sqlite3_column_bytes(stmt->handle, column_index));
 }
 
-void SQLiteRow::columnIndexSanityCheck(unsigned int column_index) const {
+void SQLiteRow::columnIndexSanityCheck(uint column_index) const {
     invariant(
         column_index < numColumns,
         "SQLite column index out of range (%d vs. %d columns)", column_index, numColumns

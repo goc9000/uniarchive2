@@ -29,7 +29,7 @@ public:
 
     RawSendContactsEvent(
         IMM(ApparentTime) timestamp,
-        unsigned int index,
+        uint index,
         TAKE(ApparentSubject) sender,
         TAKE_VEC(ApparentSubject) contacts
     );

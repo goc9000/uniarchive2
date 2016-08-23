@@ -17,7 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawStartCallEvent::RawStartCallEvent(
     IMM(ApparentTime) timestamp,
-    unsigned int index,
+    uint index,
     TAKE(ApparentSubject) initiator,
     TAKE_VEC(ApparentSubject) peers
 ) : RawFailableEvent(timestamp, index), initiator(move(initiator)), peers(move(peers)) {

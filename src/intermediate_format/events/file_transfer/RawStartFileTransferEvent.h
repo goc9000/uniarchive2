@@ -29,7 +29,7 @@ public:
     RawTransferredFile file;
     unique_ptr<ApparentSubject> sender;
 
-    RawStartFileTransferEvent(IMM(ApparentTime) timestamp, unsigned int index, IMM(RawTransferredFile) file);
+    RawStartFileTransferEvent(IMM(ApparentTime) timestamp, uint index, IMM(RawTransferredFile) file);
 
     virtual QString eventName() const;
 

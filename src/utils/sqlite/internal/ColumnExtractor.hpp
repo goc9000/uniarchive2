@@ -27,20 +27,20 @@ using namespace std::experimental;
 
 template<typename T>
 struct ColumnExtractor {
-    static T execute(IMM(SQLiteRow) row_handle, unsigned int column_index);
-    static const unsigned int advance;
+    static T execute(IMM(SQLiteRow) row_handle, uint column_index);
+    static const uint advance;
 };
 
 template<>
 struct ColumnExtractor<CPTR(SQLiteRow)> {
-    static CPTR(SQLiteRow) execute(IMM(SQLiteRow) row_handle, unsigned int UNUSED column_index) {
+    static CPTR(SQLiteRow) execute(IMM(SQLiteRow) row_handle, uint UNUSED column_index) {
         return &row_handle;
     }
-    static const unsigned int advance = 0;
+    static const uint advance = 0;
 };
 template<typename T>
 struct ColumnExtractor<optional<T>> {
-    static optional<T> execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static optional<T> execute(IMM(SQLiteRow) row_handle, uint column_index) {
         optional<T> result;
 
         if (row_handle.rawColumnType(column_index) != SQLITE_NULL) {
@@ -49,65 +49,65 @@ struct ColumnExtractor<optional<T>> {
 
         return result;
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
 struct ColumnExtractor<bool> {
-    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static int execute(IMM(SQLiteRow) row_handle, uint column_index) {
         return row_handle.boolColumn(column_index);
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
 struct ColumnExtractor<int> {
-    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static int execute(IMM(SQLiteRow) row_handle, uint column_index) {
         int64_t result = row_handle.int64Column(column_index);
         invariant(result <= INT_MAX, "Column value does not fit in int");
 
         return (int)result;
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
-struct ColumnExtractor<unsigned int> {
-    static int execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+struct ColumnExtractor<uint> {
+    static int execute(IMM(SQLiteRow) row_handle, uint column_index) {
         int64_t result = row_handle.int64Column(column_index);
         invariant(result >= 0, "Column value is not positive int");
-        invariant(result <= UINT_MAX, "Column value does not fit in unsigned int");
+        invariant(result <= UINT_MAX, "Column value does not fit in uint");
 
-        return (unsigned int)result;
+        return (uint)result;
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
 struct ColumnExtractor<int64_t> {
-    static int64_t execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static int64_t execute(IMM(SQLiteRow) row_handle, uint column_index) {
         return row_handle.int64Column(column_index);
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
 struct ColumnExtractor<uint64_t> {
-    static uint64_t execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static uint64_t execute(IMM(SQLiteRow) row_handle, uint column_index) {
         int64_t result = row_handle.int64Column(column_index);
         invariant(result >= 0, "Column value is not positive int");
         return (uint64_t)result;
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
 struct ColumnExtractor<QString> {
-    static QString execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static QString execute(IMM(SQLiteRow) row_handle, uint column_index) {
         return row_handle.utf8TextColumn(column_index);
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 template<>
 struct ColumnExtractor<QByteArray> {
-    static QByteArray execute(IMM(SQLiteRow) row_handle, unsigned int column_index) {
+    static QByteArray execute(IMM(SQLiteRow) row_handle, uint column_index) {
         return row_handle.blobColumn(column_index);
     }
-    static const unsigned int advance = 1;
+    static const uint advance = 1;
 };
 
 }}}}

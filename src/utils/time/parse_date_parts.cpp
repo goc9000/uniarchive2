@@ -16,8 +16,8 @@
 
 namespace uniarchive2 { namespace utils { namespace time {
 
-unsigned int parse_english_month_name(IMM(QString) month_name) {
-    const static QMap<QString, unsigned int> MONTH_MAP = {
+uint parse_english_month_name(IMM(QString) month_name) {
+    const static QMap<QString, uint> MONTH_MAP = {
         { "january",   1 },
         { "february",  2 },
         { "march",     3 },

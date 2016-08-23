@@ -23,9 +23,9 @@ using namespace std;
 class MSNConversationProvenance : public Provenance {
 public:
     unique_ptr<Provenance> base;
-    unsigned int sessionID;
+    uint sessionID;
 
-    MSNConversationProvenance(TAKE(Provenance) base, unsigned int session_id);
+    MSNConversationProvenance(TAKE(Provenance) base, uint session_id);
 
     virtual CEDE(Provenance) clone() const;
 
