@@ -54,6 +54,12 @@ class TypeRegistry:
                 include='utils/external_libs/optional.hpp',
                 use=('std', 'std::experimental'),
             )
+        elif type in ['IMM', 'CPTR', 'TAKE', 'TAKE_VEC']:
+            return TypeInfo(
+                kind=TypeKind.DECORATION,
+                include='utils/language/shortcuts.h',
+                use=None,
+            )
         else:
             return TypeInfo(
                 kind=TypeKind.HEAVY if re.match(r'^[A-Z].*', type) else TypeKind.PRIMITIVE,

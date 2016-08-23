@@ -124,6 +124,38 @@ def gen_raw_events(autogen_config, type_registry):
 
         return cpp_type, field_config.name
 
+    def as_param(field_config):
+        base_type = field_config.base_type
+        type_info = type_registry.lookup(base_type)
+        assert type_info.kind != TypeKind.DECORATION, 'Cannot use {0} as a base type'.format(base_type)
+
+        cpp_type = base_type
+
+        if type_info.kind == TypeKind.POLYMORPHIC:
+            cpp_type = ('TAKE_VEC({0})' if field_config.is_list else 'TAKE({0})').format(cpp_type)
+        else:
+            if field_config.is_list:
+                cpp_type = 'vector<{0}>'.format(cpp_type)
+
+            if type_info.kind == TypeKind.MOVABLE:
+                cpp_type += '&&'
+            elif type_info.kind != TypeKind.PRIMITIVE or field_config.is_list:
+                cpp_type = 'IMM({0})'.format(cpp_type)
+
+        return cpp_type, field_config.short_name or camelcase_to_underscore(field_config.name)
+
+    def constructor_params():
+        all_fields = \
+            [field for field in autogen_config.base_raw_event.fields + event_config.fields if field is not None]
+
+        params = list()
+
+        for field_config in all_fields:
+            if not field_config.is_optional:
+                params.append(as_param(field_config))
+
+        return params
+
     for path, name, event_config in autogen_config.raw_events:
         path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
 
@@ -144,6 +176,8 @@ def gen_raw_events(autogen_config, type_registry):
                             block.field(*as_field_decl(field))
 
                     block.nl()
+
+                block.declare_constructor(class_name, *constructor_params())
 
             struct.nl()
 
