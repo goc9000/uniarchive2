@@ -123,6 +123,7 @@ raw events:
     AddToConference:
       - ?ApparentSubject adder
       - ApparentSubject[] addees
+      - ..
       - ?bool asModerator
     RemoveFromConference:
       - ?ApparentSubject remover
@@ -217,6 +218,7 @@ raw events:
     - ?ApparentSubject editedBy
     - ?ApparentTime timeEdited
   Ping:
+    - failable: PingFailReason
     - ApparentSubject pinger
     - ?ApparentSubject pingee
   SendContacts:
