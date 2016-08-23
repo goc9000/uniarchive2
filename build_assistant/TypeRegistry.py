@@ -16,8 +16,8 @@ from build_assistant.autogen_common import get_full_autogen_raw_event_path_and_n
 from build_assistant.util import scan_files
 
 
-TypeKind = Enum('TypeKind', ['POLYMORPHIC', 'MOVABLE', 'HEAVY', 'PRIMITIVE'])
-TypeInfo = namedtuple('TypeInfo', ['kind', 'include', 'qt_include', 'use'])
+TypeKind = Enum('TypeKind', ['POLYMORPHIC', 'MOVABLE', 'HEAVY', 'PRIMITIVE', 'DECORATION'])
+TypeInfo = namedtuple('TypeInfo', ['kind', 'include', 'use'])
 
 
 class TypeRegistry:
@@ -33,15 +33,31 @@ class TypeRegistry:
         if re.match(r'^Q[A-Z].*', type):
             return TypeInfo(
                 kind=TypeKind.HEAVY,
-                include=None,
-                qt_include=type,
+                include=('qt', type),
                 use=None,
+            )
+        elif type == 'unique_ptr':
+            return TypeInfo(
+                kind=TypeKind.DECORATION,
+                include=('std', 'memory'),
+                use=('std', 'std'),
+            )
+        elif type == 'vector':
+            return TypeInfo(
+                kind=TypeKind.DECORATION,
+                include=('std', 'vector'),
+                use=('std', 'std'),
+            )
+        elif type == 'optional':
+            return TypeInfo(
+                kind=TypeKind.DECORATION,
+                include='utils/external_libs/optional.hpp',
+                use=('std', 'std::experimental'),
             )
         else:
             return TypeInfo(
                 kind=TypeKind.HEAVY if re.match(r'^[A-Z].*', type) else TypeKind.PRIMITIVE,
                 include=None,
-                qt_include=None,
                 use=None,
             )
 
@@ -84,7 +100,6 @@ class TypeRegistry:
             type_registry[typename] = TypeInfo(
                 kind=kind,
                 include=path,
-                qt_include=None,
                 use=extract_namespace_from_file(content),
             )
 
@@ -93,7 +108,6 @@ class TypeRegistry:
             type_registry[name] = TypeInfo(
                 kind=TypeKind.PRIMITIVE,
                 include=physical_path(path, name),
-                qt_include=None,
                 use=namespace_path(path),
             )
         for path, name, _ in autogen_config.raw_events:
@@ -101,7 +115,6 @@ class TypeRegistry:
             type_registry[name] = TypeInfo(
                 kind=TypeKind.POLYMORPHIC,
                 include=physical_path(path, name),
-                qt_include=None,
                 use=namespace_path(path),
             )
 

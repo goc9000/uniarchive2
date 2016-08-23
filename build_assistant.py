@@ -109,6 +109,7 @@ def gen_raw_events(autogen_config, type_registry):
 
         base_type = field_config.base_type
         type_info = type_registry.lookup(base_type)
+        assert type_info.kind != TypeKind.DECORATION, 'Cannot use {0} as a base type'.format(base_type)
 
         use_optional = field_config.is_optional and not \
             (type_info.kind == TypeKind.POLYMORPHIC and not field_config.is_list)
