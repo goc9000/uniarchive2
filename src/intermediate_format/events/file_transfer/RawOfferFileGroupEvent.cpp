@@ -19,7 +19,7 @@ RawOfferFileGroupEvent::RawOfferFileGroupEvent(
     uint index,
     TAKE(ApparentSubject) sender,
     uint num_files
-): RawEvent(timestamp, index), sender(move(sender)), num_files(num_files) {
+): RawEvent(timestamp, index), sender(move(sender)), numFiles(num_files) {
 }
 
 QString RawOfferFileGroupEvent::eventName() const {
@@ -27,7 +27,7 @@ QString RawOfferFileGroupEvent::eventName() const {
 }
 
 void RawOfferFileGroupEvent::writeDetailsToDebugStream(QDebug stream) const {
-    stream << " sender=" << sender.get() << " num_files=" << num_files;
+    stream << " sender=" << sender.get() << " num_files=" << numFiles;
     if (recipient) {
         stream << " recipient=" << recipient.get();
     }

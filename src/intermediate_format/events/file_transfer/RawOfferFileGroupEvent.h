@@ -27,7 +27,7 @@ struct RawOfferFileGroupEvent : RawEvent {
 public:
     unique_ptr<ApparentSubject> sender;
     unique_ptr<ApparentSubject> recipient;
-    uint num_files;
+    uint numFiles;
 
     RawOfferFileGroupEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) sender, uint num_files);
 
