@@ -13,7 +13,8 @@ from collections import namedtuple
 
 from build_assistant.VirtualPath import VirtualPath
 from build_assistant.autogen_common import get_full_autogen_raw_event_path_and_name
-from build_assistant.includes import local_include, std_include, qt_include, local_use, std_use
+from build_assistant.includes import IncludeType, local_include, std_include, qt_include, local_use, std_use, \
+    normalize_include_path
 from build_assistant.util import scan_files
 
 
@@ -48,6 +49,20 @@ class SymbolRegistry:
                 include=None,
                 use=None,
             )
+
+    def symbols_covered_by_include(self, bank, path):
+        path = normalize_include_path(path)
+
+        if bank == IncludeType.QT and looks_like_qt_symbol(path.to_text()):
+            return [path.to_text()]
+
+        symbols = list()
+
+        for symbol, symbol_info in self.symbols.items():
+            if symbol_info.include == (bank, path):
+                symbols.append(symbol)
+
+        return symbols
 
     @staticmethod
     def build(base_src_dir, autogen_config, code_gen_cfg):
