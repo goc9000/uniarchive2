@@ -20,11 +20,14 @@ TypeKind = Enum('TypeKind', ['POLYMORPHIC', 'MOVABLE', 'HEAVY', 'PRIMITIVE'])
 SymbolInfo = namedtuple('SymbolInfo', ['is_type', 'type_kind', 'include', 'use'])
 
 
+SHORTCUTS = ['IMM', 'CPTR', 'TAKE', 'TAKE_VEC']
+
+
 class SymbolRegistry:
     symbols = None
 
     def __init__(self, symbols):
-        self.symbols = dict(symbols)
+        self.symbols = dict(**symbols, **get_builtin_symbols())
 
     def lookup(self, symbol):
         if symbol in self.symbols:
@@ -35,34 +38,6 @@ class SymbolRegistry:
                 is_type=True,
                 type_kind=TypeKind.HEAVY,
                 include=('qt', symbol),
-                use=None,
-            )
-        elif symbol == 'unique_ptr':
-            return SymbolInfo(
-                is_type=False,
-                type_kind=None,
-                include=('std', 'memory'),
-                use=('std', 'std'),
-            )
-        elif symbol == 'vector':
-            return SymbolInfo(
-                is_type=False,
-                type_kind=None,
-                include=('std', 'vector'),
-                use=('std', 'std'),
-            )
-        elif symbol == 'optional':
-            return SymbolInfo(
-                is_type=False,
-                type_kind=None,
-                include='utils/external_libs/optional.hpp',
-                use=('std', 'std::experimental'),
-            )
-        elif symbol in ['IMM', 'CPTR', 'TAKE', 'TAKE_VEC']:
-            return SymbolInfo(
-                is_type=False,
-                type_kind=None,
-                include='utils/language/shortcuts.h',
                 use=None,
             )
         else:
@@ -134,3 +109,36 @@ class SymbolRegistry:
             )
 
         return SymbolRegistry(symbols)
+
+
+def get_builtin_symbols():
+    symbols = dict(
+        unique_ptr=SymbolInfo(
+            is_type=False,
+            type_kind=None,
+            include=('std', 'memory'),
+            use=('std', 'std'),
+        ),
+        vector=SymbolInfo(
+            is_type=False,
+            type_kind=None,
+            include=('std', 'vector'),
+            use=('std', 'std'),
+        ),
+        optional=SymbolInfo(
+            is_type=False,
+            type_kind=None,
+            include='utils/external_libs/optional.hpp',
+            use=('std', 'std::experimental'),
+        ),
+    )
+
+    for symbol in SHORTCUTS:
+        symbols[symbol] = SymbolInfo(
+            is_type=False,
+            type_kind=None,
+            include='utils/language/shortcuts.h',
+            use=None,
+        )
+
+    return symbols
