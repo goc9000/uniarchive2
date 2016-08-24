@@ -34,6 +34,12 @@ class VirtualPath:
     def depth(self):
         return len(self.elements)
 
+    def is_parent_of(self, other):
+        return len(self.elements) < len(other.elements) and self.elements == other.elements[:len(self.elements)]
+
+    def is_equal_or_parent_of(self, other):
+        return self == other or self.is_parent_of(other)
+
     def add(self, element):
         return VirtualPath(self.elements + (element,))
 
