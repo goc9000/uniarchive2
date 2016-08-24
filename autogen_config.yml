@@ -74,6 +74,7 @@ enums:
 base raw event:
   - ApparentTime timestamp
   - uint indexInConversation as index
+  - ..
   - ?QByteArray skypeGUID
 
 raw events:
