@@ -144,7 +144,7 @@ def gen_raw_events(autogen_config, symbol_registry):
 
         return cpp_type, field_config.short_name or camelcase_to_underscore(field_config.name)
 
-    def constructor_params():
+    def constructor_params(event_config):
         all_fields = \
             [field for field in autogen_config.base_raw_event.fields + event_config.fields if field is not None]
 
@@ -177,7 +177,7 @@ def gen_raw_events(autogen_config, symbol_registry):
                     block.nl()
 
                 block \
-                    .declare_constructor(class_name, *constructor_params()).nl() \
+                    .declare_constructor(class_name, *constructor_params(event_config)).nl() \
                     .declare_fn('eventName', 'QString', const=True, virtual=True)
 
             struct.nl()
