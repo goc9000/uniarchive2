@@ -17,7 +17,7 @@ RawChangeTopicEvent::RawChangeTopicEvent(
     uint index,
     TAKE(ApparentSubject) subject,
     RawMessageContent&& topic
-): RawEvent(timestamp, index), subject(move(subject)), topic(move(topic)) {
+) : RawEvent(timestamp, index), subject(move(subject)), topic(move(topic)) {
 }
 
 QString RawChangeTopicEvent::eventName() const {

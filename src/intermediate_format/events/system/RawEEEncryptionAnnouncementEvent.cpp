@@ -14,7 +14,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawEEEncryptionAnnouncementEvent::RawEEEncryptionAnnouncementEvent(IMM(ApparentTime) timestamp, uint index)
-    : RawEvent(timestamp, index) {
+  : RawEvent(timestamp, index) {
 }
 
 QString RawEEEncryptionAnnouncementEvent::eventName() const {

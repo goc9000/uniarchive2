@@ -16,7 +16,7 @@ RawEditedPreviousMessageEvent::RawEditedPreviousMessageEvent(
     IMM(ApparentTime) timestamp,
     uint index,
     TAKE(ApparentSubject) subject
-): RawEvent(timestamp, index), subject(move(subject)) {
+) : RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString RawEditedPreviousMessageEvent::eventName() const {

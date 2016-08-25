@@ -17,7 +17,7 @@ RawOfferFileGroupEvent::RawOfferFileGroupEvent(
     uint index,
     TAKE(ApparentSubject) sender,
     uint num_files
-): RawEvent(timestamp, index), sender(move(sender)), numFiles(num_files) {
+) : RawEvent(timestamp, index), sender(move(sender)), numFiles(num_files) {
 }
 
 QString RawOfferFileGroupEvent::eventName() const {

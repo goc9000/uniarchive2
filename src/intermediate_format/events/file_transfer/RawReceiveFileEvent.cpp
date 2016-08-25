@@ -17,7 +17,7 @@ RawReceiveFileEvent::RawReceiveFileEvent(
     uint index,
     TAKE(ApparentSubject) receiver,
     IMM(RawTransferredFile) file
-): RawEvent(timestamp, index), receiver(move(receiver)), file(file) {
+) : RawEvent(timestamp, index), receiver(move(receiver)), file(file) {
 }
 
 QString RawReceiveFileEvent::eventName() const {

@@ -18,7 +18,7 @@ RawSendContactsEvent::RawSendContactsEvent(
     uint index,
     TAKE(ApparentSubject) sender,
     TAKE_VEC(ApparentSubject) contacts
-): RawEvent(timestamp, index), sender(move(sender)), contacts(move(contacts)) {
+) : RawEvent(timestamp, index), sender(move(sender)), contacts(move(contacts)) {
 }
 
 QString RawSendContactsEvent::eventName() const {

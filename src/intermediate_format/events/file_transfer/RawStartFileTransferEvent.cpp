@@ -16,7 +16,7 @@ RawStartFileTransferEvent::RawStartFileTransferEvent(
     IMM(ApparentTime) timestamp,
     uint index,
     IMM(RawTransferredFile) file
-): RawEvent(timestamp, index), file(file) {
+) : RawEvent(timestamp, index), file(file) {
 }
 
 QString RawStartFileTransferEvent::eventName() const {

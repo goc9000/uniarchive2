@@ -17,7 +17,7 @@ RawStatusChangeEvent::RawStatusChangeEvent(
     uint index,
     TAKE(ApparentSubject) subject,
     IMStatus status
-): RawEvent(timestamp, index), subject(move(subject)), status(status) {
+) : RawEvent(timestamp, index), subject(move(subject)), status(status) {
 }
 
 QString RawStatusChangeEvent::eventName() const {

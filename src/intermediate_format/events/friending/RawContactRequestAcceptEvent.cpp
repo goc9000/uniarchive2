@@ -17,7 +17,7 @@ RawContactRequestAcceptEvent::RawContactRequestAcceptEvent(
     uint index,
     TAKE(ApparentSubject) acceptor,
     TAKE(ApparentSubject) acceptee
-): RawEvent(timestamp, index), acceptor(move(acceptor)), acceptee(move(acceptee)) {
+) : RawEvent(timestamp, index), acceptor(move(acceptor)), acceptee(move(acceptee)) {
 }
 
 QString RawContactRequestAcceptEvent::eventName() const {

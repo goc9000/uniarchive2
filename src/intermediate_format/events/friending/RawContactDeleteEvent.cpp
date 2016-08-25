@@ -17,7 +17,7 @@ RawContactDeleteEvent::RawContactDeleteEvent(
     uint index,
     TAKE(ApparentSubject) deleter,
     TAKE(ApparentSubject) deletee
-): RawEvent(timestamp, index), deleter(move(deleter)), deletee(move(deletee)) {
+) : RawEvent(timestamp, index), deleter(move(deleter)), deletee(move(deletee)) {
 }
 
 QString RawContactDeleteEvent::eventName() const {

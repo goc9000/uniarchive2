@@ -18,7 +18,7 @@ RawTransferFilesEvent::RawTransferFilesEvent(
     uint index,
     TAKE(ApparentSubject) sender,
     IMM(vector<RawTransferredFile>) files
-): RawEvent(timestamp, index), sender(move(sender)), files(files) {
+) : RawEvent(timestamp, index), sender(move(sender)), files(files) {
 }
 
 QString RawTransferFilesEvent::eventName() const {

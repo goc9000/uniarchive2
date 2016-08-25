@@ -12,11 +12,8 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-RawLeaveConferenceEvent::RawLeaveConferenceEvent(
-    IMM(ApparentTime) timestamp,
-    uint index,
-    TAKE(ApparentSubject) subject
-): RawEvent(timestamp, index), subject(move(subject)) {
+RawLeaveConferenceEvent::RawLeaveConferenceEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject)
+  : RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString RawLeaveConferenceEvent::eventName() const {

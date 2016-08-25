@@ -18,7 +18,7 @@ RawContactRequestEvent::RawContactRequestEvent(
     TAKE(ApparentSubject) sender,
     TAKE(ApparentSubject) receiver,
     RawMessageContent&& message
-): RawEvent(timestamp, index), sender(move(sender)), receiver(move(receiver)), message(move(message)) {
+) : RawEvent(timestamp, index), sender(move(sender)), receiver(move(receiver)), message(move(message)) {
 }
 
 QString RawContactRequestEvent::eventName() const {

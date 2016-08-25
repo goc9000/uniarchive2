@@ -17,7 +17,7 @@ RawOfferFileEvent::RawOfferFileEvent(
     uint index,
     TAKE(ApparentSubject) sender,
     IMM(RawTransferredFile) file
-): RawEvent(timestamp, index), sender(move(sender)), file(file) {
+) : RawEvent(timestamp, index), sender(move(sender)), file(file) {
 }
 
 QString RawOfferFileEvent::eventName() const {

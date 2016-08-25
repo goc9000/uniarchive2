@@ -13,7 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawOfferCallEvent::RawOfferCallEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) caller)
-    : RawEvent(timestamp, index), caller(move(caller)) {
+  : RawEvent(timestamp, index), caller(move(caller)) {
 }
 
 QString RawOfferCallEvent::eventName() const {

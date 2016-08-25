@@ -13,7 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawConnectedEvent::RawConnectedEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) subject)
-    : RawEvent(timestamp, index), subject(move(subject)) {
+  : RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString RawConnectedEvent::eventName() const {

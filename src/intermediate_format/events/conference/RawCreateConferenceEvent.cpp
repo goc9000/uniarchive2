@@ -16,8 +16,8 @@ RawCreateConferenceEvent::RawCreateConferenceEvent(
     IMM(ApparentTime) timestamp,
     uint index,
     TAKE(ApparentSubject) creator,
-    IMM(QString) conferenceName
-): RawEvent(timestamp, index), creator(move(creator)), conferenceName(conferenceName) {
+    IMM(QString) conference_name
+) : RawEvent(timestamp, index), creator(move(creator)), conferenceName(conference_name) {
 }
 
 QString RawCreateConferenceEvent::eventName() const {

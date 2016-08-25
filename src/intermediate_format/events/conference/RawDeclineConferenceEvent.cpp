@@ -16,7 +16,7 @@ RawDeclineConferenceEvent::RawDeclineConferenceEvent(
     IMM(ApparentTime) timestamp,
     uint index,
     TAKE(ApparentSubject) subject
-): RawEvent(timestamp, index), subject(move(subject)) {
+) : RawEvent(timestamp, index), subject(move(subject)) {
 }
 
 QString RawDeclineConferenceEvent::eventName() const {
