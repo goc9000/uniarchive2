@@ -10,8 +10,6 @@
 
 #include "intermediate_format/events/conference/RawChangeTopicEvent.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawChangeTopicEvent::RawChangeTopicEvent(

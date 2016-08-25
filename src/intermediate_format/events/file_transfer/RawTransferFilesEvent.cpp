@@ -11,8 +11,6 @@
 #include "intermediate_format/events/file_transfer/RawTransferFilesEvent.h"
 #include "utils/qt/debug_extras.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawTransferFilesEvent::RawTransferFilesEvent(

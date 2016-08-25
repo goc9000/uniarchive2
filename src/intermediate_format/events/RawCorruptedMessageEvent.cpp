@@ -10,8 +10,6 @@
 
 #include "intermediate_format/events/RawCorruptedMessageEvent.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawCorruptedMessageEvent::RawCorruptedMessageEvent(IMM(ApparentTime) timestamp, uint index, IMM(QByteArray) raw_data)

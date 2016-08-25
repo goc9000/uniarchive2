@@ -10,8 +10,6 @@
 
 #include "intermediate_format/events/friending/RawContactRequestAcceptEvent.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawContactRequestAcceptEvent::RawContactRequestAcceptEvent(

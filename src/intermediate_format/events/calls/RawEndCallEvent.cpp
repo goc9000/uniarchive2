@@ -10,8 +10,6 @@
 
 #include "intermediate_format/events/calls/RawEndCallEvent.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawEndCallEvent::RawEndCallEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {

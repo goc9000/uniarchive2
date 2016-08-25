@@ -12,8 +12,6 @@
 
 #include "utils/qt/debug_extras.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 RawRejoinConferenceEvent::RawRejoinConferenceEvent(

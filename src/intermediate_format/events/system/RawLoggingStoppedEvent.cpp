@@ -8,8 +8,6 @@
  * Licensed under the GPL-3
  */
 
-#include <QDebugStateSaver>
-
 #include "intermediate_format/events/system/RawLoggingStoppedEvent.h"
 #include "utils/language/shortcuts.h"
 

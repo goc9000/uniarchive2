@@ -10,8 +10,6 @@
 
 #include "intermediate_format/events/conference/RawSetSkypeChatRoleEvent.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
 using namespace protocols::skype;
