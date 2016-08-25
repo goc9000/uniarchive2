@@ -62,6 +62,10 @@ class SymbolRegistry:
             if symbol_info.include == (bank, path):
                 symbols.append(symbol)
 
+        # HAXX
+        if bank == IncludeType.LOCAL and path.to_text() == 'utils/language/shortcuts.h':
+            symbols.extend(['unique_ptr', 'vector'])
+
         return symbols
 
     @staticmethod
