@@ -14,13 +14,9 @@
 #include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/errors/PingFailReason.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
-#include "utils/language/shortcuts.h"
-
-#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-using namespace std;
 using namespace uniarchive2::intermediate_format::errors;
 using namespace uniarchive2::intermediate_format::subjects;
 

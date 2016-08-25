@@ -12,14 +12,8 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWLOGGINGSTARTEDEVENT_H
 
 #include "intermediate_format/events/RawEvent.h"
-#include "utils/language/shortcuts.h"
-
-#include <QtDebug>
-#include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
-
-using namespace std;
 
 struct RawLoggingStartedEvent : RawEvent {
 public:

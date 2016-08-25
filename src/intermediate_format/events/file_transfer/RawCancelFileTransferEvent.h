@@ -14,14 +14,9 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/RawTransferredFile.h"
-#include "utils/language/shortcuts.h"
-
-#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-using namespace std;
-using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawCancelFileTransferEvent : RawEvent {

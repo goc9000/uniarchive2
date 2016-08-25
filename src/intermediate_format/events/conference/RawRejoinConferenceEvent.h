@@ -13,15 +13,9 @@
 
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
-#include "utils/language/shortcuts.h"
-
-#include <QtDebug>
-
-#include <vector>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-using namespace std;
 using namespace uniarchive2::intermediate_format::subjects;
 
 struct RawRejoinConferenceEvent : RawEvent {

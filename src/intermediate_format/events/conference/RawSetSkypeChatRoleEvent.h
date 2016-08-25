@@ -14,13 +14,9 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "protocols/skype/SkypeChatRole.h"
-#include "utils/language/shortcuts.h"
-
-#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-using namespace std;
 using namespace protocols::skype;
 using namespace uniarchive2::intermediate_format::subjects;
 
