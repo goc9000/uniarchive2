@@ -267,6 +267,10 @@ def gen_raw_events(autogen_config, autogen_core):
         ) as cons:
             pass
 
+        with cpp_source.method(class_name, 'eventName', 'QString', const=True) as m:
+            m.line("return {0};".format(m.string_literal(name)))
+
+
 def autogenerate_code():
     with open('autogen_config.yml', 'r') as f:
         raw_config = yaml.load(f)
