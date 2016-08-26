@@ -33,7 +33,7 @@ void RawEndCallEvent::writeDetailsToDebugStream(QDebug stream) const {
         stream << " synthetic_call_guid=" << *syntheticCallGUID;
     }
     if (correspondingSkypeCallID) {
-        stream << " corresp_skype_call_id=" << *correspondingSkypeCallID;
+        stream << " corresponding_skype_call_id=" << *correspondingSkypeCallID;
     }
 }
 

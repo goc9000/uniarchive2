@@ -21,7 +21,7 @@ QString RawUninterpretedEvent::eventName() const {
 }
 
 void RawUninterpretedEvent::writeDetailsToDebugStream(QDebug stream) const {
-    stream << " data=" << rawData;
+    stream << " raw_data=" << rawData;
 }
 
 }}}

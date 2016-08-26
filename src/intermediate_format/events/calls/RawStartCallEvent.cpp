@@ -35,7 +35,7 @@ void RawStartCallEvent::writeFailableEventDetailsToDebugStream(QDebug stream) co
     }
 
     if (durationSeconds) {
-        stream << " duration=" << *durationSeconds;
+        stream << " duration_seconds=" << *durationSeconds;
     }
 
     if (skypeCallGUID) {
@@ -45,7 +45,7 @@ void RawStartCallEvent::writeFailableEventDetailsToDebugStream(QDebug stream) co
         stream << " synthetic_call_guid=" << *syntheticCallGUID;
     }
     if (correspondingSkypeCallID) {
-        stream << " corresp_skype_call_id=" << *correspondingSkypeCallID;
+        stream << " corresponding_skype_call_id=" << *correspondingSkypeCallID;
     }
 }
 

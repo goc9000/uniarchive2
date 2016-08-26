@@ -21,7 +21,7 @@ QString RawCorruptedMessageEvent::eventName() const {
 }
 
 void RawCorruptedMessageEvent::writeDetailsToDebugStream(QDebug stream) const {
-    stream << " data=" << rawData;
+    stream << " raw_data=" << rawData;
 }
 
 }}}
