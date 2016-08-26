@@ -9,7 +9,6 @@
  */
 
 #include "intermediate_format/events/conference/RawRejoinConferenceEvent.h"
-
 #include "utils/qt/debug_extras.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
