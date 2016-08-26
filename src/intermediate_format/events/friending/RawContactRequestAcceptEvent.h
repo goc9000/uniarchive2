@@ -1,5 +1,5 @@
 /**
- * intermediate_format/events/friending/RawContactRequestAcceptAcceptEvent.h
+ * intermediate_format/events/friending/RawContactRequestAcceptEvent.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
