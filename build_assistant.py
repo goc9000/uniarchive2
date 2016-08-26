@@ -102,6 +102,9 @@ def gen_enums(enums_config, autogen_core):
 
 
 def gen_raw_events(autogen_config, autogen_core):
+    def local_name(field_config):
+        return field_config.short_name or camelcase_to_underscore(field_config.name)
+
     def as_field_decl(field_config):
         base_type = field_config.base_type
         type_info = autogen_core.symbol_registry.lookup(base_type)
@@ -140,14 +143,14 @@ def gen_raw_events(autogen_config, autogen_core):
             elif type_info.type_kind != TypeKind.PRIMITIVE or field_config.is_list:
                 cpp_type = 'IMM({0})'.format(cpp_type)
 
-        return cpp_type, field_config.short_name or camelcase_to_underscore(field_config.name)
+        return cpp_type, local_name(field_config)
 
     def as_rvalue(field_config):
         base_type = field_config.base_type
         type_info = autogen_core.symbol_registry.lookup(base_type)
         assert type_info.is_type, '{0} is not a base type'.format(base_type)
 
-        rvalue = field_config.short_name or camelcase_to_underscore(field_config.name)
+        rvalue = local_name(field_config)
 
         if type_info.type_kind == TypeKind.POLYMORPHIC or type_info.type_kind == TypeKind.MOVABLE:
             rvalue = 'move({0})'.format(rvalue)
@@ -179,6 +182,33 @@ def gen_raw_events(autogen_config, autogen_core):
                 subconstructors.append('{0}({1})'.format(field_config.name, as_rvalue(field_config)))
 
         return subconstructors
+
+    def gen_debug_write_method(cpp_source, event_config):
+        stream_type = 'QDebug' + (' UNUSED' if len(event_config.fields) == 0 else '')
+
+        with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as m:
+            for field_config in event_config.fields:
+                base_type = field_config.base_type
+                type_info = autogen_core.symbol_registry.lookup(base_type)
+                assert type_info.is_type, '{0} is not a base type'.format(base_type)
+
+                value_expr = field_config.name
+
+                if type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list:
+                    value_expr += '.get()'
+                else:
+                    if field_config.is_optional:
+                        value_expr = '*' + value_expr
+                    if field_config.is_list:
+                        cpp_source.include("utils/qt/debug_extras.h")  # For printing vectors
+
+                line = 'stream << " {0}=" << {1};'.format(local_name(field_config), value_expr)
+
+                if field_config.is_optional:
+                    with m.if_block(field_config.name, nl_after=False) as block:
+                        block.line(line)
+                else:
+                    m.line(line)
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
@@ -229,6 +259,7 @@ def gen_raw_events(autogen_config, autogen_core):
         cpp_source, h_source = autogen_core.new_pair(path, class_name)
 
         parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent<' + event_config.fail_reason_enum + '>'
+        debug_write_method = 'write' + ('FailableEvent' if is_failable else '') + 'DetailsToDebugStream'
 
         with h_source.struct_block(class_name, inherits=[parent_class]) as struct:
             h_source.cover_symbols(base_event_h.get_covered_symbols())
@@ -250,12 +281,7 @@ def gen_raw_events(autogen_config, autogen_core):
             struct.nl()
 
             with struct.protected_block() as block:
-                block.declare_fn(
-                    'write' + ('FailableEvent' if is_failable else '') + 'DetailsToDebugStream',
-                    'void', ('QDebug', 'stream'),
-                    virtual=True,
-                    const=True,
-                )
+                block.declare_fn(debug_write_method, 'void', ('QDebug', 'stream'), virtual=True, const=True)
 
         cpp_source.cover_symbols(h_source.get_covered_symbols())
 
@@ -268,6 +294,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
         with cpp_source.method(class_name, 'eventName', 'QString', const=True) as m:
             m.line("return {0};".format(m.string_literal(name)))
+
+        gen_debug_write_method(cpp_source, event_config)
 
 
 def autogenerate_code():
