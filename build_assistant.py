@@ -184,7 +184,25 @@ def gen_raw_events(autogen_config, autogen_core):
         return subconstructors
 
     def gen_debug_write_method(cpp_source, event_config):
+        def commit_temp_line(temp_line):
+            if temp_line is not None:
+                cpp_source.line(temp_line + ';')
+
+        def add_to_temp_line(temp_line, field_text):
+            if temp_line is None:
+                temp_line = 'stream'
+
+            if not cpp_source.line_fits(temp_line + field_text + ';'):
+                commit_temp_line(temp_line)
+                temp_line = 'stream'
+
+            temp_line += field_text
+
+            return temp_line
+
         stream_type = 'QDebug' + (' UNUSED' if len(event_config.fields) == 0 else '')
+
+        temp_line = None
 
         with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as m:
             for field_config in event_config.fields:
@@ -202,13 +220,18 @@ def gen_raw_events(autogen_config, autogen_core):
                     if field_config.is_list:
                         cpp_source.include("utils/qt/debug_extras.h")  # For printing vectors
 
-                line = 'stream << " {0}=" << {1};'.format(local_name(field_config), value_expr)
+                field_text = ' << " {0}=" << {1}'.format(local_name(field_config), value_expr)
 
                 if field_config.is_optional:
+                    commit_temp_line(temp_line)
+                    temp_line = None
+
                     with m.if_block(field_config.name, nl_after=False) as block:
-                        block.line(line)
+                        block.line('stream' + field_text + ';')
                 else:
-                    m.line(line)
+                    temp_line = add_to_temp_line(temp_line, field_text)
+
+            commit_temp_line(temp_line)
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
