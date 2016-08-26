@@ -142,6 +142,18 @@ def gen_raw_events(autogen_config, autogen_core):
 
         return cpp_type, field_config.short_name or camelcase_to_underscore(field_config.name)
 
+    def as_rvalue(field_config):
+        base_type = field_config.base_type
+        type_info = autogen_core.symbol_registry.lookup(base_type)
+        assert type_info.is_type, '{0} is not a base type'.format(base_type)
+
+        rvalue = field_config.short_name or camelcase_to_underscore(field_config.name)
+
+        if type_info.type_kind == TypeKind.POLYMORPHIC or type_info.type_kind == TypeKind.MOVABLE:
+            rvalue = 'move({0})'.format(rvalue)
+
+        return rvalue
+
     def constructor_params(event_config):
         all_fields = list(autogen_config.base_raw_event.fields)
         if event_config is not None:
@@ -155,6 +167,19 @@ def gen_raw_events(autogen_config, autogen_core):
                 params.append(as_param(field_config))
 
         return params
+
+    def subconstructors(event_config):
+        parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent'
+        parent_fields = [f for f in autogen_config.base_raw_event.fields if f is not None and not f.is_optional]
+        parent_constructor = parent_class + '(' + ', '.join(as_rvalue(f) for f in parent_fields) + ')'
+
+        subconstructors = [parent_constructor]
+
+        for field_config in event_config.fields:
+            if field_config is not None and not field_config.is_optional:
+                subconstructors.append('{0}({1})'.format(field_config.name, as_rvalue(field_config)))
+
+        return subconstructors
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
@@ -235,6 +260,12 @@ def gen_raw_events(autogen_config, autogen_core):
 
         cpp_source.cover_symbols(h_source.get_covered_symbols())
 
+        with cpp_source.constructor(
+            class_name,
+            *constructor_params(event_config),
+            inherits=subconstructors(event_config)
+        ) as cons:
+            pass
 
 def autogenerate_code():
     with open('autogen_config.yml', 'r') as f:
