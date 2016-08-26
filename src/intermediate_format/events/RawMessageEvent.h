@@ -12,8 +12,8 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWMESSAGEEVENT_H
 
 #include "intermediate_format/content/RawMessageContent.h"
-#include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/errors/SendMessageFailReason.h"
+#include "intermediate_format/events/RawFailableEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {

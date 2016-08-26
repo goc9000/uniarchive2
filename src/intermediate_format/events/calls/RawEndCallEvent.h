@@ -11,8 +11,8 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWENDCALLEVENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_EVENTS_RAWENDCALLEVENT_H
 
-#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/errors/CurrentCallFailReason.h"
+#include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
