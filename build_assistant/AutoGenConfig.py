@@ -19,12 +19,12 @@ AutoGenEntry = namedtuple('AutoGenEntry', ['path', 'name', 'config'])
 EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
 EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment'])
 
-RawEventConfig = namedtuple('RawEventConfig', ['fields', 'fail_reason_enum'])
+RawEventConfig = namedtuple('RawEventConfig', ['fields', 'field_breaks', 'fail_reason_enum'])
 RawEventFieldConfig = namedtuple(
     'RawEventConfig', ['name', 'base_type', 'is_optional', 'is_list', 'short_name', 'default_value']
 )
 
-GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'options'])
+GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'field_breaks', 'options'])
 GenericEntityFieldConfig = namedtuple('GenericEntityFieldConfig', ['expression', 'options'])
 
 
@@ -63,10 +63,13 @@ def parse_hierarchy(config, leaf_parser):
 
 def preparse_entity(entity_config, field_name):
     raw_fields = list()
+    field_breaks = list()
     raw_options = dict()
 
     for subconfig in entity_config:
-        if isinstance(subconfig, str):
+        if subconfig == '..':
+            field_breaks.append(len(raw_fields))
+        elif isinstance(subconfig, str):
             raw_fields.append(GenericEntityFieldConfig(expression=subconfig, options=dict()))
         elif field_name in subconfig:
             raw_fields.append(
@@ -78,7 +81,7 @@ def preparse_entity(entity_config, field_name):
         else:
             raw_options.update(**subconfig)
 
-    return GenericEntityConfig(fields=raw_fields, options=raw_options)
+    return GenericEntityConfig(fields=raw_fields, field_breaks=field_breaks, options=raw_options)
 
 
 def parse_enum_config(entity_config):
@@ -108,9 +111,6 @@ def parse_enum_config(entity_config):
 
 def parse_raw_event_config(entity_config):
     def parse_raw_event_field(field_config):
-        if field_config.expression == '..':
-            return None
-
         match = re.match(
             r'^(\?)?([a-zA-Z0-9_]+)(\[\])?\s+([a-zA-Z0-9_]+)(?:\s+as\s+([a-zA-Z0-9_]+))?(?:\s*=\s*(\w+))?$',
             field_config.expression.strip()
@@ -132,5 +132,6 @@ def parse_raw_event_config(entity_config):
 
     return RawEventConfig(
         fields=[parse_raw_event_field(preparsed) for preparsed in preparsed.fields],
+        field_breaks=preparsed.field_breaks,
         fail_reason_enum=preparsed.options.get('failable')
     )

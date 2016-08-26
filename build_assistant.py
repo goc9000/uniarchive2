@@ -158,7 +158,6 @@ def gen_raw_events(autogen_config, autogen_core):
         all_fields = list(autogen_config.base_raw_event.fields)
         if event_config is not None:
             all_fields += event_config.fields
-        all_fields = filter(lambda f: f is not None, all_fields)
 
         params = list()
 
@@ -170,13 +169,13 @@ def gen_raw_events(autogen_config, autogen_core):
 
     def subconstructors(event_config):
         parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent'
-        parent_fields = [f for f in autogen_config.base_raw_event.fields if f is not None and not f.is_optional]
+        parent_fields = [f for f in autogen_config.base_raw_event.fields if not f.is_optional]
         parent_constructor = parent_class + '(' + ', '.join(as_rvalue(f) for f in parent_fields) + ')'
 
         subconstructors = [parent_constructor]
 
         for field_config in event_config.fields:
-            if field_config is not None and not field_config.is_optional:
+            if not field_config.is_optional:
                 subconstructors.append('{0}({1})'.format(field_config.name, as_rvalue(field_config)))
 
         return subconstructors
@@ -190,11 +189,11 @@ def gen_raw_events(autogen_config, autogen_core):
         with h_source.struct_block(class_name) as struct:
             with struct.public_block() as block:
                 if len(autogen_config.base_raw_event.fields) > 0:
-                    for field in autogen_config.base_raw_event.fields:
-                        if field is None:
+                    for index, field in enumerate(autogen_config.base_raw_event.fields):
+                        if index in autogen_config.base_raw_event.field_breaks:
                             block.nl()
-                        else:
-                            block.field(*as_field_decl(field))
+
+                        block.field(*as_field_decl(field))
 
                     block.nl()
 
@@ -236,11 +235,11 @@ def gen_raw_events(autogen_config, autogen_core):
 
             with struct.public_block() as block:
                 if len(event_config.fields) > 0:
-                    for field in event_config.fields:
-                        if field is None:
+                    for index, field in enumerate(event_config.fields):
+                        if index in event_config.field_breaks:
                             block.nl()
-                        else:
-                            block.field(*as_field_decl(field))
+
+                        block.field(*as_field_decl(field))
 
                     block.nl()
 
