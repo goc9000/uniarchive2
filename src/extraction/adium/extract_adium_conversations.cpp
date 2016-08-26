@@ -183,6 +183,7 @@ static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename
 static IMProtocol parse_protocol(IMM(QString) protocol_name) {
     const static QMap<QString, IMProtocol> PROTOCOL_MAP = {
         { "Yahoo!", IMProtocol::YAHOO },
+        { "GTalk", IMProtocol::JABBER },
         { "Jabber", IMProtocol::JABBER },
     };
 
