@@ -16,8 +16,8 @@
 #include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
 #include <QByteArray>
+#include <QDebug>
 #include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
