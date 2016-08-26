@@ -9,7 +9,6 @@
  */
 
 #include "intermediate_format/events/system/RawLoggingStartedEvent.h"
-#include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
