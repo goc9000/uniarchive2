@@ -17,8 +17,8 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
 
-using namespace protocols::skype;
 using namespace uniarchive2::intermediate_format::subjects;
+using namespace uniarchive2::protocols::skype;
 
 struct RawSetSkypeChatRoleEvent : RawEvent {
 public:
