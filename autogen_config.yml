@@ -98,7 +98,7 @@ raw events:
       - ?QString syntheticCallGUID
       - ?uint64_t correspondingSkypeCallID
     EndCall:
-      - ApparentSubject ender
+      - ?ApparentSubject ender
       - ..
       - ?CurrentCallFailReason reasonCallFailed
       - ..
