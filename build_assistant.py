@@ -340,6 +340,15 @@ def gen_raw_events(autogen_config, autogen_core):
 
         cpp_source.cover_symbols(h_source.get_covered_symbols())
 
+        with cpp_source.method(
+            class_name, 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'), const=True
+        ) as _:
+            pass
+        with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event')) as method:
+            method \
+                .line('event->writeToDebugStream(stream);') \
+                .line('return stream;')
+
         return h_source
 
     base_event_h = gen_base_raw_event()
