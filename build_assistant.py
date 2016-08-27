@@ -193,25 +193,25 @@ def gen_raw_events(autogen_config, autogen_core):
             )
 
     def gen_debug_write_method(cpp_source, event_config):
-        def commit_temp_line(temp_line):
-            if temp_line is not None:
-                cpp_source.line(temp_line + ';')
+        def commit_regular_fields_line(regular_fields_line):
+            if regular_fields_line is not None:
+                cpp_source.line(regular_fields_line + ';')
 
-        def add_to_temp_line(temp_line, field_text):
-            if temp_line is None:
-                temp_line = 'stream'
+        def add_to_regular_fields_line(regular_fields_line, field_text):
+            if regular_fields_line is None:
+                regular_fields_line = 'stream'
 
-            if not cpp_source.line_fits(temp_line + field_text + ';'):
-                commit_temp_line(temp_line)
-                temp_line = 'stream'
+            if not cpp_source.line_fits(regular_fields_line + field_text + ';'):
+                commit_regular_fields_line(regular_fields_line)
+                regular_fields_line = 'stream'
 
-            temp_line += field_text
+            regular_fields_line += field_text
 
-            return temp_line
+            return regular_fields_line
 
         stream_type = 'QDebug' + (' UNUSED' if len(event_config.fields) == 0 else '')
 
-        temp_line = None
+        regular_fields_line = None
 
         with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as m:
             for field_config in event_config.fields:
@@ -232,15 +232,15 @@ def gen_raw_events(autogen_config, autogen_core):
                 field_text = ' << " {0}=" << {1}'.format(local_name(field_config), value_expr)
 
                 if field_config.is_optional:
-                    commit_temp_line(temp_line)
-                    temp_line = None
+                    commit_regular_fields_line(regular_fields_line)
+                    regular_fields_line = None
 
                     with m.if_block(field_config.name, nl_after=False) as block:
                         block.line('stream' + field_text + ';')
                 else:
-                    temp_line = add_to_temp_line(temp_line, field_text)
+                    regular_fields_line = add_to_regular_fields_line(regular_fields_line, field_text)
 
-            commit_temp_line(temp_line)
+            commit_regular_fields_line(regular_fields_line)
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
