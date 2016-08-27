@@ -127,7 +127,7 @@ raw events:
       - ..
       - ?bool asModerator
     RemoveFromConference:
-      - ?ApparentSubject remover
+      - (?)ApparentSubject remover
       - ApparentSubject removee
     ChangeConferencePicture:
       - ApparentSubject subject
@@ -135,13 +135,13 @@ raw events:
       - ApparentSubject subject
       - RawMessageContent topic
     SetSkypeChatRole:
-      - ?ApparentSubject setter
+      - (?)ApparentSubject setter
       - ApparentSubject target
       - SkypeChatRole role
   (conversation):
     StartConversation:
-      - ?ApparentSubject initiator
-      - ?ApparentSubject peer
+      - (?)ApparentSubject initiator
+      - (?)ApparentSubject peer
     JoinConversation:
       - ApparentSubject subject
     LeaveConversation:
@@ -163,7 +163,7 @@ raw events:
       - RawTransferredFile file
       - ?ApparentSubject sender
     CancelFileTransfer:
-      - ?RawTransferredFile file
+      - (?)RawTransferredFile file
       - ?ApparentSubject actor
     TransferFiles:
       - ApparentSubject sender
