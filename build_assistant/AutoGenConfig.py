@@ -23,7 +23,7 @@ RawEventConfig = namedtuple('RawEventConfig', ['fields', 'field_breaks', 'fail_r
 RawEventFieldConfig = namedtuple(
     'RawEventConfig',
     ['name', 'base_type', 'is_optional', 'is_list', 'add_to_constructor', 'maybe_singleton', 'short_name',
-     'default_value']
+     'default_value', 'doc']
 )
 
 GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'field_breaks', 'options'])
@@ -130,7 +130,8 @@ def parse_raw_event_config(entity_config):
             add_to_constructor=(optionality == '(?)'),
             maybe_singleton=(multiplicity == '([])'),
             short_name=short_name,
-            default_value=default_value
+            default_value=default_value,
+            doc=field_config.options['doc'].strip() if 'doc' in field_config.options else None
         )
 
     preparsed = preparse_entity(entity_config, 'field')

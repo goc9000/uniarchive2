@@ -311,6 +311,9 @@ def gen_raw_events(autogen_config, autogen_core):
                         if index in autogen_config.base_raw_event.field_breaks:
                             block.nl()
 
+                        if field.doc is not None:
+                            block.doc_comment(field.doc)
+
                         block.field(*as_field_decl(field))
 
                     block.nl()
@@ -359,6 +362,9 @@ def gen_raw_events(autogen_config, autogen_core):
                     for index, field in enumerate(event_config.fields):
                         if index in event_config.field_breaks:
                             block.nl()
+
+                        if field.doc is not None:
+                            block.doc_comment(field.doc)
 
                         block.field(*as_field_decl(field))
 
