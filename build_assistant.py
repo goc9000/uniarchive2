@@ -26,6 +26,7 @@ from build_assistant.util import fail, scan_files
 
 
 AppMetadata = namedtuple('AppMetadata', ['app_name', 'copyright_text', 'license_text'])
+ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors'])
 
 
 APP_METADATA = AppMetadata(
@@ -172,25 +173,22 @@ def gen_raw_events(autogen_config, autogen_core):
             free_fields = autogen_config.base_raw_event.fields
             parent_constructor = []
 
-        inited_fields = [f for f in free_fields if not f.is_optional]
-
-        yield (
-            [as_param(f) for f in base_fields + inited_fields],
-            parent_constructor + [as_subconstructor(f) for f in inited_fields]
-        )
-
         maybe_addable_fields = filter(lambda f: f.is_optional and f.add_to_constructor, free_fields)
-        enabled_fields = set()
+        extra_enabled_fields = set()
 
-        for field_config in maybe_addable_fields:
-            enabled_fields.add(field_config.name)
+        while True:
+            inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or not f.is_optional]
 
-            inited_fields = [f for f in free_fields if f.name in enabled_fields or not f.is_optional]
-
-            yield (
-                [as_param(f) for f in base_fields + inited_fields],
-                parent_constructor + [as_subconstructor(f) for f in inited_fields]
+            yield ConstructorInfo(
+                params=[as_param(f) for f in base_fields + inited_fields],
+                subconstructors=parent_constructor + [as_subconstructor(f) for f in inited_fields],
             )
+
+            field_config = next(maybe_addable_fields, None)
+            if field_config is None:
+                break
+
+            extra_enabled_fields.add(field_config.name)
 
     def gen_debug_write_method(cpp_source, event_config):
         def as_rvalue_expr(field_config):
@@ -274,8 +272,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
-                for params, _ in constructors(None):
-                    block.declare_constructor(class_name, *params)
+                for ctor_info in constructors(None):
+                    block.declare_constructor(class_name, *ctor_info.params)
 
                 block \
                     .nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl() \
@@ -323,8 +321,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
-                for params, _ in constructors(event_config):
-                    block.declare_constructor(class_name, *params)
+                for ctor_info in constructors(event_config):
+                    block.declare_constructor(class_name, *ctor_info.params)
 
                 block.nl().declare_fn('eventName', 'QString', const=True, virtual=True)
 
@@ -335,8 +333,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
         cpp_source.cover_symbols(h_source.get_covered_symbols())
 
-        for params, subcons in constructors(event_config):
-            with cpp_source.constructor(class_name, *params, inherits=subcons) as cons:
+        for ctor_info in constructors(event_config):
+            with cpp_source.constructor(class_name, *ctor_info.params, inherits=ctor_info.subconstructors) as cons:
                 pass
 
         with cpp_source.method(class_name, 'eventName', 'QString', const=True) as m:
