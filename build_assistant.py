@@ -210,18 +210,18 @@ def gen_raw_events(autogen_config, autogen_core):
 
             return rvalue_expr
 
-        def commit_regular_fields_line(regular_fields_line):
+        def commit_regular_fields(block, regular_fields_line):
             if regular_fields_line is not None:
-                cpp_source.line(regular_fields_line + ';')
+                block.line(regular_fields_line + ';')
 
-        def write_regular_field(regular_fields_line, field_config):
+        def write_regular_field(block, regular_fields_line, field_config):
             if regular_fields_line is None:
                 regular_fields_line = 'stream'
 
             added_text = ' << " {0}=" << {1}'.format(local_name(field_config), as_rvalue_expr(field_config))
 
-            if not cpp_source.line_fits(regular_fields_line + added_text + ';'):
-                commit_regular_fields_line(regular_fields_line)
+            if not block.line_fits(regular_fields_line + added_text + ';'):
+                commit_regular_fields(block, regular_fields_line)
                 regular_fields_line = 'stream'
 
             regular_fields_line += added_text
@@ -232,10 +232,10 @@ def gen_raw_events(autogen_config, autogen_core):
 
         regular_fields_line = None
 
-        with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as m:
+        with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as method:
             for field_config in event_config.fields:
                 if field_config.is_optional:
-                    commit_regular_fields_line(regular_fields_line)
+                    commit_regular_fields(method, regular_fields_line)
                     regular_fields_line = None
 
                     with m.if_block(field_config.name, nl_after=False) as block:
@@ -243,9 +243,9 @@ def gen_raw_events(autogen_config, autogen_core):
                             'stream << " {0}=" << {1};'.format(local_name(field_config), as_rvalue_expr(field_config))
                         )
                 else:
-                    regular_fields_line = write_regular_field(regular_fields_line, field_config)
+                    regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
 
-            commit_regular_fields_line(regular_fields_line)
+            commit_regular_fields(method, regular_fields_line)
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
