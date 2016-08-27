@@ -193,19 +193,38 @@ def gen_raw_events(autogen_config, autogen_core):
             )
 
     def gen_debug_write_method(cpp_source, event_config):
+        def as_rvalue_expr(field_config):
+            base_type = field_config.base_type
+            type_info = autogen_core.symbol_registry.lookup(base_type)
+            assert type_info.is_type, '{0} is not a base type'.format(base_type)
+
+            rvalue_expr = field_config.name
+
+            if type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list:
+                rvalue_expr += '.get()'
+            else:
+                if field_config.is_optional:
+                    rvalue_expr = '*' + rvalue_expr
+                if field_config.is_list:
+                    cpp_source.include("utils/qt/debug_extras.h")  # For printing vectors
+
+            return rvalue_expr
+
         def commit_regular_fields_line(regular_fields_line):
             if regular_fields_line is not None:
                 cpp_source.line(regular_fields_line + ';')
 
-        def add_to_regular_fields_line(regular_fields_line, field_text):
+        def write_regular_field(regular_fields_line, field_config):
             if regular_fields_line is None:
                 regular_fields_line = 'stream'
 
-            if not cpp_source.line_fits(regular_fields_line + field_text + ';'):
+            added_text = ' << " {0}=" << {1}'.format(local_name(field_config), as_rvalue_expr(field_config))
+
+            if not cpp_source.line_fits(regular_fields_line + added_text + ';'):
                 commit_regular_fields_line(regular_fields_line)
                 regular_fields_line = 'stream'
 
-            regular_fields_line += field_text
+            regular_fields_line += added_text
 
             return regular_fields_line
 
@@ -215,30 +234,16 @@ def gen_raw_events(autogen_config, autogen_core):
 
         with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as m:
             for field_config in event_config.fields:
-                base_type = field_config.base_type
-                type_info = autogen_core.symbol_registry.lookup(base_type)
-                assert type_info.is_type, '{0} is not a base type'.format(base_type)
-
-                value_expr = field_config.name
-
-                if type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list:
-                    value_expr += '.get()'
-                else:
-                    if field_config.is_optional:
-                        value_expr = '*' + value_expr
-                    if field_config.is_list:
-                        cpp_source.include("utils/qt/debug_extras.h")  # For printing vectors
-
-                field_text = ' << " {0}=" << {1}'.format(local_name(field_config), value_expr)
-
                 if field_config.is_optional:
                     commit_regular_fields_line(regular_fields_line)
                     regular_fields_line = None
 
                     with m.if_block(field_config.name, nl_after=False) as block:
-                        block.line('stream' + field_text + ';')
+                        block.line(
+                            'stream << " {0}=" << {1};'.format(local_name(field_config), as_rvalue_expr(field_config))
+                        )
                 else:
-                    regular_fields_line = add_to_regular_fields_line(regular_fields_line, field_text)
+                    regular_fields_line = write_regular_field(regular_fields_line, field_config)
 
             commit_regular_fields_line(regular_fields_line)
 
