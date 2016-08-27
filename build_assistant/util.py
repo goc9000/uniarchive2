@@ -40,3 +40,10 @@ def scan_files(base_dir, full_paths=True, include_dirs=False, filter=None):
     scan_rec(VirtualPath([]))
 
     return output
+
+
+def singular(word):
+    if word.endswith('s'):
+        return word[:-1]
+
+    assert False, "Don't know how to produce singular of '{0}'".format(word)

@@ -22,7 +22,8 @@ EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment']
 RawEventConfig = namedtuple('RawEventConfig', ['fields', 'field_breaks', 'fail_reason_enum'])
 RawEventFieldConfig = namedtuple(
     'RawEventConfig',
-    ['name', 'base_type', 'is_optional', 'is_list', 'add_to_constructor', 'short_name', 'default_value']
+    ['name', 'base_type', 'is_optional', 'is_list', 'add_to_constructor', 'maybe_singleton', 'short_name',
+     'default_value']
 )
 
 GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'field_breaks', 'options'])
@@ -113,19 +114,21 @@ def parse_enum_config(entity_config):
 def parse_raw_event_config(entity_config):
     def parse_raw_event_field(field_config):
         match = re.match(
-            r'^(\?|\(\?\))?([a-zA-Z0-9_]+)(\[\])?\s+([a-zA-Z0-9_]+)(?:\s+as\s+([a-zA-Z0-9_]+))?(?:\s*=\s*(\w+))?$',
+            r'^(\?|\(\?\))?([a-zA-Z0-9_]+)(\[\]|\(\[\]\))?\s+([a-zA-Z0-9_]+)' +
+            r'(?:\s+as\s+([a-zA-Z0-9_]+))?(?:\s*=\s*(\w+))?$',
             field_config.expression.strip()
         )
         assert match is not None, "Invalid field config: " + field_config.expression
 
-        optionality, base_type, vectorial, name, short_name, default_value = match.groups()
+        optionality, base_type, multiplicity, name, short_name, default_value = match.groups()
 
         return RawEventFieldConfig(
             name=name,
             base_type=base_type,
             is_optional=(optionality is not None),
-            is_list=(vectorial is not None),
+            is_list=(multiplicity is not None),
             add_to_constructor=(optionality == '(?)'),
+            maybe_singleton=(multiplicity == '([])'),
             short_name=short_name,
             default_value=default_value
         )

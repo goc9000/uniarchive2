@@ -22,11 +22,11 @@ from build_assistant.AutoGenConfig import parse_autogen_config
 from build_assistant.AutoGenCore import AutoGenCore
 from build_assistant.SymbolRegistry import SymbolRegistry, TypeKind
 from build_assistant.autogen_common import get_full_autogen_raw_event_path_and_name
-from build_assistant.util import fail, scan_files
+from build_assistant.util import fail, scan_files, singular
 
 
 AppMetadata = namedtuple('AppMetadata', ['app_name', 'copyright_text', 'license_text'])
-ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors'])
+ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements'])
 
 
 APP_METADATA = AppMetadata(
@@ -182,7 +182,35 @@ def gen_raw_events(autogen_config, autogen_core):
             yield ConstructorInfo(
                 params=[as_param(f) for f in base_fields + inited_fields],
                 subconstructors=parent_constructor + [as_subconstructor(f) for f in inited_fields],
+                init_statements=list(),
             )
+
+            # Generate convenience constructor for the first singularizable field
+            for index, field_config in enumerate(inited_fields):
+                if field_config.maybe_singleton:
+                    singularized = field_config._replace(
+                        is_list=False,
+                        name=singular(field_config.name),
+                        short_name=singular(field_config.short_name) if field_config.short_name is not None else None
+                    )
+
+                    params = \
+                        [as_param(f) for f in base_fields + inited_fields[:index]] + \
+                        [as_param(singularized)] + \
+                        [as_param(f) for f in inited_fields[index+1:]]
+
+                    subcons = parent_constructor + \
+                        [as_subconstructor(f) for f in inited_fields[:index]] + \
+                        [as_subconstructor(f) for f in inited_fields[index+1:]]
+
+                    yield ConstructorInfo(
+                        params=params,
+                        subconstructors=subcons,
+                        init_statements=[
+                            '{0}.push_back({1});'.format(field_config.name, as_rvalue(singularized))
+                        ]
+                    )
+                    break
 
             field_config = next(maybe_addable_fields, None)
             if field_config is None:
@@ -234,6 +262,18 @@ def gen_raw_events(autogen_config, autogen_core):
                 write_irregular_field2(block, field_config)
 
         def write_irregular_field2(block, field_config):
+            if field_config.maybe_singleton:
+                name = local_name(field_config)
+                rvalue = as_rvalue_expr(field_config)
+
+                with block.if_block('{0}.size() == 1'.format(field_config.name), nl_after=False) as b:
+                    b.line('stream << " {0}=" << {1}.front();'.format(singular(name), rvalue))
+                    with b.else_block() as e:
+                        b.line('stream << " {0}=" << {1};'.format(name, rvalue))
+            else:
+                write_irregular_field3(block, field_config)
+
+        def write_irregular_field3(block, field_config):
             block.line('stream << " {0}=" << {1};'.format(local_name(field_config), as_rvalue_expr(field_config)))
 
         stream_type = 'QDebug' + (' UNUSED' if len(event_config.fields) == 0 else '')
@@ -244,7 +284,7 @@ def gen_raw_events(autogen_config, autogen_core):
             for field_config in event_config.fields:
 
                 # First, write regular fields
-                if not field_config.is_optional:
+                if not (field_config.is_optional or field_config.maybe_singleton):
                     regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
                     continue
 
@@ -335,7 +375,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
         for ctor_info in constructors(event_config):
             with cpp_source.constructor(class_name, *ctor_info.params, inherits=ctor_info.subconstructors) as cons:
-                pass
+                for line in ctor_info.init_statements:
+                    cons.line(line)
 
         with cpp_source.method(class_name, 'eventName', 'QString', const=True) as m:
             m.line("return {0};".format(m.string_literal(name)))

@@ -90,7 +90,7 @@ raw events:
     StartCall:
       - failable: StartCallFailReason
       - ApparentSubject initiator
-      - ApparentSubject[] peers
+      - ApparentSubject([]) peers
       - ..
       - ?uint durationSeconds
       - ..
@@ -122,8 +122,8 @@ raw events:
       - ApparentSubject creator
       - (?)QString conferenceName
     AddToConference:
-      - ?ApparentSubject adder
-      - ApparentSubject[] addees
+      - (?)ApparentSubject adder
+      - ApparentSubject([]) addees
       - ..
       - ?bool asModerator
     RemoveFromConference:
@@ -168,7 +168,7 @@ raw events:
     TransferFiles:
       - ApparentSubject sender
       - ?ApparentSubject recipient
-      - RawTransferredFile[] files
+      - RawTransferredFile([]) files
   (friending):
     ContactDelete:
       - ApparentSubject deleter
