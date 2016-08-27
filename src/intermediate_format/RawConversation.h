@@ -43,7 +43,7 @@ public:
     vector<unique_ptr<ApparentSubject>> declaredPeers; // Note: the identity is excluded from the peers (if recognized)
 
     optional<bool> isConference;
-    QString conferenceTitle;
+    optional<QString> conferenceTitle;
     optional<ApparentTime> declaredStartDate;
     unique_ptr<ApparentSubject> declaredInitiator;
 

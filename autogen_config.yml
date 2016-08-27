@@ -120,7 +120,7 @@ raw events:
       - ?RawMessageContent message
     CreateConference:
       - ApparentSubject creator
-      - QString conferenceName
+      - (?)QString conferenceName
     AddToConference:
       - ?ApparentSubject adder
       - ApparentSubject[] addees

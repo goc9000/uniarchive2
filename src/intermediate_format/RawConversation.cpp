@@ -76,8 +76,8 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
     if ((bool)declaredInitiator) {
         stream << "\tInitiator: " << declaredInitiator.get() << "\n";
     }
-    if (!conferenceTitle.isEmpty()) {
-        stream << "\tConference title: " << conferenceTitle << "\n";
+    if ((bool)conferenceTitle) {
+        stream << "\tConference title: " << *conferenceTitle << "\n";
     }
     if ((bool)declaredStartDate) {
         stream << "\tDeclared start date: " << *declaredStartDate << "\n";
