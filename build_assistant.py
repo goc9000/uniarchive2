@@ -157,31 +157,40 @@ def gen_raw_events(autogen_config, autogen_core):
 
         return rvalue
 
-    def constructor_params(event_config):
-        all_fields = list(autogen_config.base_raw_event.fields)
+    def as_subconstructor(field_config):
+        return '{0}({1})'.format(field_config.name, as_rvalue(field_config))
+
+    def constructors(event_config):
         if event_config is not None:
-            all_fields += event_config.fields
+            base_fields = [f for f in autogen_config.base_raw_event.fields if not f.is_optional]
+            free_fields = event_config.fields
 
-        params = list()
+            parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent'
+            parent_constructor = [parent_class + '(' + ', '.join(map(as_rvalue, base_fields)) + ')']
+        else:
+            base_fields = []
+            free_fields = autogen_config.base_raw_event.fields
+            parent_constructor = []
 
-        for field_config in all_fields:
-            if not field_config.is_optional:
-                params.append(as_param(field_config))
+        inited_fields = [f for f in free_fields if not f.is_optional]
 
-        return params
+        yield (
+            [as_param(f) for f in base_fields + inited_fields],
+            parent_constructor + [as_subconstructor(f) for f in inited_fields]
+        )
 
-    def subconstructors(event_config):
-        parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent'
-        parent_fields = [f for f in autogen_config.base_raw_event.fields if not f.is_optional]
-        parent_constructor = parent_class + '(' + ', '.join(as_rvalue(f) for f in parent_fields) + ')'
+        maybe_addable_fields = filter(lambda f: f.is_optional and f.add_to_constructor, free_fields)
+        enabled_fields = set()
 
-        subconstructors = [parent_constructor]
+        for field_config in maybe_addable_fields:
+            enabled_fields.add(field_config.name)
 
-        for field_config in event_config.fields:
-            if not field_config.is_optional:
-                subconstructors.append('{0}({1})'.format(field_config.name, as_rvalue(field_config)))
+            inited_fields = [f for f in free_fields if f.name in enabled_fields or not f.is_optional]
 
-        return subconstructors
+            yield (
+                [as_param(f) for f in base_fields + inited_fields],
+                parent_constructor + [as_subconstructor(f) for f in inited_fields]
+            )
 
     def gen_debug_write_method(cpp_source, event_config):
         def commit_temp_line(temp_line):
@@ -250,9 +259,11 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
+                for params, _ in constructors(None):
+                    block.declare_constructor(class_name, *params)
+
                 block \
-                    .declare_constructor(class_name, *constructor_params(None)).nl() \
-                    .line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl() \
+                    .nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl() \
                     .declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True) \
                     .declare_fn('writeToDebugStream', 'void', ('QDebug', 'stream'), const=True)
 
@@ -297,9 +308,10 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
-                block \
-                    .declare_constructor(class_name, *constructor_params(event_config)).nl() \
-                    .declare_fn('eventName', 'QString', const=True, virtual=True)
+                for params, _ in constructors(event_config):
+                    block.declare_constructor(class_name, *params)
+
+                block.nl().declare_fn('eventName', 'QString', const=True, virtual=True)
 
             struct.nl()
 
@@ -308,12 +320,9 @@ def gen_raw_events(autogen_config, autogen_core):
 
         cpp_source.cover_symbols(h_source.get_covered_symbols())
 
-        with cpp_source.constructor(
-            class_name,
-            *constructor_params(event_config),
-            inherits=subconstructors(event_config)
-        ) as cons:
-            pass
+        for params, subcons in constructors(event_config):
+            with cpp_source.constructor(class_name, *params, inherits=subcons) as cons:
+                pass
 
         with cpp_source.method(class_name, 'eventName', 'QString', const=True) as m:
             m.line("return {0};".format(m.string_literal(name)))
