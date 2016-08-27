@@ -228,22 +228,32 @@ def gen_raw_events(autogen_config, autogen_core):
 
             return regular_fields_line
 
+        def write_irregular_field(block, field_config):
+            if field_config.is_optional:
+                with block.if_block(field_config.name, nl_after=False) as b:
+                    write_irregular_field2(b, field_config)
+            else:
+                write_irregular_field2(block, field_config)
+
+        def write_irregular_field2(block, field_config):
+            block.line('stream << " {0}=" << {1};'.format(local_name(field_config), as_rvalue_expr(field_config)))
+
         stream_type = 'QDebug' + (' UNUSED' if len(event_config.fields) == 0 else '')
 
         regular_fields_line = None
 
         with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as method:
             for field_config in event_config.fields:
-                if field_config.is_optional:
-                    commit_regular_fields(method, regular_fields_line)
-                    regular_fields_line = None
 
-                    with m.if_block(field_config.name, nl_after=False) as block:
-                        block.line(
-                            'stream << " {0}=" << {1};'.format(local_name(field_config), as_rvalue_expr(field_config))
-                        )
-                else:
+                # First, write regular fields
+                if not field_config.is_optional:
                     regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
+                    continue
+
+                commit_regular_fields(method, regular_fields_line)
+                regular_fields_line = None
+
+                write_irregular_field(method, field_config)
 
             commit_regular_fields(method, regular_fields_line)
 
