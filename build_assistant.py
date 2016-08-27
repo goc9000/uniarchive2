@@ -124,7 +124,7 @@ def gen_raw_events(autogen_config, autogen_core):
         if use_optional:
             cpp_type = 'optional<{0}>'.format(cpp_type)
 
-        return cpp_type, field_config.name
+        return cpp_type, field_config.name, field_config.default_value
 
     def as_param(field_config):
         base_type = field_config.base_type
@@ -161,9 +161,12 @@ def gen_raw_events(autogen_config, autogen_core):
     def as_subconstructor(field_config):
         return '{0}({1})'.format(field_config.name, as_rvalue(field_config))
 
+    def is_mandatory_field(field_config):
+        return not field_config.is_optional and field_config.default_value is None
+
     def constructors(event_config):
         if event_config is not None:
-            base_fields = [f for f in autogen_config.base_raw_event.fields if not f.is_optional]
+            base_fields = list(filter(is_mandatory_field, autogen_config.base_raw_event.fields))
             free_fields = event_config.fields
 
             parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent'
@@ -173,11 +176,11 @@ def gen_raw_events(autogen_config, autogen_core):
             free_fields = autogen_config.base_raw_event.fields
             parent_constructor = []
 
-        maybe_addable_fields = filter(lambda f: f.is_optional and f.add_to_constructor, free_fields)
+        maybe_addable_fields = filter(lambda f: f.add_to_constructor, free_fields)
         extra_enabled_fields = set()
 
         while True:
-            inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or not f.is_optional]
+            inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or is_mandatory_field(f)]
 
             yield ConstructorInfo(
                 params=[as_param(f) for f in base_fields + inited_fields],
