@@ -30,13 +30,13 @@ void RawMessageEvent::writeFailableEventDetailsToDebugStream(QDebug stream) cons
     }
     if (isEdited) {
         stream << " EDITED";
-        if (editedBy || timeEdited.isSpecified()) {
+        if (editedBy || timeEdited) {
             stream << "(";
             if (editedBy) {
                 stream << "edited_by=" << editedBy.get();
             }
-            if (timeEdited.isSpecified()) {
-                stream << (editedBy ? " " : "") << "time_edited=" << timeEdited;
+            if (timeEdited) {
+                stream << (editedBy ? " " : "") << "time_edited=" << *timeEdited;
             }
             stream << ")";
         }

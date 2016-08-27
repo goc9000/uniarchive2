@@ -37,7 +37,7 @@ public:
 
     bool isEdited = false;
     unique_ptr<ApparentSubject> editedBy;
-    ApparentTime timeEdited;
+    optional<ApparentTime> timeEdited;
 
     RawMessageEvent(IMM(ApparentTime) timestamp, uint index, TAKE(ApparentSubject) sender, RawMessageContent&& content);
 
