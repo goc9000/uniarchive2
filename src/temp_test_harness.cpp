@@ -67,7 +67,6 @@ RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
 
     vector<tuple<ArchiveFormat, QString, QString>> inputs {
         { ArchiveFormat::SKYPE,               "skype",    "main.db" },
-        /*
         { ArchiveFormat::WHATSAPP_EMAIL,      "whatsapp", "*.txt" },
         { ArchiveFormat::PIDGIN_TXT,          "pidgin",   "*.txt" },
         { ArchiveFormat::PIDGIN_HTML,         "pidgin",   "*.html" },
@@ -76,7 +75,6 @@ RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
         { ArchiveFormat::FACEBOOK_DYI,        "facebook", "messages.htm" },
         { ArchiveFormat::YAHOO_MESSENGER_DAT, "yahoo",    "*.dat" },
         { ArchiveFormat::MSN_MESSENGER_XML,   "msn",      "*xml" },
-        */
     };
 
     for (IMM(auto) format_path_glob : inputs) {
