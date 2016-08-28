@@ -161,6 +161,23 @@ def gen_raw_events(autogen_config, autogen_core):
     def as_subconstructor(field_config):
         return '{0}({1})'.format(field_config.name, as_rvalue(field_config))
 
+    def as_print_rvalue(field_config, source):
+        base_type = field_config.base_type
+        type_info = autogen_core.symbol_registry.lookup(base_type)
+        assert type_info.is_type, '{0} is not a base type'.format(base_type)
+
+        rvalue_expr = field_config.name
+
+        if type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list:
+            rvalue_expr += '.get()'
+        else:
+            if field_config.is_optional:
+                rvalue_expr = '*' + rvalue_expr
+            if field_config.is_list:
+                source.include("utils/qt/debug_extras.h")  # For printing vectors
+
+        return rvalue_expr
+
     def is_mandatory_field(field_config):
         return not field_config.is_optional and field_config.default_value is None
 
@@ -221,24 +238,7 @@ def gen_raw_events(autogen_config, autogen_core):
 
             extra_enabled_fields.add(field_config.name)
 
-    def gen_debug_write_method(cpp_source, event_config):
-        def as_rvalue_expr(field_config):
-            base_type = field_config.base_type
-            type_info = autogen_core.symbol_registry.lookup(base_type)
-            assert type_info.is_type, '{0} is not a base type'.format(base_type)
-
-            rvalue_expr = field_config.name
-
-            if type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list:
-                rvalue_expr += '.get()'
-            else:
-                if field_config.is_optional:
-                    rvalue_expr = '*' + rvalue_expr
-                if field_config.is_list:
-                    cpp_source.include("utils/qt/debug_extras.h")  # For printing vectors
-
-            return rvalue_expr
-
+    def gen_debug_write_field_code(method, fields):
         def commit_regular_fields(block, regular_fields_line):
             if regular_fields_line is not None:
                 block.line(regular_fields_line + ';')
@@ -247,7 +247,7 @@ def gen_raw_events(autogen_config, autogen_core):
             if regular_fields_line is None:
                 regular_fields_line = 'stream'
 
-            added_text = ' << " {0}=" << {1}'.format(local_name(field_config), as_rvalue_expr(field_config))
+            added_text = ' << " {0}=" << {1}'.format(local_name(field_config), as_print_rvalue(field_config, block))
 
             if not block.line_fits(regular_fields_line + added_text + ';'):
                 commit_regular_fields(block, regular_fields_line)
@@ -267,7 +267,7 @@ def gen_raw_events(autogen_config, autogen_core):
         def write_irregular_field2(block, field_config):
             if field_config.maybe_singleton:
                 name = local_name(field_config)
-                rvalue = as_rvalue_expr(field_config)
+                rvalue = as_print_rvalue(field_config, block)
 
                 with block.if_block('{0}.size() == 1'.format(field_config.name), nl_after=False) as b:
                     b.line('stream << " {0}=" << {1}.front();'.format(singular(name), rvalue))
@@ -277,32 +277,66 @@ def gen_raw_events(autogen_config, autogen_core):
                 write_irregular_field3(block, field_config)
 
         def write_irregular_field3(block, field_config):
-            block.line('stream << " {0}=" << {1};'.format(local_name(field_config), as_rvalue_expr(field_config)))
-
-        stream_type = 'QDebug' + (' UNUSED' if len(event_config.fields) == 0 else '')
+            block.line(
+                'stream << " {0}=" << {1};'.format(local_name(field_config), as_print_rvalue(field_config, block))
+            )
 
         regular_fields_line = None
 
-        with cpp_source.method(class_name, debug_write_method, 'void', (stream_type, 'stream'), const=True) as method:
-            for field_config in event_config.fields:
-
-                # First, write regular fields
-                if not (field_config.is_optional or field_config.maybe_singleton):
-                    regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
-                    continue
-
-                commit_regular_fields(method, regular_fields_line)
-                regular_fields_line = None
-
-                write_irregular_field(method, field_config)
+        for field_config in fields:
+            # First, write regular fields
+            if not (field_config.is_optional or field_config.maybe_singleton):
+                regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
+                continue
 
             commit_regular_fields(method, regular_fields_line)
+            regular_fields_line = None
+
+            write_irregular_field(method, field_config)
+
+        commit_regular_fields(method, regular_fields_line)
+
+    def gen_debug_write_method(cpp_source, event_config):
+        with cpp_source.method(
+            class_name,
+            debug_write_method,
+            'void',
+            ('QDebug' + (' UNUSED' if len(event_config.fields) == 0 else ''), 'stream'),
+            const=True
+        ) as method:
+            gen_debug_write_field_code(method, event_config.fields)
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
         class_name = 'RawEvent'
 
         cpp_source, h_source = autogen_core.new_pair(base_path, class_name)
+
+        def gen_base_debug_write_method():
+            time_field = None
+            index_field = None
+
+            remaining_fields = []
+            for field_config in autogen_config.base_raw_event.fields:
+                if field_config.name == 'timestamp' and time_field is None:
+                    time_field = field_config
+                elif field_config.name.startswith('index') and index_field is None:
+                    index_field = field_config
+                else:
+                    remaining_fields.append(field_config)
+
+            with cpp_source.method(
+                class_name, 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True
+            ) as method:
+                method \
+                    .field('QDebugStateSaver', 'saver(stream)') \
+                    .line('stream.nospace();').nl() \
+                    .line('stream << "#" << {0} << " ";'.format(as_print_rvalue(index_field, cpp_source))) \
+                    .line('stream << "[" << {0} << "] ";'.format(as_print_rvalue(time_field, cpp_source))).nl() \
+                    .line('stream << QP(eventName());').add_includes_for_type('QP') \
+                    .line('writeDetailsToDebugStream(stream);').nl()
+
+                gen_debug_write_field_code(method, remaining_fields)
 
         with h_source.struct_block(class_name) as struct:
             with struct.public_block() as block:
@@ -340,10 +374,18 @@ def gen_raw_events(autogen_config, autogen_core):
 
         cpp_source.cover_symbols(h_source.get_covered_symbols())
 
+        for ctor_info in constructors(None):
+            with cpp_source.constructor(class_name, *ctor_info.params, inherits=ctor_info.subconstructors) as cons:
+                for line in ctor_info.init_statements:
+                    cons.line(line)
+
+        gen_base_debug_write_method()
+
         with cpp_source.method(
             class_name, 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'), const=True
         ) as _:
             pass
+
         with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event')) as method:
             method \
                 .line('event->writeToDebugStream(stream);') \
@@ -396,8 +438,8 @@ def gen_raw_events(autogen_config, autogen_core):
                 for line in ctor_info.init_statements:
                     cons.line(line)
 
-        with cpp_source.method(class_name, 'eventName', 'QString', const=True) as m:
-            m.line("return {0};".format(m.string_literal(name)))
+        with cpp_source.method(class_name, 'eventName', 'QString', const=True) as method:
+            method.line("return {0};".format(method.string_literal(name)))
 
         gen_debug_write_method(cpp_source, event_config)
 

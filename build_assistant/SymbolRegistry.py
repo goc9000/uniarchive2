@@ -152,6 +152,12 @@ def get_builtin_symbols():
             include=local_include('utils/external_libs/optional.hpp'),
             use=std_use('std::experimental'),
         ),
+        QP=SymbolInfo(
+            is_type=False,
+            type_kind=None,
+            include=local_include('utils/qt/shortcuts.h'),
+            use=None,
+        ),
     )
 
     for symbol in SHORTCUTS:
@@ -166,4 +172,4 @@ def get_builtin_symbols():
 
 
 def looks_like_qt_symbol(symbol):
-    return re.match(r'^Q[A-Z].*', symbol) is not None
+    return re.match(r'^Q[A-Z][a-z].*', symbol) is not None
