@@ -19,7 +19,10 @@ AutoGenEntry = namedtuple('AutoGenEntry', ['path', 'name', 'config'])
 EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
 EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment'])
 
-RawEventConfig = namedtuple('RawEventConfig', ['fields', 'field_breaks', 'fail_reason_enum'])
+RawEventConfig = namedtuple(
+    'RawEventConfig',
+    ['fields', 'field_breaks', 'fail_reason_enum', 'custom_name_method', 'custom_debug_write_method']
+)
 RawEventFieldConfig = namedtuple(
     'RawEventConfig',
     ['name', 'base_type', 'is_optional', 'is_list', 'add_to_constructor', 'maybe_singleton', 'short_name',
@@ -136,8 +139,15 @@ def parse_raw_event_config(entity_config):
 
     preparsed = preparse_entity(entity_config, 'field')
 
+    custom = preparsed.options.get('custom', list())
+    assert set(custom).issubset({
+        'name method', 'debug write method'
+    }), 'Unsupported custom directive'
+
     return RawEventConfig(
         fields=[parse_raw_event_field(preparsed) for preparsed in preparsed.fields],
         field_breaks=preparsed.field_breaks,
-        fail_reason_enum=preparsed.options.get('failable')
+        fail_reason_enum=preparsed.options.get('failable'),
+        custom_name_method='name method' in custom,
+        custom_debug_write_method='debug write method' in custom,
     )

@@ -21,10 +21,13 @@ RawMessageEvent::RawMessageEvent(
 }
 
 QString RawMessageEvent::eventName() const {
+    // BEGIN CUSTOM SECTION: Name method
     return isAction ? "ActionMessage" : "Message";
+    // END CUSTOM SECTION: Name method
 }
 
 void RawMessageEvent::writeFailableEventDetailsToDebugStream(QDebug stream) const {
+    // BEGIN CUSTOM SECTION: Debug write method
     if (isOffline) {
         stream << " OFFLINE";
     }
@@ -46,6 +49,7 @@ void RawMessageEvent::writeFailableEventDetailsToDebugStream(QDebug stream) cons
         stream << " receiver=" << receiver.get();
     }
     stream << " content=" << content;
+    // END CUSTOM SECTION: Debug write method
 }
 
 }}}

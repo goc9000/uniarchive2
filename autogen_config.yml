@@ -205,6 +205,7 @@ raw events:
     - ApparentSubject subject
   Message:
     - failable: SendMessageFailReason
+      custom: [name method, debug write method]
     - ApparentSubject sender
     - ?ApparentSubject receiver
     - RawMessageContent content

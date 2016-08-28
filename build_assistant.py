@@ -304,7 +304,10 @@ def gen_raw_events(autogen_config, autogen_core):
             ('QDebug' + (' UNUSED' if len(event_config.fields) == 0 else ''), 'stream'),
             const=True
         ) as method:
-            gen_debug_write_field_code(method, event_config.fields)
+            if event_config.custom_debug_write_method:
+                method.custom_section('Debug write method')
+            else:
+                gen_debug_write_field_code(method, event_config.fields)
 
     def gen_base_raw_event():
         base_path = VirtualPath(['intermediate_format', 'events'])
@@ -439,7 +442,10 @@ def gen_raw_events(autogen_config, autogen_core):
                     cons.line(line)
 
         with cpp_source.method(class_name, 'eventName', 'QString', const=True) as method:
-            method.line("return {0};".format(method.string_literal(name)))
+            if event_config.custom_name_method:
+                method.custom_section('Name method')
+            else:
+                method.line("return {0};".format(method.string_literal(name)))
 
         gen_debug_write_method(cpp_source, event_config)
 
