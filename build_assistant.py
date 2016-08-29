@@ -22,7 +22,9 @@ from build_assistant.AutoGenConfig import parse_autogen_config
 from build_assistant.AutoGenCore import AutoGenCore
 from build_assistant.SymbolRegistry import SymbolRegistry, TypeKind
 from build_assistant.autogen_common import get_full_autogen_raw_event_path_and_name
-from build_assistant.util import fail, scan_files, singular
+from build_assistant.autogen_enums import gen_enums
+from build_assistant.grammar import camelcase_to_underscore, singular
+from build_assistant.util import fail, scan_files
 
 
 AppMetadata = namedtuple('AppMetadata', ['app_name', 'copyright_text', 'license_text'])
@@ -43,63 +45,6 @@ CODE_GEN_CFG = CodeGenConfig(
 )
 
 BASE_SRC_DIR = VirtualPath.from_text('src')
-
-
-def camelcase_to_underscore(name):
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)).lower()
-
-
-def classname_to_varname(name):
-    return camelcase_to_underscore(name).split('_')[-1]
-
-
-def gen_enums(enums_config, autogen_core):
-    for path, name, enum_config in enums_config:
-        varname = classname_to_varname(name)
-        parameter_spec = (name, varname)
-
-        name_for_function = 'name_for_' + camelcase_to_underscore(name)
-
-        cpp_source, h_source = autogen_core.new_pair(path, name)
-
-        if enum_config.internal_comment is not None:
-            h_source.line_comment(enum_config.internal_comment).nl()
-
-        with h_source.enum_class_block(name) as block:
-            for i, value in enumerate(enum_config.values):
-                line = value.constant
-
-                if value.int_value is not None:
-                    line += ' = ' + value.int_value
-
-                line += ','
-
-                if value.comment is not None:
-                    line += ' // ' + value.comment
-
-                block.line(line)
-
-        h_source \
-            .declare_fn(name_for_function, 'QString', parameter_spec).nl() \
-            .declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec)
-
-        cpp_source \
-            .cover_symbols(h_source.get_covered_symbols()) \
-            .include('utils/qt/shortcuts.h') \
-            .qt_include('QtDebug')
-
-        with cpp_source.function(name_for_function, 'QString', parameter_spec) as fn:
-            with fn.switch_block(varname) as sw:
-                for value in enum_config.values:
-                    with sw.case_block(name + '::' + value.constant) as c:
-                        c.line('return {0};'.format(c.string_literal(value.text)))
-
-            fn.line('invariant_violation("Invalid {0} value (%d)", {1});'.format(name, varname))
-
-        with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec) as fn:
-            fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)) \
-              .nl() \
-              .line('return stream;')
 
 
 def gen_raw_events(autogen_config, autogen_core):
