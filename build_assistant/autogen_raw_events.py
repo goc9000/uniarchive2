@@ -18,105 +18,29 @@ ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'i
 
 
 def gen_raw_events(autogen_config, autogen_core):
-    def local_name(field_config):
-        return field_config.short_name or camelcase_to_underscore(field_config.name)
-
-    def as_field_decl(field_config):
-        base_type = field_config.base_type
-        type_info = autogen_core.symbol_registry.lookup(base_type)
-        assert type_info.is_type, '{0} is not a base type'.format(base_type)
-
-        use_optional = field_config.is_optional and not \
-            (type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list)
-        use_unique_ptr = type_info.type_kind == TypeKind.POLYMORPHIC
-        use_vector = field_config.is_list
-
-        cpp_type = base_type
-        if use_unique_ptr:
-            cpp_type = 'unique_ptr<{0}>'.format(cpp_type)
-        if use_vector:
-            cpp_type = 'vector<{0}>'.format(cpp_type)
-        if use_optional:
-            cpp_type = 'optional<{0}>'.format(cpp_type)
-
-        return cpp_type, field_config.name, field_config.default_value
-
-    def as_param(field_config):
-        base_type = field_config.base_type
-        type_info = autogen_core.symbol_registry.lookup(base_type)
-        assert type_info.is_type, '{0} is not a base type'.format(base_type)
-
-        cpp_type = base_type
-
-        if type_info.type_kind == TypeKind.POLYMORPHIC:
-            cpp_type = ('TAKE_VEC({0})' if field_config.is_list else 'TAKE({0})').format(cpp_type)
-        else:
-            if field_config.is_list:
-                cpp_type = 'vector<{0}>'.format(cpp_type)
-
-            if type_info.type_kind == TypeKind.MOVABLE:
-                cpp_type += '&&'
-            elif type_info.type_kind != TypeKind.PRIMITIVE or field_config.is_list:
-                cpp_type = 'IMM({0})'.format(cpp_type)
-
-        return cpp_type, local_name(field_config)
-
-    def as_rvalue(field_config):
-        base_type = field_config.base_type
-        type_info = autogen_core.symbol_registry.lookup(base_type)
-        assert type_info.is_type, '{0} is not a base type'.format(base_type)
-
-        rvalue = local_name(field_config)
-
-        if type_info.type_kind == TypeKind.POLYMORPHIC or type_info.type_kind == TypeKind.MOVABLE:
-            rvalue = 'move({0})'.format(rvalue)
-
-        return rvalue
-
-    def as_subconstructor(field_config):
-        return '{0}({1})'.format(field_config.name, as_rvalue(field_config))
-
-    def as_print_rvalue(field_config, source):
-        base_type = field_config.base_type
-        type_info = autogen_core.symbol_registry.lookup(base_type)
-        assert type_info.is_type, '{0} is not a base type'.format(base_type)
-
-        rvalue_expr = field_config.name
-
-        if type_info.type_kind == TypeKind.POLYMORPHIC and not field_config.is_list:
-            rvalue_expr += '.get()'
-        else:
-            if field_config.is_optional:
-                rvalue_expr = '*' + rvalue_expr
-            if field_config.is_list:
-                source.include("utils/qt/debug_extras.h")  # For printing vectors
-
-        return rvalue_expr
-
-    def is_mandatory_field(field_config):
-        return not field_config.is_optional and field_config.default_value is None
+    base_event_config = augment_fields_in_event_config(autogen_config.base_raw_event, autogen_core)
 
     def constructors(event_config):
         if event_config is not None:
-            base_fields = list(filter(is_mandatory_field, autogen_config.base_raw_event.fields))
+            base_fields = list(filter(lambda f: f.is_mandatory(), base_event_config.fields))
             free_fields = event_config.fields
 
             parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent'
-            parent_constructor = [parent_class + '(' + ', '.join(map(as_rvalue, base_fields)) + ')']
+            parent_constructor = [parent_class + '(' + ', '.join(map(lambda f: f.as_rvalue(), base_fields)) + ')']
         else:
             base_fields = []
-            free_fields = autogen_config.base_raw_event.fields
+            free_fields = base_event_config.fields
             parent_constructor = []
 
         maybe_addable_fields = filter(lambda f: f.add_to_constructor, free_fields)
         extra_enabled_fields = set()
 
         while True:
-            inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or is_mandatory_field(f)]
+            inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
 
             yield ConstructorInfo(
-                params=[as_param(f) for f in base_fields + inited_fields],
-                subconstructors=parent_constructor + [as_subconstructor(f) for f in inited_fields],
+                params=[f.as_param() for f in base_fields + inited_fields],
+                subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
                 init_statements=list(),
             )
 
@@ -130,19 +54,19 @@ def gen_raw_events(autogen_config, autogen_core):
                     )
 
                     params = \
-                        [as_param(f) for f in base_fields + inited_fields[:index]] + \
-                        [as_param(singularized)] + \
-                        [as_param(f) for f in inited_fields[index+1:]]
+                        [f.as_param() for f in base_fields + inited_fields[:index]] + \
+                        [singularized.as_param()] + \
+                        [f.as_param() for f in inited_fields[index+1:]]
 
                     subcons = parent_constructor + \
-                        [as_subconstructor(f) for f in inited_fields[:index]] + \
-                        [as_subconstructor(f) for f in inited_fields[index+1:]]
+                        [f.as_subconstructor() for f in inited_fields[:index]] + \
+                        [f.as_subconstructor() for f in inited_fields[index+1:]]
 
                     yield ConstructorInfo(
                         params=params,
                         subconstructors=subcons,
                         init_statements=[
-                            '{0}.push_back({1});'.format(field_config.name, as_rvalue(singularized))
+                            '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
                         ]
                     )
                     break
@@ -162,7 +86,7 @@ def gen_raw_events(autogen_config, autogen_core):
             if regular_fields_line is None:
                 regular_fields_line = 'stream'
 
-            added_text = ' << " {0}=" << {1}'.format(local_name(field_config), as_print_rvalue(field_config, block))
+            added_text = ' << " {0}=" << {1}'.format(field_config.local_name(), field_config.as_print_rvalue(block))
 
             if not block.line_fits(regular_fields_line + added_text + ';'):
                 commit_regular_fields(block, regular_fields_line)
@@ -181,8 +105,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
         def write_irregular_field2(block, field_config):
             if field_config.maybe_singleton:
-                name = local_name(field_config)
-                rvalue = as_print_rvalue(field_config, block)
+                name = field_config.local_name()
+                rvalue = field_config.as_print_rvalue(block)
 
                 with block.if_block('{0}.size() == 1'.format(field_config.name), nl_after=False) as b:
                     b.line('stream << " {0}=" << {1}.front();'.format(singular(name), rvalue))
@@ -193,7 +117,7 @@ def gen_raw_events(autogen_config, autogen_core):
 
         def write_irregular_field3(block, field_config):
             block.line(
-                'stream << " {0}=" << {1};'.format(local_name(field_config), as_print_rvalue(field_config, block))
+                'stream << " {0}=" << {1};'.format(field_config.local_name(), field_config.as_print_rvalue(block))
             )
 
         regular_fields_line = None
@@ -235,7 +159,7 @@ def gen_raw_events(autogen_config, autogen_core):
             index_field = None
 
             remaining_fields = []
-            for field_config in autogen_config.base_raw_event.fields:
+            for field_config in base_event_config.fields:
                 if field_config.name == 'timestamp' and time_field is None:
                     time_field = field_config
                 elif field_config.name.startswith('index') and index_field is None:
@@ -249,8 +173,8 @@ def gen_raw_events(autogen_config, autogen_core):
                 method \
                     .field('QDebugStateSaver', 'saver(stream)') \
                     .line('stream.nospace();').nl() \
-                    .line('stream << "#" << {0} << " ";'.format(as_print_rvalue(index_field, cpp_source))) \
-                    .line('stream << "[" << {0} << "] ";'.format(as_print_rvalue(time_field, cpp_source))).nl() \
+                    .line('stream << "#" << {0} << " ";'.format(index_field.as_print_rvalue(cpp_source))) \
+                    .line('stream << "[" << {0} << "] ";'.format(time_field.as_print_rvalue(cpp_source))).nl() \
                     .line('stream << QP(eventName());').add_includes_for_type('QP') \
                     .line('writeDetailsToDebugStream(stream);').nl()
 
@@ -258,15 +182,15 @@ def gen_raw_events(autogen_config, autogen_core):
 
         with h_source.struct_block(class_name) as struct:
             with struct.public_block() as block:
-                if len(autogen_config.base_raw_event.fields) > 0:
-                    for index, field in enumerate(autogen_config.base_raw_event.fields):
-                        if index in autogen_config.base_raw_event.field_breaks:
+                if len(base_event_config.fields) > 0:
+                    for index, field in enumerate(base_event_config.fields):
+                        if index in base_event_config.field_breaks:
                             block.nl()
 
                         if field.doc is not None:
                             block.doc_comment(field.doc)
 
-                        block.field(*as_field_decl(field))
+                        block.field(*field.as_field_decl())
 
                     block.nl()
 
@@ -314,6 +238,7 @@ def gen_raw_events(autogen_config, autogen_core):
     base_event_h = gen_base_raw_event()
 
     for path, name, event_config in autogen_config.raw_events:
+        event_config = augment_fields_in_event_config(event_config, autogen_core)
         path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
 
         is_failable = event_config.fail_reason_enum is not None
@@ -335,7 +260,7 @@ def gen_raw_events(autogen_config, autogen_core):
                         if field.doc is not None:
                             block.doc_comment(field.doc)
 
-                        block.field(*as_field_decl(field))
+                        block.field(*field.as_field_decl())
 
                     block.nl()
 
@@ -363,3 +288,95 @@ def gen_raw_events(autogen_config, autogen_core):
                 method.line("return {0};".format(method.string_literal(name)))
 
         gen_debug_write_method(cpp_source, event_config)
+
+
+def augment_fields_in_event_config(event_config, autogen_core):
+    return event_config._replace(fields=[EventFieldWrapper(field, autogen_core) for field in event_config.fields])
+
+
+class EventFieldWrapper:
+    _field_config = None
+    _core = None
+
+    _base_type = None
+    _type_info = None
+
+    def __init__(self, field_config, autogen_core):
+        self._field_config = field_config
+        self._core = autogen_core
+
+        self._base_type = field_config.base_type
+        self._type_info = autogen_core.symbol_registry.lookup(self._base_type)
+        assert self._type_info.is_type, '{0} is not a base type'.format(self._base_type)
+
+    def __getattr__(self, name):
+        return getattr(self._field_config, name)
+
+    def _replace(self, **newvalues):
+        return EventFieldWrapper(self._field_config._replace(**newvalues), self._core)
+
+    def local_name(self):
+        return self.short_name or camelcase_to_underscore(self.name)
+
+    def as_field_decl(self):
+        type_kind = self._type_info.type_kind
+
+        use_optional = self.is_optional and not (type_kind == TypeKind.POLYMORPHIC and not self.is_list)
+        use_unique_ptr = type_kind == TypeKind.POLYMORPHIC
+        use_vector = self.is_list
+
+        cpp_type = self._base_type
+        if use_unique_ptr:
+            cpp_type = 'unique_ptr<{0}>'.format(cpp_type)
+        if use_vector:
+            cpp_type = 'vector<{0}>'.format(cpp_type)
+        if use_optional:
+            cpp_type = 'optional<{0}>'.format(cpp_type)
+
+        return cpp_type, self.name, self.default_value
+
+    def as_param(self):
+        type_kind = self._type_info.type_kind
+
+        cpp_type = self._base_type
+        if type_kind == TypeKind.POLYMORPHIC:
+            cpp_type = ('TAKE_VEC({0})' if self.is_list else 'TAKE({0})').format(cpp_type)
+        else:
+            if self.is_list:
+                cpp_type = 'vector<{0}>'.format(cpp_type)
+
+            if type_kind == TypeKind.MOVABLE:
+                cpp_type += '&&'
+            elif type_kind != TypeKind.PRIMITIVE or self.is_list:
+                cpp_type = 'IMM({0})'.format(cpp_type)
+
+        return cpp_type, self.local_name()
+
+    def as_rvalue(self):
+        type_kind = self._type_info.type_kind
+
+        rvalue = self.local_name()
+
+        if type_kind == TypeKind.POLYMORPHIC or type_kind == TypeKind.MOVABLE:
+            rvalue = 'move({0})'.format(rvalue)
+
+        return rvalue
+
+    def as_subconstructor(self):
+        return '{0}({1})'.format(self.name, self.as_rvalue())
+
+    def as_print_rvalue(self, source):
+        rvalue_expr = self.name
+
+        if self._type_info.type_kind == TypeKind.POLYMORPHIC and not self.is_list:
+            rvalue_expr += '.get()'
+        else:
+            if self.is_optional:
+                rvalue_expr = '*' + rvalue_expr
+            if self.is_list:
+                source.include("utils/qt/debug_extras.h")  # For printing vectors
+
+        return rvalue_expr
+
+    def is_mandatory(self):
+        return not self.is_optional and self.default_value is None
