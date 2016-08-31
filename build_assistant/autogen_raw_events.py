@@ -49,14 +49,17 @@ def gen_raw_events(autogen_config, autogen_core):
                     block.nl()
 
                 for ctor_info in constructors(event_config, base_event_config):
-                    block.declare_constructor(class_name, *ctor_info.params)
-                    with cpp_source.constructor(class_name, *ctor_info.params,
-                                                inherits=ctor_info.subconstructors) as cons:
+                    with cpp_source.constructor(
+                        class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
+                    ) as cons:
                         for line in ctor_info.init_statements:
                             cons.line(line)
 
-                block.nl().declare_fn('eventName', 'QString', const=True, virtual=True)
-                with cpp_source.method(class_name, 'eventName', 'QString', const=True) as method:
+                block.nl()
+
+                with cpp_source.method(
+                    class_name, 'eventName', 'QString', const=True, virtual=True, declare=True
+                ) as method:
                     if event_config.custom_name_method:
                         method.custom_section('Name method')
                     else:
@@ -64,10 +67,7 @@ def gen_raw_events(autogen_config, autogen_core):
 
             struct.nl()
 
-            with struct.protected_block() as block:
-                block.declare_fn(
-                    debug_write_method_name(event_config), 'void', ('QDebug', 'stream'), virtual=True, const=True
-                )
+            with struct.protected_block() as _:
                 gen_debug_write_method(cpp_source, class_name, event_config)
 
 
@@ -92,8 +92,9 @@ def gen_base_raw_event(base_event_config, autogen_core):
                 block.nl()
 
             for ctor_info in constructors(None, base_event_config):
-                block.declare_constructor(class_name, *ctor_info.params)
-                with cpp_source.constructor(class_name, *ctor_info.params, inherits=ctor_info.subconstructors) as cons:
+                with cpp_source.constructor(
+                    class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
+                ) as cons:
                     for line in ctor_info.init_statements:
                         cons.line(line)
 
@@ -101,25 +102,23 @@ def gen_base_raw_event(base_event_config, autogen_core):
                 .nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl() \
                 .declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True)
 
-            block.declare_fn('writeToDebugStream', 'void', ('QDebug', 'stream'), const=True)
             gen_base_debug_write_method(cpp_source, base_event_config)
 
         struct.nl()
 
-        with struct.protected_block() as block:
-            block.declare_fn(
-                'writeDetailsToDebugStream',
-                'void', ('QDebug', 'stream'),
-                virtual=True,
-                const=True
-            )
+        with struct.protected_block() as _:
             with cpp_source.method(
-                    class_name, 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'), const=True
+                class_name,
+                'writeDetailsToDebugStream',
+                'void',
+                ('QDebug UNUSED', 'stream'),
+                const=True, virtual=True, declare=True
             ) as _:
                 pass
 
-    h_source.declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event'))
-    with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event')) as method:
+    with cpp_source.function(
+        'operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event'), declare=True
+    ) as method:
         method \
             .line('event->writeToDebugStream(stream);') \
             .line('return stream;')
@@ -189,17 +188,13 @@ def constructors(event_config, base_event_config):
         extra_enabled_fields.add(field_config.name)
 
 
-def debug_write_method_name(event_config):
-    return 'write' + ('FailableEvent' if event_config.fail_reason_enum is not None else '') + 'DetailsToDebugStream'
-
-
 def gen_debug_write_method(cpp_source, class_name, event_config):
     with cpp_source.method(
         class_name,
-        debug_write_method_name(event_config),
+        'write' + ('FailableEvent' if event_config.fail_reason_enum is not None else '') + 'DetailsToDebugStream',
         'void',
         ('QDebug' + (' UNUSED' if len(event_config.fields) == 0 else ''), 'stream'),
-        const=True
+        const=True, virtual=True, declare=True
     ) as method:
         if event_config.custom_debug_write_method:
             method.custom_section('Debug write method')
@@ -220,7 +215,9 @@ def gen_base_debug_write_method(cpp_source, base_event_config):
         else:
             remaining_fields.append(field_config)
 
-    with cpp_source.method('RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True) as method:
+    with cpp_source.method(
+        'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare=True
+    ) as method:
         method \
             .field('QDebugStateSaver', 'saver(stream)') \
             .line('stream.nospace();').nl() \

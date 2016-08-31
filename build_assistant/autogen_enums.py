@@ -37,8 +37,7 @@ def gen_enums(enums_config, autogen_core):
 
         cpp_source.qt_include('QtDebug')
 
-        h_source.declare_fn(name_for_function, 'QString', parameter_spec)
-        with cpp_source.function(name_for_function, 'QString', parameter_spec) as fn:
+        with cpp_source.function(name_for_function, 'QString', parameter_spec, declare=True) as fn:
             with fn.switch_block(varname) as sw:
                 for value in enum_config.values:
                     with sw.case_block(name + '::' + value.constant) as c:
@@ -48,8 +47,7 @@ def gen_enums(enums_config, autogen_core):
 
         h_source.nl()
 
-        h_source.declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec)
-        with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec) as fn:
+        with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec, declare=True) as fn:
             fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)).use_symbol('QP') \
               .nl() \
               .line('return stream;')
