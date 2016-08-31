@@ -400,14 +400,22 @@ class EventFieldWrapper:
     def is_checkable(self):
         type_kind = self._type_info.type_kind
 
-        return type_kind == TypeKind.POLYMORPHIC and not self.is_list
+        return type_kind == TypeKind.POLYMORPHIC
 
     def write_param_check(self, source):
         type_kind = self._type_info.type_kind
 
-        if type_kind == TypeKind.POLYMORPHIC and not self.is_list:
-            source.call(
-                'invariant',
-                self.name,
-                source.string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
-            )
+        if type_kind == TypeKind.POLYMORPHIC:
+            if self.is_list:
+                with source.for_each_block('IMM(auto)', 'item', self.local_name(), nl_after=False) as block:
+                    source.call(
+                        'invariant',
+                        'item',
+                        source.string_literal("Parameter '{0}' cannot have empty entries".format(self.local_name()))
+                    )
+            else:
+                source.call(
+                    'invariant',
+                    self.name,
+                    source.string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
+                )
