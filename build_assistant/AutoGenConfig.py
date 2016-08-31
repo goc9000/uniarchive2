@@ -11,6 +11,7 @@ import re
 from collections import namedtuple
 
 from build_assistant.VirtualPath import VirtualPath
+from build_assistant.FrozenStruct import FrozenStruct
 
 
 AutoGenConfig = namedtuple('AutoGenConfig', ['enums', 'base_raw_event', 'raw_events'])
@@ -18,16 +19,6 @@ AutoGenEntry = namedtuple('AutoGenEntry', ['path', 'name', 'config'])
 
 EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
 EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment'])
-
-RawEventConfig = namedtuple(
-    'RawEventConfig',
-    ['fields', 'field_breaks', 'fail_reason_enum', 'custom_name_method', 'custom_debug_write_method']
-)
-RawEventFieldConfig = namedtuple(
-    'RawEventConfig',
-    ['name', 'base_type', 'is_optional', 'is_list', 'add_to_constructor', 'maybe_singleton', 'short_name',
-     'default_value', 'doc']
-)
 
 GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'field_breaks', 'options'])
 GenericEntityFieldConfig = namedtuple('GenericEntityFieldConfig', ['expression', 'options'])
@@ -151,3 +142,41 @@ def parse_raw_event_config(entity_config):
         custom_name_method='name method' in custom,
         custom_debug_write_method='debug write method' in custom,
     )
+
+
+class GenericPolymorphicConfig(FrozenStruct):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        FrozenStruct.__init__(
+            self,
+            ['fields', 'field_breaks'] + (_superclass_fields or list()),
+            kwargs
+        )
+
+
+class GenericPolymorphicFieldConfig(FrozenStruct):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        FrozenStruct.__init__(
+            self,
+            ['name', 'base_type', 'is_optional', 'is_list', 'add_to_constructor', 'maybe_singleton', 'short_name',
+             'default_value', 'doc'] + (_superclass_fields or list()),
+            kwargs
+        )
+
+
+class RawEventConfig(GenericPolymorphicConfig):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        GenericPolymorphicConfig.__init__(
+            self,
+            _superclass_fields=['fail_reason_enum', 'custom_name_method', 'custom_debug_write_method'] +
+                (_superclass_fields or list()),
+            **kwargs
+        )
+
+
+class RawEventFieldConfig(GenericPolymorphicFieldConfig):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        GenericPolymorphicFieldConfig.__init__(
+            self,
+            _superclass_fields=[] + (_superclass_fields or list()),
+            **kwargs
+        )
