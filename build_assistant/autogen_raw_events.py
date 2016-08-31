@@ -159,11 +159,7 @@ def constructors(event_config):
         # Generate convenience constructor for the first singularizable field
         for index, field_config in enumerate(inited_fields):
             if field_config.maybe_singleton:
-                singularized = field_config._replace(
-                    is_list=False,
-                    name=singular(field_config.name),
-                    short_name=singular(field_config.short_name) if field_config.short_name is not None else None
-                )
+                singularized = field_config.singularized()
 
                 params = \
                     [f.as_param() for f in base_fields + inited_fields[:index]] + \
@@ -312,8 +308,8 @@ class AbstractEventConfigWrapper:
     def __getattr__(self, name):
         return getattr(self._event_config, name)
 
-    def _replace(self, **newvalues):
-        raise NotImplementedError
+    def _replace(self, **_):
+        assert False, 'Wrappers do not support _replace'
 
     def mandatory_base_fields(self):
         raise NotImplementedError
@@ -325,9 +321,6 @@ class AbstractEventConfigWrapper:
 class BaseEventConfigWrapper(AbstractEventConfigWrapper):
     def __init__(self, event_config, autogen_core):
         AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
-
-    def _replace(self, **newvalues):
-        return BaseEventConfigWrapper(self._event_config._replace(**newvalues), self._core)
 
     def mandatory_base_fields(self):
         return list()
@@ -342,9 +335,6 @@ class EventConfigWrapper(AbstractEventConfigWrapper):
     def __init__(self, event_config, autogen_core, base_config=None):
         AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
         self._base_config = base_config
-
-    def _replace(self, **newvalues):
-        return EventConfigWrapper(self._event_config._replace(**newvalues), self._core, base_config=self._base_config)
 
     def mandatory_base_fields(self):
         return [f for f in self._base_config.fields if f.is_mandatory()]
@@ -371,8 +361,8 @@ class EventFieldWrapper:
     def __getattr__(self, name):
         return getattr(self._field_config, name)
 
-    def _replace(self, **newvalues):
-        return EventFieldWrapper(self._field_config._replace(**newvalues), self._core)
+    def _replace(self, **_):
+        assert False, 'Wrappers do not support _replace'
 
     def local_name(self):
         return self.short_name or camelcase_to_underscore(self.name)
@@ -436,6 +426,16 @@ class EventFieldWrapper:
                 source.include("utils/qt/debug_extras.h")  # For printing vectors
 
         return rvalue_expr
+
+    def singularized(self):
+        return EventFieldWrapper(
+            self._field_config._replace(
+                is_list=False,
+                name=singular(self.name),
+                short_name=singular(self.short_name) if self.short_name is not None else None
+            ),
+            self._core
+        )
 
     def is_mandatory(self):
         return not self.is_optional and self.default_value is None
