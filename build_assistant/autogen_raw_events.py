@@ -33,7 +33,7 @@ def gen_raw_events(autogen_config, autogen_core):
         parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent<' + event_config.fail_reason_enum + '>'
 
         with h_source.struct_block(class_name, inherits=[parent_class]) as struct:
-            h_source.cover_symbols(base_event_h.get_covered_symbols())
+            h_source.cover_symbols_from(base_event_h)
 
             with struct.public_block() as block:
                 if len(event_config.fields) > 0:
@@ -60,7 +60,7 @@ def gen_raw_events(autogen_config, autogen_core):
                     debug_write_method_name(event_config), 'void', ('QDebug', 'stream'), virtual=True, const=True
                 )
 
-        cpp_source.cover_symbols(h_source.get_covered_symbols())
+        cpp_source.cover_symbols_from(h_source)
 
         for ctor_info in constructors(event_config, base_event_config):
             with cpp_source.constructor(class_name, *ctor_info.params, inherits=ctor_info.subconstructors) as cons:
@@ -116,7 +116,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
     h_source.declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event'))
 
-    cpp_source.cover_symbols(h_source.get_covered_symbols())
+    cpp_source.cover_symbols_from(h_source)
 
     for ctor_info in constructors(None, base_event_config):
         with cpp_source.constructor(class_name, *ctor_info.params, inherits=ctor_info.subconstructors) as cons:
@@ -237,7 +237,7 @@ def gen_base_debug_write_method(cpp_source, base_event_config):
             .line('stream.nospace();').nl() \
             .line('stream << "#" << {0} << " ";'.format(index_field.as_print_rvalue(cpp_source))) \
             .line('stream << "[" << {0} << "] ";'.format(time_field.as_print_rvalue(cpp_source))).nl() \
-            .line('stream << QP(eventName());').add_includes_for_type('QP') \
+            .line('stream << QP(eventName());').use_symbol('QP') \
             .line('writeDetailsToDebugStream(stream);').nl()
 
         gen_debug_write_field_code(method, remaining_fields)

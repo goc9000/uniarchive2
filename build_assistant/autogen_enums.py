@@ -40,7 +40,7 @@ def gen_enums(enums_config, autogen_core):
             .declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec)
 
         cpp_source \
-            .cover_symbols(h_source.get_covered_symbols()) \
+            .cover_symbols_from(h_source) \
             .include('utils/qt/shortcuts.h') \
             .qt_include('QtDebug')
 
