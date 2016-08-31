@@ -79,12 +79,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
         base_event_config.gen_private_block(struct)
 
-    with cpp_source.function(
-        'operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event'), declare=True
-    ) as method:
-        method \
-            .line('event->writeToDebugStream(stream);') \
-            .line('return stream;')
+    base_event_config.gen_debug_write_operator(cpp_source)
 
     return h_source
 

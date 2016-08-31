@@ -10,7 +10,7 @@ from collections import namedtuple
 
 from build_assistant.Augment import Augment
 from build_assistant.AutoGenConfig import GenericPolymorphicConfig
-from build_assistant.grammar import singular
+from build_assistant.grammar import singular, classname_to_varname
 
 
 ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements'])
@@ -180,6 +180,17 @@ class GenericPolymorphicAugment(Augment):
             write_irregular_field(method, field_config)
 
         commit_regular_fields(method, regular_fields_line)
+
+    def gen_debug_write_operator(self, cpp_source):
+        varname = classname_to_varname(self.class_name())
+
+        with cpp_source.function(
+            'operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR({0})'.format(self.class_name()), varname),
+            declare=True
+        ) as method:
+            method \
+                .line('{0}->writeToDebugStream(stream);'.format(varname)) \
+                .line('return stream;')
 
     def has_private_block(self):
         return self.has_mandatory_fields_sanity_check()
