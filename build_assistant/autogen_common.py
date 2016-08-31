@@ -8,16 +8,10 @@
 
 import hashlib
 
-from build_assistant.VirtualPath import VirtualPath
-
 
 HASH_LINE_PREFIX = ' * Codegen hash (sha256):'
 BEGIN_CUSTOM_SECTION_LINE_PREFIX = '// BEGIN CUSTOM SECTION: '
 END_CUSTOM_SECTION_LINE_PREFIX = '// END CUSTOM SECTION: '
-
-
-def get_full_autogen_raw_event_path_and_name(path, name):
-    return VirtualPath(['intermediate_format', 'events']).append(path), 'Raw' + name + 'Event'
 
 
 def compute_content_hash(lines):

@@ -9,6 +9,11 @@
 from build_assistant.grammar import classname_to_varname, camelcase_to_underscore
 
 
+def autogen_enums_index(autogen_config):
+    for path, name, _ in autogen_config.enums:
+        yield path, name
+
+
 def gen_enums(enums_config, autogen_core):
     for path, name, enum_config in enums_config:
         varname = classname_to_varname(name)

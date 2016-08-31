@@ -10,11 +10,22 @@ from collections import namedtuple
 
 from build_assistant.VirtualPath import VirtualPath
 from build_assistant.SymbolRegistry import TypeKind
-from build_assistant.autogen_common import get_full_autogen_raw_event_path_and_name
 from build_assistant.grammar import camelcase_to_underscore, singular
 
 
 ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements'])
+
+
+BASE_EVENTS_PATH = VirtualPath(['intermediate_format', 'events'])
+
+
+def autogen_raw_events_index(autogen_config):
+    yield BASE_EVENTS_PATH, 'RawEvent'
+
+    for path, name, _ in autogen_config.raw_events:
+        yield BASE_EVENTS_PATH.append(path), 'Raw' + name + 'Event'
+
+    return []
 
 
 def gen_raw_events(autogen_config, autogen_core):
@@ -22,11 +33,11 @@ def gen_raw_events(autogen_config, autogen_core):
 
     base_event_h = gen_base_raw_event(base_event_config, autogen_core)
 
-    for path, name, event_config in autogen_config.raw_events:
-        event_config = EventConfigWrapper(event_config, autogen_core, base_config=base_event_config)
-        path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
+    for rel_path, name, event_config in autogen_config.raw_events:
+        event_config = EventConfigWrapper(name, event_config, autogen_core, base_config=base_event_config)
+        class_name = event_config.class_name()
 
-        cpp_source, h_source = autogen_core.new_pair(path, class_name)
+        cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), class_name)
 
         with h_source.struct_block(class_name, inherits=[event_config.parent_class()]) as struct:
             h_source.cover_symbols_from(base_event_h)
@@ -76,10 +87,9 @@ def gen_raw_events(autogen_config, autogen_core):
 
 
 def gen_base_raw_event(base_event_config, autogen_core):
-    base_path = VirtualPath(['intermediate_format', 'events'])
-    class_name = 'RawEvent'
+    class_name = base_event_config.class_name()
 
-    cpp_source, h_source = autogen_core.new_pair(base_path, class_name)
+    cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH, class_name)
 
     with h_source.struct_block(class_name) as struct:
         with struct.public_block() as block:
@@ -258,6 +268,9 @@ class AbstractEventConfigWrapper:
     def mandatory_base_fields(self):
         raise NotImplementedError
 
+    def class_name(self):
+        raise NotImplementedError
+
     def parent_class(self, no_template=None):
         raise NotImplementedError
 
@@ -322,19 +335,27 @@ class BaseEventConfigWrapper(AbstractEventConfigWrapper):
     def mandatory_base_fields(self):
         return list()
 
+    def class_name(self):
+        return 'RawEvent'
+
     def parent_class(self, no_template=None):
         return None
 
 
 class EventConfigWrapper(AbstractEventConfigWrapper):
+    _name = None
     _base_config = None
 
-    def __init__(self, event_config, autogen_core, base_config=None):
+    def __init__(self, name, event_config, autogen_core, base_config=None):
         AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
+        self._name = name
         self._base_config = base_config
 
     def mandatory_base_fields(self):
         return [f for f in self._base_config.fields if f.is_mandatory()]
+
+    def class_name(self):
+        return 'Raw' + self._name + 'Event'
 
     def parent_class(self, no_template=False):
         if self.fail_reason_enum is None:
