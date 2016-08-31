@@ -31,12 +31,12 @@ def autogen_raw_events_index(autogen_config):
 
 
 def gen_raw_events(autogen_config, autogen_core):
-    base_event_config = BaseEventConfigWrapper(autogen_config.base_raw_event, autogen_core)
+    base_event_config = BaseEventConfigAugment(autogen_config.base_raw_event, autogen_core)
 
     base_event_h = gen_base_raw_event(base_event_config, autogen_core)
 
     for rel_path, name, event_config in autogen_config.raw_events:
-        event_config = EventConfigWrapper(name, event_config, autogen_core, base_config=base_event_config)
+        event_config = EventConfigAugment(name, event_config, autogen_core, base_config=base_event_config)
         class_name = event_config.class_name()
 
         cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), class_name)
@@ -251,14 +251,14 @@ def gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config):
             field.write_param_check(method)
 
 
-class AbstractEventConfigWrapper(Augment):
+class AbstractEventConfigAugment(Augment):
     _core = None
 
     def __init__(self, event_config, autogen_core):
         Augment.__init__(
             self,
             event_config._replace(
-                fields=[EventFieldWrapper(field, autogen_core) for field in event_config.fields]
+                fields=[EventFieldAugment(field, autogen_core) for field in event_config.fields]
             ),
             RawEventConfig
         )
@@ -328,9 +328,9 @@ class AbstractEventConfigWrapper(Augment):
         return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
 
 
-class BaseEventConfigWrapper(AbstractEventConfigWrapper):
+class BaseEventConfigAugment(AbstractEventConfigAugment):
     def __init__(self, event_config, autogen_core):
-        AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
+        AbstractEventConfigAugment.__init__(self, event_config, autogen_core)
 
     def mandatory_base_fields(self):
         return list()
@@ -342,12 +342,12 @@ class BaseEventConfigWrapper(AbstractEventConfigWrapper):
         return None
 
 
-class EventConfigWrapper(AbstractEventConfigWrapper):
+class EventConfigAugment(AbstractEventConfigAugment):
     _name = None
     _base_config = None
 
     def __init__(self, name, event_config, autogen_core, base_config=None):
-        AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
+        AbstractEventConfigAugment.__init__(self, event_config, autogen_core)
         self._name = name
         self._base_config = base_config
 
@@ -366,7 +366,7 @@ class EventConfigWrapper(AbstractEventConfigWrapper):
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
 
 
-class EventFieldWrapper(Augment):
+class EventFieldAugment(Augment):
     _core = None
 
     _base_type = None
@@ -445,7 +445,7 @@ class EventFieldWrapper(Augment):
         return rvalue_expr
 
     def singularized(self):
-        return EventFieldWrapper(
+        return EventFieldAugment(
             self._augmented_object._replace(
                 is_list=False,
                 name=singular(self.name),
