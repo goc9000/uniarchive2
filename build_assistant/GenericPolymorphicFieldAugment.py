@@ -108,7 +108,7 @@ class GenericPolymorphicFieldAugment(Augment):
 
         return type_kind == TypeKind.POLYMORPHIC
 
-    def write_param_check(self, source):
+    def gen_param_check(self, source):
         type_kind = self._type_info.type_kind
 
         if type_kind == TypeKind.POLYMORPHIC:

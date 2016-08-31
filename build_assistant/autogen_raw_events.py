@@ -57,15 +57,8 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
-                for ctor_info in event_config.constructors():
-                    with cpp_source.constructor(
-                        class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
-                    ) as cons:
-                        for line in ctor_info.init_statements:
-                            cons.line(line)
-
-                if event_config.has_mandatory_fields_sanity_check():
-                    gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config)
+                event_config.gen_constructors(cpp_source)
+                event_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
                 block.nl()
 
@@ -82,10 +75,7 @@ def gen_raw_events(autogen_config, autogen_core):
             with struct.protected_block() as _:
                 gen_debug_write_method(cpp_source, class_name, event_config)
 
-            if event_config.has_mandatory_fields_sanity_check():
-                struct.nl()
-                with struct.private_block() as block:
-                    block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
+            event_config.gen_private_block(struct)
 
 
 def gen_base_raw_event(base_event_config, autogen_core):
@@ -107,12 +97,8 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
                 block.nl()
 
-            for ctor_info in base_event_config.constructors():
-                with cpp_source.constructor(
-                    class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
-                ) as cons:
-                    for line in ctor_info.init_statements:
-                        cons.line(line)
+            base_event_config.gen_constructors(cpp_source)
+            base_event_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
             block \
                 .nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl() \
@@ -131,6 +117,8 @@ def gen_base_raw_event(base_event_config, autogen_core):
                 const=True, virtual=True, declare=True
             ) as _:
                 pass
+
+        base_event_config.gen_private_block(struct)
 
     with cpp_source.function(
         'operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR(RawEvent)', 'event'), declare=True
@@ -242,15 +230,6 @@ def gen_debug_write_field_code(method, fields):
     commit_regular_fields(method, regular_fields_line)
 
 
-def gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config):
-    with cpp_source.method(class_name, 'sanityCheckMandatoryParameters', 'void', const=True) as method:
-        for field in event_config.fields:
-            if not (field.is_mandatory() and field.is_checkable()):
-                continue
-
-            field.write_param_check(method)
-
-
 class AbstractEventConfigAugment(Augment):
     _core = None
 
@@ -286,13 +265,11 @@ class AbstractEventConfigAugment(Augment):
 
         while True:
             inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
-            sanity_check_statements = ['sanityCheckMandatoryParameters();'] \
-                if self.has_mandatory_fields_sanity_check() else list()
 
             yield ConstructorInfo(
                 params=[f.as_param() for f in base_fields + inited_fields],
                 subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
-                init_statements=sanity_check_statements,
+                init_statements=list(),
             )
 
             # Generate convenience constructor for the first singularizable field
@@ -314,7 +291,7 @@ class AbstractEventConfigAugment(Augment):
                         subconstructors=subcons,
                         init_statements=[
                             '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
-                        ] + sanity_check_statements
+                        ],
                     )
                     break
 
@@ -323,6 +300,30 @@ class AbstractEventConfigAugment(Augment):
                 break
 
             extra_enabled_fields.add(field_config.name)
+
+    def gen_constructors(self, cpp_source):
+        for ctor_info in self.constructors():
+            with cpp_source.constructor(
+                 self.class_name(), *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
+            ) as cons:
+                for line in ctor_info.init_statements:
+                    cons.line(line)
+
+                if self.has_mandatory_fields_sanity_check():
+                    cons.line('sanityCheckMandatoryParameters();')
+
+    def gen_mandatory_fields_sanity_check_method(self, cpp_source):
+        if self.has_mandatory_fields_sanity_check():
+            with cpp_source.method(self.class_name(), 'sanityCheckMandatoryParameters', 'void', const=True) as method:
+                for field in self.fields:
+                    if field.is_mandatory() and field.is_checkable():
+                        field.gen_param_check(method)
+
+    def gen_private_block(self, struct):
+        if self.has_mandatory_fields_sanity_check():
+            struct.nl()
+            with struct.private_block() as block:
+                block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
 
     def has_mandatory_fields_sanity_check(self):
         return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
