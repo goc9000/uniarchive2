@@ -45,18 +45,7 @@ def gen_raw_events(autogen_config, autogen_core):
             h_source.cover_symbols_from(base_event_h)
 
             with struct.public_block() as block:
-                if len(event_config.fields) > 0:
-                    for index, field in enumerate(event_config.fields):
-                        if index in event_config.field_breaks:
-                            block.nl()
-
-                        if field.doc is not None:
-                            block.doc_comment(field.doc)
-
-                        block.field(*field.as_field_decl())
-
-                    block.nl()
-
+                event_config.gen_field_declarations(block)
                 event_config.gen_constructors(cpp_source)
                 event_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
@@ -85,18 +74,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
     with h_source.struct_block(class_name) as struct:
         with struct.public_block() as block:
-            if len(base_event_config.fields) > 0:
-                for index, field in enumerate(base_event_config.fields):
-                    if index in base_event_config.field_breaks:
-                        block.nl()
-
-                    if field.doc is not None:
-                        block.doc_comment(field.doc)
-
-                    block.field(*field.as_field_decl())
-
-                block.nl()
-
+            base_event_config.gen_field_declarations(block)
             base_event_config.gen_constructors(cpp_source)
             base_event_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
@@ -300,6 +278,19 @@ class AbstractEventConfigAugment(Augment):
                 break
 
             extra_enabled_fields.add(field_config.name)
+
+    def gen_field_declarations(self, block):
+        if len(self.fields) > 0:
+            for index, field in enumerate(self.fields):
+                if index in self.field_breaks:
+                    block.nl()
+
+                if field.doc is not None:
+                    block.doc_comment(field.doc)
+
+                block.field(*field.as_field_decl())
+
+            block.nl()
 
     def gen_constructors(self, cpp_source):
         for ctor_info in self.constructors():
