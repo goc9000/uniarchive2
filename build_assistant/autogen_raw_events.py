@@ -26,14 +26,9 @@ def gen_raw_events(autogen_config, autogen_core):
         event_config = EventConfigWrapper(event_config, autogen_core, base_config=base_event_config)
         path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
 
-        is_failable = event_config.fail_reason_enum is not None
-        check_mandatory_fields = any(field.is_mandatory() and field.is_checkable() for field in event_config.fields)
-
         cpp_source, h_source = autogen_core.new_pair(path, class_name)
 
-        parent_class = 'RawEvent' if not is_failable else 'RawFailableEvent<' + event_config.fail_reason_enum + '>'
-
-        with h_source.struct_block(class_name, inherits=[parent_class]) as struct:
+        with h_source.struct_block(class_name, inherits=[event_config.parent_class()]) as struct:
             h_source.cover_symbols_from(base_event_h)
 
             with struct.public_block() as block:
@@ -49,14 +44,14 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
-                for ctor_info in constructors(event_config):
+                for ctor_info in event_config.constructors():
                     with cpp_source.constructor(
                         class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
                     ) as cons:
                         for line in ctor_info.init_statements:
                             cons.line(line)
 
-                if check_mandatory_fields:
+                if event_config.has_mandatory_fields_sanity_check():
                     gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config)
 
                 block.nl()
@@ -74,7 +69,7 @@ def gen_raw_events(autogen_config, autogen_core):
             with struct.protected_block() as _:
                 gen_debug_write_method(cpp_source, class_name, event_config)
 
-            if check_mandatory_fields:
+            if event_config.has_mandatory_fields_sanity_check():
                 struct.nl()
                 with struct.private_block() as block:
                     block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
@@ -100,7 +95,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
                 block.nl()
 
-            for ctor_info in constructors(base_event_config):
+            for ctor_info in base_event_config.constructors():
                 with cpp_source.constructor(
                     class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
                 ) as cons:
@@ -133,57 +128,6 @@ def gen_base_raw_event(base_event_config, autogen_core):
             .line('return stream;')
 
     return h_source
-
-
-def constructors(event_config):
-    base_fields = event_config.mandatory_base_fields()
-    free_fields = event_config.fields
-    parent_constructor = \
-        [event_config.parent_class() + '(' + ', '.join(map(lambda f: f.as_rvalue(), base_fields)) + ')'] \
-        if event_config.parent_class() is not None else []
-
-    maybe_addable_fields = filter(lambda f: f.add_to_constructor, free_fields)
-    extra_enabled_fields = set()
-    has_checkable_mandatory_fields = any(field.is_mandatory() and field.is_checkable() for field in event_config.fields)
-
-    while True:
-        inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
-        sanity_check_statements = ['sanityCheckMandatoryParameters();'] if has_checkable_mandatory_fields else list()
-
-        yield ConstructorInfo(
-            params=[f.as_param() for f in base_fields + inited_fields],
-            subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
-            init_statements=sanity_check_statements,
-        )
-
-        # Generate convenience constructor for the first singularizable field
-        for index, field_config in enumerate(inited_fields):
-            if field_config.maybe_singleton:
-                singularized = field_config.singularized()
-
-                params = \
-                    [f.as_param() for f in base_fields + inited_fields[:index]] + \
-                    [singularized.as_param()] + \
-                    [f.as_param() for f in inited_fields[index + 1:]]
-
-                subcons = parent_constructor + \
-                          [f.as_subconstructor() for f in inited_fields[:index]] + \
-                          [f.as_subconstructor() for f in inited_fields[index + 1:]]
-
-                yield ConstructorInfo(
-                    params=params,
-                    subconstructors=subcons,
-                    init_statements=[
-                        '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
-                    ] + sanity_check_statements
-                )
-                break
-
-        field_config = next(maybe_addable_fields, None)
-        if field_config is None:
-            break
-
-        extra_enabled_fields.add(field_config.name)
 
 
 def gen_debug_write_method(cpp_source, class_name, event_config):
@@ -314,8 +258,61 @@ class AbstractEventConfigWrapper:
     def mandatory_base_fields(self):
         raise NotImplementedError
 
-    def parent_class(self):
+    def parent_class(self, no_template=None):
         raise NotImplementedError
+
+    def constructors(self):
+        base_fields = self.mandatory_base_fields()
+        free_fields = self.fields
+        parent_constructor = \
+            [self.parent_class(no_template=True) + '(' + ', '.join(f.as_rvalue() for f in base_fields) + ')'] \
+            if self.parent_class() is not None else []
+
+        maybe_addable_fields = filter(lambda f: f.add_to_constructor, free_fields)
+        extra_enabled_fields = set()
+
+        while True:
+            inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
+            sanity_check_statements = ['sanityCheckMandatoryParameters();'] \
+                if self.has_mandatory_fields_sanity_check() else list()
+
+            yield ConstructorInfo(
+                params=[f.as_param() for f in base_fields + inited_fields],
+                subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
+                init_statements=sanity_check_statements,
+            )
+
+            # Generate convenience constructor for the first singularizable field
+            for index, field_config in enumerate(inited_fields):
+                if field_config.maybe_singleton:
+                    singularized = field_config.singularized()
+
+                    params = \
+                        [f.as_param() for f in base_fields + inited_fields[:index]] + \
+                        [singularized.as_param()] + \
+                        [f.as_param() for f in inited_fields[index + 1:]]
+
+                    subcons = parent_constructor + \
+                              [f.as_subconstructor() for f in inited_fields[:index]] + \
+                              [f.as_subconstructor() for f in inited_fields[index + 1:]]
+
+                    yield ConstructorInfo(
+                        params=params,
+                        subconstructors=subcons,
+                        init_statements=[
+                            '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
+                        ] + sanity_check_statements
+                    )
+                    break
+
+            field_config = next(maybe_addable_fields, None)
+            if field_config is None:
+                break
+
+            extra_enabled_fields.add(field_config.name)
+
+    def has_mandatory_fields_sanity_check(self):
+        return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
 
 
 class BaseEventConfigWrapper(AbstractEventConfigWrapper):
@@ -325,7 +322,7 @@ class BaseEventConfigWrapper(AbstractEventConfigWrapper):
     def mandatory_base_fields(self):
         return list()
 
-    def parent_class(self):
+    def parent_class(self, no_template=None):
         return None
 
 
@@ -339,8 +336,13 @@ class EventConfigWrapper(AbstractEventConfigWrapper):
     def mandatory_base_fields(self):
         return [f for f in self._base_config.fields if f.is_mandatory()]
 
-    def parent_class(self):
-        return 'RawEvent' if self.fail_reason_enum is None else 'RawFailableEvent'
+    def parent_class(self, no_template=False):
+        if self.fail_reason_enum is None:
+            return 'RawEvent'
+        elif no_template:
+            return 'RawFailableEvent'
+        else:
+            return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
 
 
 class EventFieldWrapper:
