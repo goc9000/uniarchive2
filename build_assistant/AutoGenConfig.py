@@ -105,8 +105,8 @@ def parse_enum_config(entity_config):
     )
 
 
-def parse_raw_event_config(entity_config):
-    def parse_raw_event_field(field_config):
+def parse_generic_polymorphic_config(preparsed_entity, field_parser):
+    def parse_polymorphic_field(field_config):
         match = re.match(
             r'^(\?|\(\?\))?([a-zA-Z0-9_]+)(\[\]|\(\[\]\))?\s+([a-zA-Z0-9_]+)' +
             r'(?:\s+as\s+([a-zA-Z0-9_]+))?(?:\s*=\s*(\w+))?$',
@@ -116,7 +116,7 @@ def parse_raw_event_config(entity_config):
 
         optionality, base_type, multiplicity, name, short_name, default_value = match.groups()
 
-        return RawEventFieldConfig(
+        return field_parser(dict(
             name=name,
             base_type=base_type,
             is_optional=(optionality is not None),
@@ -126,7 +126,17 @@ def parse_raw_event_config(entity_config):
             short_name=short_name,
             default_value=default_value,
             doc=field_config.options['doc'].strip() if 'doc' in field_config.options else None
-        )
+        ))
+
+    return dict(
+        fields=[parse_polymorphic_field(preparsed) for preparsed in preparsed_entity.fields],
+        field_breaks=preparsed_entity.field_breaks,
+    )
+
+
+def parse_raw_event_config(entity_config):
+    def parse_raw_event_field(attrs):
+        return RawEventFieldConfig(**attrs)
 
     preparsed = preparse_entity(entity_config, 'field')
 
@@ -136,8 +146,7 @@ def parse_raw_event_config(entity_config):
     }), 'Unsupported custom directive'
 
     return RawEventConfig(
-        fields=[parse_raw_event_field(preparsed) for preparsed in preparsed.fields],
-        field_breaks=preparsed.field_breaks,
+        **parse_generic_polymorphic_config(preparsed, parse_raw_event_field),
         fail_reason_enum=preparsed.options.get('failable'),
         custom_name_method='name method' in custom,
         custom_debug_write_method='debug write method' in custom,
