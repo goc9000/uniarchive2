@@ -8,9 +8,11 @@
 
 from collections import namedtuple
 
+from build_assistant.Augment import Augment
 from build_assistant.VirtualPath import VirtualPath
 from build_assistant.SymbolRegistry import TypeKind
 from build_assistant.grammar import camelcase_to_underscore, singular
+from build_assistant.AutoGenConfig import RawEventConfig, RawEventFieldConfig
 
 
 ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements'])
@@ -249,21 +251,19 @@ def gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config):
             field.write_param_check(method)
 
 
-class AbstractEventConfigWrapper:
-    _event_config = None
+class AbstractEventConfigWrapper(Augment):
     _core = None
 
     def __init__(self, event_config, autogen_core):
-        self._event_config = event_config._replace(
-            fields=[EventFieldWrapper(field, autogen_core) for field in event_config.fields]
+        Augment.__init__(
+            self,
+            event_config._replace(
+                fields=[EventFieldWrapper(field, autogen_core) for field in event_config.fields]
+            ),
+            RawEventConfig
         )
+
         self._core = autogen_core
-
-    def __getattr__(self, name):
-        return getattr(self._event_config, name)
-
-    def _replace(self, **_):
-        assert False, 'Wrappers do not support _replace'
 
     def mandatory_base_fields(self):
         raise NotImplementedError
@@ -366,26 +366,20 @@ class EventConfigWrapper(AbstractEventConfigWrapper):
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
 
 
-class EventFieldWrapper:
-    _field_config = None
+class EventFieldWrapper(Augment):
     _core = None
 
     _base_type = None
     _type_info = None
 
     def __init__(self, field_config, autogen_core):
-        self._field_config = field_config
+        Augment.__init__(self, field_config, RawEventFieldConfig)
+
         self._core = autogen_core
 
         self._base_type = field_config.base_type
         self._type_info = autogen_core.symbol_registry.lookup(self._base_type)
         assert self._type_info.is_type, '{0} is not a base type'.format(self._base_type)
-
-    def __getattr__(self, name):
-        return getattr(self._field_config, name)
-
-    def _replace(self, **_):
-        assert False, 'Wrappers do not support _replace'
 
     def local_name(self):
         return self.short_name or camelcase_to_underscore(self.name)
@@ -452,7 +446,7 @@ class EventFieldWrapper:
 
     def singularized(self):
         return EventFieldWrapper(
-            self._field_config._replace(
+            self._augmented_object._replace(
                 is_list=False,
                 name=singular(self.name),
                 short_name=singular(self.short_name) if self.short_name is not None else None
