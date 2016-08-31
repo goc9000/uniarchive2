@@ -45,18 +45,12 @@ def gen_raw_events(autogen_config, autogen_core):
 
                 block.nl()
 
-                with cpp_source.method(
-                    class_name, 'eventName', 'QString', const=True, virtual=True, declare=True
-                ) as method:
-                    if event_config.custom_name_method:
-                        method.custom_section('Name method')
-                    else:
-                        method.line("return {0};".format(method.string_literal(name)))
+                event_config.gen_event_name_method(cpp_source)
 
             struct.nl()
 
             with struct.protected_block() as _:
-                gen_debug_write_method(cpp_source, class_name, event_config)
+                event_config.gen_debug_write_details_method(cpp_source)
 
             event_config.gen_private_block(struct)
 
@@ -72,23 +66,16 @@ def gen_base_raw_event(base_event_config, autogen_core):
             base_event_config.gen_constructors(cpp_source)
             base_event_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
-            block \
-                .nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl() \
-                .declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True)
+            block.nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl()
+
+            base_event_config.gen_event_name_method(cpp_source)
 
             gen_base_debug_write_method(cpp_source, base_event_config)
 
         struct.nl()
 
         with struct.protected_block() as _:
-            with cpp_source.method(
-                class_name,
-                'writeDetailsToDebugStream',
-                'void',
-                ('QDebug UNUSED', 'stream'),
-                const=True, virtual=True, declare=True
-            ) as _:
-                pass
+            base_event_config.gen_debug_write_details_method(cpp_source)
 
         base_event_config.gen_private_block(struct)
 
@@ -100,21 +87,6 @@ def gen_base_raw_event(base_event_config, autogen_core):
             .line('return stream;')
 
     return h_source
-
-
-def gen_debug_write_method(cpp_source, class_name, event_config):
-    with cpp_source.method(
-        class_name,
-        'write' + ('FailableEvent' if event_config.fail_reason_enum is not None else '') + 'DetailsToDebugStream',
-        'void',
-        ('QDebug' + (' UNUSED' if len(event_config.fields) == 0 else ''), 'stream'),
-        const=True, virtual=True, declare=True
-    ) as method:
-        if event_config.custom_debug_write_method:
-            method.custom_section('Debug write method')
-        else:
-            event_config.gen_debug_write_field_code(method, event_config.fields)
-
 
 def gen_base_debug_write_method(cpp_source, base_event_config):
     time_field = None
@@ -149,6 +121,12 @@ class AbstractEventConfigAugment(GenericPolymorphicAugment):
 
         GenericPolymorphicAugment.__init__(self, event_config, autogen_core, field_augment=EventFieldAugment)
 
+    def gen_event_name_method(self, cpp_source):
+        raise NotImplementedError
+
+    def gen_debug_write_details_method(self, cpp_source):
+        raise NotImplementedError
+
 
 class BaseEventConfigAugment(AbstractEventConfigAugment):
     def __init__(self, event_config, autogen_core):
@@ -162,6 +140,16 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
 
     def parent_class(self, no_template=None):
         return None
+
+    def gen_event_name_method(self, cpp_source):
+        cpp_source.companion.declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True)
+
+    def gen_debug_write_details_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(), 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'),
+            const=True, virtual=True, declare=True
+        ) as _:
+            pass
 
 
 class EventConfigAugment(AbstractEventConfigAugment):
@@ -186,6 +174,28 @@ class EventConfigAugment(AbstractEventConfigAugment):
             return 'RawFailableEvent'
         else:
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
+
+    def gen_event_name_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare=True
+        ) as method:
+            if self.custom_name_method:
+                method.custom_section('Name method')
+            else:
+                method.line("return {0};".format(method.string_literal(self._name)))
+
+    def gen_debug_write_details_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(),
+            'write' + ('FailableEvent' if self.fail_reason_enum is not None else '') + 'DetailsToDebugStream',
+            'void',
+            ('QDebug' + (' UNUSED' if len(self.fields) == 0 else ''), 'stream'),
+            const=True, virtual=True, declare=True
+        ) as method:
+            if self.custom_debug_write_method:
+                method.custom_section('Debug write method')
+            else:
+                self.gen_debug_write_field_code(method, self.fields)
 
 
 class EventFieldAugment(GenericPolymorphicFieldAugment):
