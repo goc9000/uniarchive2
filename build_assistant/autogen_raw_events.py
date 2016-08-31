@@ -69,8 +69,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
             block.nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl()
 
             base_event_config.gen_event_name_method(cpp_source)
-
-            gen_base_debug_write_method(cpp_source, base_event_config)
+            base_event_config.gen_debug_write_method(cpp_source)
 
         struct.nl()
 
@@ -82,32 +81,6 @@ def gen_base_raw_event(base_event_config, autogen_core):
     base_event_config.gen_debug_write_operator(cpp_source)
 
     return h_source
-
-def gen_base_debug_write_method(cpp_source, base_event_config):
-    time_field = None
-    index_field = None
-
-    remaining_fields = []
-    for field_config in base_event_config.fields:
-        if field_config.name == 'timestamp' and time_field is None:
-            time_field = field_config
-        elif field_config.name.startswith('index') and index_field is None:
-            index_field = field_config
-        else:
-            remaining_fields.append(field_config)
-
-    with cpp_source.method(
-        'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare=True
-    ) as method:
-        method \
-            .field('QDebugStateSaver', 'saver(stream)') \
-            .line('stream.nospace();').nl() \
-            .line('stream << "#" << {0} << " ";'.format(index_field.as_print_rvalue(cpp_source))) \
-            .line('stream << "[" << {0} << "] ";'.format(time_field.as_print_rvalue(cpp_source))).nl() \
-            .line('stream << QP(eventName());').use_symbol('QP') \
-            .line('writeDetailsToDebugStream(stream);').nl()
-
-        base_event_config.gen_debug_write_field_code(method, remaining_fields)
 
 
 class AbstractEventConfigAugment(GenericPolymorphicAugment):
@@ -138,6 +111,32 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
 
     def gen_event_name_method(self, cpp_source):
         cpp_source.companion.declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True)
+
+    def gen_debug_write_method(self, cpp_source):
+        time_field = None
+        index_field = None
+
+        remaining_fields = []
+        for field_config in self.fields:
+            if field_config.name == 'timestamp' and time_field is None:
+                time_field = field_config
+            elif field_config.name.startswith('index') and index_field is None:
+                index_field = field_config
+            else:
+                remaining_fields.append(field_config)
+
+        with cpp_source.method(
+            'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare=True
+        ) as method:
+            method \
+                .field('QDebugStateSaver', 'saver(stream)') \
+                .line('stream.nospace();').nl() \
+                .line('stream << "#" << {0} << " ";'.format(index_field.as_print_rvalue(cpp_source))) \
+                .line('stream << "[" << {0} << "] ";'.format(time_field.as_print_rvalue(cpp_source))).nl() \
+                .line('stream << QP(eventName());').use_symbol('QP') \
+                .line('writeDetailsToDebugStream(stream);').nl()
+
+            self.gen_debug_write_field_code(method, remaining_fields)
 
     def gen_debug_write_details_method(self, cpp_source):
         with cpp_source.method(
