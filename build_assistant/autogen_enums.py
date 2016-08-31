@@ -35,15 +35,9 @@ def gen_enums(enums_config, autogen_core):
 
                 block.line(line)
 
-        h_source \
-            .declare_fn(name_for_function, 'QString', parameter_spec).nl() \
-            .declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec)
+        cpp_source.qt_include('QtDebug')
 
-        cpp_source \
-            .cover_symbols_from(h_source) \
-            .include('utils/qt/shortcuts.h') \
-            .qt_include('QtDebug')
-
+        h_source.declare_fn(name_for_function, 'QString', parameter_spec)
         with cpp_source.function(name_for_function, 'QString', parameter_spec) as fn:
             with fn.switch_block(varname) as sw:
                 for value in enum_config.values:
@@ -52,7 +46,10 @@ def gen_enums(enums_config, autogen_core):
 
             fn.line('invariant_violation("Invalid {0} value (%d)", {1});'.format(name, varname))
 
+        h_source.nl()
+
+        h_source.declare_fn('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec)
         with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec) as fn:
-            fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)) \
+            fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)).use_symbol('QP') \
               .nl() \
               .line('return stream;')
