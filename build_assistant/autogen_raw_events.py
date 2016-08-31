@@ -18,12 +18,12 @@ ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'i
 
 
 def gen_raw_events(autogen_config, autogen_core):
-    base_event_config = augment_fields_in_event_config(autogen_config.base_raw_event, autogen_core)
+    base_event_config = BaseEventConfigWrapper(autogen_config.base_raw_event, autogen_core)
 
     base_event_h = gen_base_raw_event(base_event_config, autogen_core)
 
     for path, name, event_config in autogen_config.raw_events:
-        event_config = augment_fields_in_event_config(event_config, autogen_core)
+        event_config = EventConfigWrapper(event_config, autogen_core, base_config=base_event_config)
         path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
 
         is_failable = event_config.fail_reason_enum is not None
@@ -49,7 +49,7 @@ def gen_raw_events(autogen_config, autogen_core):
 
                     block.nl()
 
-                for ctor_info in constructors(event_config, base_event_config):
+                for ctor_info in constructors(event_config):
                     with cpp_source.constructor(
                         class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
                     ) as cons:
@@ -100,7 +100,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
                 block.nl()
 
-            for ctor_info in constructors(None, base_event_config):
+            for ctor_info in constructors(base_event_config):
                 with cpp_source.constructor(
                     class_name, *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
                 ) as cons:
@@ -135,27 +135,16 @@ def gen_base_raw_event(base_event_config, autogen_core):
     return h_source
 
 
-def augment_fields_in_event_config(event_config, autogen_core):
-    return event_config._replace(fields=[EventFieldWrapper(field, autogen_core) for field in event_config.fields])
-
-
-def constructors(event_config, base_event_config):
-    if event_config is not None:
-        base_fields = list(filter(lambda f: f.is_mandatory(), base_event_config.fields))
-        free_fields = event_config.fields
-
-        parent_class = 'RawEvent' if event_config.fail_reason_enum is None else 'RawFailableEvent'
-        parent_constructor = [parent_class + '(' + ', '.join(map(lambda f: f.as_rvalue(), base_fields)) + ')']
-    else:
-        base_fields = []
-        free_fields = base_event_config.fields
-        parent_constructor = []
+def constructors(event_config):
+    base_fields = event_config.mandatory_base_fields()
+    free_fields = event_config.fields
+    parent_constructor = \
+        [event_config.parent_class() + '(' + ', '.join(map(lambda f: f.as_rvalue(), base_fields)) + ')'] \
+        if event_config.parent_class() is not None else []
 
     maybe_addable_fields = filter(lambda f: f.add_to_constructor, free_fields)
     extra_enabled_fields = set()
-    has_checkable_mandatory_fields = any(
-        field.is_mandatory() and field.is_checkable() for field in (event_config or base_event_config).fields
-    )
+    has_checkable_mandatory_fields = any(field.is_mandatory() and field.is_checkable() for field in event_config.fields)
 
     while True:
         inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
@@ -310,6 +299,60 @@ def gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config):
             field.write_param_check(method)
 
 
+class AbstractEventConfigWrapper:
+    _event_config = None
+    _core = None
+
+    def __init__(self, event_config, autogen_core):
+        self._event_config = event_config._replace(
+            fields=[EventFieldWrapper(field, autogen_core) for field in event_config.fields]
+        )
+        self._core = autogen_core
+
+    def __getattr__(self, name):
+        return getattr(self._event_config, name)
+
+    def _replace(self, **newvalues):
+        raise NotImplementedError
+
+    def mandatory_base_fields(self):
+        raise NotImplementedError
+
+    def parent_class(self):
+        raise NotImplementedError
+
+
+class BaseEventConfigWrapper(AbstractEventConfigWrapper):
+    def __init__(self, event_config, autogen_core):
+        AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
+
+    def _replace(self, **newvalues):
+        return BaseEventConfigWrapper(self._event_config._replace(**newvalues), self._core)
+
+    def mandatory_base_fields(self):
+        return list()
+
+    def parent_class(self):
+        return None
+
+
+class EventConfigWrapper(AbstractEventConfigWrapper):
+    _base_config = None
+
+    def __init__(self, event_config, autogen_core, base_config=None):
+        AbstractEventConfigWrapper.__init__(self, event_config, autogen_core)
+        self._base_config = base_config
+
+    def _replace(self, **newvalues):
+        return EventConfigWrapper(self._event_config._replace(**newvalues), self._core, base_config=self._base_config)
+
+    def mandatory_base_fields(self):
+        return [f for f in self._base_config.fields if f.is_mandatory()]
+
+    def parent_class(self):
+        return 'RawEvent' if self.fail_reason_enum is None else 'RawFailableEvent'
+
+
 class EventFieldWrapper:
     _field_config = None
     _core = None
@@ -407,8 +450,8 @@ class EventFieldWrapper:
 
         if type_kind == TypeKind.POLYMORPHIC:
             if self.is_list:
-                with source.for_each_block('IMM(auto)', 'item', self.local_name(), nl_after=False) as block:
-                    source.call(
+                with source.for_each_block('IMM(auto)', 'item', self.name, nl_after=False) as block:
+                    block.call(
                         'invariant',
                         'item',
                         source.string_literal("Parameter '{0}' cannot have empty entries".format(self.local_name()))
