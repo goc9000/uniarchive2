@@ -27,6 +27,7 @@ def gen_raw_events(autogen_config, autogen_core):
         path, class_name = get_full_autogen_raw_event_path_and_name(path, name)
 
         is_failable = event_config.fail_reason_enum is not None
+        check_mandatory_fields = any(field.is_mandatory() and field.is_checkable() for field in event_config.fields)
 
         cpp_source, h_source = autogen_core.new_pair(path, class_name)
 
@@ -55,6 +56,9 @@ def gen_raw_events(autogen_config, autogen_core):
                         for line in ctor_info.init_statements:
                             cons.line(line)
 
+                if check_mandatory_fields:
+                    gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config)
+
                 block.nl()
 
                 with cpp_source.method(
@@ -69,6 +73,11 @@ def gen_raw_events(autogen_config, autogen_core):
 
             with struct.protected_block() as _:
                 gen_debug_write_method(cpp_source, class_name, event_config)
+
+            if check_mandatory_fields:
+                struct.nl()
+                with struct.private_block() as block:
+                    block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
 
 
 def gen_base_raw_event(base_event_config, autogen_core):
@@ -144,14 +153,18 @@ def constructors(event_config, base_event_config):
 
     maybe_addable_fields = filter(lambda f: f.add_to_constructor, free_fields)
     extra_enabled_fields = set()
+    has_checkable_mandatory_fields = any(
+        field.is_mandatory() and field.is_checkable() for field in (event_config or base_event_config).fields
+    )
 
     while True:
         inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
+        sanity_check_statements = ['sanityCheckMandatoryParameters();'] if has_checkable_mandatory_fields else list()
 
         yield ConstructorInfo(
             params=[f.as_param() for f in base_fields + inited_fields],
             subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
-            init_statements=list(),
+            init_statements=sanity_check_statements,
         )
 
         # Generate convenience constructor for the first singularizable field
@@ -177,7 +190,7 @@ def constructors(event_config, base_event_config):
                     subconstructors=subcons,
                     init_statements=[
                         '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
-                    ]
+                    ] + sanity_check_statements
                 )
                 break
 
@@ -288,6 +301,15 @@ def gen_debug_write_field_code(method, fields):
     commit_regular_fields(method, regular_fields_line)
 
 
+def gen_sanity_check_for_mandatory_params(cpp_source, class_name, event_config):
+    with cpp_source.method(class_name, 'sanityCheckMandatoryParameters', 'void', const=True) as method:
+        for field in event_config.fields:
+            if not (field.is_mandatory() and field.is_checkable()):
+                continue
+
+            field.write_param_check(method)
+
+
 class EventFieldWrapper:
     _field_config = None
     _core = None
@@ -374,3 +396,18 @@ class EventFieldWrapper:
 
     def is_mandatory(self):
         return not self.is_optional and self.default_value is None
+
+    def is_checkable(self):
+        type_kind = self._type_info.type_kind
+
+        return type_kind == TypeKind.POLYMORPHIC and not self.is_list
+
+    def write_param_check(self, source):
+        type_kind = self._type_info.type_kind
+
+        if type_kind == TypeKind.POLYMORPHIC and not self.is_list:
+            source.call(
+                'invariant',
+                self.name,
+                source.string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
+            )
