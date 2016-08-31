@@ -13,7 +13,7 @@ from build_assistant.AutoGenConfig import GenericPolymorphicConfig
 from build_assistant.grammar import singular, classname_to_varname
 
 
-ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements'])
+ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements', 'extra_fields'])
 
 
 class GenericPolymorphicAugment(Augment):
@@ -50,11 +50,13 @@ class GenericPolymorphicAugment(Augment):
 
         while True:
             inited_fields = [f for f in free_fields if f.name in extra_enabled_fields or f.is_mandatory()]
+            extra_fields = [f for f in free_fields if f.name in extra_enabled_fields and not f.is_mandatory()]
 
             yield ConstructorInfo(
                 params=[f.as_param() for f in base_fields + inited_fields],
                 subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
                 init_statements=list(),
+                extra_fields=extra_fields,
             )
 
             # Generate convenience constructor for the first singularizable field
@@ -77,6 +79,7 @@ class GenericPolymorphicAugment(Augment):
                         init_statements=[
                             '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
                         ],
+                        extra_fields=extra_fields,
                     )
                     break
 
@@ -109,6 +112,9 @@ class GenericPolymorphicAugment(Augment):
 
                 if self.has_mandatory_fields_sanity_check():
                     cons.line('sanityCheckMandatoryParameters();')
+
+                for field in ctor_info.extra_fields:
+                    field.gen_param_check(cons, disambiguate=True)
 
     def gen_mandatory_fields_sanity_check_method(self, cpp_source):
         if self.has_mandatory_fields_sanity_check():

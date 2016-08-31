@@ -108,12 +108,14 @@ class GenericPolymorphicFieldAugment(Augment):
 
         return type_kind == TypeKind.POLYMORPHIC
 
-    def gen_param_check(self, source):
+    def gen_param_check(self, source, disambiguate=False):
         type_kind = self._type_info.type_kind
+
+        value_expr = 'this->{0}'.format(self.name) if disambiguate else self.name
 
         if type_kind == TypeKind.POLYMORPHIC:
             if self.is_list:
-                with source.for_each_block('IMM(auto)', 'item', self.name, nl_after=False) as block:
+                with source.for_each_block('IMM(auto)', 'item', value_expr, nl_after=False) as block:
                     block.call(
                         'invariant',
                         'item',
@@ -122,6 +124,6 @@ class GenericPolymorphicFieldAugment(Augment):
             else:
                 source.call(
                     'invariant',
-                    self.name,
+                    value_expr,
                     source.string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
                 )
