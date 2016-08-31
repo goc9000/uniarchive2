@@ -10,6 +10,7 @@ from collections import namedtuple
 
 from build_assistant.Augment import Augment
 from build_assistant.AutoGenConfig import GenericPolymorphicConfig
+from build_assistant.grammar import singular
 
 
 ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements'])
@@ -121,6 +122,64 @@ class GenericPolymorphicAugment(Augment):
             struct.nl()
             with struct.private_block() as block:
                 block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
+
+    def gen_debug_write_field_code(self, method, fields):
+        def commit_regular_fields(block, regular_fields_line):
+            if regular_fields_line is not None:
+                block.line(regular_fields_line + ';')
+
+        def write_regular_field(block, regular_fields_line, field_config):
+            if regular_fields_line is None:
+                regular_fields_line = 'stream'
+
+            added_text = ' << " {0}=" << {1}'.format(field_config.local_name(), field_config.as_print_rvalue(block))
+
+            if not block.line_fits(regular_fields_line + added_text + ';'):
+                commit_regular_fields(block, regular_fields_line)
+                regular_fields_line = 'stream'
+
+            regular_fields_line += added_text
+
+            return regular_fields_line
+
+        def write_irregular_field(block, field_config):
+            if field_config.is_optional:
+                with block.if_block(field_config.name, nl_after=False) as b:
+                    write_irregular_field2(b, field_config)
+            else:
+                write_irregular_field2(block, field_config)
+
+        def write_irregular_field2(block, field_config):
+            if field_config.maybe_singleton:
+                name = field_config.local_name()
+                rvalue = field_config.as_print_rvalue(block)
+
+                with block.if_block('{0}.size() == 1'.format(field_config.name), nl_after=False) as b:
+                    b.line('stream << " {0}=" << {1}.front();'.format(singular(name), rvalue))
+                    with b.else_block() as e:
+                        b.line('stream << " {0}=" << {1};'.format(name, rvalue))
+            else:
+                write_irregular_field3(block, field_config)
+
+        def write_irregular_field3(block, field_config):
+            block.line(
+                'stream << " {0}=" << {1};'.format(field_config.local_name(), field_config.as_print_rvalue(block))
+            )
+
+        regular_fields_line = None
+
+        for field_config in fields:
+            # First, write regular fields
+            if not (field_config.is_optional or field_config.maybe_singleton):
+                regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
+                continue
+
+            commit_regular_fields(method, regular_fields_line)
+            regular_fields_line = None
+
+            write_irregular_field(method, field_config)
+
+        commit_regular_fields(method, regular_fields_line)
 
     def has_private_block(self):
         return self.has_mandatory_fields_sanity_check()
