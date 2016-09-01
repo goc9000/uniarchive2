@@ -25,7 +25,9 @@ public:
     QString textEquivalent;
 
     FlagIcon(IMM(QString) country_code, IMM(QString) text_equivalent);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

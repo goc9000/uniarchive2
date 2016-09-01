@@ -20,7 +20,9 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 struct LineBreakTag : Markup {
 public:
     LineBreakTag();
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

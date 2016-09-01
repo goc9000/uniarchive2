@@ -23,7 +23,10 @@ struct RawMessageContentItem {
 public:
     POLYMORPHIC_HELPERS
 
-    virtual void writeToDebugStream(QDebug stream) const = 0;
+    void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
 
 QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) content_item);

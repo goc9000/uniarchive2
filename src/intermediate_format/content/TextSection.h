@@ -24,7 +24,9 @@ public:
     QString text;
 
     TextSection(IMM(QString) text);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

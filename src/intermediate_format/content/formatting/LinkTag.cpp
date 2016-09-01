@@ -10,8 +10,6 @@
 
 #include "intermediate_format/content/formatting/LinkTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 LinkTag::LinkTag(QUrl url) : url(url), closed(false) {
@@ -20,10 +18,8 @@ LinkTag::LinkTag(QUrl url) : url(url), closed(false) {
 LinkTag::LinkTag(bool closed) : closed(closed) {
 }
 
-void LinkTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "Link";
+void LinkTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "Link";
     if (!url.isEmpty()) {
         stream << " url=" << url.toString();
     }

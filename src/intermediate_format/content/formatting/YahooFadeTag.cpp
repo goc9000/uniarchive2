@@ -11,18 +11,14 @@
 #include "intermediate_format/content/formatting/YahooFadeTag.h"
 #include "utils/language/invariant.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 YahooFadeTag::YahooFadeTag(bool closed, IMM(QList<Color>) colors)
     : colors(colors), closed(closed) {
 }
 
-void YahooFadeTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "Fade";
+void YahooFadeTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "Fade";
     if (!closed && !colors.isEmpty()) {
         stream << ":" << colors[0];
         if (colors.length() > 1) {

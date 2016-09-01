@@ -26,7 +26,9 @@ public:
 
     CSSStyleTag(IMM(QString) css);
     CSSStyleTag(bool closed);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

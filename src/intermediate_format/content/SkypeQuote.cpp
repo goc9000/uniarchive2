@@ -10,8 +10,6 @@
 
 #include "intermediate_format/content/SkypeQuote.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 SkypeQuote::SkypeQuote(
@@ -26,10 +24,8 @@ SkypeQuote::SkypeQuote(
     quoteContent(move(quote_content)) {
 }
 
-void SkypeQuote::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[SkypeQuote";
+void SkypeQuote::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[SkypeQuote";
     stream << " conversation_id=" << quotedMessageConversationID << " message_guid=" << quotedMessageGUID;
     stream << " author=" << quotedMessageAuthor.get() << " time=" << quotedMessageTime;
     stream << " legacy_header=" << legacyHeader;

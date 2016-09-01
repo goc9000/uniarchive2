@@ -11,8 +11,6 @@
 #include "intermediate_format/content/formatting/CSSStyleTag.h"
 #include "utils/qt/shortcuts.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 CSSStyleTag::CSSStyleTag(IMM(QString) css) : css(css), closed(false) {
@@ -21,10 +19,8 @@ CSSStyleTag::CSSStyleTag(IMM(QString) css) : css(css), closed(false) {
 CSSStyleTag::CSSStyleTag(bool closed) : closed(closed) {
 }
 
-void CSSStyleTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "Style";
+void CSSStyleTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "Style";
     if (!css.isEmpty()) {
         stream << ": " << QP(css);
     }

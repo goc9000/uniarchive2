@@ -22,7 +22,9 @@ public:
     bool closed;
 
     BoldTag(bool closed = false);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

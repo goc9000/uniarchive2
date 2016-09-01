@@ -31,7 +31,9 @@ public:
 
     YahooAltTag(bool closed, IMM(Color) color1, IMM(Color) color2);
     YahooAltTag(bool closed);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

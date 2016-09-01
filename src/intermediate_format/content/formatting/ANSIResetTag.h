@@ -18,8 +18,8 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 struct ANSIResetTag : Markup {
-public:
-    virtual void writeToDebugStream(QDebug stream) const;
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

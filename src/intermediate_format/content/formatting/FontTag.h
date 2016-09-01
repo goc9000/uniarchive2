@@ -34,7 +34,9 @@ public:
     bool closed;
 
     FontTag(bool closed = false);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

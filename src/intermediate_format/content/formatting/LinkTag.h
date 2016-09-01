@@ -26,7 +26,8 @@ public:
     LinkTag(QUrl url);
     LinkTag(bool closed);
 
-    virtual void writeToDebugStream(QDebug stream) const;
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

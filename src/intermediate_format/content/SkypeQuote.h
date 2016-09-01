@@ -42,7 +42,9 @@ public:
         IMM(QString) legacy_header,
         RawMessageContent&& quote_content
     );
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

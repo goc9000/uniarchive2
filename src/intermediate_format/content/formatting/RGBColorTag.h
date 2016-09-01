@@ -27,7 +27,9 @@ public:
     bool closed;
 
     RGBColorTag(IMM(Color) color, bool closed = false);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

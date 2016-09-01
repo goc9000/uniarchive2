@@ -11,17 +11,13 @@
 #include "intermediate_format/content/MediaAttachment.h"
 #include "utils/language/invariant.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 MediaAttachment::MediaAttachment()  {
 }
 
-void MediaAttachment::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[Media";
+void MediaAttachment::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[Media";
     if (!filename.isEmpty()) {
         stream << " filename=" << filename;
     }

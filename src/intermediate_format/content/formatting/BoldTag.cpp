@@ -10,17 +10,13 @@
 
 #include "intermediate_format/content/formatting/BoldTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 BoldTag::BoldTag(bool closed) : closed(closed) {
 }
 
-void BoldTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "B]";
+void BoldTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "B]";
 }
 
 }}}

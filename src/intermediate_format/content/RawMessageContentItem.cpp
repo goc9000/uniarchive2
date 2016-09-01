@@ -14,10 +14,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) content_item) {
+void RawMessageContentItem::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
     stream.nospace();
-    content_item->writeToDebugStream(stream);
+
+    writeToDebugStreamImpl(stream);
+}
+
+QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) item) {
+    item->writeToDebugStream(stream);
     return stream;
 }
 

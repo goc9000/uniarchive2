@@ -25,7 +25,9 @@ public:
     QString textEquivalent;
 
     SkypeEmoticon(IMM(QString) semantics, IMM(QString) text_equivalent);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

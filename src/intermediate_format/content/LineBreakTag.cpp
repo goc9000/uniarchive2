@@ -10,14 +10,12 @@
 
 #include "intermediate_format/content/LineBreakTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 LineBreakTag::LineBreakTag() {
 }
 
-void LineBreakTag::writeToDebugStream(QDebug stream) const {
+void LineBreakTag::writeToDebugStreamImpl(QDebug stream) const {
     stream << "[BRK]";
 }
 

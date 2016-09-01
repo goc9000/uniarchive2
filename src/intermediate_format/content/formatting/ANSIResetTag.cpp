@@ -10,14 +10,10 @@
 
 #include "intermediate_format/content/formatting/ANSIResetTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-void ANSIResetTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[ANSIReset]";
+void ANSIResetTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[ANSIReset]";
 }
 
 }}}

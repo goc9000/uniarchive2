@@ -26,7 +26,9 @@ public:
     bool closed;
 
     ANSIColorTag(ANSIColor color, bool closed = false);
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

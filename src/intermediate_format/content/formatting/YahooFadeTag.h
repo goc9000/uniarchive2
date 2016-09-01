@@ -28,7 +28,9 @@ public:
     bool closed;
 
     YahooFadeTag(bool closed, IMM(QList<Color>) colors = QList<Color>());
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

@@ -10,17 +10,13 @@
 
 #include "intermediate_format/content/formatting/ANSIColorTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 ANSIColorTag::ANSIColorTag(ANSIColor color, bool closed) : color(color), closed(closed) {
 }
 
-void ANSIColorTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "ANSICol:" << color << "]";
+void ANSIColorTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "ANSICol:" << color << "]";
 }
 
 }}}

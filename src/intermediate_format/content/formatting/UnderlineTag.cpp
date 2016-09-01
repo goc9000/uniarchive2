@@ -10,17 +10,13 @@
 
 #include "intermediate_format/content/formatting/UnderlineTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 UnderlineTag::UnderlineTag(bool closed) : closed(closed) {
 }
 
-void UnderlineTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "U]";
+void UnderlineTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "U]";
 }
 
 }}}

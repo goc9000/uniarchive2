@@ -11,8 +11,6 @@
 #include "intermediate_format/content/formatting/YahooAltTag.h"
 #include "utils/language/invariant.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 YahooAltTag::YahooAltTag(bool closed, IMM(Color) color1, IMM(Color) color2)
@@ -23,10 +21,8 @@ YahooAltTag::YahooAltTag(bool closed) : closed(closed) {
     invariant(closed, "Can't instantiate ALT tag without any colors");
 }
 
-void YahooAltTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "Alt";
+void YahooAltTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "Alt";
     if (!closed) {
         stream << ":" << *color1 << "," << *color2;
     }

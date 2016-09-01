@@ -10,17 +10,13 @@
 
 #include "intermediate_format/content/formatting/EmphasisTag.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 EmphasisTag::EmphasisTag(bool closed) : closed(closed) {
 }
 
-void EmphasisTag::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-
-    stream.nospace() << "[" << (closed ? "/" : "") << "EM]";
+void EmphasisTag::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "[" << (closed ? "/" : "") << "EM]";
 }
 
 }}}

@@ -30,7 +30,9 @@ public:
     MediaError error = MediaError::NO_ERROR;
 
     MediaAttachment();
-    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

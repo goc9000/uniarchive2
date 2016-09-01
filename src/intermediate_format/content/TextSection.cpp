@@ -10,14 +10,12 @@
 
 #include "intermediate_format/content/TextSection.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 TextSection::TextSection(IMM(QString) text) : text(text) {
 }
 
-void TextSection::writeToDebugStream(QDebug stream) const {
+void TextSection::writeToDebugStreamImpl(QDebug stream) const {
     stream << text;
 }
 
