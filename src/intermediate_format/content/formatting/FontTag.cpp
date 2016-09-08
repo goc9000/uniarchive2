@@ -10,32 +10,34 @@
 
 #include "intermediate_format/content/formatting/FontTag.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/qt/debug_extras.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-FontTag::FontTag(bool closed) : closed(closed) {
+FontTag::FontTag(bool open) : StandardTag(open) {
 }
 
-void FontTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "Font";
+QString FontTag::tagName() const {
+    return "Font";
+}
 
-    int any = 0;
-    if (faces.length() > 0) {
-        stream << (any++ ? ":" : ",") << QP(faces[0]);
-        if (faces.length() > 1) {
-            stream << "+";
+void FontTag::writeOpenTagAttributesToDebugStream(QDebug stream) const {
+    if (faces) {
+        if (faces->size() == 1) {
+            stream << " face=" << faces->front();
+        } else {
+            stream << " faces=" << *faces;
         }
     }
-    if (!size.isEmpty()) {
-        stream << (any++ ? ":" : ",") << QP(size);
+    if (size) {
+        stream << " size=" << *size;
     }
     if (color) {
-        stream << (any++ ? ":" : ",") << *color;
+        stream << " color=" << *color;
     }
-    if (!css.isEmpty()) {
-        stream << (any++ ? ":" : ",") << "CSS";
+    if (css) {
+        stream << " css=" << *css;
     }
-    stream << "]";
 }
 
 }}}

@@ -12,18 +12,20 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-LinkTag::LinkTag(QUrl url) : url(url), closed(false) {
+LinkTag::LinkTag(QUrl url) : StandardTag(true), url(url) {
 }
 
-LinkTag::LinkTag(bool closed) : closed(closed) {
+LinkTag::LinkTag(bool open) : StandardTag(open) {
 }
 
-void LinkTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "Link";
-    if (!url.isEmpty()) {
-        stream << " url=" << url.toString();
+QString LinkTag::tagName() const {
+    return "Link";
+}
+
+void LinkTag::writeOpenTagAttributesToDebugStream(QDebug stream) const {
+    if (url) {
+        stream << " " << url->url();
     }
-    stream << "]";
 }
 
 }}}

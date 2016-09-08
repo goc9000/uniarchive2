@@ -9,24 +9,21 @@
  */
 
 #include "intermediate_format/content/formatting/YahooAltTag.h"
-#include "utils/language/invariant.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-YahooAltTag::YahooAltTag(bool closed, IMM(Color) color1, IMM(Color) color2)
-    : color1(color1), color2(color2), closed(closed) {
+YahooAltTag::YahooAltTag(IMM(Color) color1, IMM(Color) color2) : StandardTag(true), color1(color1), color2(color2) {
 }
 
-YahooAltTag::YahooAltTag(bool closed) : closed(closed) {
-    invariant(closed, "Can't instantiate ALT tag without any colors");
+YahooAltTag::YahooAltTag() : StandardTag(false) {
 }
 
-void YahooAltTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "Alt";
-    if (!closed) {
-        stream << ":" << *color1 << "," << *color2;
-    }
-    stream << "]";
+QString YahooAltTag::tagName() const {
+    return "Alt";
+}
+
+void YahooAltTag::writeOpenTagAttributesToDebugStream(QDebug stream) const {
+    stream << " " << *color1 << " " << *color2;
 }
 
 }}}

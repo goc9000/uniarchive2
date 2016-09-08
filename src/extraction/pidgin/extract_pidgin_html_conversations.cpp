@@ -215,10 +215,10 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
     if ((tag_info.tagName == "html") || (tag_info.tagName == "body") || (tag_info.tagName == "p")) {
         return unique_ptr<RawMessageContentItem>(); // skip these tags
     } else if (tag_info.tagName == "em") {
-        return make_unique<EmphasisTag>(tag_info.closed);
+        return make_unique<EmphasisTag>(tag_info.open);
     } else if (tag_info.tagName == "span") {
         if (tag_info.closed) {
-            return make_unique<CSSStyleTag>(true);
+            return make_unique<CSSStyleTag>();
         } else {
             invariant(
                 tag_info.attributes.empty() ||
@@ -235,7 +235,7 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
         }
     } else if (tag_info.tagName == "a") {
         if (tag_info.closed) {
-            return make_unique<LinkTag>(true);
+            return make_unique<LinkTag>(false);
         } else {
             return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
         }

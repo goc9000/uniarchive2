@@ -11,20 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_EMPHASISTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_EMPHASISTAG_H
 
-#include "intermediate_format/content/Markup.h"
-
-#include <QtDebug>
+#include "intermediate_format/content/StandardTag.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct EmphasisTag : Markup {
+struct EmphasisTag : StandardTag {
 public:
-    bool closed;
-
-    EmphasisTag(bool closed = false);
+    EmphasisTag(bool open);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
 };
 
 }}}

@@ -11,20 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_BOLDTAG_H
 
-#include "intermediate_format/content/Markup.h"
-
-#include <QtDebug>
+#include "intermediate_format/content/StandardTag.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct BoldTag : Markup {
+struct BoldTag : StandardTag {
 public:
-    bool closed;
-
-    BoldTag(bool closed = false);
+    BoldTag(bool open);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
 };
 
 }}}

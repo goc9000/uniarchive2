@@ -11,24 +11,24 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_CSSSTYLETAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_CSSSTYLETAG_H
 
-#include "intermediate_format/content/Markup.h"
+#include "intermediate_format/content/StandardTag.h"
+#include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
-
-#include <QtDebug>
-#include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct CSSStyleTag : Markup {
+using namespace std::experimental;
+
+struct CSSStyleTag : StandardTag {
 public:
-    QString css;
-    bool closed;
+    optional<QString> css;
 
     CSSStyleTag(IMM(QString) css);
-    CSSStyleTag(bool closed);
+    CSSStyleTag();
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

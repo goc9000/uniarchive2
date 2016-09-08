@@ -12,11 +12,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-EmphasisTag::EmphasisTag(bool closed) : closed(closed) {
+EmphasisTag::EmphasisTag(bool open) : StandardTag(open) {
 }
 
-void EmphasisTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "EM]";
+QString EmphasisTag::tagName() const {
+    return "EM";
 }
 
 }}}

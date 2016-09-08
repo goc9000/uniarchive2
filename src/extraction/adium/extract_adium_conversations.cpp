@@ -391,11 +391,11 @@ static CEDE(RawMessageContentItem) convert_event_content_closed_tag(IMM(QDomElem
     QString tag_name = element.tagName();
 
     if (tag_name == "span") {
-        return make_unique<CSSStyleTag>(true);
+        return make_unique<CSSStyleTag>();
     } else if (tag_name == "br") {
         return unique_ptr<RawMessageContentItem>();
     } else if (tag_name == "a") {
-        return make_unique<LinkTag>(true);
+        return make_unique<LinkTag>(false);
     }
 
     invariant_violation("Unsupported closed tag: <%s>", QP(tag_name));
@@ -417,7 +417,7 @@ static CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IM
     QString tag_name = element.tagName();
 
     if ((tag_name == "a") && (element.hasAttribute("style"))) {
-        return make_unique<CSSStyleTag>(true);
+        return make_unique<CSSStyleTag>();
     }
 
     return unique_ptr<RawMessageContentItem>();

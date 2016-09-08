@@ -12,28 +12,27 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOALTTAG_H
 
 #include "graphics/Color.h"
-#include "intermediate_format/content/Markup.h"
+#include "intermediate_format/content/StandardTag.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
-
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-using namespace std::experimental;
 using namespace uniarchive2::graphics;
 
-struct YahooAltTag : Markup {
+using namespace std::experimental;
+
+struct YahooAltTag : StandardTag {
 public:
     optional<Color> color1;
     optional<Color> color2;
-    bool closed;
 
-    YahooAltTag(bool closed, IMM(Color) color1, IMM(Color) color2);
-    YahooAltTag(bool closed);
+    YahooAltTag(IMM(Color) color1, IMM(Color) color2);
+    YahooAltTag();
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

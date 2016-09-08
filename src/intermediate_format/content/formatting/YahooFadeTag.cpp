@@ -9,26 +9,29 @@
  */
 
 #include "intermediate_format/content/formatting/YahooFadeTag.h"
-#include "utils/language/invariant.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-YahooFadeTag::YahooFadeTag(bool closed, IMM(QList<Color>) colors)
-    : colors(colors), closed(closed) {
+YahooFadeTag::YahooFadeTag(IMM(vector<Color>) colors) : StandardTag(true), colors(colors) {
 }
 
-void YahooFadeTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "Fade";
-    if (!closed && !colors.isEmpty()) {
-        stream << ":" << colors[0];
-        if (colors.length() > 1) {
-            stream << "," << colors[1];
+YahooFadeTag::YahooFadeTag(bool open) : StandardTag(open) {
+}
+
+QString YahooFadeTag::tagName() const {
+    return "Fade";
+}
+
+void YahooFadeTag::writeOpenTagAttributesToDebugStream(QDebug stream) const {
+    if (colors) {
+        stream << " " << colors->at(0);
+        if (colors->size() > 1) {
+            stream << "," << colors->at(1);
         }
-        if (colors.length() > 2) {
-            stream << "+";
+        if (colors->size() > 2) {
+            stream << "...";
         }
     }
-    stream << "]";
 }
 
 }}}

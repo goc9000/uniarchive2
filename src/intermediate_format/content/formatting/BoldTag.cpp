@@ -12,11 +12,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-BoldTag::BoldTag(bool closed) : closed(closed) {
+BoldTag::BoldTag(bool open) : StandardTag(open) {
 }
 
-void BoldTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "B]";
+QString BoldTag::tagName() const {
+    return "B";
 }
 
 }}}

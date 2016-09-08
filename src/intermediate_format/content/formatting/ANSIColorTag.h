@@ -12,23 +12,21 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ANSICOLORTAG_H
 
 #include "graphics/ANSIColor.h"
-#include "intermediate_format/content/Markup.h"
-
-#include <QtDebug>
+#include "intermediate_format/content/SymmetricTag.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace uniarchive2::graphics;
 
-struct ANSIColorTag : Markup {
+struct ANSIColorTag : SymmetricTag {
 public:
     ANSIColor color;
-    bool closed;
 
-    ANSIColorTag(ANSIColor color, bool closed = false);
+    ANSIColorTag(bool open, ANSIColor color);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

@@ -12,11 +12,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-ItalicTag::ItalicTag(bool closed) : closed(closed) {
+ItalicTag::ItalicTag(bool open) : StandardTag(open) {
 }
 
-void ItalicTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "I]";
+QString ItalicTag::tagName() const {
+    return "I";
 }
 
 }}}

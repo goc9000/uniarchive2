@@ -12,11 +12,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-ANSIColorTag::ANSIColorTag(ANSIColor color, bool closed) : color(color), closed(closed) {
+ANSIColorTag::ANSIColorTag(bool open, ANSIColor color) : SymmetricTag(open), color(color) {
 }
 
-void ANSIColorTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "ANSICol:" << color << "]";
+QString ANSIColorTag::tagName() const {
+    return "ANSICol";
+}
+
+void ANSIColorTag::writeAttributesToDebugStream(QDebug stream) const {
+    stream << " " << color;
 }
 
 }}}

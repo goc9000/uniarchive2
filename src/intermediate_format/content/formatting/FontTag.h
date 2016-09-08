@@ -12,31 +12,27 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_FONTTAG_H
 
 #include "graphics/Color.h"
-#include "intermediate_format/content/Markup.h"
+#include "intermediate_format/content/StandardTag.h"
 #include "utils/external_libs/optional.hpp"
-
-#include <QtDebug>
-#include <QString>
-#include <QList>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-using namespace std::experimental;
 using namespace uniarchive2::graphics;
 
-struct FontTag : Markup {
+using namespace std::experimental;
+
+struct FontTag : StandardTag {
 public:
-    QList<QString> faces;
-    QString size;
+    optional<vector<QString>> faces;
+    optional<QString> size;
     optional<Color> color;
-    QString css;
+    optional<QString> css;
 
-    bool closed;
-
-    FontTag(bool closed = false);
+    FontTag(bool open);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

@@ -11,20 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_UNDERLINETAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_UNDERLINETAG_H
 
-#include "intermediate_format/content/Markup.h"
-
-#include <QtDebug>
+#include "intermediate_format/content/StandardTag.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct UnderlineTag : Markup {
+struct UnderlineTag : StandardTag {
 public:
-    bool closed;
-
-    UnderlineTag(bool closed = false);
+    UnderlineTag(bool open);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
 };
 
 }}}

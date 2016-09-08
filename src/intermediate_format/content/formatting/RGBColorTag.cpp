@@ -12,11 +12,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-RGBColorTag::RGBColorTag(IMM(Color) color, bool closed) : color(color), closed(closed) {
+RGBColorTag::RGBColorTag(bool open, IMM(Color) color) : SymmetricTag(open), color(color) {
 }
 
-void RGBColorTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "RGBCol:" << color << "]";
+QString RGBColorTag::tagName() const {
+    return "RGBCol";
+}
+
+void RGBColorTag::writeAttributesToDebugStream(QDebug stream) const {
+    stream << " " << color;
 }
 
 }}}

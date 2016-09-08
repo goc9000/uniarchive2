@@ -11,23 +11,26 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_LINKTAG_H
 
-#include "intermediate_format/content/Markup.h"
+#include "intermediate_format/content/StandardTag.h"
+#include "utils/external_libs/optional.hpp"
+#include "utils/language/shortcuts.h"
 
-#include <QtDebug>
 #include <QUrl>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct LinkTag : Markup {
+using namespace std::experimental;
+
+struct LinkTag : StandardTag {
 public:
-    QUrl url;
-    bool closed;
+    optional<QUrl> url;
 
     LinkTag(QUrl url);
-    LinkTag(bool closed);
+    LinkTag(bool open);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

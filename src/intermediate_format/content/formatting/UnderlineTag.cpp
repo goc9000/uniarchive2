@@ -12,11 +12,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-UnderlineTag::UnderlineTag(bool closed) : closed(closed) {
+UnderlineTag::UnderlineTag(bool open) : StandardTag(open) {
 }
 
-void UnderlineTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "U]";
+QString UnderlineTag::tagName() const {
+    return "U";
 }
 
 }}}

@@ -12,25 +12,26 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_YAHOOFADETAG_H
 
 #include "graphics/Color.h"
-#include "intermediate_format/content/Markup.h"
+#include "intermediate_format/content/StandardTag.h"
+#include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
-
-#include <QtDebug>
-#include <QList>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace uniarchive2::graphics;
 
-struct YahooFadeTag : Markup {
-public:
-    QList<Color> colors;
-    bool closed;
+using namespace std::experimental;
 
-    YahooFadeTag(bool closed, IMM(QList<Color>) colors = QList<Color>());
+struct YahooFadeTag : StandardTag {
+public:
+    optional<vector<Color>> colors;
+
+    YahooFadeTag(IMM(vector<Color>) colors);
+    YahooFadeTag(bool open);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

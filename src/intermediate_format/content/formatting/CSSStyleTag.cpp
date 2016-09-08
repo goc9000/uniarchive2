@@ -13,18 +13,18 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-CSSStyleTag::CSSStyleTag(IMM(QString) css) : css(css), closed(false) {
+CSSStyleTag::CSSStyleTag(IMM(QString) css) : StandardTag(true), css(css) {
 }
 
-CSSStyleTag::CSSStyleTag(bool closed) : closed(closed) {
+CSSStyleTag::CSSStyleTag() : StandardTag(false) {
 }
 
-void CSSStyleTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[" << (closed ? "/" : "") << "Style";
-    if (!css.isEmpty()) {
-        stream << ": " << QP(css);
-    }
-    stream << "]";
+QString CSSStyleTag::tagName() const {
+    return "Style";
+}
+
+void CSSStyleTag::writeOpenTagAttributesToDebugStream(QDebug stream) const {
+    stream << " " << *css;
 }
 
 }}}

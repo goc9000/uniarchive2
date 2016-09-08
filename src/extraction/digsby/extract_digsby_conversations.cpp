@@ -292,14 +292,14 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
     if (tag_info.tagName == "br") {
         return make_unique<LineBreak>();
     } else if (tag_info.tagName == "b") {
-        return make_unique<BoldTag>(tag_info.closed);
+        return make_unique<BoldTag>(tag_info.open);
     } else if (tag_info.tagName == "i") {
-        return make_unique<ItalicTag>(tag_info.closed);
+        return make_unique<ItalicTag>(tag_info.open);
     } else if (tag_info.tagName == "u") {
-        return make_unique<UnderlineTag>(tag_info.closed);
+        return make_unique<UnderlineTag>(tag_info.open);
     } else if (tag_info.tagName == "span") {
         if (tag_info.closed) {
-            return make_unique<CSSStyleTag>(true);
+            return make_unique<CSSStyleTag>();
         } else {
             invariant(
                 tag_info.attributes.empty() ||
@@ -312,12 +312,12 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
         return parse_font_tag(tag_info);
     } else if (tag_info.tagName == "a") {
         if (tag_info.closed) {
-            return make_unique<LinkTag>(true);
+            return make_unique<LinkTag>(false);
         } else {
             return make_unique<LinkTag>(QUrl(tag_info.attributes["href"]));
         }
     } else if (tag_info.tagName == "fade") {
-        return make_unique<YahooFadeTag>(tag_info.closed);
+        return make_unique<YahooFadeTag>(tag_info.open);
     }
 
     if (tag_info.closed) {
@@ -334,14 +334,17 @@ static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
 
     invariant(tag_info.tagName == "font", "This function should be run on <font> tags only");
 
-    auto font_tag = make_unique<FontTag>(tag_info.closed);
+    auto font_tag = make_unique<FontTag>(tag_info.open);
 
     for (IMM(QString) key : tag_info.attributes.keys()) {
         QString value = tag_info.attributes[key].trimmed();
         if (key == "color") {
             font_tag->color = Color::fromHTMLFormat(value);
         } else if (key == "face") {
-            font_tag->faces = value.split(comma_separator, QString::SkipEmptyParts);
+            font_tag->faces = vector<QString>();
+            for (IMM(QString) item : value.split(comma_separator, QString::SkipEmptyParts)) {
+                font_tag->faces->push_back(item);
+            }
         } else if (key == "style") {
             font_tag->css = value;
         } else {

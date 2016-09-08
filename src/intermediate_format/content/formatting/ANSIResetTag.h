@@ -11,15 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ANSIRESETTAG_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_ANSIRESETTAG_H
 
-#include "intermediate_format/content/Markup.h"
-
-#include <QtDebug>
+#include "intermediate_format/content/SelfClosingTag.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct ANSIResetTag : Markup {
+struct ANSIResetTag : SelfClosingTag {
+public:
+    ANSIResetTag();
+
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
 };
 
 }}}

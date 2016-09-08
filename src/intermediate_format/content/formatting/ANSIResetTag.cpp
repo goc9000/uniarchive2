@@ -12,8 +12,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-void ANSIResetTag::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "[ANSIReset]";
+ANSIResetTag::ANSIResetTag() : SelfClosingTag() {
+}
+
+QString ANSIResetTag::tagName() const {
+    return "ANSIReset";
 }
 
 }}}

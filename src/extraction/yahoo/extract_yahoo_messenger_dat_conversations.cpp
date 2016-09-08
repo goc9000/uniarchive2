@@ -339,17 +339,17 @@ static CEDE(RawMessageContentItem) parse_pseudo_ansi_seq(IMM(QString) sgr_code) 
     if (match.capturedLength("reset")) {
         return make_unique<ANSIResetTag>();
     } else if (match.capturedLength("bold")) {
-        return make_unique<BoldTag>(closed);
+        return make_unique<BoldTag>(!closed);
     } else if (match.capturedLength("italic")) {
-        return make_unique<ItalicTag>(closed);
+        return make_unique<ItalicTag>(!closed);
     } else if (match.capturedLength("underline")) {
-        return make_unique<UnderlineTag>(closed);
+        return make_unique<UnderlineTag>(!closed);
     } else if (match.capturedLength("link")) {
-        return make_unique<LinkTag>(closed);
+        return make_unique<LinkTag>(!closed);
     } else if (match.capturedLength("ansi_color")) {
-        return make_unique<ANSIColorTag>((ANSIColor)match.captured("ansi_color").toInt(), closed);
+        return make_unique<ANSIColorTag>(!closed, (ANSIColor)match.captured("ansi_color").toInt());
     } else if (match.capturedLength("html_color")) {
-        return make_unique<RGBColorTag>(Color::fromHTMLFormat(match.captured("html_color")), closed);
+        return make_unique<RGBColorTag>(!closed, Color::fromHTMLFormat(match.captured("html_color")));
     }
 
     never_reached();
@@ -375,14 +375,17 @@ static CEDE(RawMessageContentItem) parse_html_tag(IMM(QString) tag_text) {
 static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     QREGEX(comma_separator, "\\s*,\\s*");
 
-    auto tag = make_unique<FontTag>(tag_info.closed);
+    auto tag = make_unique<FontTag>(tag_info.open);
 
     for (IMM(auto) key : tag_info.attributes.keys()) {
         QString norm_key = key.toLower();
         QString value = tag_info.attributes[key].trimmed();
 
         if (norm_key == "face") {
-            tag->faces = value.split(comma_separator, QString::SkipEmptyParts);
+            tag->faces = vector<QString>();
+            for (IMM(QString) item : value.split(comma_separator, QString::SkipEmptyParts)) {
+                tag->faces->push_back(item);
+            }
         } else if (norm_key == "size") {
             tag->size = value;
         } else {
@@ -406,21 +409,19 @@ static CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text) {
     QString tag_name = match.captured("tag_name").toLower();
     bool closed = match.capturedLength("closed") > 0;
 
-    QList<Color> colors;
+    vector<Color> colors;
     if (match.capturedLength("colors")) {
         for (IMM(auto) color_str : match.captured("colors").split(',')) {
-            colors.append(Color::fromHTMLFormat(color_str));
+            colors.push_back(Color::fromHTMLFormat(color_str));
         }
     }
 
     if (tag_name == "fade") {
-        invariant(closed || (colors.length() > 0), "<fade> tag must have at least one color specified");
-        return make_unique<YahooFadeTag>(closed, colors);
+        invariant(closed || !colors.empty(), "<fade> tag must have at least one color specified");
+        return closed ? make_unique<YahooFadeTag>(false) : make_unique<YahooFadeTag>(colors);
     } else if (tag_name == "alt") {
-        invariant(closed || (colors.length() == 2), "<alt> tag must have exactly 2 colors specified");
-        return closed ?
-               make_unique<YahooAltTag>(true) :
-               make_unique<YahooAltTag>(false, colors[0], colors[1]);
+        invariant(closed || (colors.size() == 2), "<alt> tag must have exactly 2 colors specified");
+        return closed ? make_unique<YahooAltTag>() : make_unique<YahooAltTag>(colors[0], colors[1]);
     }
 
     invariant_violation("Yahoo markup tag not supported: \"%s\"", QP(tag_name));

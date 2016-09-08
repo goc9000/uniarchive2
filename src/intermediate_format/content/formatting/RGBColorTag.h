@@ -12,24 +12,22 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RGBCOLORTAG_H
 
 #include "graphics/Color.h"
-#include "intermediate_format/content/Markup.h"
+#include "intermediate_format/content/SymmetricTag.h"
 #include "utils/language/shortcuts.h"
-
-#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace uniarchive2::graphics;
 
-struct RGBColorTag : Markup {
+struct RGBColorTag : SymmetricTag {
 public:
     Color color;
-    bool closed;
 
-    RGBColorTag(IMM(Color) color, bool closed = false);
+    RGBColorTag(bool open, IMM(Color) color);
 
 protected:
-    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual QString tagName() const;
+    virtual void writeAttributesToDebugStream(QDebug stream) const;
 };
 
 }}}

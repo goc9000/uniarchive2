@@ -989,7 +989,7 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
             parse_message_content_node(mut_content, child);
         }
 
-        mut_content.addItem(make_unique<LinkTag>(true));
+        mut_content.addItem(make_unique<LinkTag>(false));
     } else if (tag_name == "quote") {
         mut_content.addItem(parse_quote_element(element));
     } else if (tag_name == "e_m") {
