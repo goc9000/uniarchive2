@@ -1,5 +1,5 @@
 /**
- * intermediate_format/content/LineBreakTag.cpp
+ * intermediate_format/content/LineBreak.cpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,14 +8,14 @@
  * Licensed under the GPL-3
  */
 
-#include "intermediate_format/content/LineBreakTag.h"
+#include "intermediate_format/content/LineBreak.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-LineBreakTag::LineBreakTag() {
+LineBreak::LineBreak() : RawMessageContentItem() {
 }
 
-void LineBreakTag::writeToDebugStreamImpl(QDebug stream) const {
+void LineBreak::writeToDebugStreamImpl(QDebug stream) const {
     stream << "[BRK]";
 }
 

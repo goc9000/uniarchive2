@@ -12,7 +12,7 @@
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/content/formatting/CSSStyleTag.h"
 #include "intermediate_format/content/formatting/LinkTag.h"
-#include "intermediate_format/content/LineBreakTag.h"
+#include "intermediate_format/content/LineBreak.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/status/RawDisconnectedEvent.h"
 #include "intermediate_format/events/status/RawConnectedEvent.h"
@@ -377,7 +377,7 @@ static CEDE(RawMessageContentItem) convert_event_content_open_tag(IMM(QDomElemen
     if (tag_name == "span") {
         return make_unique<CSSStyleTag>(read_only_string_attr(element, "style"));
     } else if (tag_name == "br") {
-        return make_unique<LineBreakTag>();
+        return make_unique<LineBreak>();
     } else if (tag_name == "a") {
         return make_unique<LinkTag>(QUrl(read_string_attr(element, "href")));
     }

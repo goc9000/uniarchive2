@@ -16,7 +16,7 @@
 #include "intermediate_format/content/formatting/LinkTag.h"
 #include "intermediate_format/content/formatting/UnderlineTag.h"
 #include "intermediate_format/content/formatting/YahooFadeTag.h"
-#include "intermediate_format/content/LineBreakTag.h"
+#include "intermediate_format/content/LineBreak.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawCorruptedMessageEvent.h"
@@ -290,7 +290,7 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
     invariant(!tag_info.open || !tag_info.closed, "Did not expect self-closing tags in Digsby archives");
 
     if (tag_info.tagName == "br") {
-        return make_unique<LineBreakTag>();
+        return make_unique<LineBreak>();
     } else if (tag_info.tagName == "b") {
         return make_unique<BoldTag>(tag_info.closed);
     } else if (tag_info.tagName == "i") {

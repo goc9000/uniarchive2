@@ -15,7 +15,7 @@
 #include "intermediate_format/content/formatting/EmphasisTag.h"
 #include "intermediate_format/content/formatting/LinkTag.h"
 #include "intermediate_format/content/RawMessageContent.h"
-#include "intermediate_format/content/LineBreakTag.h"
+#include "intermediate_format/content/LineBreak.h"
 #include "intermediate_format/content/TextSection.h"
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
@@ -202,7 +202,7 @@ static RawMessageContent parse_message_content(IMM(QString) content_html) {
 
 static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_info) {
     if (tag_info.tagName == "br") {
-        return make_unique<LineBreakTag>();
+        return make_unique<LineBreak>();
     }
 
     if (tag_info.open && tag_info.closed) {

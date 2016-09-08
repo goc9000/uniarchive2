@@ -41,7 +41,7 @@ SOURCES += \
     intermediate_format/content/formatting/YahooFadeTag.cpp \
     intermediate_format/content/symbols/FlagIcon.cpp \
     intermediate_format/content/symbols/SkypeEmoticon.cpp \
-    intermediate_format/content/LineBreakTag.cpp \
+    intermediate_format/content/LineBreak.cpp \
     intermediate_format/content/MediaAttachment.cpp \
     intermediate_format/content/RawMessageContent.cpp \
     intermediate_format/content/RawMessageContentItem.cpp \
@@ -171,7 +171,7 @@ HEADERS += \
     intermediate_format/content/formatting/YahooFadeTag.h \
     intermediate_format/content/symbols/FlagIcon.h \
     intermediate_format/content/symbols/SkypeEmoticon.h \
-    intermediate_format/content/LineBreakTag.h \
+    intermediate_format/content/LineBreak.h \
     intermediate_format/content/Markup.h \
     intermediate_format/content/MediaAttachment.h \
     intermediate_format/content/RawMessageContent.h \
