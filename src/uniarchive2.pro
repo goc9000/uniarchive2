@@ -41,11 +41,15 @@ SOURCES += \
     intermediate_format/content/formatting/YahooFadeTag.cpp \
     intermediate_format/content/symbols/FlagIcon.cpp \
     intermediate_format/content/symbols/SkypeEmoticon.cpp \
+    intermediate_format/content/AbstractTag.cpp \
     intermediate_format/content/LineBreak.cpp \
     intermediate_format/content/MediaAttachment.cpp \
     intermediate_format/content/RawMessageContent.cpp \
     intermediate_format/content/RawMessageContentItem.cpp \
+    intermediate_format/content/SelfClosingTag.cpp \
     intermediate_format/content/SkypeQuote.cpp \
+    intermediate_format/content/StandardTag.cpp \
+    intermediate_format/content/SymmetricTag.cpp \
     intermediate_format/content/TextSection.cpp \
     intermediate_format/errors/CurrentCallFailReason.cpp \
     intermediate_format/errors/OfferWebcamFailReason.cpp \
@@ -171,12 +175,16 @@ HEADERS += \
     intermediate_format/content/formatting/YahooFadeTag.h \
     intermediate_format/content/symbols/FlagIcon.h \
     intermediate_format/content/symbols/SkypeEmoticon.h \
+    intermediate_format/content/AbstractTag.h \
     intermediate_format/content/LineBreak.h \
     intermediate_format/content/Markup.h \
     intermediate_format/content/MediaAttachment.h \
     intermediate_format/content/RawMessageContent.h \
     intermediate_format/content/RawMessageContentItem.h \
+    intermediate_format/content/SelfClosingTag.h \
     intermediate_format/content/SkypeQuote.h \
+    intermediate_format/content/StandardTag.h \
+    intermediate_format/content/SymmetricTag.h \
     intermediate_format/content/TextSection.h \
     intermediate_format/errors/CurrentCallFailReason.h \
     intermediate_format/errors/OfferWebcamFailReason.h \
