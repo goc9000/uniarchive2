@@ -13,7 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 SkypeEmoticon::SkypeEmoticon(IMM(QString) semantics, IMM(QString) text_equivalent)
-    : semantics(semantics), textEquivalent(text_equivalent) {
+    : RawMessageContentItem(), semantics(semantics), textEquivalent(text_equivalent) {
 }
 
 void SkypeEmoticon::writeToDebugStreamImpl(QDebug stream) const {

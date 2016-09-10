@@ -13,7 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 FlagIcon::FlagIcon(IMM(QString) country_code, IMM(QString) text_equivalent)
-    : countryCode(country_code), textEquivalent(text_equivalent) {
+    : RawMessageContentItem(), countryCode(country_code), textEquivalent(text_equivalent) {
 }
 
 void FlagIcon::writeToDebugStreamImpl(QDebug stream) const {

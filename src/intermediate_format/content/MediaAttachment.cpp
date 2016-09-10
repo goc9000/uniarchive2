@@ -13,7 +13,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-MediaAttachment::MediaAttachment()  {
+MediaAttachment::MediaAttachment() : RawMessageContentItem() {
 }
 
 void MediaAttachment::writeToDebugStreamImpl(QDebug stream) const {

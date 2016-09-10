@@ -19,7 +19,7 @@ SkypeQuote::SkypeQuote(
     IMM(ApparentTime) time,
     IMM(QString) legacy_header,
     RawMessageContent&& quote_content
-) : quotedMessageConversationID(conversation_id), quotedMessageGUID(message_guid),
+) : RawMessageContentItem(), quotedMessageConversationID(conversation_id), quotedMessageGUID(message_guid),
     quotedMessageAuthor(move(author)), quotedMessageTime(time), legacyHeader(legacy_header),
     quoteContent(move(quote_content)) {
 }
