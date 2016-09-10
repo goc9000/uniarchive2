@@ -228,3 +228,39 @@ raw events:
     - ApparentSubject[] contacts
   Uninterpreted:
     - QByteArray rawData
+
+content items:
+  (formatting):
+    ANSIResetTag:
+      - tag_type: self-closing
+    ANSIColorTag:
+      - tag_type: symmetric
+    RGBColorTag:
+      - tag_type: symmetric
+    BoldTag:
+      - tag_type: standard
+    EmphasisTag:
+      - tag_type: standard
+    ItalicTag:
+      - tag_type: standard
+    UnderlineTag:
+      - tag_type: standard
+    CSSStyleTag:
+      - tag_type: standard
+    FontTag:
+      - tag_type: standard
+    LinkTag:
+      - tag_type: standard
+    YahooAltTag:
+      - tag_type: standard
+    YahooFadeTag:
+      - tag_type: standard
+
+  (symbols):
+    FlagIcon:
+    SkypeEmoticon:
+
+  LineBreak:
+  MediaAttachment:
+  SkypeQuote:
+  TextSection:
