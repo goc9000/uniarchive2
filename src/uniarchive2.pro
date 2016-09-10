@@ -177,7 +177,6 @@ HEADERS += \
     intermediate_format/content/symbols/SkypeEmoticon.h \
     intermediate_format/content/AbstractTag.h \
     intermediate_format/content/LineBreak.h \
-    intermediate_format/content/Markup.h \
     intermediate_format/content/MediaAttachment.h \
     intermediate_format/content/RawMessageContent.h \
     intermediate_format/content/RawMessageContentItem.h \
