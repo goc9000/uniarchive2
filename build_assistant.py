@@ -22,6 +22,7 @@ from build_assistant.AutoGenConfig import parse_autogen_config
 from build_assistant.AutoGenCore import AutoGenCore
 from build_assistant.SymbolRegistry import SymbolRegistry
 from build_assistant.autogen_enums import gen_enums
+from build_assistant.autogen_content_items import gen_content_items
 from build_assistant.autogen_raw_events import gen_raw_events
 from build_assistant.util import fail, scan_files
 
@@ -55,6 +56,7 @@ def autogenerate_code():
     autogen_core = AutoGenCore(autogen_config, symbol_registry, CODE_GEN_CFG)
 
     gen_enums(autogen_config.enums, autogen_core)
+    gen_content_items(autogen_config, autogen_core)
     gen_raw_events(autogen_config, autogen_core)
 
     autogen_core.commit(BASE_SRC_DIR)

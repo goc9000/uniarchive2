@@ -8,13 +8,17 @@
 
 import re
 
+from enum import Enum
 from collections import namedtuple
 
 from build_assistant.VirtualPath import VirtualPath
 from build_assistant.FrozenStruct import FrozenStruct
 
 
-AutoGenConfig = namedtuple('AutoGenConfig', ['enums', 'base_raw_event', 'raw_events'])
+AutoGenConfig = namedtuple(
+    'AutoGenConfig',
+    ['enums', 'base_raw_event', 'raw_events', 'content_items'],
+)
 AutoGenEntry = namedtuple('AutoGenEntry', ['path', 'name', 'config'])
 
 EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
@@ -29,6 +33,7 @@ def parse_autogen_config(raw_config):
         enums=parse_hierarchy(raw_config['enums'], parse_enum_config),
         base_raw_event=parse_raw_event_config(raw_config['base raw event']),
         raw_events=parse_hierarchy(raw_config['raw events'], parse_raw_event_config),
+        content_items=parse_hierarchy(raw_config['content items'], parse_content_item_config),
     )
 
 
@@ -62,7 +67,7 @@ def preparse_entity(entity_config, field_name):
     field_breaks = list()
     raw_options = dict()
 
-    for subconfig in entity_config:
+    for subconfig in entity_config or list():
         if subconfig == '..':
             field_breaks.append(len(raw_fields))
         elif isinstance(subconfig, str):
@@ -153,6 +158,38 @@ def parse_raw_event_config(entity_config):
     )
 
 
+def parse_content_item_config(entity_config):
+    def parse_content_item_field(attrs):
+        return ContentItemFieldConfig(**attrs)
+
+    def parse_content_item_tag_field(attrs):
+        return ContentItemTagFieldConfig(**attrs)
+
+    def parse_tag_type(tag_type):
+        if tag_type is None:
+            return None
+        elif tag_type == 'standard':
+            return ContentItemTagType.STANDARD
+        elif tag_type == 'symmetric':
+            return ContentItemTagType.SYMMETRIC
+        elif tag_type == 'self-closing':
+            return ContentItemTagType.SELF_CLOSING
+
+        assert False, 'Unsupported tag type: {0}'.format(tag_type)
+
+    preparsed = preparse_entity(entity_config, 'field')
+
+    if 'tag_type' in preparsed.options:
+        return ContentItemTagConfig(
+            **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field),
+            tag_type=parse_tag_type(preparsed.options['tag_type']),
+        )
+    else:
+        return ContentItemConfig(
+            **parse_generic_polymorphic_config(preparsed, parse_content_item_field),
+        )
+
+
 class GenericPolymorphicConfig(FrozenStruct):
     def __init__(self, _superclass_fields=None, **kwargs):
         FrozenStruct.__init__(
@@ -185,6 +222,45 @@ class RawEventConfig(GenericPolymorphicConfig):
 class RawEventFieldConfig(GenericPolymorphicFieldConfig):
     def __init__(self, _superclass_fields=None, **kwargs):
         GenericPolymorphicFieldConfig.__init__(
+            self,
+            _superclass_fields=[] + (_superclass_fields or list()),
+            **kwargs
+        )
+
+
+class ContentItemConfig(GenericPolymorphicConfig):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        GenericPolymorphicConfig.__init__(
+            self,
+            _superclass_fields=[] + (_superclass_fields or list()),
+            **kwargs
+        )
+
+
+class ContentItemFieldConfig(GenericPolymorphicFieldConfig):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        GenericPolymorphicFieldConfig.__init__(
+            self,
+            _superclass_fields=[] + (_superclass_fields or list()),
+            **kwargs
+        )
+
+
+ContentItemTagType = Enum('ContentItemTagType', ['STANDARD', 'SYMMETRIC', 'SELF_CLOSING'])
+
+
+class ContentItemTagConfig(ContentItemConfig):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        ContentItemConfig.__init__(
+            self,
+            _superclass_fields=['tag_type'] + (_superclass_fields or list()),
+            **kwargs
+        )
+
+
+class ContentItemTagFieldConfig(ContentItemFieldConfig):
+    def __init__(self, _superclass_fields=None, **kwargs):
+        ContentItemFieldConfig.__init__(
             self,
             _superclass_fields=[] + (_superclass_fields or list()),
             **kwargs
