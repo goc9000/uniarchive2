@@ -17,7 +17,6 @@
 #include "intermediate_format/ApparentTime.h"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
 #include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
