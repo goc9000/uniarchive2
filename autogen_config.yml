@@ -238,8 +238,10 @@ content items:
       - tag_type: self-closing
     ANSIColorTag:
       - tag_type: symmetric
+      - ANSIColor color
     RGBColorTag:
       - tag_type: symmetric
+      - Color color
     BoldTag:
       - tag_type: standard
     EmphasisTag:
@@ -250,20 +252,41 @@ content items:
       - tag_type: standard
     CSSStyleTag:
       - tag_type: standard
+      - QString css
     FontTag:
       - tag_type: standard
+      - ?QString[] faces
+      - ?QString size
+      - ?Color color
+      - ?QString css
     LinkTag:
       - tag_type: standard
+      - ?QUrl url
     YahooAltTag:
       - tag_type: standard
+      - Color color1
+      - Color color2
     YahooFadeTag:
       - tag_type: standard
+      - ?Color[] colors
 
   (symbols):
     FlagIcon:
+      - QString countryCode
+      - QString textEquivalent
     SkypeEmoticon:
+      - QString semantics
+      - QString textEquivalent
 
   LineBreak:
   MediaAttachment:
+    - ?QString filename
+    - ?MediaError error
   SkypeQuote:
+    - QString quotedMessageConversationID
+    - QString quotedMessageGUID
+    - ApparentSubject quotedMessageAuthor
+    - ApparentTime quotedMessageTime
+    - QString legacyHeader
   TextSection:
+    - QString text
