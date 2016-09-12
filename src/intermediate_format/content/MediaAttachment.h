@@ -11,22 +11,22 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MEDIAATTACHMENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MEDIAATTACHMENT_H
 
+#include "intermediate_format/errors/MediaError.h"
 #include "intermediate_format/content/RawMessageContentItem.h"
+#include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 
 #include <QString>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
+using namespace std::experimental;
+using namespace uniarchive2::intermediate_format::errors;
+
 struct MediaAttachment : RawMessageContentItem {
 public:
-    enum class MediaError {
-        NO_ERROR = 0,
-        OMITTED
-    };
-
-    QString filename;
-    MediaError error = MediaError::NO_ERROR;
+    optional<QString> filename;
+    optional<MediaError> error;
 
     MediaAttachment();
 

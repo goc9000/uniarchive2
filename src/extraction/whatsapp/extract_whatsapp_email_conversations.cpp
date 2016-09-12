@@ -211,7 +211,7 @@ static CEDE(RawEvent) parse_message(
         content.addItem(move(media));
     } else if (match.capturedLength("omitted")) {
         unique_ptr<RawMessageContentItem> media = make_unique<MediaAttachment>();
-        media->as<MediaAttachment>()->error = MediaAttachment::MediaError::OMITTED;
+        media->as<MediaAttachment>()->error = MediaError::OMITTED;
         content.addItem(move(media));
     } else {
         content = RawMessageContent::fromPlainText(text_content);

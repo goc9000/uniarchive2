@@ -18,17 +18,11 @@ MediaAttachment::MediaAttachment() : RawMessageContentItem() {
 
 void MediaAttachment::writeToDebugStreamImpl(QDebug stream) const {
     stream << "[Media";
-    if (!filename.isEmpty()) {
-        stream << " filename=" << filename;
+    if (filename) {
+        stream << " filename=" << *filename;
     }
-    if (error != MediaError::NO_ERROR) {
-        stream << " error=";
-        switch (error) {
-            case MediaError::NO_ERROR:
-                never_reached();
-            case MediaError::OMITTED:
-                stream << "OMITTED";
-        }
+    if (error) {
+        stream << " error=" << *error;
     }
     stream << "]";
 }

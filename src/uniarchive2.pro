@@ -52,6 +52,7 @@ SOURCES += \
     intermediate_format/content/SymmetricTag.cpp \
     intermediate_format/content/TextSection.cpp \
     intermediate_format/errors/CurrentCallFailReason.cpp \
+    intermediate_format/errors/MediaError.cpp \
     intermediate_format/errors/OfferWebcamFailReason.cpp \
     intermediate_format/errors/PingFailReason.cpp \
     intermediate_format/errors/SendMessageFailReason.cpp \
@@ -186,6 +187,7 @@ HEADERS += \
     intermediate_format/content/SymmetricTag.h \
     intermediate_format/content/TextSection.h \
     intermediate_format/errors/CurrentCallFailReason.h \
+    intermediate_format/errors/MediaError.h \
     intermediate_format/errors/OfferWebcamFailReason.h \
     intermediate_format/errors/PingFailReason.h \
     intermediate_format/errors/SendMessageFailReason.h \

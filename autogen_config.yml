@@ -31,6 +31,9 @@ enums:
     PingFailReason:
       - undetermined = 0
       - blocked or unsupported
+    MediaError:
+      - undetermined = 0
+      - omitted
 
   protocols:
     ArchiveFormat:
