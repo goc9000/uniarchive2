@@ -33,7 +33,7 @@ class GenericPolymorphicFieldAugment(Augment):
     def as_field_decl(self):
         type_kind = self._type_info.type_kind
 
-        use_optional = self.is_optional and not (type_kind == TypeKind.POLYMORPHIC and not self.is_list)
+        use_optional = self._is_optional_for_storage() and not (type_kind == TypeKind.POLYMORPHIC and not self.is_list)
         use_unique_ptr = type_kind == TypeKind.POLYMORPHIC
         use_vector = self.is_list
 
@@ -46,6 +46,9 @@ class GenericPolymorphicFieldAugment(Augment):
             cpp_type = 'optional<{0}>'.format(cpp_type)
 
         return cpp_type, self.name, self.default_value
+
+    def _is_optional_for_storage(self):
+        return self.is_optional
 
     def as_param(self):
         type_kind = self._type_info.type_kind

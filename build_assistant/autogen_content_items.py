@@ -28,7 +28,8 @@ def gen_content_items(autogen_config, autogen_core):
         cpp_source, h_source = autogen_core.new_pair(BASE_CONTENT_ITEMS_PATH.append(rel_path), class_name)
 
         with h_source.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
-            pass
+            with struct.public_block() as block:
+                item_config.gen_field_declarations(block)
 
 
 class ContentItemConfigAugment(GenericPolymorphicAugment):
@@ -65,7 +66,8 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
         assert isinstance(item_config, ContentItemTagConfig), 'Augmented object should be ContentItemTagConfig'
 
         ContentItemConfigAugment.__init__(
-            self, name, item_config, autogen_core, field_augment_override=ContentItemTagFieldAugment
+            self, name, item_config, autogen_core,
+            field_augment_override=lambda field_config, core: ContentItemTagFieldAugment(field_config, core, self)
         )
 
     def parent_class(self, no_template=False):
@@ -80,8 +82,15 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
 
 
 class ContentItemTagFieldAugment(ContentItemFieldAugment):
-    def __init__(self, field_config, autogen_core):
+    _parent_tag = None
+
+    def __init__(self, field_config, autogen_core, parent_tag):
         assert isinstance(field_config, ContentItemTagFieldConfig), \
             'Augmented object should be ContentItemTagFieldConfig'
 
         ContentItemFieldAugment.__init__(self, field_config, autogen_core)
+
+        self._parent_tag = parent_tag
+
+    def _is_optional_for_storage(self):
+        return self.is_optional or self._parent_tag.tag_type == ContentItemTagType.STANDARD
