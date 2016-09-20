@@ -235,39 +235,39 @@ raw events:
 content items:
   (formatting):
     ANSIResetTag:
-      - tag_type: self-closing
+      - tag type: self-closing
     ANSIColorTag:
-      - tag_type: symmetric
+      - tag type: symmetric
       - ANSIColor color
     RGBColorTag:
-      - tag_type: symmetric
+      - tag type: symmetric
       - Color color
     BoldTag:
-      - tag_type: standard
+      - tag type: standard
     EmphasisTag:
-      - tag_type: standard
+      - tag type: standard
     ItalicTag:
-      - tag_type: standard
+      - tag type: standard
     UnderlineTag:
-      - tag_type: standard
+      - tag type: standard
     CSSStyleTag:
-      - tag_type: standard
+      - tag type: standard
       - QString css
     FontTag:
-      - tag_type: standard
+      - tag type: standard
       - ?QString[] faces
       - ?QString size
       - ?Color color
       - ?QString css
     LinkTag:
-      - tag_type: standard
+      - tag type: standard
       - ?QUrl url
     YahooAltTag:
-      - tag_type: standard
+      - tag type: standard
       - Color color1
       - Color color2
     YahooFadeTag:
-      - tag_type: standard
+      - tag type: standard
       - ?Color[] colors
 
   (symbols):

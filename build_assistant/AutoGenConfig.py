@@ -179,10 +179,10 @@ def parse_content_item_config(entity_config):
 
     preparsed = preparse_entity(entity_config, 'field')
 
-    if 'tag_type' in preparsed.options:
+    if 'tag type' in preparsed.options:
         return ContentItemTagConfig(
             **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field),
-            tag_type=parse_tag_type(preparsed.options['tag_type']),
+            tag_type=parse_tag_type(preparsed.options['tag type']),
         )
     else:
         return ContentItemConfig(
