@@ -183,6 +183,7 @@ def parse_content_item_config(entity_config):
         return ContentItemTagConfig(
             **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field),
             tag_type=parse_tag_type(preparsed.options['tag type']),
+            tag_name_override=preparsed.options.get('tag name'),
         )
     else:
         return ContentItemConfig(
@@ -253,7 +254,7 @@ class ContentItemTagConfig(ContentItemConfig):
     def __init__(self, _superclass_fields=None, **kwargs):
         ContentItemConfig.__init__(
             self,
-            _superclass_fields=['tag_type'] + (_superclass_fields or list()),
+            _superclass_fields=['tag_type', 'tag_name_override'] + (_superclass_fields or list()),
             **kwargs
         )
 

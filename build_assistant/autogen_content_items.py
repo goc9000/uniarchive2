@@ -31,6 +31,11 @@ def gen_content_items(autogen_config, autogen_core):
             with struct.public_block() as block:
                 item_config.gen_field_declarations(block)
 
+            struct.nl()
+
+            with struct.protected_block() as _:
+                item_config.gen_protected_block_code(cpp_source)
+
 
 class ContentItemConfigAugment(GenericPolymorphicAugment):
     _name = None
@@ -52,6 +57,9 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
 
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
+
+    def gen_protected_block_code(self, block):
+        pass
 
 
 class ContentItemFieldAugment(GenericPolymorphicFieldAugment):
@@ -79,6 +87,21 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
             return 'SelfClosingTag'
 
         assert False, 'Unsupported tag_type: {0}'.format(self.tag_type)
+
+    def gen_protected_block_code(self, cpp_source):
+        self._gen_tag_name_method(cpp_source)
+
+    def _gen_tag_name_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare=True
+        ) as method:
+            method.line("return {0};".format(method.string_literal(self._tag_name_for_display())))
+
+    def _tag_name_for_display(self):
+        if self.tag_name_override is not None:
+            return self.tag_name_override
+
+        return self._name[:-3] if self._name.endswith('Tag') else self._name
 
 
 class ContentItemTagFieldAugment(ContentItemFieldAugment):

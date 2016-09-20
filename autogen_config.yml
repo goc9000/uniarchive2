@@ -238,20 +238,27 @@ content items:
       - tag type: self-closing
     ANSIColorTag:
       - tag type: symmetric
+      - tag name: ANSICol
       - ANSIColor color
     RGBColorTag:
       - tag type: symmetric
+      - tag name: RGBCol
       - Color color
     BoldTag:
       - tag type: standard
+      - tag name: B
     EmphasisTag:
       - tag type: standard
+      - tag name: EM
     ItalicTag:
       - tag type: standard
+      - tag name: I
     UnderlineTag:
       - tag type: standard
+      - tag name: U
     CSSStyleTag:
       - tag type: standard
+      - tag name: Style
       - QString css
     FontTag:
       - tag type: standard
@@ -264,10 +271,12 @@ content items:
       - ?QUrl url
     YahooAltTag:
       - tag type: standard
+      - tag name: Alt
       - Color color1
       - Color color2
     YahooFadeTag:
       - tag type: standard
+      - tag name: Fade
       - ?Color[] colors
 
   (symbols):
