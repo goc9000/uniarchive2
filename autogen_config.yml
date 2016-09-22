@@ -292,10 +292,11 @@ content items:
     - ?QString filename
     - ?MediaError error
   SkypeQuote:
-    - QString quotedMessageConversationID
-    - QString quotedMessageGUID
-    - ApparentSubject quotedMessageAuthor
-    - ApparentTime quotedMessageTime
+    - QString quotedMessageConversationID as conversation_id
+    - QString quotedMessageGUID as message_guid
+    - ApparentSubject quotedMessageAuthor as author
+    - ApparentTime quotedMessageTime as time
     - QString legacyHeader
+    - RawMessageContent quoteContent
   TextSection:
     - QString text
