@@ -27,6 +27,8 @@ def gen_content_items(autogen_config, autogen_core):
 
         cpp_source, h_source = autogen_core.new_pair(BASE_CONTENT_ITEMS_PATH.append(rel_path), class_name)
 
+        h_source.cover_symbols(item_config.implicitly_covered_symbols())
+
         with h_source.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
             with struct.public_block() as block:
                 item_config.gen_field_declarations(block)
@@ -61,6 +63,9 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
     def gen_protected_block_code(self, block):
         pass
 
+    def implicitly_covered_symbols(self):
+        return list()
+
 
 class ContentItemFieldAugment(GenericPolymorphicFieldAugment):
     def __init__(self, field_config, autogen_core):
@@ -90,6 +95,9 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
 
     def gen_protected_block_code(self, cpp_source):
         self._gen_tag_name_method(cpp_source)
+
+    def implicitly_covered_symbols(self):
+        return ['QString']
 
     def _gen_tag_name_method(self, cpp_source):
         with cpp_source.method(
