@@ -77,7 +77,10 @@ class GenericPolymorphicFieldAugment(Augment):
 
         return rvalue
 
-    def as_subconstructor(self):
+    def as_initializer(self):
+        """
+        Renders an initializer of the field from a similarly-named parameter, e.g. fieldName(field_name)
+        """
         return '{0}({1})'.format(self.name, self.as_rvalue())
 
     def as_print_rvalue(self, source):

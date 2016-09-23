@@ -54,7 +54,7 @@ class GenericPolymorphicAugment(Augment):
 
             yield ConstructorInfo(
                 params=[f.as_param() for f in base_fields + inited_fields],
-                subconstructors=parent_constructor + [f.as_subconstructor() for f in inited_fields],
+                subconstructors=parent_constructor + [f.as_initializer() for f in inited_fields],
                 init_statements=list(),
                 extra_fields=extra_fields,
             )
@@ -70,8 +70,8 @@ class GenericPolymorphicAugment(Augment):
                         [f.as_param() for f in inited_fields[index + 1:]]
 
                     subcons = parent_constructor + \
-                              [f.as_subconstructor() for f in inited_fields[:index]] + \
-                              [f.as_subconstructor() for f in inited_fields[index + 1:]]
+                              [f.as_initializer() for f in inited_fields[:index]] + \
+                              [f.as_initializer() for f in inited_fields[index + 1:]]
 
                     yield ConstructorInfo(
                         params=params,
