@@ -31,24 +31,32 @@ class GenericPolymorphicFieldAugment(Augment):
         return self.short_name or camelcase_to_underscore(self.name)
 
     def as_field_decl(self):
-        type_kind = self._type_info.type_kind
-
-        use_optional = self._is_optional_for_storage() and not (type_kind == TypeKind.POLYMORPHIC and not self.is_list)
-        use_unique_ptr = type_kind == TypeKind.POLYMORPHIC
-        use_vector = self.is_list
-
         cpp_type = self._base_type
-        if use_unique_ptr:
+        if self.uses_unique_ptr():
             cpp_type = 'unique_ptr<{0}>'.format(cpp_type)
-        if use_vector:
+        if self.is_list:
             cpp_type = 'vector<{0}>'.format(cpp_type)
-        if use_optional:
+        if self.uses_optional():
             cpp_type = 'optional<{0}>'.format(cpp_type)
 
         return cpp_type, self.name, self.default_value
 
+    def uses_optional(self):
+        """Whether storage for this field uses the optional<T> template"""
+        return self._is_optional_for_storage() and not \
+            (self._type_info.type_kind == TypeKind.POLYMORPHIC and not self.is_list)
+
     def _is_optional_for_storage(self):
+        """
+        Whether this field should be optional as far as storage is concerned, regardless of whether it is optional
+        semantics-wise. It is possible for a field to be semantically mandatory, but still optional in storage (e.g.
+        if a StandardTag is closed, it stores no attributes, but in the open variant, it can have mandatory attributes.
+        """
         return self.is_optional
+
+    def uses_unique_ptr(self):
+        """Whether storage for this field uses the unique_ptr<T> template"""
+        return self._type_info.type_kind == TypeKind.POLYMORPHIC
 
     def as_param(self):
         type_kind = self._type_info.type_kind
@@ -68,6 +76,9 @@ class GenericPolymorphicFieldAugment(Augment):
         return cpp_type, self.local_name()
 
     def as_rvalue(self):
+        """
+        Renders a movable rvalue for a similarly-named parameter or local variable corresponding to this field.
+        """
         type_kind = self._type_info.type_kind
 
         rvalue = self.local_name()
@@ -84,12 +95,15 @@ class GenericPolymorphicFieldAugment(Augment):
         return '{0}({1})'.format(self.name, self.as_rvalue())
 
     def as_print_rvalue(self, source):
+        """
+        Renders an expression for the debug-printable value of this field.
+        """
         rvalue_expr = self.name
 
-        if self._type_info.type_kind == TypeKind.POLYMORPHIC and not self.is_list:
+        if self.uses_unique_ptr() and not self.is_list:
             rvalue_expr += '.get()'
         else:
-            if self.is_optional:
+            if self.uses_optional():
                 rvalue_expr = '*' + rvalue_expr
             if self.is_list:
                 source.include("utils/qt/debug_extras.h")  # For printing vectors
