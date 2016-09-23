@@ -268,7 +268,7 @@ content items:
       - ?QString css
     LinkTag:
       - tag type: standard
-      - ?QUrl url
+      - (?)QUrl url
     YahooAltTag:
       - tag type: standard
       - tag name: Alt
@@ -277,7 +277,7 @@ content items:
     YahooFadeTag:
       - tag type: standard
       - tag name: Fade
-      - ?Color[] colors
+      - (?)Color[] colors
 
   (symbols):
     FlagIcon:
