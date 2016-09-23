@@ -9,7 +9,7 @@
 from build_assistant.VirtualPath import VirtualPath
 from build_assistant.AutoGenConfig import ContentItemConfig, ContentItemFieldConfig, ContentItemTagType, \
     ContentItemTagConfig, ContentItemTagFieldConfig
-from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment
+from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment, ConstructorInfo
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
 
 
@@ -32,6 +32,8 @@ def gen_content_items(autogen_config, autogen_core):
         with h_source.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
             with struct.public_block() as block:
                 item_config.gen_field_declarations(block)
+                item_config.gen_constructors(cpp_source)
+                item_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
             struct.nl()
 
@@ -92,6 +94,40 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
             return 'SelfClosingTag'
 
         assert False, 'Unsupported tag_type: {0}'.format(self.tag_type)
+
+    def constructors(self):
+        if self.tag_type == ContentItemTagType.SYMMETRIC:
+            for constructor in super().constructors():
+                yield constructor._replace(
+                    params=[('bool', 'open')] + constructor.params,
+                    subconstructors=['SymmetricTag(open)'] + constructor.subconstructors[1:]
+                )
+        elif self.tag_type == ContentItemTagType.STANDARD:
+            closed_constructor_covered = False
+
+            for constructor in super().constructors():
+                if len(constructor.params) == 0:
+                    yield constructor._replace(
+                        params=[('bool', 'open')],
+                        subconstructors=['StandardTag(open)'] + constructor.subconstructors[1:]
+                    )
+                    closed_constructor_covered = True
+                else:
+                    yield constructor._replace(
+                        subconstructors=['StandardTag(true)'] + constructor.subconstructors[1:]
+                    )
+
+            if not closed_constructor_covered:
+                yield ConstructorInfo(
+                    params=[],
+                    subconstructors=['StandardTag(false)'],
+                    init_statements=[],
+                    extra_fields=[]
+                )
+
+        else:
+            for constructor in super().constructors():
+                yield constructor
 
     def gen_protected_block_code(self, cpp_source):
         self._gen_tag_name_method(cpp_source)

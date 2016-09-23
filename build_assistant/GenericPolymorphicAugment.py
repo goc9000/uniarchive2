@@ -201,5 +201,8 @@ class GenericPolymorphicAugment(Augment):
     def has_private_block(self):
         return self.has_mandatory_fields_sanity_check()
 
+    def has_mandatory_fields(self):
+        return any(f.is_mandatory() for f in self.fields)
+
     def has_mandatory_fields_sanity_check(self):
         return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
