@@ -110,6 +110,13 @@ class GenericPolymorphicFieldAugment(Augment):
 
         return rvalue_expr
 
+    def debug_write_header(self):
+        """
+        Renders an expression describing the header printed right before the value of the field, in the debug write
+        method, e.g. " field_name="
+        """
+        return '" {0}="'.format(self.local_name())
+
     def singularized(self):
         return type(self)(
             self._augmented_object._replace(

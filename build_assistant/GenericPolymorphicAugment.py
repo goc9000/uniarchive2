@@ -138,7 +138,7 @@ class GenericPolymorphicAugment(Augment):
             if regular_fields_line is None:
                 regular_fields_line = 'stream'
 
-            added_text = ' << " {0}=" << {1}'.format(field_config.local_name(), field_config.as_print_rvalue(block))
+            added_text = ' << {0} << {1}'.format(field_config.debug_write_header(), field_config.as_print_rvalue(block))
 
             if not block.line_fits(regular_fields_line + added_text + ';'):
                 commit_regular_fields(block, regular_fields_line)
@@ -157,19 +157,21 @@ class GenericPolymorphicAugment(Augment):
 
         def write_irregular_field2(block, field_config):
             if field_config.maybe_singleton:
-                name = field_config.local_name()
                 rvalue = field_config.as_print_rvalue(block)
 
                 with block.if_block('{0}.size() == 1'.format(field_config.name), nl_after=False) as b:
-                    b.line('stream << " {0}=" << {1}.front();'.format(singular(name), rvalue))
+                    b.line('stream << {0} << {1}.front();'.format(
+                        field_config.singularized().debug_write_header(),
+                        rvalue
+                    ))
                     with b.else_block() as e:
-                        b.line('stream << " {0}=" << {1};'.format(name, rvalue))
+                        b.line('stream << {0} << {1};'.format(field_config.debug_write_header(), rvalue))
             else:
                 write_irregular_field3(block, field_config)
 
         def write_irregular_field3(block, field_config):
             block.line(
-                'stream << " {0}=" << {1};'.format(field_config.local_name(), field_config.as_print_rvalue(block))
+                'stream << {0} << {1};'.format(field_config.debug_write_header(), field_config.as_print_rvalue(block))
             )
 
         regular_fields_line = None
