@@ -18,9 +18,8 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-using namespace uniarchive2::graphics;
-
 using namespace std::experimental;
+using namespace uniarchive2::graphics;
 
 struct YahooAltTag : StandardTag {
 public:

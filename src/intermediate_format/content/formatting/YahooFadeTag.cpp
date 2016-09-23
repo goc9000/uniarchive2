@@ -12,10 +12,10 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-YahooFadeTag::YahooFadeTag(IMM(vector<Color>) colors) : StandardTag(true), colors(colors) {
+YahooFadeTag::YahooFadeTag(bool open) : StandardTag(open) {
 }
 
-YahooFadeTag::YahooFadeTag(bool open) : StandardTag(open) {
+YahooFadeTag::YahooFadeTag(IMM(vector<Color>) colors) : StandardTag(true), colors(colors) {
 }
 
 QString YahooFadeTag::tagName() const {

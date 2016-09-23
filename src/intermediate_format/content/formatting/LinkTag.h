@@ -25,8 +25,8 @@ struct LinkTag : StandardTag {
 public:
     optional<QUrl> url;
 
-    LinkTag(QUrl url);
     LinkTag(bool open);
+    LinkTag(IMM(QUrl) url);
 
 protected:
     virtual QString tagName() const;

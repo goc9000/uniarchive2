@@ -12,10 +12,10 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-LinkTag::LinkTag(QUrl url) : StandardTag(true), url(url) {
+LinkTag::LinkTag(bool open) : StandardTag(open) {
 }
 
-LinkTag::LinkTag(bool open) : StandardTag(open) {
+LinkTag::LinkTag(IMM(QUrl) url) : StandardTag(true), url(url) {
 }
 
 QString LinkTag::tagName() const {

@@ -18,16 +18,15 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-using namespace uniarchive2::graphics;
-
 using namespace std::experimental;
+using namespace uniarchive2::graphics;
 
 struct YahooFadeTag : StandardTag {
 public:
     optional<vector<Color>> colors;
 
-    YahooFadeTag(IMM(vector<Color>) colors);
     YahooFadeTag(bool open);
+    YahooFadeTag(IMM(vector<Color>) colors);
 
 protected:
     virtual QString tagName() const;
