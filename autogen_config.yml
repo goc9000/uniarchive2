@@ -262,7 +262,7 @@ content items:
       - primary QString css
     FontTag:
       - tag type: standard
-      - ?QString[] faces
+      - ?QString([]) faces
       - ?QString size
       - ?Color color
       - ?QString css
