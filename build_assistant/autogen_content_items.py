@@ -62,7 +62,7 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
 
-    def gen_protected_block_code(self, block):
+    def gen_protected_block_code(self, cpp_source):
         pass
 
     def implicitly_covered_symbols(self):
@@ -131,15 +131,33 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
 
     def gen_protected_block_code(self, cpp_source):
         self._gen_tag_name_method(cpp_source)
+        self._gen_debug_write_method(cpp_source)
 
     def implicitly_covered_symbols(self):
-        return ['QString']
+        return ['QString', 'QDebug']
 
     def _gen_tag_name_method(self, cpp_source):
         with cpp_source.method(
             self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare=True
         ) as method:
             method.line("return {0};".format(method.string_literal(self._tag_name_for_display())))
+
+    def _debug_write_method_name(self):
+        return 'write' + ('OpenTag' if self.tag_type == ContentItemTagType.STANDARD else '') + 'AttributesToDebugStream'
+
+    def _gen_debug_write_method(self, cpp_source):
+        if len(self.fields) == 0:
+            return
+
+        with cpp_source.method(
+            self.class_name(),
+            self._debug_write_method_name(),
+            'void',
+            ('QDebug', 'stream'),
+            const=True, virtual=True, declare=True
+        ) as method:
+            self.gen_debug_write_field_code(method, self.fields)
+
 
     def _tag_name_for_display(self):
         if self.tag_name_override is not None:
