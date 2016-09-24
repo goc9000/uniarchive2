@@ -177,6 +177,9 @@ class ContentItemTagFieldAugment(ContentItemFieldAugment):
 
         self._parent_tag = parent_tag
 
+    def _extra_clone_params(self):
+        return dict(parent_tag = self._parent_tag)
+
     def _is_optional_for_storage(self):
         return self.is_optional or self._parent_tag.tag_type == ContentItemTagType.STANDARD
 

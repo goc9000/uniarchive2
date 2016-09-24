@@ -27,6 +27,9 @@ class GenericPolymorphicFieldAugment(Augment):
         self._type_info = autogen_core.symbol_registry.lookup(self._base_type)
         assert self._type_info.is_type, '{0} is not a base type'.format(self._base_type)
 
+    def _extra_clone_params(self):
+        return dict()
+
     def local_name(self):
         return self.short_name or camelcase_to_underscore(self.name)
 
@@ -124,7 +127,8 @@ class GenericPolymorphicFieldAugment(Augment):
                 name=singular(self.name),
                 short_name=singular(self.short_name) if self.short_name is not None else None
             ),
-            self._core
+            self._core,
+            **self._extra_clone_params(),
         )
 
     def is_mandatory(self):
