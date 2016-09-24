@@ -63,10 +63,27 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
         return 'RawMessageContentItem'
 
     def gen_protected_block_code(self, cpp_source):
-        pass
+        self._gen_debug_write_method(cpp_source)
 
     def implicitly_covered_symbols(self):
         return list()
+
+    def _gen_debug_write_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(),
+            'writeToDebugStreamImpl',
+            'void',
+            ('QDebug', 'stream'),
+            const=True, virtual=True, declare=True
+        ) as method:
+            item_name = self._name
+
+            if len(self.fields) == 0:
+                method.line('stream << "[{0}]";'.format(item_name))
+            else:
+                method.line('stream << "[{0}";'.format(item_name))
+                self.gen_debug_write_field_code(method, self.fields)
+                method.line('stream << "]";')
 
 
 class ContentItemFieldAugment(GenericPolymorphicFieldAugment):
