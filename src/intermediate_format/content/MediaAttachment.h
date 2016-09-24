@@ -11,8 +11,8 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MEDIAATTACHMENT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_MEDIAATTACHMENT_H
 
-#include "intermediate_format/errors/MediaError.h"
 #include "intermediate_format/content/RawMessageContentItem.h"
+#include "intermediate_format/errors/MediaError.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 

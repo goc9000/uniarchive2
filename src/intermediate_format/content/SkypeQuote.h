@@ -11,8 +11,8 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_SKYPEQUOTE_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_SKYPEQUOTE_H
 
-#include "intermediate_format/content/RawMessageContentItem.h"
 #include "intermediate_format/content/RawMessageContent.h"
+#include "intermediate_format/content/RawMessageContentItem.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "utils/language/shortcuts.h"
