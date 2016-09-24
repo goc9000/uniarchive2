@@ -110,18 +110,23 @@ def parse_enum_config(entity_config):
     )
 
 
-def parse_generic_polymorphic_config(preparsed_entity, field_parser):
+def parse_generic_polymorphic_config(preparsed_entity, field_parser, supported_prefixes=None):
     def parse_polymorphic_field(field_config):
+        if supported_prefixes is not None:
+            prefixes_pattern = r'((?:(?:' + r'|'.join(supported_prefixes) + r')\s+)*)'
+        else:
+            prefixes_pattern = r'()'
+
         match = re.match(
-            r'^(\?|\(\?\))?([a-zA-Z0-9_]+)(\[\]|\(\[\]\))?\s+([a-zA-Z0-9_]+)' +
+            r'^' + prefixes_pattern + r'(\?|\(\?\))?([a-zA-Z0-9_]+)(\[\]|\(\[\]\))?\s+([a-zA-Z0-9_]+)' +
             r'(?:\s+as\s+([a-zA-Z0-9_]+))?(?:\s*=\s*(\w+))?$',
             field_config.expression.strip()
         )
         assert match is not None, "Invalid field config: " + field_config.expression
 
-        optionality, base_type, multiplicity, name, short_name, default_value = match.groups()
+        prefixes, optionality, base_type, multiplicity, name, short_name, default_value = match.groups()
 
-        return field_parser(dict(
+        raw_attrs = dict(
             name=name,
             base_type=base_type,
             is_optional=(optionality is not None),
@@ -130,8 +135,13 @@ def parse_generic_polymorphic_config(preparsed_entity, field_parser):
             maybe_singleton=(multiplicity == '([])'),
             short_name=short_name,
             default_value=default_value,
-            doc=field_config.options['doc'].strip() if 'doc' in field_config.options else None
-        ))
+            doc=field_config.options['doc'].strip() if 'doc' in field_config.options else None,
+        )
+
+        if supported_prefixes is not None:
+            raw_attrs['prefixes'] = [item for item in re.split(r'\s+', prefixes) if item != '']
+
+        return field_parser(raw_attrs)
 
     return dict(
         fields=[parse_polymorphic_field(preparsed) for preparsed in preparsed_entity.fields],
@@ -163,7 +173,9 @@ def parse_content_item_config(entity_config):
         return ContentItemFieldConfig(**attrs)
 
     def parse_content_item_tag_field(attrs):
-        return ContentItemTagFieldConfig(**attrs)
+        prefixes = attrs['prefixes']
+        del attrs['prefixes']
+        return ContentItemTagFieldConfig(**attrs, is_primary=('primary' in prefixes))
 
     def parse_tag_type(tag_type):
         if tag_type is None:
@@ -181,7 +193,7 @@ def parse_content_item_config(entity_config):
 
     if 'tag type' in preparsed.options:
         return ContentItemTagConfig(
-            **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field),
+            **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field, supported_prefixes=['primary']),
             tag_type=parse_tag_type(preparsed.options['tag type']),
             tag_name_override=preparsed.options.get('tag name'),
         )
@@ -263,6 +275,6 @@ class ContentItemTagFieldConfig(ContentItemFieldConfig):
     def __init__(self, _superclass_fields=None, **kwargs):
         ContentItemFieldConfig.__init__(
             self,
-            _superclass_fields=[] + (_superclass_fields or list()),
+            _superclass_fields=['is_primary'] + (_superclass_fields or list()),
             **kwargs
         )

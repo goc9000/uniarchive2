@@ -239,11 +239,11 @@ content items:
     ANSIColorTag:
       - tag type: symmetric
       - tag name: ANSICol
-      - ANSIColor color
+      - primary ANSIColor color
     RGBColorTag:
       - tag type: symmetric
       - tag name: RGBCol
-      - Color color
+      - primary Color color
     BoldTag:
       - tag type: standard
       - tag name: B
@@ -259,7 +259,7 @@ content items:
     CSSStyleTag:
       - tag type: standard
       - tag name: Style
-      - QString css
+      - primary QString css
     FontTag:
       - tag type: standard
       - ?QString[] faces
@@ -268,16 +268,16 @@ content items:
       - ?QString css
     LinkTag:
       - tag type: standard
-      - (?)QUrl url
+      - primary (?)QUrl url
     YahooAltTag:
       - tag type: standard
       - tag name: Alt
-      - Color color1
-      - Color color2
+      - primary Color color1
+      - primary Color color2
     YahooFadeTag:
       - tag type: standard
       - tag name: Fade
-      - (?)Color[] colors
+      - primary (?)Color[] colors
 
   (symbols):
     FlagIcon:

@@ -179,3 +179,9 @@ class ContentItemTagFieldAugment(ContentItemFieldAugment):
 
     def _is_optional_for_storage(self):
         return self.is_optional or self._parent_tag.tag_type == ContentItemTagType.STANDARD
+
+    def debug_write_header(self):
+        if self.is_primary:
+            return '" "'
+
+        return super().debug_write_header()
