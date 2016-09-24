@@ -103,6 +103,9 @@ class GenericPolymorphicFieldAugment(Augment):
         """
         rvalue_expr = self.name
 
+        if self._base_type == 'QUrl' and not self.is_list:
+            return self.as_subfield_value('url()')
+
         if self.uses_unique_ptr() and not self.is_list:
             rvalue_expr += '.get()'
         else:
