@@ -113,6 +113,10 @@ class GenericPolymorphicFieldAugment(Augment):
 
         return rvalue_expr
 
+    def as_subfield_value(self, subfield):
+        use_arrow = self.uses_optional() or (self.uses_unique_ptr() and not self.is_list)
+        return self.name + ('->' if use_arrow else '.') + subfield
+
     def debug_write_header(self):
         """
         Renders an expression describing the header printed right before the value of the field, in the debug write

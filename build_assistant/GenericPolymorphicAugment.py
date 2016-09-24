@@ -159,10 +159,10 @@ class GenericPolymorphicAugment(Augment):
             if field_config.maybe_singleton:
                 rvalue = field_config.as_print_rvalue(block)
 
-                with block.if_block('{0}.size() == 1'.format(field_config.name), nl_after=False) as b:
-                    b.line('stream << {0} << {1}.front();'.format(
+                with block.if_block('{0} == 1'.format(field_config.as_subfield_value('size()')), nl_after=False) as b:
+                    b.line('stream << {0} << {1};'.format(
                         field_config.singularized().debug_write_header(),
-                        rvalue
+                        field_config.as_subfield_value('front()')
                     ))
                     with b.else_block() as e:
                         b.line('stream << {0} << {1};'.format(field_config.debug_write_header(), rvalue))
