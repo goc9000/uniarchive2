@@ -66,7 +66,9 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
         self._gen_debug_write_method(cpp_source)
 
     def implicitly_covered_symbols(self):
-        return list()
+        return [
+            'QDebug', 'vector'  # Through RawMessageContentItem
+        ]
 
     def _gen_debug_write_method(self, cpp_source):
         with cpp_source.method(
@@ -154,7 +156,9 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
         self._gen_debug_write_method(cpp_source)
 
     def implicitly_covered_symbols(self):
-        return ['QString', 'QDebug']
+        return [
+            'QString', 'QDebug', 'vector'  # Through AbstractTag, RawMessageContentItem
+        ]
 
     def _gen_tag_name_method(self, cpp_source):
         with cpp_source.method(
