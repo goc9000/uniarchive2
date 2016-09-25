@@ -40,6 +40,8 @@ def gen_content_items(autogen_config, autogen_core):
             with struct.protected_block() as _:
                 item_config.gen_protected_block_code(cpp_source)
 
+            item_config.gen_private_block(struct)
+
 
 class ContentItemConfigAugment(GenericPolymorphicAugment):
     _name = None
