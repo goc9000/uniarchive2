@@ -1,4 +1,4 @@
-# build_assistant/grammar.py
+# build_assistant/util/grammar.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

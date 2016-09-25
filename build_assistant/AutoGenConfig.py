@@ -11,8 +11,8 @@ import re
 from enum import Enum
 from collections import namedtuple
 
-from build_assistant.VirtualPath import VirtualPath
-from build_assistant.FrozenStruct import FrozenStruct
+from build_assistant.util.FrozenStruct import FrozenStruct
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 AutoGenConfig = namedtuple(

@@ -1,4 +1,4 @@
-# build_assistant/util.py
+# build_assistant/util/util.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -11,7 +11,7 @@ import sys
 
 from textwrap import dedent
 
-from build_assistant.VirtualPath import VirtualPath
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 def fail(format_str, *args, **kwargs):

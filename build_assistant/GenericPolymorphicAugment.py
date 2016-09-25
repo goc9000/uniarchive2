@@ -8,9 +8,9 @@
 
 from collections import namedtuple
 
-from build_assistant.Augment import Augment
 from build_assistant.AutoGenConfig import GenericPolymorphicConfig
-from build_assistant.grammar import singular, classname_to_varname
+from build_assistant.util.Augment import Augment
+from build_assistant.util.grammar import classname_to_varname
 
 
 ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements', 'extra_fields'])

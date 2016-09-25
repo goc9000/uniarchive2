@@ -11,10 +11,10 @@ import re
 from enum import Enum
 from collections import namedtuple
 
-from build_assistant.VirtualPath import VirtualPath
 from build_assistant.includes import IncludeType, local_include, std_include, qt_include, local_use, std_use, \
     normalize_include_path
-from build_assistant.util import scan_files
+from build_assistant.util.util import scan_files
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 TypeKind = Enum('TypeKind', ['POLYMORPHIC', 'MOVABLE', 'HEAVY', 'PRIMITIVE'])

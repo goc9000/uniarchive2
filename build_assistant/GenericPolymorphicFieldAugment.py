@@ -6,10 +6,10 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.Augment import Augment
 from build_assistant.AutoGenConfig import GenericPolymorphicFieldConfig
-from build_assistant.grammar import camelcase_to_underscore, singular
 from build_assistant.SymbolRegistry import TypeKind
+from build_assistant.util.Augment import Augment
+from build_assistant.util.grammar import camelcase_to_underscore, singular
 
 
 class GenericPolymorphicFieldAugment(Augment):

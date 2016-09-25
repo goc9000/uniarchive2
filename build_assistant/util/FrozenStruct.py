@@ -1,4 +1,4 @@
-# build_assistant/FrozenStruct.py
+# build_assistant/util/FrozenStruct.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

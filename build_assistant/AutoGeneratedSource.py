@@ -15,7 +15,7 @@ from contextlib import contextmanager
 from build_assistant.autogen_common import HASH_LINE_PREFIX, BEGIN_CUSTOM_SECTION_LINE_PREFIX, \
     END_CUSTOM_SECTION_LINE_PREFIX, compute_content_hash
 from build_assistant.includes import IncludeType, UseType, normalize_include_path, normalize_use_path
-from build_assistant.VirtualPath import VirtualPath
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 CodeGenConfig = namedtuple('CodeGenConfig', ['app_metadata', 'indent_size', 'gutter_width', 'base_namespace'])

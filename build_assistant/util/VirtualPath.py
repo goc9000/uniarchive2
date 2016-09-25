@@ -1,4 +1,4 @@
-# build_assistant/VirtualPath.py
+# build_assistant/util/VirtualPath.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

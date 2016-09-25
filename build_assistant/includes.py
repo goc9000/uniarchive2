@@ -9,7 +9,7 @@
 
 from enum import Enum
 
-from build_assistant.VirtualPath import VirtualPath
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 IncludeType = Enum('IncludeType', ['LOCAL', 'STD', 'QT'])

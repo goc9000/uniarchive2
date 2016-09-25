@@ -6,11 +6,11 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.VirtualPath import VirtualPath
 from build_assistant.AutoGenConfig import ContentItemConfig, ContentItemFieldConfig, ContentItemTagType, \
     ContentItemTagConfig, ContentItemTagFieldConfig
 from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment, ConstructorInfo
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 BASE_CONTENT_ITEMS_PATH = VirtualPath(['intermediate_format', 'content'])

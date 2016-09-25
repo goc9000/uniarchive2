@@ -6,10 +6,10 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.VirtualPath import VirtualPath
 from build_assistant.AutoGenConfig import RawEventConfig, RawEventFieldConfig
 from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 BASE_EVENTS_PATH = VirtualPath(['intermediate_format', 'events'])

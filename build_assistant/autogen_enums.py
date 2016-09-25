@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.grammar import classname_to_varname, camelcase_to_underscore
+from build_assistant.util.grammar import classname_to_varname, camelcase_to_underscore
 
 
 def autogen_enums_index(autogen_config):
