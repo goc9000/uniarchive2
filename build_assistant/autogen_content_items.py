@@ -76,14 +76,17 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
             ('QDebug', 'stream'),
             const=True, virtual=True, declare=True
         ) as method:
-            item_name = self._name
-
-            if len(self.fields) == 0:
-                method.line('stream << "[{0}]";'.format(item_name))
+            if self.custom_debug_write_method:
+                method.custom_section('Debug write method')
             else:
-                method.line('stream << "[{0}";'.format(item_name))
-                self.gen_debug_write_field_code(method, self.fields)
-                method.line('stream << "]";')
+                item_name = self._name
+
+                if len(self.fields) == 0:
+                    method.line('stream << "[{0}]";'.format(item_name))
+                else:
+                    method.line('stream << "[{0}";'.format(item_name))
+                    self.gen_debug_write_field_code(method, self.fields)
+                    method.line('stream << "]";')
 
 
 class ContentItemFieldAugment(GenericPolymorphicFieldAugment):
@@ -163,7 +166,7 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
         return 'write' + ('OpenTag' if self.tag_type == ContentItemTagType.STANDARD else '') + 'AttributesToDebugStream'
 
     def _gen_debug_write_method(self, cpp_source):
-        if len(self.fields) == 0:
+        if len(self.fields) == 0 and not self.custom_debug_write_method:
             return
 
         with cpp_source.method(
@@ -173,7 +176,10 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
             ('QDebug', 'stream'),
             const=True, virtual=True, declare=True
         ) as method:
-            self.gen_debug_write_field_code(method, self.fields)
+            if self.custom_debug_write_method:
+                method.custom_section('Debug write method')
+            else:
+                self.gen_debug_write_field_code(method, self.fields)
 
 
     def _tag_name_for_display(self):

@@ -300,3 +300,4 @@ content items:
     - RawMessageContent quoteContent
   TextSection:
     - QString text
+    - custom: [debug write method]
