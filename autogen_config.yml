@@ -299,7 +299,7 @@ content items:
     - ApparentSubject quotedMessageAuthor as author
     - ApparentTime quotedMessageTime as time
     - QString legacyHeader
-    - RawMessageContent quoteContent
+    - RawMessageContent content
   TextSection:
     - QString text
     - custom: [debug write method]
