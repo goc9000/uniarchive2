@@ -201,11 +201,13 @@ def parse_content_item_config(entity_config):
             **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field, supported_prefixes=['primary']),
             tag_type=parse_tag_type(preparsed.options['tag type']),
             tag_name_override=preparsed.options.get('tag name'),
+            debug_write_name_override=None,
             custom_debug_write_method=('debug write method' in custom),
         )
     else:
         return ContentItemConfig(
             **parse_generic_polymorphic_config(preparsed, parse_content_item_field),
+            debug_write_name_override=preparsed.options.get('debug write name'),
             custom_debug_write_method=('debug write method' in custom),
         )
 
@@ -252,7 +254,9 @@ class ContentItemConfig(GenericPolymorphicConfig):
     def __init__(self, _superclass_fields=None, **kwargs):
         GenericPolymorphicConfig.__init__(
             self,
-            _superclass_fields=['custom_debug_write_method'] + (_superclass_fields or list()),
+            _superclass_fields=[
+                'custom_debug_write_method', 'debug_write_name_override',
+            ] + (_superclass_fields or list()),
             **kwargs
         )
 

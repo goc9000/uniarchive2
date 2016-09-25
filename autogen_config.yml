@@ -288,9 +288,11 @@ content items:
       - QString textEquivalent
 
   LineBreak:
+    - debug write name: BRK
   MediaAttachment:
     - ?QString filename
     - ?MediaError error
+    - debug write name: Media
   SkypeQuote:
     - QString quotedMessageConversationID as conversation_id
     - QString quotedMessageGUID as message_guid

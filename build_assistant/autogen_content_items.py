@@ -79,7 +79,7 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')
             else:
-                item_name = self._name
+                item_name = self.debug_write_name_override or self._name
 
                 if len(self.fields) == 0:
                     method.line('stream << "[{0}]";'.format(item_name))
