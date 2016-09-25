@@ -271,12 +271,13 @@ content items:
       - primary (?)QUrl url
     YahooAltTag:
       - tag type: standard
-      - tag name: Alt
+        tag name: Alt
       - primary Color color1
       - primary Color color2
     YahooFadeTag:
       - tag type: standard
-      - tag name: Fade
+        tag name: Fade
+        custom: [debug write method]
       - primary (?)Color[] colors
 
   (symbols):
