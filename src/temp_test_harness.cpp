@@ -23,6 +23,9 @@
 #include <QString>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QThreadPool>
+#include <QRunnable>
+
 
 #include <map>
 #include <vector>
@@ -62,8 +65,27 @@ QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
 }
 
+class ExtractConversationsTask : public QRunnable {
+public:
+    ArchiveFormat format;
+    QString filename;
+
+    RawConversationCollection result;
+
+    ExtractConversationsTask(ArchiveFormat format, IMM(QString) filename) : format(format), filename(filename) {
+        setAutoDelete(false);
+    }
+
+    void run() {
+        result.take(extract_conversations_generic(format, filename));
+    }
+};
+
 RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
     RawConversationCollection convos;
+
+    QThreadPool* tp = QThreadPool::globalInstance();
+    tp->setMaxThreadCount(QThread::idealThreadCount() * 2); // oversubscribe 2x
 
     vector<tuple<ArchiveFormat, QString, QString>> inputs {
         { ArchiveFormat::SKYPE,               "skype",    "main.db" },
@@ -85,8 +107,24 @@ RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
             QDir::Files,
             QDirIterator::Subdirectories
         );
+
+        vector<unique_ptr<ExtractConversationsTask>> tasks;
+
         while (files.hasNext()) {
-            convos.take(extract_conversations_generic(get<ArchiveFormat>(format_path_glob), files.next()));
+            tasks.push_back(make_unique<ExtractConversationsTask>(
+                get<ArchiveFormat>(format_path_glob),
+                files.next()
+            ));
+        }
+
+        for (IMM(auto) task : tasks) {
+            tp->start(task.get());
+        }
+
+        tp->waitForDone();
+
+        for (IMM(auto) task : tasks) {
+            convos.take(move(task->result));
         }
     }
 
