@@ -13,6 +13,7 @@
 
 #include "utils/serialization/ISerializable.h"
 #include "utils/language/shortcuts.h"
+#include "utils/external_libs/optional.hpp"
 
 #include <QDataStream>
 
@@ -30,6 +31,16 @@ QDataStream& operator<< (QDataStream& mut_stream, IMM(std::unique_ptr<T>) item) 
     invariant((bool)item, "Tried to serialze null unique_ptr");
 
     mut_stream << *item;
+
+    return mut_stream;
+}
+
+template<typename T>
+QDataStream& operator<< (QDataStream& mut_stream, IMM(std::experimental::optional<T>) item) {
+    mut_stream << (bool)item;
+    if ((bool)item) {
+        mut_stream << *item;
+    }
 
     return mut_stream;
 }
