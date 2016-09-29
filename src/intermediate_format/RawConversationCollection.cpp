@@ -61,6 +61,11 @@ void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {
 
     QDataStream stream(&file);
     stream << (quint32)BINARY_FORMAT_VERSION;
+    stream << this;
+}
+
+void RawConversationCollection::serializeToStream(QDataStream& mut_stream) const {
+    mut_stream << (quint32)conversations.size();
 
     // TODO: fill in stub
 }

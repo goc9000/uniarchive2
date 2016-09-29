@@ -130,6 +130,7 @@ SOURCES += \
     utils/external_libs/sqlite/sqlite3.c \
     utils/html/entities.cpp \
     utils/html/parse_html_lenient.cpp \
+    utils/serialization/ISerializable.cpp \
     utils/sqlite/SQLiteDB.cpp \
     utils/sqlite/SQLiteRow.cpp \
     utils/sqlite/SQLiteStmt.cpp \
@@ -274,6 +275,7 @@ HEADERS += \
     utils/language/shortcuts.h \
     utils/qt/debug_extras.h \
     utils/qt/shortcuts.h \
+    utils/serialization/ISerializable.h \
     utils/sqlite/internal/ColumnExtractor.hpp \
     utils/sqlite/internal/DataTupleGenerator.hpp \
     utils/sqlite/SQLiteDB.h \
