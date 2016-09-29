@@ -41,6 +41,7 @@ public:
 };
 
 QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject);
+QDebug operator<< (QDebug stream, IMM(ApparentSubject) subject);
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ApparentSubject::Hints);
 

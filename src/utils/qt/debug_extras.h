@@ -24,7 +24,7 @@
 template<typename T>
 QDebug operator<< (QDebug stream, IMM(std::unique_ptr<T>) value) {
     if (value) {
-        stream << value.get();
+        stream << *value;
     } else {
         stream << "(unset)";
     }

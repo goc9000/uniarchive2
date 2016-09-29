@@ -19,17 +19,25 @@ ApparentSubject::ApparentSubject(Hints hints) : hints(hints) {
 }
 
 QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject) {
+    invariant(subject != nullptr, "Tried to debug print null ApparentSubject");
+
+    stream << *subject;
+
+    return stream;
+}
+
+QDebug operator<< (QDebug stream, IMM(ApparentSubject) subject) {
     QDebugStateSaver save(stream);
     stream.nospace();
-    subject->writeToDebugStream(stream);
+    subject.writeToDebugStream(stream);
 
-    if (subject->hints) {
+    if (subject.hints) {
         QStringList hints_repr;
 
-        if (subject->hints.testFlag(ApparentSubject::Hint::IsIdentity)) {
+        if (subject.hints.testFlag(ApparentSubject::Hint::IsIdentity)) {
             hints_repr << "ident";
         }
-        if (subject->hints.testFlag(ApparentSubject::Hint::IsPeer)) {
+        if (subject.hints.testFlag(ApparentSubject::Hint::IsPeer)) {
             hints_repr << "peer";
         }
 

@@ -30,6 +30,7 @@ public:
 };
 
 QDebug operator<< (QDebug stream, CPTR(Provenance) provenance);
+QDebug operator<< (QDebug stream, IMM(Provenance) provenance);
 
 }}}
 
