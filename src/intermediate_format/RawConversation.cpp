@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/RawConversation.h"
+#include "utils/serialization/serialization_helpers.h"
 #include "utils/qt/debug_extras.h"
 
 #include <QDebugStateSaver>
@@ -46,8 +47,10 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
 }
 
 void RawConversation::serializeToStream(QDataStream& mut_stream) const {
-    mut_stream << 0xDEADBEEF;
-
+    mut_stream << protocol;
+    serialize_optional_unique_ptr(mut_stream, identity);
+    mut_stream << declaredPeers << isConference << conferenceTitle << declaredStartDate;
+    serialize_optional_unique_ptr(mut_stream, declaredInitiator);
     // TODO: fill in stub
 }
 
