@@ -13,6 +13,7 @@
 
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/ISerializable.h"
 
 #include <QtDebug>
 #include <QByteArray>
@@ -24,8 +25,9 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 using namespace std::experimental;
+using namespace uniarchive2::utils::serialization;
 
-struct ApparentTime {
+struct ApparentTime : ISerializable {
 public:
     enum class Reference {
         UNKNOWN,
@@ -58,6 +60,8 @@ public:
     bool hasSpecifiedDate() const;
     bool hasSpecifiedTime() const;
     bool hasSpecifiedSeconds() const;
+
+    void serializeToStream(QDataStream& mut_stream) const;
 };
 
 QDebug operator<< (QDebug stream, IMM(ApparentTime) time);

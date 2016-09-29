@@ -30,7 +30,7 @@ public:
     FullAccountName();
     FullAccountName(IMProtocol protocol, IMM(QString) account_name);
 
-    virtual void serializeToStream(QDataStream& mut_stream) const;
+    void serializeToStream(QDataStream& mut_stream) const;
 
     bool operator == (IMM(FullAccountName) other) const;
 };
