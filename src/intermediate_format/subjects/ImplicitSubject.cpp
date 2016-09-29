@@ -12,8 +12,6 @@
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 ImplicitSubject::ImplicitSubject(Kind kind, Hints hints) : ApparentSubject(hints), kind(kind) {
@@ -36,9 +34,8 @@ QString name_for_implicit_subject_kind(ImplicitSubject::Kind kind) {
     invariant_violation("Unhandled enum value");
 }
 
-void ImplicitSubject::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "Sbj:implicit:" << QP(name_for_implicit_subject_kind(kind));
+void ImplicitSubject::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "Sbj:implicit:" << QP(name_for_implicit_subject_kind(kind));
 }
 
 }}}

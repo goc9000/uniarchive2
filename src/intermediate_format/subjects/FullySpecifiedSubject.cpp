@@ -26,9 +26,8 @@ CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {
     return make_unique<FullySpecifiedSubject>(accountName, screenName, hints);
 }
 
-void FullySpecifiedSubject::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "Sbj:full:" << QP(screenName) << " [" << accountName << "]";
+void FullySpecifiedSubject::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "Sbj:full:" << QP(screenName) << " [" << accountName << "]";
 }
 
 }}}

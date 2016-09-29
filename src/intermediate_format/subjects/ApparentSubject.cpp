@@ -18,6 +18,25 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 ApparentSubject::ApparentSubject(Hints hints) : hints(hints) {
 }
 
+void ApparentSubject::writeToDebugStream(QDebug stream) const {
+    QDebugStateSaver save(stream);
+    stream.nospace();
+    writeToDebugStreamImpl(stream);
+
+    if (hints) {
+        QStringList hints_repr;
+
+        if (hints.testFlag(ApparentSubject::Hint::IsIdentity)) {
+            hints_repr << "ident";
+        }
+        if (hints.testFlag(ApparentSubject::Hint::IsPeer)) {
+            hints_repr << "peer";
+        }
+
+        stream << " [" << QP(hints_repr.join(',')) << "]";
+    }
+}
+
 QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject) {
     invariant(subject != nullptr, "Tried to debug print null ApparentSubject");
 
@@ -27,23 +46,7 @@ QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject) {
 }
 
 QDebug operator<< (QDebug stream, IMM(ApparentSubject) subject) {
-    QDebugStateSaver save(stream);
-    stream.nospace();
     subject.writeToDebugStream(stream);
-
-    if (subject.hints) {
-        QStringList hints_repr;
-
-        if (subject.hints.testFlag(ApparentSubject::Hint::IsIdentity)) {
-            hints_repr << "ident";
-        }
-        if (subject.hints.testFlag(ApparentSubject::Hint::IsPeer)) {
-            hints_repr << "peer";
-        }
-
-        stream << " [" << QP(hints_repr.join(',')) << "]";
-    }
-
     return stream;
 }
 

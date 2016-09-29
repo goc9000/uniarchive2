@@ -11,8 +11,6 @@
 #include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
 #include "utils/qt/shortcuts.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 SubjectGivenAsScreenName::SubjectGivenAsScreenName(
@@ -25,9 +23,8 @@ CEDE(ApparentSubject) SubjectGivenAsScreenName::clone() const {
     return make_unique<SubjectGivenAsScreenName>(screenName, hints);
 }
 
-void SubjectGivenAsScreenName::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "Sbj:scrname:" << QP(screenName);
+void SubjectGivenAsScreenName::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "Sbj:scrname:" << QP(screenName);
 }
 
 }}}

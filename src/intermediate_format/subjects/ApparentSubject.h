@@ -14,11 +14,9 @@
 #include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
+#include <QDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
-
-using namespace std;
 
 class ApparentSubject {
 public:
@@ -37,7 +35,10 @@ public:
 
     virtual CEDE(ApparentSubject) clone() const = 0;
 
-    virtual void writeToDebugStream(QDebug stream) const = 0;
+    void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
 
 QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject);

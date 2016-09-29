@@ -15,11 +15,8 @@
 #include "protocols/FullAccountName.h"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
-
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-using namespace std;
 using namespace uniarchive2::protocols;
 
 class SubjectGivenAsAccount : public ApparentSubject {
@@ -30,7 +27,8 @@ public:
 
     virtual CEDE(ApparentSubject) clone() const;
 
-    virtual void writeToDebugStream(QDebug stream) const;
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

@@ -14,11 +14,7 @@
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
-
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
-
-using namespace std;
 
 class ImplicitSubject : public ApparentSubject {
 public:
@@ -34,7 +30,8 @@ public:
 
     virtual CEDE(ApparentSubject) clone() const;
 
-    virtual void writeToDebugStream(QDebug stream) const;
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}
