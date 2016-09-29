@@ -273,6 +273,8 @@ HEADERS += \
     utils/language/invariant.h \
     utils/language/polymorphic_helpers.h \
     utils/language/shortcuts.h \
+    utils/polymorphics/IPolymorphic.h \
+    utils/polymorphics/StandardPolymorphic.h \
     utils/qt/debug_extras.h \
     utils/qt/shortcuts.h \
     utils/serialization/ISerializable.h \
