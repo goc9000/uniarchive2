@@ -58,7 +58,7 @@ void run_test_harness(IMM(QString) config_file) {
     invariant(QDir(base_output_path).exists(), "Test output dir %s does not exist", QP(base_output_path));
 
     auto convos = extract_conversations(base_input_path);
-    dump_conversations(convos, base_output_path);
+    dump_conversations(convos, base_output_path + "/debug_dump");
 }
 
 QString remove_trailing_slash(IMM(QString) path) {
