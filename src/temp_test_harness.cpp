@@ -59,6 +59,8 @@ void run_test_harness(IMM(QString) config_file) {
 
     auto convos = extract_conversations(base_input_path);
     dump_conversations(convos, base_output_path + "/debug_dump");
+
+    convos.writeToBinaryFile(base_output_path + "/binary_dump.bin");
 }
 
 QString remove_trailing_slash(IMM(QString) path) {

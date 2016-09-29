@@ -9,8 +9,11 @@
  */
 
 #include "intermediate_format/RawConversationCollection.h"
+#include "utils/qt/shortcuts.h"
 
 #include <QDebugStateSaver>
+#include <QDataStream>
+#include <QFile>
 
 namespace uniarchive2 { namespace intermediate_format {
 
@@ -49,6 +52,17 @@ vector<RawConversation>::const_iterator RawConversationCollection::begin() const
 
 vector<RawConversation>::const_iterator RawConversationCollection::end() const {
     return conversations.cend();
+}
+
+void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {
+    QFile file(filename);
+    file.open(QFile::WriteOnly);
+    invariant(file.isWritable(), "Could not open output file '%s'", QP(filename));
+
+    QDataStream stream(&file);
+    stream << (quint32)BINARY_FORMAT_VERSION;
+
+    // TODO: fill in stub
 }
 
 void RawConversationCollection::writeToDebugStream(QDebug stream, bool summarize_conversations) const {
