@@ -11,14 +11,16 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 
+#include "intermediate_format/subjects/ApparentSubjectSubType.h"
 #include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
-
-#include <QDebug>
+#include "utils/polymorphics/StandardPolymorphic.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-class ApparentSubject {
+using namespace uniarchive2::utils::polymorphics;
+
+class ApparentSubject : public StandardPolymorphic<ApparentSubjectSubType> {
 public:
     enum class Hint {
         NoHints    = 0,
@@ -40,9 +42,6 @@ public:
 protected:
     virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
-
-QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject);
-QDebug operator<< (QDebug stream, IMM(ApparentSubject) subject);
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ApparentSubject::Hints);
 

@@ -24,6 +24,8 @@ public:
 
     SubjectGivenAsScreenName(IMM(QString) screen_name, Hints hints = Hint::NoHints);
 
+    virtual ApparentSubjectSubType subType() const;
+
     virtual CEDE(ApparentSubject) clone() const;
 
 protected:

@@ -11,8 +11,6 @@
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "utils/qt/shortcuts.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 FullySpecifiedSubject::FullySpecifiedSubject(
@@ -20,6 +18,10 @@ FullySpecifiedSubject::FullySpecifiedSubject(
     IMM(QString) screen_name,
     Hints hints
 ) : ApparentSubject(hints), accountName(account_name), screenName(screen_name) {
+}
+
+ApparentSubjectSubType FullySpecifiedSubject::subType() const {
+    return ApparentSubjectSubType::FULLYSPECIFIEDSUBJECT;
 }
 
 CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {

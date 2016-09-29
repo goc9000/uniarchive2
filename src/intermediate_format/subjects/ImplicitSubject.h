@@ -28,6 +28,8 @@ public:
 
     ImplicitSubject(Kind kind, Hints hints = Hint::NoHints);
 
+    virtual ApparentSubjectSubType subType() const;
+
     virtual CEDE(ApparentSubject) clone() const;
 
 protected:

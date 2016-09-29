@@ -19,6 +19,10 @@ SubjectGivenAsScreenName::SubjectGivenAsScreenName(
 ) : ApparentSubject(hints), screenName(screen_name) {
 }
 
+ApparentSubjectSubType SubjectGivenAsScreenName::subType() const {
+    return ApparentSubjectSubType::SUBJECTGIVENASSCREENNAME;
+}
+
 CEDE(ApparentSubject) SubjectGivenAsScreenName::clone() const {
     return make_unique<SubjectGivenAsScreenName>(screenName, hints);
 }

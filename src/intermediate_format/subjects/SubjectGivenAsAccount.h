@@ -25,6 +25,8 @@ public:
 
     SubjectGivenAsAccount(IMM(FullAccountName) account, Hints hints = Hint::NoHints);
 
+    virtual ApparentSubjectSubType subType() const;
+
     virtual CEDE(ApparentSubject) clone() const;
 
 protected:

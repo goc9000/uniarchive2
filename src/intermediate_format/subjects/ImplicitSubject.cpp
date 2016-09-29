@@ -17,6 +17,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 ImplicitSubject::ImplicitSubject(Kind kind, Hints hints) : ApparentSubject(hints), kind(kind) {
 }
 
+ApparentSubjectSubType ImplicitSubject::subType() const {
+    return ApparentSubjectSubType::IMPLICITSUBJECT;
+}
+
 CEDE(ApparentSubject) ImplicitSubject::clone() const {
     return make_unique<ImplicitSubject>(kind, hints);
 }

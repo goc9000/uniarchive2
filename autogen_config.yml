@@ -10,30 +10,38 @@ enums:
     - white = 7
     - extended = 8
 
-  intermediate_format/errors:
-    SendMessageFailReason:
-      - undetermined = 0
-      - message too large
-      - recipient offline
-      - connection error
-    StartCallFailReason:
-      - undetermined = 0
-      - no answer
-      - peer busy
-      - blocked by privacy settings as PRIVACY_BLOCKED
-      - call rejected
-    CurrentCallFailReason:
-      - undetermined = 0
-      - connection dropped
-    OfferWebcamFailReason:
-      - undetermined = 0
-      - unsupported
-    PingFailReason:
-      - undetermined = 0
-      - blocked or unsupported
-    MediaError:
-      - undetermined = 0
-      - omitted
+  intermediate_format:
+    errors:
+      SendMessageFailReason:
+        - undetermined = 0
+        - message too large
+        - recipient offline
+        - connection error
+      StartCallFailReason:
+        - undetermined = 0
+        - no answer
+        - peer busy
+        - blocked by privacy settings as PRIVACY_BLOCKED
+        - call rejected
+      CurrentCallFailReason:
+        - undetermined = 0
+        - connection dropped
+      OfferWebcamFailReason:
+        - undetermined = 0
+        - unsupported
+      PingFailReason:
+        - undetermined = 0
+        - blocked or unsupported
+      MediaError:
+        - undetermined = 0
+        - omitted
+
+    subjects:
+      ApparentSubjectSubType:
+        - ImplicitSubject
+        - SubjectGivenAsScreenName
+        - SubjectGivenAsAccount
+        - FullySpecifiedSubject
 
   protocols:
     ArchiveFormat:

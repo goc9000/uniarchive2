@@ -37,17 +37,4 @@ void ApparentSubject::writeToDebugStream(QDebug stream) const {
     }
 }
 
-QDebug operator<< (QDebug stream, CPTR(ApparentSubject) subject) {
-    invariant(subject != nullptr, "Tried to debug print null ApparentSubject");
-
-    stream << *subject;
-
-    return stream;
-}
-
-QDebug operator<< (QDebug stream, IMM(ApparentSubject) subject) {
-    subject.writeToDebugStream(stream);
-    return stream;
-}
-
 }}}
