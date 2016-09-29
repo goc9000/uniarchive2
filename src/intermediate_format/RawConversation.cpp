@@ -44,6 +44,12 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     return convo;
 }
 
+void RawConversation::serializeToStream(QDataStream& mut_stream) const {
+    mut_stream << 0xDEADBEEF;
+
+    // TODO: fill in stub
+}
+
 void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const {
 #define N_CONTEXT_LINES 3
     QDebugStateSaver settings(stream);

@@ -276,6 +276,7 @@ HEADERS += \
     utils/qt/debug_extras.h \
     utils/qt/shortcuts.h \
     utils/serialization/ISerializable.h \
+    utils/serialization/serialization_helpers.h \
     utils/sqlite/internal/ColumnExtractor.hpp \
     utils/sqlite/internal/DataTupleGenerator.hpp \
     utils/sqlite/SQLiteDB.h \

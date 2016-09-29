@@ -10,12 +10,15 @@
 
 #include "intermediate_format/RawConversationCollection.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/serialization/serialization_helpers.h"
 
 #include <QDebugStateSaver>
 #include <QDataStream>
 #include <QFile>
 
 namespace uniarchive2 { namespace intermediate_format {
+
+using namespace uniarchive2::utils::serialization;
 
 RawConversationCollection RawConversationCollection::from(RawConversation&& conversation) {
     RawConversationCollection collection;
@@ -65,9 +68,7 @@ void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {
 }
 
 void RawConversationCollection::serializeToStream(QDataStream& mut_stream) const {
-    mut_stream << (quint32)conversations.size();
-
-    // TODO: fill in stub
+    mut_stream << conversations;
 }
 
 void RawConversationCollection::writeToDebugStream(QDebug stream, bool summarize_conversations) const {

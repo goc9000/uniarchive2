@@ -18,6 +18,7 @@
 #include "protocols/IMProtocol.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/ISerializable.h"
 
 #include <vector>
 
@@ -32,8 +33,9 @@ using namespace uniarchive2::intermediate_format::events;
 using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
+using namespace uniarchive2::utils::serialization;
 
-class RawConversation {
+class RawConversation : public ISerializable {
 public:
     // Mandatory metadata
     IMProtocol protocol;
@@ -53,6 +55,8 @@ public:
 
     RawConversation();
     RawConversation(IMProtocol protocol);
+
+    virtual void serializeToStream(QDataStream& mut_stream) const;
 
     void writeToDebugStream(QDebug stream, bool all_messages = false) const;
 

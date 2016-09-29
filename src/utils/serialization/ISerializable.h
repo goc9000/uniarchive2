@@ -11,9 +11,9 @@
 #ifndef UNIARCHIVE2_UTILS_SERIALIZATION_ISERIALIZABLE_H
 #define UNIARCHIVE2_UTILS_SERIALIZATION_ISERIALIZABLE_H
 
-#include <QDataStream>
-
 #include "utils/language/shortcuts.h"
+
+#include <QDataStream>
 
 namespace uniarchive2 { namespace utils { namespace serialization {
 
