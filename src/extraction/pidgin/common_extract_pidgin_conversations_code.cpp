@@ -124,7 +124,7 @@ static IMProtocol parse_protocol(IMM(QString) protocol_name) {
 
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation) {
     ApparentTime timestamp;
-    timestamp.reference = ApparentTime::Reference::LOCAL_TIME;
+    timestamp.reference = ApparentTimeReference::LOCAL_TIME;
 
     QREGEX_MUST_MATCH_CI(
         match,

@@ -288,7 +288,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_file(
             unique_ptr<RawEvent> event = make_unique<RawReceiveFileEvent>(
                 event_time,
                 event_index,
-                make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+                make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY),
                 file
             );
             event->as<RawReceiveFileEvent>()->sender = move(subject);
@@ -320,7 +320,7 @@ static CEDE(RawEvent) parse_invitation_or_response_event_with_application(
             unique_ptr<RawEvent> event = make_unique<RawAnswerCallEvent>(
                 event_time,
                 event_index,
-                make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+                make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
             );
             event->as<RawAnswerCallEvent>()->caller = move(subject);
 

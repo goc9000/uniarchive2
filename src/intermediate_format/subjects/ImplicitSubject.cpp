@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-ImplicitSubject::ImplicitSubject(Kind kind, Hints hints) : ApparentSubject(hints), kind(kind) {
+ImplicitSubject::ImplicitSubject(ImplicitSubjectKind kind, Hints hints) : ApparentSubject(hints), kind(kind) {
 }
 
 ApparentSubjectSubType ImplicitSubject::subType() const {
@@ -25,25 +25,12 @@ CEDE(ApparentSubject) ImplicitSubject::clone() const {
     return make_unique<ImplicitSubject>(kind, hints);
 }
 
-QString name_for_implicit_subject_kind(ImplicitSubject::Kind kind) {
-    switch (kind) {
-        case ImplicitSubject::Kind::INVALID:
-            return "(invalid)";
-        case ImplicitSubject::Kind::IDENTITY:
-            return "identity";
-        case ImplicitSubject::Kind::FILE_RECEIVER:
-            return "file_receiver";
-    }
-
-    invariant_violation("Unhandled enum value");
-}
-
 void ImplicitSubject::serializeToStreamSubImpl(QDataStream& mut_stream) const {
-    mut_stream << (quint32)kind;
+    mut_stream << kind;
 }
 
 void ImplicitSubject::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "Sbj:implicit:" << QP(name_for_implicit_subject_kind(kind));
+    stream << "Sbj:implicit:" << kind;
 }
 
 }}}

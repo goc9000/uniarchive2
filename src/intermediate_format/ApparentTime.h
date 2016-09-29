@@ -11,11 +11,12 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_APPARENTTIME_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_APPARENTTIME_H
 
+#include "intermediate_format/ApparentTimeReference.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 #include "utils/serialization/ISerializable.h"
 
-#include <QtDebug>
+#include <QDebug>
 #include <QByteArray>
 #include <QDate>
 #include <QString>
@@ -29,18 +30,12 @@ using namespace uniarchive2::utils::serialization;
 
 struct ApparentTime : ISerializable {
 public:
-    enum class Reference {
-        UNKNOWN,
-        LOCAL_TIME, // The local time when the conversation was recorded
-        SPECIFIED // At least one of UTC offset, timezone abbreviation or timezone are specified
-    };
-
     // These three fields form the "mantissa" of the date, i.e. the day/hour/etc. numbers relative to a reference
     optional<QDate> date;
     optional<QTime> time;
     bool secondsSpecified = true;
 
-    Reference reference = Reference::UNKNOWN;
+    ApparentTimeReference reference = ApparentTimeReference::UNKNOWN;
 
     // These fields describe the time reference, if reference=SPECIFIED. They are listed in increasing order of
     // specificity: if a timezone abbreviation is specified, the UTC offset is implied (but will be stored nonetheless

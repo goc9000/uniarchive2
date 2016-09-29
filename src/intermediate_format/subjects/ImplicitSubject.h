@@ -12,21 +12,16 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_IMPLICITSUBJECT_H
 
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/ImplicitSubjectKind.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class ImplicitSubject : public ApparentSubject {
 public:
-    enum class Kind {
-        INVALID = 0,
-        IDENTITY, // Whoever the identity (i.e. local user) is
-        FILE_RECEIVER,
-    };
+    ImplicitSubjectKind kind;
 
-    Kind kind;
-
-    ImplicitSubject(Kind kind, Hints hints = Hint::NoHints);
+    ImplicitSubject(ImplicitSubjectKind kind, Hints hints = Hint::NoHints);
 
     virtual ApparentSubjectSubType subType() const;
 

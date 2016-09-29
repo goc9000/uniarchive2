@@ -43,6 +43,16 @@ enums:
         - SubjectGivenAsAccount
         - FullySpecifiedSubject
 
+      ImplicitSubjectKind:
+        - (invalid)
+        - identity  // Whoever the identity (i.e. local user) is
+        - file receiver
+
+    ApparentTimeReference:
+      - unknown
+      - local time  // The local time when the conversation was recorded
+      - specified   // At least one of UTC offset, timezone abbreviation or timezone are specified
+
   protocols:
     ArchiveFormat:
       - (invalid) = 0

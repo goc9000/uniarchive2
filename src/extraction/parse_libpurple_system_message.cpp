@@ -128,7 +128,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         );
         xfer_event->as<RawCancelFileTransferEvent>()->actor =
             match.capturedLength("cancel_you")
-                ? make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+                ? make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
                 : parse_libpurple_subject(match.captured("cancel_who"), protocol, is_html);
 
         return xfer_event;
@@ -138,7 +138,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         return make_unique<RawReceiveFileEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::FILE_RECEIVER),
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::FILE_RECEIVER),
             parse_file(match.captured("recv_file"), is_html)
         );
 
@@ -146,7 +146,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> offer_event = make_unique<RawOfferFileEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY),
             parse_file(match.captured("you_offer_file"), is_html)
         );
         offer_event->as<RawOfferFileEvent>()->recipient =
@@ -157,7 +157,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> ping_event = make_unique<RawPingEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
         );
 
         if (match.capturedLength("buzz_to")) {
@@ -170,7 +170,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> ping_event = make_unique<RawPingEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
         );
         ping_event->as<RawPingEvent>()->pingee =
             parse_libpurple_subject(match.captured("buzz_to_fail"), protocol, is_html);
@@ -245,7 +245,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> event = make_unique<RawMessageEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY),
             RawMessageContent()
         );
         event->as<RawMessageEvent>()->reasonFailed = SendMessageFailReason::MESSAGE_TOO_LARGE;
@@ -257,7 +257,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
         unique_ptr<RawEvent> event = make_unique<RawMessageEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY),
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY),
             RawMessageContent::fromPlainText(match.captured("unsent_msg"))
         );
 

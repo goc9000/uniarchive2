@@ -287,14 +287,14 @@ static CEDE(RawEvent) parse_status_event(
         return make_unique<RawConnectedEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
         );
     } else if (event_type == "disconnected") {
         expect_event_text(event_element, "You have disconnected");
         return make_unique<RawDisconnectedEvent>(
             event_time,
             event_index,
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
         );
     } else if (event_type == "Notification") {
         if (event_element.text().trimmed().endsWith(" wants your attention!")) {

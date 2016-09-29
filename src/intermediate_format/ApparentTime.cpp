@@ -32,7 +32,7 @@ ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
     ApparentTime time;
     time.date = timestamp.date();
     time.time = timestamp.time();
-    time.reference = Reference::SPECIFIED;
+    time.reference = ApparentTimeReference::SPECIFIED;
     time.timeZoneID = QTimeZone::utc().id();
 
     return time;
@@ -47,16 +47,16 @@ ApparentTime ApparentTime::fromQDateTime(IMM(QDateTime) datetime) {
         case Qt::LocalTime:
             invariant_violation("Cannot initialize equivalent ApparentTime for QDateTime defined on local timespec");
         case Qt::UTC:
-            time.reference = Reference::SPECIFIED;
+            time.reference = ApparentTimeReference::SPECIFIED;
             time.timeZoneID = QTimeZone::utc().id();
             break;
         case Qt::OffsetFromUTC:
-            time.reference = Reference::SPECIFIED;
+            time.reference = ApparentTimeReference::SPECIFIED;
             invariant(abs(datetime.offsetFromUtc()) % 900 == 0, "UTC offset must be a multiple of 15 minutes");
             time.utcOffsetQuarters = datetime.offsetFromUtc() / 900;
             break;
         case Qt::TimeZone:
-            time.reference = Reference::SPECIFIED;
+            time.reference = ApparentTimeReference::SPECIFIED;
             time.timeZoneID = datetime.timeZone().id();
             break;
     }
@@ -68,7 +68,7 @@ ApparentTime ApparentTime::fromQDateTimeUnknownReference(IMM(QDateTime) datetime
     ApparentTime time;
     time.date = datetime.date();
     time.time = datetime.time();
-    time.reference = Reference::UNKNOWN;
+    time.reference = ApparentTimeReference::UNKNOWN;
 
     return time;
 }
@@ -77,7 +77,7 @@ ApparentTime ApparentTime::fromQDateTimeLocalTime(IMM(QDateTime) datetime) {
     ApparentTime time;
     time.date = datetime.date();
     time.time = datetime.time();
-    time.reference = Reference::LOCAL_TIME;
+    time.reference = ApparentTimeReference::LOCAL_TIME;
 
     return time;
 }
@@ -99,9 +99,9 @@ bool ApparentTime::hasSpecifiedSeconds() const {
 }
 
 void ApparentTime::serializeToStream(QDataStream& mut_stream) const {
-    mut_stream << date << time << secondsSpecified << (quint32)reference;
+    mut_stream << date << time << secondsSpecified << reference;
 
-    if (reference == ApparentTime::Reference::SPECIFIED) {
+    if (reference == ApparentTimeReference::SPECIFIED) {
         mut_stream << utcOffsetQuarters << timeZoneAbbreviation << timeZoneID;
     }
 }
@@ -125,13 +125,13 @@ QDebug operator<< (QDebug stream, IMM(ApparentTime) time) {
         stream << QP(time.time->toString(time.hasSpecifiedSeconds() ? "HH:mm:ss" : "HH:mm"));
     }
     switch (time.reference) {
-        case ApparentTime::Reference::UNKNOWN:
+        case ApparentTimeReference::UNKNOWN:
             stream << " (unknown reference)";
             break;
-        case ApparentTime::Reference::LOCAL_TIME:
+        case ApparentTimeReference::LOCAL_TIME:
             stream << " (local time)";
             break;
-        case ApparentTime::Reference::SPECIFIED:
+        case ApparentTimeReference::SPECIFIED:
             if (time.utcOffsetQuarters) {
                 stream << QP(format_utc_offset(*time.utcOffsetQuarters));
             }

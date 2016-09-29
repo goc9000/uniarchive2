@@ -177,7 +177,7 @@ static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint event
             timestamp,
             event_index,
             parse_subject(match.captured("grp_add_you")),
-            make_unique<ImplicitSubject>(ImplicitSubject::Kind::IDENTITY)
+            make_unique<ImplicitSubject>(ImplicitSubjectKind::IDENTITY)
         );
     }
 
