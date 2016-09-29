@@ -40,6 +40,9 @@ public:
     void writeToDebugStream(QDebug stream) const;
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
+    virtual void serializeToStreamSubImpl(QDataStream& mut_stream) const = 0;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
 

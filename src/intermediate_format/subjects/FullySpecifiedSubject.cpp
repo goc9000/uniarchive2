@@ -28,6 +28,10 @@ CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {
     return make_unique<FullySpecifiedSubject>(accountName, screenName, hints);
 }
 
+void FullySpecifiedSubject::serializeToStreamSubImpl(QDataStream &mut_stream) const {
+    mut_stream << accountName << screenName;
+}
+
 void FullySpecifiedSubject::writeToDebugStreamImpl(QDebug stream) const {
     stream << "Sbj:full:" << QP(screenName) << " [" << accountName << "]";
 }

@@ -18,6 +18,11 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 ApparentSubject::ApparentSubject(Hints hints) : hints(hints) {
 }
 
+void ApparentSubject::serializeToStreamImpl(QDataStream &mut_stream) const {
+    mut_stream << hints;
+    serializeToStreamSubImpl(mut_stream);
+}
+
 void ApparentSubject::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver save(stream);
     stream.nospace();

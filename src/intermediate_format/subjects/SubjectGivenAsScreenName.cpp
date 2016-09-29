@@ -27,6 +27,10 @@ CEDE(ApparentSubject) SubjectGivenAsScreenName::clone() const {
     return make_unique<SubjectGivenAsScreenName>(screenName, hints);
 }
 
+void SubjectGivenAsScreenName::serializeToStreamSubImpl(QDataStream &mut_stream) const {
+    mut_stream << screenName;
+}
+
 void SubjectGivenAsScreenName::writeToDebugStreamImpl(QDebug stream) const {
     stream << "Sbj:scrname:" << QP(screenName);
 }

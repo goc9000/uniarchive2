@@ -33,6 +33,8 @@ public:
     virtual CEDE(ApparentSubject) clone() const;
 
 protected:
+    virtual void serializeToStreamSubImpl(QDataStream &mut_stream) const;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 

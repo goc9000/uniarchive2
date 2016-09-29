@@ -24,6 +24,10 @@ CEDE(ApparentSubject) SubjectGivenAsAccount::clone() const {
     return make_unique<SubjectGivenAsAccount>(account, hints);
 }
 
+void SubjectGivenAsAccount::serializeToStreamSubImpl(QDataStream &mut_stream) const {
+    mut_stream << account;
+}
+
 void SubjectGivenAsAccount::writeToDebugStreamImpl(QDebug stream) const {
     stream << "Sbj:acct:" << account;
 }

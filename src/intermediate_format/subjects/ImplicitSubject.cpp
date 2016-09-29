@@ -38,6 +38,10 @@ QString name_for_implicit_subject_kind(ImplicitSubject::Kind kind) {
     invariant_violation("Unhandled enum value");
 }
 
+void ImplicitSubject::serializeToStreamSubImpl(QDataStream& mut_stream) const {
+    mut_stream << (quint32)kind;
+}
+
 void ImplicitSubject::writeToDebugStreamImpl(QDebug stream) const {
     stream << "Sbj:implicit:" << QP(name_for_implicit_subject_kind(kind));
 }
