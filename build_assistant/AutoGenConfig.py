@@ -11,6 +11,7 @@ import re
 from enum import Enum
 from collections import namedtuple
 
+from build_assistant.util.grammar import text_to_constant_name
 from build_assistant.util.FrozenStruct import FrozenStruct
 from build_assistant.util.VirtualPath import VirtualPath
 
@@ -86,9 +87,6 @@ def preparse_entity(entity_config, field_name):
 
 
 def parse_enum_config(entity_config):
-    def text_to_constant_name(text):
-        return '_'.join(word.upper() for word in re.findall('[a-z0-9]+', text, flags=re.IGNORECASE))
-
     def parse_enum_value(preparsed_field):
         match = re.match(r'^(.*?)(?:\s+as\s+([A-Z_]+))?(?:\s*=\s*(\d+))?(?:\s*//\s*(.*))?$', preparsed_field.expression)
         assert match is not None, "Invalid enum value expression: " + preparsed_field.expression

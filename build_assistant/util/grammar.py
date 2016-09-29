@@ -17,6 +17,10 @@ def classname_to_varname(name):
     return camelcase_to_underscore(name).split('_')[-1]
 
 
+def text_to_constant_name(text):
+    return '_'.join(word.upper() for word in re.findall('[a-z0-9]+', text, flags=re.IGNORECASE))
+
+
 def singular(word):
     if word.endswith('s'):
         return word[:-1]
