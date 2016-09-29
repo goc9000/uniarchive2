@@ -25,4 +25,21 @@ QDataStream& operator<< (QDataStream& mut_stream, IMM(std::vector<T>) items) {
     return mut_stream;
 }
 
+template<typename T>
+QDataStream& operator<< (QDataStream& mut_stream, IMM(std::unique_ptr<T>) item) {
+    invariant((bool)item, "Tried to serialze null unique_ptr");
+
+    mut_stream << *item;
+
+    return mut_stream;
+}
+
+template<typename T>
+void serialize_optional_unique_ptr(QDataStream& mut_stream, IMM(std::unique_ptr<T>) item) {
+    mut_stream << (bool)item;
+    if ((bool)item) {
+        mut_stream << item;
+    }
+}
+
 #endif //UNIARCHIVE2_UTILS_SERIALIZATION_SERIALIZATION_HELPERS_H
