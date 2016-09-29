@@ -56,3 +56,10 @@ def gen_enums(enums_config, autogen_core):
             fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)).use_symbol('QP') \
               .nl() \
               .line('return stream;')
+
+        with cpp_source.function(
+            'operator<< ', 'QDataStream&', ('QDataStream&', 'mut_stream'), parameter_spec, declare=True
+        ) as fn:
+            fn.line('mut_stream << (quint32){0};'.format(varname)) \
+                .nl() \
+                .line('return mut_stream;')
