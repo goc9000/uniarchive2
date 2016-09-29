@@ -13,19 +13,24 @@
 
 #include "protocols/IMProtocol.h"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/ISerializable.h"
 
 #include <QDebug>
 #include <QString>
 
 namespace uniarchive2 { namespace protocols {
 
-struct FullAccountName {
+using namespace uniarchive2::utils::serialization;
+
+struct FullAccountName : ISerializable {
 public:
     IMProtocol protocol;
     QString accountName;
 
     FullAccountName();
     FullAccountName(IMProtocol protocol, IMM(QString) account_name);
+
+    virtual void serializeToStream(QDataStream& mut_stream) const;
 
     bool operator == (IMM(FullAccountName) other) const;
 };

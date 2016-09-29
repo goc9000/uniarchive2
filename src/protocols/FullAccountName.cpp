@@ -16,12 +16,15 @@
 
 namespace uniarchive2 { namespace protocols {
 
-FullAccountName::FullAccountName()
-    : protocol(IMProtocol::INVALID), accountName("") {
+FullAccountName::FullAccountName() : protocol(IMProtocol::INVALID), accountName("") {
 }
 
 FullAccountName::FullAccountName(IMProtocol protocol, IMM(QString) account_name)
     : protocol(protocol), accountName(account_name) {
+}
+
+void FullAccountName::serializeToStream(QDataStream& mut_stream) const {
+    mut_stream << protocol << accountName;
 }
 
 bool FullAccountName::operator == (IMM(FullAccountName) other) const {
