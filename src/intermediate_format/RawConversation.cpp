@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/RawConversation.h"
+#include "utils/qt/debug_extras.h"
 
 #include <QDebugStateSaver>
 
@@ -59,38 +60,29 @@ void RawConversation::writeToDebugStream(QDebug stream, bool all_messages) const
 
     stream << "\tIdentity: ";
     if (identity) {
-        stream << identity.get();
+        stream << identity;
     } else {
         stream << "(unspecified)";
     }
     stream << "\n";
 
-    stream << "\tDeclared peers: [";
-    bool first = true;
-    for (IMM(auto) account : declaredPeers) {
-        if (!first) {
-            stream << ", ";
-        }
-        stream << account.get();
-        first = false;
-    }
-    stream << "]\n";
+    stream << "\tDeclared peers: " << declaredPeers << "\n";
 
-    if ((bool)isConference) {
-        stream << "\tIs conference: " << *isConference << "\n";
+    if (isConference) {
+        stream << "\tIs conference: " << isConference << "\n";
     }
-    if ((bool)declaredInitiator) {
-        stream << "\tInitiator: " << declaredInitiator.get() << "\n";
+    if (declaredInitiator) {
+        stream << "\tInitiator: " << declaredInitiator << "\n";
     }
-    if ((bool)conferenceTitle) {
-        stream << "\tConference title: " << *conferenceTitle << "\n";
+    if (conferenceTitle) {
+        stream << "\tConference title: " << conferenceTitle << "\n";
     }
-    if ((bool)declaredStartDate) {
-        stream << "\tDeclared start date: " << *declaredStartDate << "\n";
+    if (declaredStartDate) {
+        stream << "\tDeclared start date: " << declaredStartDate << "\n";
     }
 
     if (provenance) {
-        stream << "\tProvenance: " << provenance.get() << "\n";
+        stream << "\tProvenance: " << provenance << "\n";
     }
 
     stream << "\t\n";
