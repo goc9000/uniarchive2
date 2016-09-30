@@ -86,7 +86,9 @@ def gen_base_raw_event(base_event_config, autogen_core):
             block.nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl()
 
             base_event_config.gen_subtype_method(cpp_source)
+            block.nl()
             base_event_config.gen_event_name_method(cpp_source)
+            block.nl()
             base_event_config.gen_debug_write_method(cpp_source)
 
         struct.nl()
@@ -134,7 +136,10 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
         cpp_source.companion.declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
 
     def gen_event_name_method(self, cpp_source):
-        cpp_source.companion.declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True)
+        with cpp_source.method(
+            self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare=True
+        ) as method:
+            method.line("return name_for_raw_event_sub_type(subType());")
 
     def gen_debug_write_method(self, cpp_source):
         time_field = None
@@ -200,13 +205,11 @@ class EventConfigAugment(AbstractEventConfigAugment):
             method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
 
     def gen_event_name_method(self, cpp_source):
-        with cpp_source.method(
-            self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare=True
-        ) as method:
-            if self.custom_name_method:
+        if self.custom_name_method:
+            with cpp_source.method(
+                self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare=True
+            ) as method:
                 method.custom_section('Name method')
-            else:
-                method.line("return {0};".format(method.string_literal(self._name)))
 
     def gen_debug_write_details_method(self, cpp_source):
         with cpp_source.method(
