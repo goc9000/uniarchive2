@@ -11,7 +11,7 @@ import re
 from enum import Enum
 from collections import namedtuple
 
-from build_assistant.util.grammar import text_to_constant_name
+from build_assistant.util.grammar import camelcase_to_underscore, text_to_constant_name
 from build_assistant.util.FrozenStruct import FrozenStruct
 from build_assistant.util.VirtualPath import VirtualPath
 
@@ -31,7 +31,8 @@ GenericEntityFieldConfig = namedtuple('GenericEntityFieldConfig', ['expression',
 
 def parse_autogen_config(raw_config):
     return AutoGenConfig(
-        enums=parse_hierarchy(raw_config['enums'], parse_enum_config),
+        enums=parse_hierarchy(raw_config['enums'], parse_enum_config) +\
+              parse_hierarchy(raw_config['poly subtype enums'], parse_poly_subtype_enum_config),
         base_raw_event=parse_raw_event_config(raw_config['base raw event']),
         raw_events=parse_hierarchy(raw_config['raw events'], parse_raw_event_config),
         content_items=parse_hierarchy(raw_config['content items'], parse_content_item_config),
@@ -106,6 +107,31 @@ def parse_enum_config(entity_config):
         values=[parse_enum_value(field) for field in preparsed.fields],
         internal_comment=preparsed.options.get('internal comment')
     )
+
+
+def parse_poly_subtype_enum_config(entity_config):
+    return EnumConfig(
+        values=[
+            EnumValue(
+                text=item,
+                constant=camelcase_to_underscore(item).upper(),
+                int_value=None,
+                comment=None,
+            ) for item in parse_vectorish(entity_config)
+        ],
+        internal_comment=None
+    )
+
+
+def parse_vectorish(value):
+    if value is None:
+        return list()
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(',') if item.strip() != ""]
+
+    assert isinstance(value, list) or isinstance(value, tuple)
+
+    return value
 
 
 def parse_generic_polymorphic_config(preparsed_entity, field_parser, supported_prefixes=None):

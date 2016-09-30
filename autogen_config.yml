@@ -37,24 +37,10 @@ enums:
         - omitted
 
     subjects:
-      ApparentSubjectSubType:
-        - implicit
-        - screen name
-        - account
-        - fully specified
-
       ImplicitSubjectKind:
         - (invalid)
         - identity  // Whoever the identity (i.e. local user) is
         - file receiver
-
-    provenance:
-      ProvenanceSubType:
-        - archive file
-        - Adium archive file
-        - event range
-        - MSN conversation
-        - Skype conversation
 
     ApparentTimeReference:
       - unknown
@@ -99,6 +85,11 @@ enums:
       - helper         // slightly privileged user (e.g. exempt from USERS_ARE_LISTENERS option)
       - regular user
       - listener       // cannot post
+
+poly subtype enums:
+  intermediate_format:
+    provenance/ProvenanceSubType: ArchiveFile, AdiumArchiveFile, EventRange, MSNConversation, SkypeConversation
+    subjects/ApparentSubjectSubType: Implicit, ScreenName, Account, FullySpecified
 
 base raw event:
   - ApparentTime timestamp
