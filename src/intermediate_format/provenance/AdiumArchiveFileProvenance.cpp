@@ -11,8 +11,6 @@
 #include "intermediate_format/provenance/AdiumArchiveFileProvenance.h"
 #include "utils/qt/shortcuts.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
 AdiumArchiveFileProvenance::AdiumArchiveFileProvenance(

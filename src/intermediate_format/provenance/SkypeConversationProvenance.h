@@ -21,7 +21,6 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-using namespace std;
 using namespace std::experimental;
 
 class SkypeConversationProvenance : public Provenance {

@@ -16,8 +16,6 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-using namespace std;
-
 class EventRangeProvenance : public Provenance {
 public:
     unique_ptr<Provenance> base;
