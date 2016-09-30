@@ -12,7 +12,6 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_APPARENTSUBJECT_H
 
 #include "intermediate_format/subjects/ApparentSubjectSubType.h"
-#include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
 #include "utils/polymorphics/StandardPolymorphic.h"
 
@@ -32,8 +31,6 @@ public:
     Hints hints;
 
     ApparentSubject(Hints hints = Hint::NoHints);
-
-    POLYMORPHIC_HELPERS
 
     virtual CEDE(ApparentSubject) clone() const = 0;
 

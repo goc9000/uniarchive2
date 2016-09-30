@@ -17,6 +17,18 @@ template<typename SubTypeEnumT>
 class IPolymorphic {
 public:
     virtual SubTypeEnumT subType() const = 0;
+
+    template<typename T>
+    bool is() {
+        return dynamic_cast<T*>(this) != nullptr;
+    }
+
+    template<typename T>
+    T* as() {
+        T* converted = dynamic_cast<T*>(this);
+        invariant(converted, "Not an object of the specified type");
+        return converted;
+    }
 };
 
 }}}
