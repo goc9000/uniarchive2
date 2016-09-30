@@ -6,16 +6,30 @@
 #
 # Licensed under the GPL-3
 
+from build_assistant.autogen_raw_events import autogen_raw_events_subtype_enum
+from build_assistant.autogen_content_items import autogen_content_items_subtype_enum
 from build_assistant.util.grammar import classname_to_varname, camelcase_to_underscore
 
 
 def autogen_enums_index(autogen_config):
-    for path, name, _ in autogen_config.enums:
+    for path, name, _ in all_enums(autogen_config):
         yield path, name
 
 
-def gen_enums(enums_config, autogen_core):
-    for path, name, enum_config in enums_config:
+def all_enums(autogen_config):
+    for item in autogen_config.enums:
+        yield item
+    for item in synthetic_enums(autogen_config):
+        yield item
+
+
+def synthetic_enums(autogen_config):
+    yield autogen_raw_events_subtype_enum(autogen_config)
+    yield autogen_content_items_subtype_enum(autogen_config)
+
+
+def gen_enums(autogen_config, autogen_core):
+    for path, name, enum_config in all_enums(autogen_config):
         varname = classname_to_varname(name)
         parameter_spec = (name, varname)
 

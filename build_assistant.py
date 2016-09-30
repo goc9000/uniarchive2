@@ -55,7 +55,7 @@ def autogenerate_code():
 
     autogen_core = AutoGenCore(autogen_config, symbol_registry, CODE_GEN_CFG)
 
-    gen_enums(autogen_config.enums, autogen_core)
+    gen_enums(autogen_config, autogen_core)
     gen_content_items(autogen_config, autogen_core)
     gen_raw_events(autogen_config, autogen_core)
 

@@ -6,9 +6,10 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import RawEventConfig, RawEventFieldConfig
+from build_assistant.AutoGenConfig import RawEventConfig, RawEventFieldConfig, EnumConfig, EnumValue
 from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
+from build_assistant.util.grammar import camelcase_to_underscore
 from build_assistant.util.VirtualPath import VirtualPath
 
 
@@ -22,6 +23,20 @@ def autogen_raw_events_index(autogen_config):
         yield BASE_EVENTS_PATH.append(path), 'Raw' + name + 'Event'
 
     return []
+
+
+def autogen_raw_events_subtype_enum(autogen_config):
+    return BASE_EVENTS_PATH, 'RawEventSubType', EnumConfig(
+        values=[
+            EnumValue(
+                text=name,
+                constant=camelcase_to_underscore(name).upper(),
+                int_value=None,
+                comment=None,
+            ) for _, name, _ in sorted(autogen_config.raw_events, key=lambda tup: tup[0].add(tup[1]).to_text())
+        ],
+        internal_comment=None,
+    )
 
 
 def gen_raw_events(autogen_config, autogen_core):

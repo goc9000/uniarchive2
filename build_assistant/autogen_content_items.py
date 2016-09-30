@@ -7,13 +7,28 @@
 # Licensed under the GPL-3
 
 from build_assistant.AutoGenConfig import ContentItemConfig, ContentItemFieldConfig, ContentItemTagType, \
-    ContentItemTagConfig, ContentItemTagFieldConfig
+    ContentItemTagConfig, ContentItemTagFieldConfig, EnumConfig, EnumValue
 from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment, ConstructorInfo
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
+from build_assistant.util.grammar import camelcase_to_underscore
 from build_assistant.util.VirtualPath import VirtualPath
 
 
 BASE_CONTENT_ITEMS_PATH = VirtualPath(['intermediate_format', 'content'])
+
+
+def autogen_content_items_subtype_enum(autogen_config):
+    return BASE_CONTENT_ITEMS_PATH, 'RawMessageContentItemSubType', EnumConfig(
+        values=[
+            EnumValue(
+                text=name,
+                constant=camelcase_to_underscore(name).upper(),
+                int_value=None,
+                comment=None,
+            ) for _, name, _ in sorted(autogen_config.content_items, key=lambda tup: tup[0].add(tup[1]).to_text())
+        ],
+        internal_comment=None,
+    )
 
 
 def gen_content_items(autogen_config, autogen_core):
