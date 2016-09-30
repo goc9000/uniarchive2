@@ -17,13 +17,10 @@
 #include "utils/language/shortcuts.h"
 
 #include <QFileInfo>
-#include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::protocols;
-using namespace std;
 
 class AdiumArchiveFileProvenance : public ArchiveFileProvenance {
 public:

@@ -14,11 +14,7 @@
 #include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
 
-#include <QtDebug>
-
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
-
-using namespace std;
 
 class Provenance {
 public:
