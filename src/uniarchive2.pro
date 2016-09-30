@@ -46,6 +46,7 @@ SOURCES += \
     intermediate_format/content/MediaAttachment.cpp \
     intermediate_format/content/RawMessageContent.cpp \
     intermediate_format/content/RawMessageContentItem.cpp \
+    intermediate_format/content/RawMessageContentItemSubType.cpp \
     intermediate_format/content/SelfClosingTag.cpp \
     intermediate_format/content/SkypeQuote.cpp \
     intermediate_format/content/StandardTag.cpp \
@@ -96,6 +97,7 @@ SOURCES += \
     intermediate_format/events/RawCorruptedMessageEvent.cpp \
     intermediate_format/events/RawEditedPreviousMessageEvent.cpp \
     intermediate_format/events/RawEvent.cpp \
+    intermediate_format/events/RawEventSubType.cpp \
     intermediate_format/events/RawMessageEvent.cpp \
     intermediate_format/events/RawPingEvent.cpp \
     intermediate_format/events/RawSendContactsEvent.cpp \
@@ -186,6 +188,7 @@ HEADERS += \
     intermediate_format/content/MediaAttachment.h \
     intermediate_format/content/RawMessageContent.h \
     intermediate_format/content/RawMessageContentItem.h \
+    intermediate_format/content/RawMessageContentItemSubType.h \
     intermediate_format/content/SelfClosingTag.h \
     intermediate_format/content/SkypeQuote.h \
     intermediate_format/content/StandardTag.h \
@@ -236,6 +239,7 @@ HEADERS += \
     intermediate_format/events/RawCorruptedMessageEvent.h \
     intermediate_format/events/RawEditedPreviousMessageEvent.h \
     intermediate_format/events/RawEvent.h \
+    intermediate_format/events/RawEventSubType.h \
     intermediate_format/events/RawFailableEvent.h \
     intermediate_format/events/RawMessageEvent.h \
     intermediate_format/events/RawPingEvent.h \
