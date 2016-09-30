@@ -34,9 +34,13 @@ public:
 
     SkypeConversationProvenance(TAKE(Provenance) base, uint64_t convo_dbid, QString chatname);
 
+    virtual ProvenanceSubType subType() const;
+
     virtual CEDE(Provenance) clone() const;
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream &mut_stream) const;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 

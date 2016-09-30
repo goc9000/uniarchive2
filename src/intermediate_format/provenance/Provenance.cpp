@@ -9,7 +9,6 @@
  */
 
 #include "intermediate_format/provenance/Provenance.h"
-#include "utils/qt/shortcuts.h"
 
 #include <QDebugStateSaver>
 
@@ -20,20 +19,6 @@ void Provenance::writeToDebugStream(QDebug stream) const {
     stream.nospace();
 
     writeToDebugStreamImpl(stream);
-}
-
-QDebug operator<< (QDebug stream, CPTR(Provenance) provenance) {
-    invariant(provenance != nullptr, "Tried to debug print null Provenance");
-
-    stream << *provenance;
-
-    return stream;
-}
-
-QDebug operator<< (QDebug stream, IMM(Provenance) provenance) {
-    provenance.writeToDebugStream(stream);
-
-    return stream;
 }
 
 }}}

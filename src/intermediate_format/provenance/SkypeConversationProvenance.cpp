@@ -10,11 +10,16 @@
 
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
 #include "utils/qt/debug_extras.h"
+#include "utils/serialization/serialization_helpers.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
 SkypeConversationProvenance::SkypeConversationProvenance(TAKE(Provenance) base, uint64_t convo_dbid, QString chatname)
     : base(move(base)), conversationDBID(convo_dbid), chatname(chatname) {
+}
+
+ProvenanceSubType SkypeConversationProvenance::subType() const {
+    return ProvenanceSubType::SKYPE_CONVERSATION;
 }
 
 CEDE(Provenance) SkypeConversationProvenance::clone() const {
@@ -24,6 +29,10 @@ CEDE(Provenance) SkypeConversationProvenance::clone() const {
     dupe->as<SkypeConversationProvenance>()->callDBID = callDBID;
 
     return dupe;
+}
+
+void SkypeConversationProvenance::serializeToStreamImpl(QDataStream &mut_stream) const {
+    mut_stream << base << conversationDBID << chatname << chatDBID << callDBID;
 }
 
 void SkypeConversationProvenance::writeToDebugStreamImpl(QDebug stream) const {

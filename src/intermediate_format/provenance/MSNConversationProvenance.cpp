@@ -10,6 +10,7 @@
 
 #include "intermediate_format/provenance/MSNConversationProvenance.h"
 #include "utils/qt/debug_extras.h"
+#include "utils/serialization/serialization_helpers.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
@@ -17,8 +18,16 @@ MSNConversationProvenance::MSNConversationProvenance(TAKE(Provenance) base, uint
     : base(move(base)), sessionID(session_id) {
 }
 
+ProvenanceSubType MSNConversationProvenance::subType() const {
+    return ProvenanceSubType::MSN_CONVERSATION;
+}
+
 CEDE(Provenance) MSNConversationProvenance::clone() const {
     return make_unique<MSNConversationProvenance>(base->clone(), sessionID);
+}
+
+void MSNConversationProvenance::serializeToStreamImpl(QDataStream &mut_stream) const {
+    mut_stream << base << sessionID;
 }
 
 void MSNConversationProvenance::writeToDebugStreamImpl(QDebug stream) const {

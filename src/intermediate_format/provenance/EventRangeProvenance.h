@@ -24,9 +24,13 @@ public:
 
     EventRangeProvenance(TAKE(Provenance) base, uint first_event_index, uint last_event_index);
 
+    virtual ProvenanceSubType subType() const;
+
     virtual CEDE(Provenance) clone() const;
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream &mut_stream) const;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 

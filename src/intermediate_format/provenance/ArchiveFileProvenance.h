@@ -30,11 +30,16 @@ public:
 
     ArchiveFileProvenance(ArchiveFormat format, IMM(QString) full_filename, IMM(ApparentTime) last_modified_time);
 
+    virtual ProvenanceSubType subType() const;
+
     virtual CEDE(Provenance) clone() const;
 
     static CEDE(ArchiveFileProvenance) fromQFileInfo(ArchiveFormat format, IMM(QFileInfo) file_info);
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
+    virtual void serializeToStreamSubImpl(QDataStream& mut_stream) const;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const;
     virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
 };

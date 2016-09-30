@@ -23,9 +23,13 @@ public:
 
     MSNConversationProvenance(TAKE(Provenance) base, uint session_id);
 
+    virtual ProvenanceSubType subType() const;
+
     virtual CEDE(Provenance) clone() const;
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream &mut_stream) const;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 

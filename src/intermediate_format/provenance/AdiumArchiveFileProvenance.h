@@ -29,11 +29,15 @@ public:
 
     AdiumArchiveFileProvenance(IMM(QString) full_filename, IMM(ApparentTime) last_modified_time);
 
+    virtual ProvenanceSubType subType() const;
+
     virtual CEDE(Provenance) clone() const;
 
     static CEDE(AdiumArchiveFileProvenance) fromQFileInfo(IMM(QFileInfo) file_info);
 
 protected:
+    virtual void serializeToStreamSubImpl(QDataStream &mut_stream) const;
+
     virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
 };
 

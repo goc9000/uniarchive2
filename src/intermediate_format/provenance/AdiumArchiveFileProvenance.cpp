@@ -19,6 +19,10 @@ AdiumArchiveFileProvenance::AdiumArchiveFileProvenance(
 ) : ArchiveFileProvenance(ArchiveFormat::ADIUM, full_filename, last_modified_time) {
 }
 
+ProvenanceSubType AdiumArchiveFileProvenance::subType() const {
+    return ProvenanceSubType::ADIUM_ARCHIVE_FILE;
+}
+
 CEDE(Provenance) AdiumArchiveFileProvenance::clone() const {
     unique_ptr<Provenance> provenance = make_unique<AdiumArchiveFileProvenance>(fullFilename, lastModifiedTime);
 
@@ -26,6 +30,10 @@ CEDE(Provenance) AdiumArchiveFileProvenance::clone() const {
     provenance->as<AdiumArchiveFileProvenance>()->adiumBuildID = adiumBuildID;
 
     return provenance;
+}
+
+void AdiumArchiveFileProvenance::serializeToStreamSubImpl(QDataStream& mut_stream) const {
+    mut_stream << adiumVersion << adiumBuildID;
 }
 
 void AdiumArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug stream) const {

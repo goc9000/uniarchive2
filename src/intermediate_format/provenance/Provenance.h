@@ -11,25 +11,25 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_PROVENANCE_PROVENANCE_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_PROVENANCE_PROVENANCE_H
 
-#include "utils/language/polymorphic_helpers.h"
+#include "intermediate_format/provenance/ProvenanceSubType.h"
+#include "utils/polymorphics/StandardPolymorphic.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-class Provenance {
-public:
-    POLYMORPHIC_HELPERS
+using namespace uniarchive2::utils::polymorphics;
 
+class Provenance : public StandardPolymorphic<ProvenanceSubType> {
+public:
     virtual CEDE(Provenance) clone() const = 0;
 
-    virtual void writeToDebugStream(QDebug stream) const;
+    void writeToDebugStream(QDebug stream) const;
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream& mut_stream) const = 0;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
-
-QDebug operator<< (QDebug stream, CPTR(Provenance) provenance);
-QDebug operator<< (QDebug stream, IMM(Provenance) provenance);
 
 }}}
 

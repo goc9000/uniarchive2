@@ -10,6 +10,7 @@
 
 #include "intermediate_format/provenance/EventRangeProvenance.h"
 #include "utils/qt/debug_extras.h"
+#include "utils/serialization/serialization_helpers.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
@@ -17,8 +18,16 @@ EventRangeProvenance::EventRangeProvenance(TAKE(Provenance) base, uint first_eve
     : base(move(base)), firstEventIndex(first_event_index), lastEventIndex(last_event_index) {
 }
 
+ProvenanceSubType EventRangeProvenance::subType() const {
+    return ProvenanceSubType::EVENT_RANGE;
+}
+
 CEDE(Provenance) EventRangeProvenance::clone() const {
     return make_unique<EventRangeProvenance>(base->clone(), firstEventIndex, lastEventIndex);
+}
+
+void EventRangeProvenance::serializeToStreamImpl(QDataStream& mut_stream) const {
+    mut_stream << base << firstEventIndex << lastEventIndex;
 }
 
 void EventRangeProvenance::writeToDebugStreamImpl(QDebug stream) const {

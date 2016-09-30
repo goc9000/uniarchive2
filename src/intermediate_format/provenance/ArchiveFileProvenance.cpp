@@ -20,8 +20,20 @@ ArchiveFileProvenance::ArchiveFileProvenance(
 ) : archiveFormat(format), fullFilename(full_filename), lastModifiedTime(last_modified_time) {
 }
 
+ProvenanceSubType ArchiveFileProvenance::subType() const {
+    return ProvenanceSubType::ARCHIVE_FILE;
+}
+
 CEDE(Provenance) ArchiveFileProvenance::clone() const {
     return make_unique<ArchiveFileProvenance>(archiveFormat, fullFilename, lastModifiedTime);
+}
+
+void ArchiveFileProvenance::serializeToStreamImpl(QDataStream& mut_stream) const {
+    mut_stream << archiveFormat << fullFilename << lastModifiedTime;
+    serializeToStreamSubImpl(mut_stream);
+}
+
+void ArchiveFileProvenance::serializeToStreamSubImpl(QDataStream& UNUSED mut_stream) const {
 }
 
 void ArchiveFileProvenance::writeToDebugStreamImpl(QDebug stream) const {

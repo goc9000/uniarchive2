@@ -48,6 +48,14 @@ enums:
         - identity  // Whoever the identity (i.e. local user) is
         - file receiver
 
+    provenance:
+      ProvenanceSubType:
+        - archive file
+        - Adium archive file
+        - event range
+        - MSN conversation
+        - Skype conversation
+
     ApparentTimeReference:
       - unknown
       - local time  // The local time when the conversation was recorded
