@@ -14,6 +14,7 @@ from build_assistant.util.VirtualPath import VirtualPath
 
 
 BASE_EVENTS_PATH = VirtualPath(['intermediate_format', 'events'])
+SUBTYPE_ENUM = 'RawEventSubType'
 
 
 def autogen_raw_events_index(autogen_config):
@@ -26,7 +27,7 @@ def autogen_raw_events_index(autogen_config):
 
 
 def autogen_raw_events_subtype_enum(autogen_config):
-    return BASE_EVENTS_PATH, 'RawEventSubType', EnumConfig(
+    return BASE_EVENTS_PATH, SUBTYPE_ENUM, EnumConfig(
         values=[
             EnumValue(
                 text=name,
@@ -59,7 +60,8 @@ def gen_raw_events(autogen_config, autogen_core):
                 event_config.gen_mandatory_fields_sanity_check_method(cpp_source)
 
                 block.nl()
-
+                event_config.gen_subtype_method(cpp_source)
+                block.nl()
                 event_config.gen_event_name_method(cpp_source)
 
             struct.nl()
@@ -83,6 +85,7 @@ def gen_base_raw_event(base_event_config, autogen_core):
 
             block.nl().line('POLYMORPHIC_HELPERS').include("utils/language/polymorphic_helpers.h").nl()
 
+            base_event_config.gen_subtype_method(cpp_source)
             base_event_config.gen_event_name_method(cpp_source)
             base_event_config.gen_debug_write_method(cpp_source)
 
@@ -104,6 +107,9 @@ class AbstractEventConfigAugment(GenericPolymorphicAugment):
 
         GenericPolymorphicAugment.__init__(self, event_config, autogen_core, field_augment=EventFieldAugment)
 
+    def gen_subtype_method(self, cpp_source):
+        raise NotImplementedError
+
     def gen_event_name_method(self, cpp_source):
         raise NotImplementedError
 
@@ -123,6 +129,9 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
 
     def parent_class(self, no_template=None):
         return None
+
+    def gen_subtype_method(self, cpp_source):
+        cpp_source.companion.declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
 
     def gen_event_name_method(self, cpp_source):
         cpp_source.companion.declare_fn('eventName', 'QString', const=True, virtual=True, abstract=True)
@@ -183,6 +192,12 @@ class EventConfigAugment(AbstractEventConfigAugment):
             return 'RawFailableEvent'
         else:
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
+
+    def gen_subtype_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare=True
+        ) as method:
+            method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
 
     def gen_event_name_method(self, cpp_source):
         with cpp_source.method(
