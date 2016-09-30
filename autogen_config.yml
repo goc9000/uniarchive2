@@ -38,10 +38,10 @@ enums:
 
     subjects:
       ApparentSubjectSubType:
-        - ImplicitSubject
-        - SubjectGivenAsScreenName
-        - SubjectGivenAsAccount
-        - FullySpecifiedSubject
+        - implicit
+        - screen name
+        - account
+        - fully specified
 
       ImplicitSubjectKind:
         - (invalid)

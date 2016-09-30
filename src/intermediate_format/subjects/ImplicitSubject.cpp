@@ -18,7 +18,7 @@ ImplicitSubject::ImplicitSubject(ImplicitSubjectKind kind, Hints hints) : Appare
 }
 
 ApparentSubjectSubType ImplicitSubject::subType() const {
-    return ApparentSubjectSubType::IMPLICITSUBJECT;
+    return ApparentSubjectSubType::IMPLICIT;
 }
 
 CEDE(ApparentSubject) ImplicitSubject::clone() const {

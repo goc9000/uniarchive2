@@ -21,7 +21,7 @@ FullySpecifiedSubject::FullySpecifiedSubject(
 }
 
 ApparentSubjectSubType FullySpecifiedSubject::subType() const {
-    return ApparentSubjectSubType::FULLYSPECIFIEDSUBJECT;
+    return ApparentSubjectSubType::FULLY_SPECIFIED;
 }
 
 CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {

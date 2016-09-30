@@ -20,7 +20,7 @@ SubjectGivenAsScreenName::SubjectGivenAsScreenName(
 }
 
 ApparentSubjectSubType SubjectGivenAsScreenName::subType() const {
-    return ApparentSubjectSubType::SUBJECTGIVENASSCREENNAME;
+    return ApparentSubjectSubType::SCREEN_NAME;
 }
 
 CEDE(ApparentSubject) SubjectGivenAsScreenName::clone() const {

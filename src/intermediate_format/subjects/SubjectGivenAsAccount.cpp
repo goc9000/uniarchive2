@@ -17,7 +17,7 @@ SubjectGivenAsAccount::SubjectGivenAsAccount(IMM(FullAccountName) account, Hints
 }
 
 ApparentSubjectSubType SubjectGivenAsAccount::subType() const {
-    return ApparentSubjectSubType::SUBJECTGIVENASACCOUNT;
+    return ApparentSubjectSubType::ACCOUNT;
 }
 
 CEDE(ApparentSubject) SubjectGivenAsAccount::clone() const {
