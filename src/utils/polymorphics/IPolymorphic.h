@@ -11,6 +11,8 @@
 #ifndef UNIARCHIVE2_UTILS_POLYMORPHICS_IPOLYMORPHIC_H
 #define UNIARCHIVE2_UTILS_POLYMORPHICS_IPOLYMORPHIC_H
 
+#include "utils/language/invariant.h"
+
 namespace uniarchive2 { namespace utils { namespace polymorphics {
 
 template<typename SubTypeEnumT>
