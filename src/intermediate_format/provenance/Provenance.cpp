@@ -15,6 +15,13 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
+void Provenance::writeToDebugStream(QDebug stream) const {
+    QDebugStateSaver saver(stream);
+    stream.nospace();
+
+    writeToDebugStreamImpl(stream);
+}
+
 QDebug operator<< (QDebug stream, CPTR(Provenance) provenance) {
     invariant(provenance != nullptr, "Tried to debug print null Provenance");
 
@@ -24,8 +31,6 @@ QDebug operator<< (QDebug stream, CPTR(Provenance) provenance) {
 }
 
 QDebug operator<< (QDebug stream, IMM(Provenance) provenance) {
-    QDebugStateSaver save(stream);
-    stream.nospace();
     provenance.writeToDebugStream(stream);
 
     return stream;

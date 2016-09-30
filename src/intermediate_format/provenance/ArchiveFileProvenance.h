@@ -32,10 +32,11 @@ public:
 
     virtual CEDE(Provenance) clone() const;
 
-    virtual void writeToDebugStream(QDebug stream) const;
-    virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
-
     static CEDE(ArchiveFileProvenance) fromQFileInfo(ArchiveFormat format, IMM(QFileInfo) file_info);
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
+    virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
 };
 
 }}}

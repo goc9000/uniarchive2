@@ -11,8 +11,6 @@
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "utils/language/shortcuts.h"
 
-#include <QDebugStateSaver>
-
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
 ArchiveFileProvenance::ArchiveFileProvenance(
@@ -26,9 +24,8 @@ CEDE(Provenance) ArchiveFileProvenance::clone() const {
     return make_unique<ArchiveFileProvenance>(archiveFormat, fullFilename, lastModifiedTime);
 }
 
-void ArchiveFileProvenance::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "ArchiveFile(format=" << archiveFormat << ", path=" << fullFilename;
+void ArchiveFileProvenance::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "ArchiveFile(format=" << archiveFormat << ", path=" << fullFilename;
     if (lastModifiedTime.isSpecified()) {
         stream << ", last_modified=" << lastModifiedTime;
     }

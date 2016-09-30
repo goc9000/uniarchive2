@@ -9,8 +9,7 @@
  */
 
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
-
-#include <QDebugStateSaver>
+#include "utils/qt/debug_extras.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
@@ -27,19 +26,16 @@ CEDE(Provenance) SkypeConversationProvenance::clone() const {
     return dupe;
 }
 
-void SkypeConversationProvenance::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "SkypeConversation(";
-    stream << "from=" << base.get();
-    stream << ", convo_dbid=" << conversationDBID;
+void SkypeConversationProvenance::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "SkypeConversation(from=" << base << ", convo_dbid=" << conversationDBID;
     if (!chatname.isEmpty()) {
         stream << ", chatname=" << chatname;
     }
     if (chatDBID) {
-        stream << ", chat_dbid=" << *chatDBID;
+        stream << ", chat_dbid=" << chatDBID;
     }
     if (callDBID) {
-        stream << ", call_dbid=" << *callDBID;
+        stream << ", call_dbid=" << callDBID;
     }
     stream << ")";
 }

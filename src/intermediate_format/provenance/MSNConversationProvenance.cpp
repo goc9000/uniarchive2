@@ -9,8 +9,7 @@
  */
 
 #include "intermediate_format/provenance/MSNConversationProvenance.h"
-
-#include <QDebugStateSaver>
+#include "utils/qt/debug_extras.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
@@ -22,12 +21,8 @@ CEDE(Provenance) MSNConversationProvenance::clone() const {
     return make_unique<MSNConversationProvenance>(base->clone(), sessionID);
 }
 
-void MSNConversationProvenance::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "MSNConversation(";
-    stream << "from=" << base.get();
-    stream << ", session_id=" << sessionID;
-    stream << ")";
+void MSNConversationProvenance::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "MSNConversation(from=" << base << ", session_id=" << sessionID << ")";
 }
 
 }}}

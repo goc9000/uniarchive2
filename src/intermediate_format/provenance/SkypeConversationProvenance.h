@@ -36,7 +36,8 @@ public:
 
     virtual CEDE(Provenance) clone() const;
 
-    virtual void writeToDebugStream(QDebug stream) const;
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const;
 };
 
 }}}

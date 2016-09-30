@@ -9,8 +9,7 @@
  */
 
 #include "intermediate_format/provenance/EventRangeProvenance.h"
-
-#include <QDebugStateSaver>
+#include "utils/qt/debug_extras.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
@@ -22,13 +21,9 @@ CEDE(Provenance) EventRangeProvenance::clone() const {
     return make_unique<EventRangeProvenance>(base->clone(), firstEventIndex, lastEventIndex);
 }
 
-void EventRangeProvenance::writeToDebugStream(QDebug stream) const {
-    QDebugStateSaver saver(stream);
-    stream.nospace() << "EventRange(";
-    stream << "from=" << base.get();
-    stream << ", first_event_index=" << firstEventIndex;
-    stream << ", last_event_index=" << lastEventIndex;
-    stream << ")";
+void EventRangeProvenance::writeToDebugStreamImpl(QDebug stream) const {
+    stream << "EventRange(from=" << base << ", first_event_index=" << firstEventIndex;
+    stream << ", last_event_index=" << lastEventIndex << ")";
 }
 
 }}}

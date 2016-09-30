@@ -31,9 +31,10 @@ public:
 
     virtual CEDE(Provenance) clone() const;
 
-    virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
-
     static CEDE(AdiumArchiveFileProvenance) fromQFileInfo(IMM(QFileInfo) file_info);
+
+protected:
+    virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
 };
 
 }}}

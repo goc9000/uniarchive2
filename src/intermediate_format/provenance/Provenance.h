@@ -22,7 +22,10 @@ public:
 
     virtual CEDE(Provenance) clone() const = 0;
 
-    virtual void writeToDebugStream(QDebug stream) const = 0;
+    virtual void writeToDebugStream(QDebug stream) const;
+
+protected:
+    virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
 
 QDebug operator<< (QDebug stream, CPTR(Provenance) provenance);
