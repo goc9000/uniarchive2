@@ -33,7 +33,7 @@
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/EventRangeProvenance.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/AccountSubject.h"
 #include "protocols/yahoo/yahoo_account_name.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/FullAccountName.h"
@@ -92,7 +92,7 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
     }
     QByteArray data = file.readAll();
 
-    QString local_account_name = prototype.identity->as<SubjectGivenAsAccount>()->account.accountName;
+    QString local_account_name = prototype.identity->as<AccountSubject>()->account.accountName;
     ExtractYahooProtocolEventsIterator proto_events(data, local_account_name);
 
     vector<unique_ptr<RawEvent>> current_events;
@@ -132,9 +132,9 @@ static RawConversation init_prototype(IMM(QString) filename) {
     RawConversation conversation(IMProtocol::YAHOO);
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::YAHOO_MESSENGER_DAT, file_info);
 
-    conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
+    conversation.identity = make_unique<AccountSubject>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
-    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
+    conversation.declaredPeers.push_back(make_unique<AccountSubject>(remote_account));
 
     QString top_folder = full_filename.section(QDir::separator(), -3, -3);
     if (top_folder == "Messages") {
@@ -240,7 +240,7 @@ static CEDE(RawEvent) convert_event(
                 parse_message_content(proto_event.text)
             );
             if ((proto_event.direction == YahooProtocolEvent::Direction::OUTGOING) && !proto_event.extra.isEmpty()) {
-                ((RawMessageEvent*)event.get())->receiver = make_unique<SubjectGivenAsAccount>(
+                ((RawMessageEvent*)event.get())->receiver = make_unique<AccountSubject>(
                     parse_yahoo_account(QString::fromUtf8(proto_event.extra))
                 );
             }
@@ -264,7 +264,7 @@ static CEDE(ApparentSubject) parse_event_subject(IMM(YahooProtocolEvent) proto_e
         return implicit_subject(proto_event, conversation);
     }
 
-    return make_unique<SubjectGivenAsAccount>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
+    return make_unique<AccountSubject>(parse_yahoo_account(QString::fromUtf8(proto_event.extra)));
 }
 
 static RawMessageContent parse_message_content(IMM(QByteArray) text_data) {

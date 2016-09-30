@@ -12,7 +12,7 @@
 #include "extraction/pidgin/common_extract_pidgin_conversations_code.h"
 #include "extraction/parse_libpurple_system_message.h"
 #include "intermediate_format/events/RawMessageEvent.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
 #include "utils/language/invariant.h"

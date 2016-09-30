@@ -10,7 +10,7 @@
 
 #include "common_extract_pidgin_conversations_code.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/parse_account_generic.h"
@@ -54,9 +54,9 @@ RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_ex
 
     conversation.declaredStartDate = info.conversation_date;
     conversation.isConference = info.is_conference;
-    conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
+    conversation.identity = make_unique<AccountSubject>(info.identity);
     if (info.peer) {
-        conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(*info.peer));
+        conversation.declaredPeers.push_back(make_unique<AccountSubject>(*info.peer));
     }
 
     return conversation;

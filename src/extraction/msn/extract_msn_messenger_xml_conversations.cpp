@@ -20,8 +20,8 @@
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/MSNConversationProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/subjects/AccountSubject.h"
+#include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "intermediate_format/RawTransferredFile.h"
 #include "protocols/msn/msn_account_name.h"
 #include "utils/language/invariant.h"
@@ -136,9 +136,9 @@ static RawConversation init_prototype(IMM(QString) filename) {
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);
     auto remote_account = parse_optionally_encoded_msn_account(base_name);
 
-    conversation.identity = make_unique<SubjectGivenAsAccount>(local_account);
+    conversation.identity = make_unique<AccountSubject>(local_account);
     if (remote_account.accountName != local_account.accountName) {
-        conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(remote_account));
+        conversation.declaredPeers.push_back(make_unique<AccountSubject>(remote_account));
     }
 
     return conversation;
@@ -209,7 +209,7 @@ static CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, I
     auto actor_element = child_elem(event_element, node_name);
     auto user_element = only_child_elem(actor_element, "User");
 
-    return make_unique<SubjectGivenAsScreenName>(read_string_attr(user_element, "FriendlyName"));
+    return make_unique<ScreenNameSubject>(read_string_attr(user_element, "FriendlyName"));
 }
 
 static RawMessageContent parse_event_text(IMM(QDomElement) event_element) {

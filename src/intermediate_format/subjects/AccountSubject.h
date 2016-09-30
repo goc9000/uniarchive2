@@ -1,5 +1,5 @@
 /**
- * intermediate_format/subjects/SubjectGivenAsAccount.h
+ * intermediate_format/subjects/AccountSubject.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_ACCOUNTSUBJECT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_ACCOUNTSUBJECT_H
 
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "protocols/FullAccountName.h"
@@ -19,11 +19,11 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 using namespace uniarchive2::protocols;
 
-class SubjectGivenAsAccount : public ApparentSubject {
+class AccountSubject : public ApparentSubject {
 public:
     FullAccountName account;
 
-    SubjectGivenAsAccount(IMM(FullAccountName) account, Hints hints = Hint::NoHints);
+    AccountSubject(IMM(FullAccountName) account, Hints hints = Hint::NoHints);
 
     virtual ApparentSubjectSubType subType() const;
 
@@ -37,4 +37,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASACCOUNT_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_ACCOUNTSUBJECT_H

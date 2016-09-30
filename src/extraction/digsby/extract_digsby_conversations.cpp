@@ -22,7 +22,7 @@
 #include "intermediate_format/events/RawCorruptedMessageEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/AccountSubject.h"
 #include "protocols/digsby/digsby_account_name.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
@@ -108,8 +108,8 @@ static RawConversation init_conversation(IMM(QString) filename) {
     conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::DIGSBY, file_info);
 
     conversation.isConference = info.isConference;
-    conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
-    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
+    conversation.identity = make_unique<AccountSubject>(info.identity);
+    conversation.declaredPeers.push_back(make_unique<AccountSubject>(info.peer));
 
     return conversation;
 }
@@ -254,7 +254,7 @@ static CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) 
     return make_unique<RawMessageEvent>(
         ApparentTime::fromQDateTime(datetime),
         conversation.events.size(),
-        make_unique<SubjectGivenAsAccount>(parse_account_generic(conversation.protocol, match.captured(4))),
+        make_unique<AccountSubject>(parse_account_generic(conversation.protocol, match.captured(4))),
         parse_message_content(match.captured(5))
     );
 }

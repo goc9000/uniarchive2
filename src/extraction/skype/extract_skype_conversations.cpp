@@ -44,7 +44,7 @@
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
+#include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/RawConversation.h"
 #include "protocols/skype/skype_account_name.h"
@@ -461,7 +461,7 @@ static RawConversation convert_one_on_one_conversation(
         raw_identities.at(identity).screenName
     );
     conversation.declaredPeers.emplace_back(
-        make_unique<SubjectGivenAsAccount>(parse_skype_account(skype_convo.identity))
+        make_unique<AccountSubject>(parse_skype_account(skype_convo.identity))
     );
 
     if (skype_chat) {
@@ -506,17 +506,15 @@ static RawConversation convert_group_chat(
 
     if (skype_convo.creator) {
         QString initiator = *skype_convo.creator;
-        conversation.declaredInitiator = make_unique<SubjectGivenAsAccount>(parse_skype_account(initiator));
+        conversation.declaredInitiator = make_unique<AccountSubject>(parse_skype_account(initiator));
 
         if (participants.count(initiator)) {
             participants.erase(initiator);
-            conversation.declaredPeers.emplace_back(
-                make_unique<SubjectGivenAsAccount>(parse_skype_account(initiator))
-            );
+            conversation.declaredPeers.emplace_back(make_unique<AccountSubject>(parse_skype_account(initiator)));
         }
     }
     for (IMM(QString) participant : participants) {
-        conversation.declaredPeers.emplace_back(make_unique<SubjectGivenAsAccount>(parse_skype_account(participant)));
+        conversation.declaredPeers.emplace_back(make_unique<AccountSubject>(parse_skype_account(participant)));
     }
 
     // The >10^9 check is necessary because sometimes the chat date is spurious
@@ -657,7 +655,7 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
         );
     }
 
-    return make_unique<SubjectGivenAsAccount>(parse_skype_account(account_name));
+    return make_unique<AccountSubject>(parse_skype_account(account_name));
 }
 
 static void convert_events(
@@ -895,7 +893,7 @@ static CEDE(RawEvent) convert_event(
 
 
 
-
+    // TODO: fix this
 
 
     invariant_violation("Unsupported Skype event type (type=%d, chatmsg_type=%d)", type, chatmsg_type);
@@ -906,7 +904,7 @@ static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString
 
     if (serialized_identities && !serialized_identities->isEmpty()) {
         for (IMM(QString) item : serialized_identities->split(" ")) {
-            result.push_back(make_unique<SubjectGivenAsAccount>(parse_skype_account(item)));
+            result.push_back(make_unique<AccountSubject>(parse_skype_account(item)));
         }
     }
 
@@ -935,7 +933,7 @@ static CEDE(RawMessageEvent) convert_message_event(
         invariant(edited_timestamp, "Edit timestamp not specified!");
 
         message->isEdited = true;
-        message->editedBy = make_unique<SubjectGivenAsAccount>(parse_skype_account(*edited_by));
+        message->editedBy = make_unique<AccountSubject>(parse_skype_account(*edited_by));
         message->timeEdited = ApparentTime::fromUnixTimestamp(*edited_timestamp);
     }
 
@@ -1069,7 +1067,7 @@ static CEDE(RawEvent) convert_complex_join_event(
     QString subject_account = subject->as<FullySpecifiedSubject>()->accountName.accountName;
 
     for (auto id = identities.begin(); id != identities.end(); id++) {
-        if ((*id)->as<SubjectGivenAsAccount>()->account.accountName == subject_account) {
+        if ((*id)->as<AccountSubject>()->account.accountName == subject_account) {
             identities.erase(id);
             break;
         }
@@ -1079,8 +1077,8 @@ static CEDE(RawEvent) convert_complex_join_event(
         invariant(identities.size() == 1, "Expected exactly 1 peer identity for 1:1 convo rejoin event");
         invariant(home_conversation.declaredPeers.size() == 1, "Expected exactly 1 peer identity for conversation");
         invariant(
-            identities.front()->as<SubjectGivenAsAccount>()->account.accountName ==
-            home_conversation.declaredPeers.front()->as<SubjectGivenAsAccount>()->account.accountName,
+            identities.front()->as<AccountSubject>()->account.accountName ==
+            home_conversation.declaredPeers.front()->as<AccountSubject>()->account.accountName,
             "Identity should be the same as the unique peer for 1:1 convo rejoin events"
         );
 

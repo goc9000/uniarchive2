@@ -12,8 +12,8 @@
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/subjects/AccountSubject.h"
+#include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "protocols/facebook/facebook_account_name.h"
 #include "utils/language/invariant.h"
@@ -61,7 +61,7 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename
     auto root_element = get_dom_root(xml, "html");
 
     QString identity_screen_name = read_identity_screen_name(root_element);
-    prototype.identity = make_unique<SubjectGivenAsScreenName>(identity_screen_name);
+    prototype.identity = make_unique<ScreenNameSubject>(identity_screen_name);
 
     auto body_element = child_elem(root_element, "body");
     auto contents_div = only_child_elem_with_class(body_element, "div", "contents");
@@ -167,10 +167,10 @@ static void populate_thread_participants(
     foreach (IMM(QString) name, participants_text_node.nodeValue().split(", ")) {
         if (is_valid_facebook_account_name(name)) {
             mut_conversation.declaredPeers.push_back(
-                make_unique<SubjectGivenAsAccount>(parse_facebook_account(name))
+                make_unique<AccountSubject>(parse_facebook_account(name))
             );
-        } else if (name != prototype.identity->as<SubjectGivenAsScreenName>()->screenName) {
-            mut_conversation.declaredPeers.push_back(make_unique<SubjectGivenAsScreenName>(name));
+        } else if (name != prototype.identity->as<ScreenNameSubject>()->screenName) {
+            mut_conversation.declaredPeers.push_back(make_unique<ScreenNameSubject>(name));
         }
     }
 }
@@ -184,7 +184,7 @@ static CEDE(RawEvent) extract_message(QDomElement& mut_message_element) {
     auto header_element = only_child_elem_with_class(mut_message_element, "div", "message_header");
 
     auto user_element = only_child_elem_with_class(header_element, "span", "user");
-    unique_ptr<ApparentSubject> sender = make_unique<SubjectGivenAsScreenName>(read_text_only_content(user_element));
+    unique_ptr<ApparentSubject> sender = make_unique<ScreenNameSubject>(read_text_only_content(user_element));
 
     auto date_element = only_child_elem_with_class(header_element, "span", "meta");
     ApparentTime message_time = parse_message_time(read_text_only_content(date_element));

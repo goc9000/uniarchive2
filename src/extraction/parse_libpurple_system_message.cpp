@@ -33,7 +33,7 @@
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "intermediate_format/RawTransferredFile.h"
 #include "protocols/parse_account_generic.h"
 #include "utils/html/entities.h"
@@ -290,7 +290,7 @@ CEDE(RawEvent) parse_libpurple_system_message(
 
 CEDE(ApparentSubject) parse_libpurple_subject(IMM(QString) subject, IMProtocol protocol, bool is_html) {
     if (!is_html) {
-        return make_unique<SubjectGivenAsScreenName>(strip_subject_suffix(subject));
+        return make_unique<ScreenNameSubject>(strip_subject_suffix(subject));
     }
 
     QREGEX_MATCH_CI(match, "^(.*) \\[<em>(.*)</em>\\]$", subject);
@@ -304,7 +304,7 @@ CEDE(ApparentSubject) parse_libpurple_subject(IMM(QString) subject, IMProtocol p
         );
     }
 
-    return make_unique<SubjectGivenAsScreenName>(strip_subject_suffix(decode_html_entities(subject)));
+    return make_unique<ScreenNameSubject>(strip_subject_suffix(decode_html_entities(subject)));
 }
 
 static QString strip_subject_suffix(IMM(QString) subject) {

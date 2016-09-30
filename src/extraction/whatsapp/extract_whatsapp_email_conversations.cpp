@@ -17,7 +17,7 @@
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "protocols/ArchiveFormat.h"
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
@@ -185,7 +185,7 @@ static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint event
 }
 
 static CEDE(ApparentSubject) parse_subject(IMM(QString) raw_subject) {
-    return make_unique<SubjectGivenAsScreenName>(raw_subject);
+    return make_unique<ScreenNameSubject>(raw_subject);
 }
 
 static CEDE(RawEvent) parse_message(

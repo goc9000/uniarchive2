@@ -27,8 +27,8 @@
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/subjects/AccountSubject.h"
+#include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "protocols/FullAccountName.h"
 #include "protocols/IMProtocol.h"
 #include "protocols/IMStatus.h"
@@ -117,7 +117,7 @@ RawConversation extract_adium_conversation(IMM(QString) filename) {
     provenance->adiumVersion = read_string_attr(root_element, "adiumversion");
     provenance->adiumBuildID = read_string_attr(root_element, "buildid");
 
-    verify_identity(root_element, conversation.identity->as<SubjectGivenAsAccount>()->account);
+    verify_identity(root_element, conversation.identity->as<AccountSubject>()->account);
 
     QDomElement event_element = root_element.firstChildElement();
     while (!event_element.isNull()) {
@@ -138,8 +138,8 @@ static RawConversation init_conversation(IMM(QString) filename) {
     RawConversation conversation(info.identity.protocol);
     conversation.provenance = AdiumArchiveFileProvenance::fromQFileInfo(file_info);
 
-    conversation.identity = make_unique<SubjectGivenAsAccount>(info.identity);
-    conversation.declaredPeers.push_back(make_unique<SubjectGivenAsAccount>(info.peer));
+    conversation.identity = make_unique<AccountSubject>(info.identity);
+    conversation.declaredPeers.push_back(make_unique<AccountSubject>(info.peer));
     conversation.declaredStartDate = info.convoStartDate;
 
     return conversation;
@@ -231,7 +231,7 @@ static CEDE(ApparentSubject) parse_event_subject(IMM(QDomElement) event_element,
         return make_unique<FullySpecifiedSubject>(account, read_string_attr(event_element, "alias"));
     }
 
-    return make_unique<SubjectGivenAsAccount>(account);
+    return make_unique<AccountSubject>(account);
 }
 
 static CEDE(RawEvent) parse_system_event(IMM(QDomElement) event_element, ApparentTime event_time, uint event_index) {

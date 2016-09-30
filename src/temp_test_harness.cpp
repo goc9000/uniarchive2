@@ -11,8 +11,8 @@
 #include "temp_test_harness.h"
 #include "extraction/extract_conversations_generic.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
-#include "intermediate_format/subjects/SubjectGivenAsAccount.h"
-#include "intermediate_format/subjects/SubjectGivenAsScreenName.h"
+#include "intermediate_format/subjects/AccountSubject.h"
+#include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "intermediate_format/RawConversationCollection.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/language/invariant.h"
@@ -152,10 +152,10 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
             ApparentSubject* subject = convo.declaredPeers.front().get();
             if (subject->is<FullySpecifiedSubject>()) {
                 convo_path << subject->as<FullySpecifiedSubject>()->accountName.accountName;
-            } else if (subject->is<SubjectGivenAsAccount>()) {
-                convo_path << subject->as<SubjectGivenAsAccount>()->account.accountName;
-            } else if (subject->is<SubjectGivenAsScreenName>()) {
-                convo_path << subject->as<SubjectGivenAsScreenName>()->screenName;
+            } else if (subject->is<AccountSubject>()) {
+                convo_path << subject->as<AccountSubject>()->account.accountName;
+            } else if (subject->is<ScreenNameSubject>()) {
+                convo_path << subject->as<ScreenNameSubject>()->screenName;
             } else {
                 convo_path << "(Unknown)";
             }

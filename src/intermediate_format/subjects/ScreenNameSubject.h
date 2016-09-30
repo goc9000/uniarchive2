@@ -1,5 +1,5 @@
 /**
- * intermediate_format/subjects/SubjectGivenAsScreenName.h
+ * intermediate_format/subjects/ScreenNameSubject.h
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASSCREENNAME_H
-#define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASSCREENNAME_H
+#ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SCREENNAMESUBJECT_H
+#define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SCREENNAMESUBJECT_H
 
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "utils/language/shortcuts.h"
@@ -18,11 +18,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-class SubjectGivenAsScreenName : public ApparentSubject {
+class ScreenNameSubject : public ApparentSubject {
 public:
     QString screenName;
 
-    SubjectGivenAsScreenName(IMM(QString) screen_name, Hints hints = Hint::NoHints);
+    ScreenNameSubject(IMM(QString) screen_name, Hints hints = Hint::NoHints);
 
     virtual ApparentSubjectSubType subType() const;
 
@@ -36,4 +36,4 @@ protected:
 
 }}}
 
-#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SUBJECTGIVENASSCREENNAME_H
+#endif //UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_SCREENNAMESUBJECT_H

@@ -106,13 +106,13 @@ SOURCES += \
     intermediate_format/provenance/MSNConversationProvenance.cpp \
     intermediate_format/provenance/Provenance.cpp \
     intermediate_format/provenance/SkypeConversationProvenance.cpp \
+    intermediate_format/subjects/AccountSubject.cpp \
     intermediate_format/subjects/ApparentSubject.cpp \
     intermediate_format/subjects/ApparentSubjectSubType.cpp \
     intermediate_format/subjects/FullySpecifiedSubject.cpp \
     intermediate_format/subjects/ImplicitSubject.cpp \
     intermediate_format/subjects/ImplicitSubjectKind.cpp \
-    intermediate_format/subjects/SubjectGivenAsAccount.cpp \
-    intermediate_format/subjects/SubjectGivenAsScreenName.cpp \
+    intermediate_format/subjects/ScreenNameSubject.cpp \
     intermediate_format/ApparentTime.cpp \
     intermediate_format/ApparentTimeReference.cpp \
     intermediate_format/RawConversation.cpp \
@@ -246,13 +246,13 @@ HEADERS += \
     intermediate_format/provenance/MSNConversationProvenance.h \
     intermediate_format/provenance/Provenance.h \
     intermediate_format/provenance/SkypeConversationProvenance.h \
+    intermediate_format/subjects/AccountSubject.h \
     intermediate_format/subjects/ApparentSubject.h \
     intermediate_format/subjects/ApparentSubjectSubType.h \
     intermediate_format/subjects/FullySpecifiedSubject.h \
     intermediate_format/subjects/ImplicitSubject.h \
     intermediate_format/subjects/ImplicitSubjectKind.h \
-    intermediate_format/subjects/SubjectGivenAsAccount.h \
-    intermediate_format/subjects/SubjectGivenAsScreenName.h \
+    intermediate_format/subjects/ScreenNameSubject.h \
     intermediate_format/ApparentTime.h \
     intermediate_format/ApparentTimeReference.h \
     intermediate_format/RawConversation.h \
