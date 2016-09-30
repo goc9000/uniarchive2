@@ -51,6 +51,7 @@ void RawConversation::serializeToStream(QDataStream& mut_stream) const {
     serialize_optional_unique_ptr(mut_stream, identity);
     mut_stream << declaredPeers << isConference << conferenceTitle << declaredStartDate;
     serialize_optional_unique_ptr(mut_stream, declaredInitiator);
+    serialize_optional_unique_ptr(mut_stream, provenance);
     // TODO: fill in stub
 }
 
