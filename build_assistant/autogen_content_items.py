@@ -15,10 +15,11 @@ from build_assistant.util.VirtualPath import VirtualPath
 
 
 BASE_CONTENT_ITEMS_PATH = VirtualPath(['intermediate_format', 'content'])
+SUBTYPE_ENUM = 'RawMessageContentItemSubType'
 
 
 def autogen_content_items_subtype_enum(autogen_config):
-    return BASE_CONTENT_ITEMS_PATH, 'RawMessageContentItemSubType', EnumConfig(
+    return BASE_CONTENT_ITEMS_PATH, SUBTYPE_ENUM, EnumConfig(
         values=[
             EnumValue(
                 text=name,
@@ -49,6 +50,8 @@ def gen_content_items(autogen_config, autogen_core):
                 item_config.gen_field_declarations(block)
                 item_config.gen_constructors(cpp_source)
                 item_config.gen_mandatory_fields_sanity_check_method(cpp_source)
+                block.nl()
+                item_config.gen_subtype_method(cpp_source)
 
             struct.nl()
 
@@ -79,12 +82,18 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
 
+    def gen_subtype_method(self, cpp_source):
+        with cpp_source.method(
+            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare=True
+        ) as method:
+            method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
+
     def gen_protected_block_code(self, cpp_source):
         self._gen_debug_write_method(cpp_source)
 
     def implicitly_covered_symbols(self):
         return [
-            'QDebug', 'vector'  # Through RawMessageContentItem
+            'QDebug', 'vector', SUBTYPE_ENUM  # Through RawMessageContentItem
         ]
 
     def _gen_debug_write_method(self, cpp_source):
@@ -173,8 +182,8 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
         self._gen_debug_write_method(cpp_source)
 
     def implicitly_covered_symbols(self):
-        return [
-            'QString', 'QDebug', 'vector'  # Through AbstractTag, RawMessageContentItem
+        return super().implicitly_covered_symbols() + [
+            'QString',  # Through AbstractTag
         ]
 
     def _gen_tag_name_method(self, cpp_source):
