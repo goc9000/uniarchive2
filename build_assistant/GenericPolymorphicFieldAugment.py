@@ -98,7 +98,7 @@ class GenericPolymorphicFieldAugment(Augment):
         """
         return '{0}({1})'.format(self.name, self.as_rvalue())
 
-    def as_print_rvalue(self, source):
+    def as_print_rvalue(self, destination_code):
         """
         Renders an expression for the debug-printable value of this field.
         """
@@ -113,7 +113,7 @@ class GenericPolymorphicFieldAugment(Augment):
             if self.uses_optional():
                 rvalue_expr = '*' + rvalue_expr
             if self.is_list:
-                source.include("utils/qt/debug_extras.h")  # For printing vectors
+                destination_code.source.include("utils/qt/debug_extras.h")  # For printing vectors
 
         return rvalue_expr
 

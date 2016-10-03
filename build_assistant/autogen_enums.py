@@ -39,9 +39,9 @@ def gen_enums(autogen_config, autogen_core):
         cpp_source, h_source = autogen_core.new_pair(path, name)
 
         if enum_config.internal_comment is not None:
-            h_source.line_comment(enum_config.internal_comment).nl()
+            h_source.code.line_comment(enum_config.internal_comment).nl()
 
-        with h_source.enum_class_block(name) as block:
+        with h_source.code.enum_class_block(name) as block:
             for i, value in enumerate(enum_config.values):
                 line = value.constant
 
@@ -57,7 +57,7 @@ def gen_enums(autogen_config, autogen_core):
 
         cpp_source.qt_include('QtDebug')
 
-        with cpp_source.function(name_for_function, 'QString', parameter_spec, declare=True) as fn:
+        with cpp_source.code.function(name_for_function, 'QString', parameter_spec, declare=True) as fn:
             with fn.switch_block(varname) as sw:
                 for value in enum_config.values:
                     with sw.case_block(name + '::' + value.constant) as c:
@@ -65,14 +65,17 @@ def gen_enums(autogen_config, autogen_core):
 
             fn.line('invariant_violation("Invalid {0} value (%d)", {1});'.format(name, varname))
 
-        h_source.nl()
+        h_source.code.nl()
 
-        with cpp_source.function('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec, declare=True) as fn:
-            fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)).use_symbol('QP') \
+        with cpp_source.code.function('operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec, declare=True) \
+            as fn:
+            fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)) \
               .nl() \
               .line('return stream;')
 
-        with cpp_source.function(
+            cpp_source.use_symbol('QP')
+
+        with cpp_source.code.function(
             'operator<< ', 'QDataStream&', ('QDataStream&', 'mut_stream'), parameter_spec, declare=True
         ) as fn:
             fn.line('mut_stream << (quint32){0};'.format(varname)) \

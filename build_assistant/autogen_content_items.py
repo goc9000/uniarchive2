@@ -46,18 +46,18 @@ def gen_content_items(autogen_config, autogen_core):
 
         h_source.cover_symbols(item_config.implicitly_covered_symbols())
 
-        with h_source.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
+        with h_source.code.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
             with struct.public_block() as block:
                 item_config.gen_field_declarations(block)
-                item_config.gen_constructors(cpp_source)
-                item_config.gen_mandatory_fields_sanity_check_method(cpp_source)
+                item_config.gen_constructors(cpp_source.code)
+                item_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
                 block.nl()
-                item_config.gen_subtype_method(cpp_source)
+                item_config.gen_subtype_method(cpp_source.code)
 
             struct.nl()
 
-            with struct.protected_block() as _:
-                item_config.gen_protected_block_code(cpp_source)
+            with struct.protected_block() as block:
+                item_config.gen_protected_block_code(cpp_source.code)
 
             item_config.gen_private_block(struct)
 

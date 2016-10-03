@@ -102,9 +102,9 @@ class GenericPolymorphicAugment(Augment):
 
             block.nl()
 
-    def gen_constructors(self, cpp_source):
+    def gen_constructors(self, cpp_code):
         for ctor_info in self.constructors():
-            with cpp_source.constructor(
+            with cpp_code.constructor(
                  self.class_name(), *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
             ) as cons:
                 for line in ctor_info.init_statements:
@@ -116,9 +116,9 @@ class GenericPolymorphicAugment(Augment):
                 for field in ctor_info.extra_fields:
                     field.gen_param_check(cons, disambiguate=True)
 
-    def gen_mandatory_fields_sanity_check_method(self, cpp_source):
+    def gen_mandatory_fields_sanity_check_method(self, cpp_code):
         if self.has_mandatory_fields_sanity_check():
-            with cpp_source.method(self.class_name(), 'sanityCheckMandatoryParameters', 'void', const=True) as method:
+            with cpp_code.method(self.class_name(), 'sanityCheckMandatoryParameters', 'void', const=True) as method:
                 for field in self.fields:
                     if field.is_mandatory() and field.is_checkable():
                         field.gen_param_check(method)
