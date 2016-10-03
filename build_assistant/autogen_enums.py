@@ -8,6 +8,7 @@
 
 from build_assistant.autogen_raw_events import autogen_raw_events_subtype_enum
 from build_assistant.autogen_content_items import autogen_content_items_subtype_enum
+from build_assistant.codegen_utils import cpp_string_literal
 from build_assistant.util.grammar import classname_to_varname, camelcase_to_underscore
 
 
@@ -60,7 +61,7 @@ def gen_enums(autogen_config, autogen_core):
             with fn.switch_block(varname) as sw:
                 for value in enum_config.values:
                     with sw.case_block(name + '::' + value.constant) as c:
-                        c.line('return {0};'.format(c.string_literal(value.text)))
+                        c.line('return {0};'.format(cpp_string_literal(value.text)))
 
             fn.line('invariant_violation("Invalid {0} value (%d)", {1});'.format(name, varname))
 

@@ -7,6 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.AutoGenConfig import GenericPolymorphicFieldConfig
+from build_assistant.codegen_utils import cpp_string_literal
 from build_assistant.SymbolRegistry import TypeKind
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import camelcase_to_underscore, singular
@@ -157,11 +158,11 @@ class GenericPolymorphicFieldAugment(Augment):
                     block.call(
                         'invariant',
                         'item',
-                        source.string_literal("Parameter '{0}' cannot have empty entries".format(self.local_name()))
+                        cpp_string_literal("Parameter '{0}' cannot have empty entries".format(self.local_name()))
                     )
             else:
                 source.call(
                     'invariant',
                     value_expr,
-                    source.string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
+                    cpp_string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
                 )

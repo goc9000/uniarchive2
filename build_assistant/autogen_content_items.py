@@ -8,6 +8,7 @@
 
 from build_assistant.AutoGenConfig import ContentItemConfig, ContentItemFieldConfig, ContentItemTagType, \
     ContentItemTagConfig, ContentItemTagFieldConfig, EnumConfig, EnumValue
+from build_assistant.codegen_utils import cpp_string_literal
 from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment, ConstructorInfo
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
 from build_assistant.util.grammar import camelcase_to_underscore
@@ -190,7 +191,7 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
         with cpp_source.method(
             self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare=True
         ) as method:
-            method.line("return {0};".format(method.string_literal(self._tag_name_for_display())))
+            method.line("return {0};".format(cpp_string_literal(self._tag_name_for_display())))
 
     def _debug_write_method_name(self):
         return 'write' + ('OpenTag' if self.tag_type == ContentItemTagType.STANDARD else '') + 'AttributesToDebugStream'
