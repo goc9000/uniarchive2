@@ -1,4 +1,4 @@
-# build_assistant/codegen_utils.py
+# build_assistant/codegen/codegen_utils.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

@@ -8,7 +8,7 @@
 
 from build_assistant.autogen_raw_events import autogen_raw_events_subtype_enum
 from build_assistant.autogen_content_items import autogen_content_items_subtype_enum
-from build_assistant.codegen_utils import cpp_string_literal
+from build_assistant.codegen.codegen_utils import cpp_string_literal
 from build_assistant.util.grammar import classname_to_varname, camelcase_to_underscore
 
 

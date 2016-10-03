@@ -8,7 +8,7 @@
 
 from build_assistant.AutoGenConfig import ContentItemConfig, ContentItemFieldConfig, ContentItemTagType, \
     ContentItemTagConfig, ContentItemTagFieldConfig, EnumConfig, EnumValue
-from build_assistant.codegen_utils import cpp_string_literal
+from build_assistant.codegen.codegen_utils import cpp_string_literal
 from build_assistant.GenericPolymorphicAugment import GenericPolymorphicAugment, ConstructorInfo
 from build_assistant.GenericPolymorphicFieldAugment import GenericPolymorphicFieldAugment
 from build_assistant.util.grammar import camelcase_to_underscore

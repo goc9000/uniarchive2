@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.AutoGenConfig import GenericPolymorphicFieldConfig
-from build_assistant.codegen_utils import cpp_string_literal
+from build_assistant.codegen.codegen_utils import cpp_string_literal
 from build_assistant.SymbolRegistry import TypeKind
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import camelcase_to_underscore, singular
