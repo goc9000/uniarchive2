@@ -11,27 +11,36 @@ import re
 from contextlib import contextmanager
 
 from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
+from build_assistant.codegen.GeneralizedHeadSection import GeneralizedHeadSection
 from build_assistant.codegen.codegen_utils import filter_lines
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
 class AbstractCodeSectionWithContent(AbstractCodeSection):
-    content_lines = None
+    content_items = None
     indent_level = None
 
     def __init__(self, source, initial_indent_level):
         super().__init__(source)
 
-        self.content_lines = list()
+        self.content_items = list()
         self.indent_level = initial_indent_level
 
     def gen_content_lines(self):
-        return filter_lines(self.content_lines)
+        def gen():
+            for item in self.content_items:
+                if isinstance(item, AbstractCodeSection):
+                    for line in item.gen_lines():
+                        yield line
+                else:
+                    yield item
+
+        return filter_lines(gen())
 
     # Basics
 
     def line(self, line):
-        self.content_lines.append((self._get_indent() + line).rstrip())
+        self.content_items.append((self._get_indent() + line).rstrip())
         return self
 
     def nl(self):
@@ -140,61 +149,8 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         return self
 
-    def _generalized_head(
-        self,
-        head,
-        params=None,
-        param_separator=',',
-        inherits=None,
-        decorations=None,
-        closer=';'
-    ):
-        if inherits is not None and len(inherits) == 0:
-            inherits = None
-
-        # First, try one-liner
-        one_line = head
-        if params is not None:
-            one_line += '(' + (param_separator + ' ').join(params) + ')'
-        one_line += decorations or ''
-        without_inherits = one_line
-        if inherits is not None:
-            one_line += ' : ' + ', '.join(inherits)
-        one_line += closer
-
-        if self.line_fits(one_line):
-            return self.line(one_line)
-
-        if inherits is not None and self.line_fits(without_inherits):  # Then, try to break at the inherits
-            self.line(without_inherits)
-            inherits_base = ' '
-        elif params is not None:  # Try to break at the params
-            self.line(head + '(')
-
-            with self.indented_section() as section:
-                for index, param in enumerate(params):
-                    section.line(param + (param_separator if index < len(params) - 1 else ''))
-
-            inherits_base = ')' + (decorations or '')
-
-            if inherits is None:
-                return self.line(inherits_base + closer)
-        else:
-            assert False, "Head too long: {0}".format(head)
-
-        line = inherits_base + ' :'
-
-        for index, item in enumerate(inherits):
-            item_and_sep = item + (',' if index < len(inherits) - 1 else closer)
-            try_line = line + ' ' + item_and_sep
-
-            if not self.line_fits(try_line):
-                self.line(line)
-                line = ' ' * (len(inherits_base) + 3) + item_and_sep
-            else:
-                line = try_line
-
-        self.line(line)
+    def _generalized_head(self, *args, **kwargs):
+        self.content_items.append(GeneralizedHeadSection(self.source, self.indent_level, *args, **kwargs))
 
         return self
 
@@ -293,6 +249,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         return self.line('{0} {1}{2};'.format(type, name, ' = ' + default_value if default_value is not None else ''))
 
     # Calls
+
     def call(self, function, *values):
         return self._generalized_head(function, params=values)
 
