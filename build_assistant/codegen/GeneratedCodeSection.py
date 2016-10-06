@@ -55,13 +55,17 @@ class GeneratedCodeSection:
 
     # Indent
 
-    def indent(self):
+    @contextmanager
+    def indented_section(self):
         self.indent_level += 1
-        return self
-
-    def unindent(self):
+        yield self
         self.indent_level -= 1
-        return self
+
+    @contextmanager
+    def unindented_section(self):
+        self.indent_level -= 1
+        yield self
+        self.indent_level += 1
 
     def line_fits(self, line):
         return self.indent_level * self.source.core.codegen_cfg.indent_size + len(line) \
@@ -125,11 +129,12 @@ class GeneratedCodeSection:
             inherits=inherits,
             decorations=decorations,
             closer=' {'
-        ).indent()
+        )
 
-        yield self
+        with self.indented_section() as section:
+            yield section
 
-        self.unindent().line('}' + (';' if semicolon else ''))
+        self.line('}' + (';' if semicolon else ''))
 
         if nl_after:
             self.nl()
@@ -165,12 +170,11 @@ class GeneratedCodeSection:
             self.line(without_inherits)
             inherits_base = ' '
         elif params is not None:  # Try to break at the params
-            self.line(head + '(').indent()
+            self.line(head + '(')
 
-            for index, param in enumerate(params):
-                self.line(param + (param_separator if index < len(params) - 1 else ''))
-
-            self.unindent()
+            with self.indented_section() as section:
+                for index, param in enumerate(params):
+                    section.line(param + (param_separator if index < len(params) - 1 else ''))
 
             inherits_base = ')' + (decorations or '')
 
@@ -197,7 +201,9 @@ class GeneratedCodeSection:
 
     @contextmanager
     def _colon_block(self, kind):
-        self.unindent().line(kind + ':').indent()
+        with self.unindented_section() as section:
+            section.line(kind + ':')
+
         yield self
 
     # Statement blocks
@@ -207,7 +213,9 @@ class GeneratedCodeSection:
 
     @contextmanager
     def else_block(self):  # Note: use within if block
-        self.unindent().line('} else {').indent()
+        with self.unindented_section() as section:
+            section.line('} else {')
+
         yield self
 
     def for_each_block(self, type, value, range, nl_after=True):
@@ -220,9 +228,10 @@ class GeneratedCodeSection:
 
     @contextmanager
     def case_block(self, case_label):
-        self.line('case ' + case_label + ':').indent()
-        yield self
-        self.unindent()
+        self.line('case ' + case_label + ':')
+
+        with self.indented_section() as section:
+            yield section
 
     # Functions
 
