@@ -1,4 +1,4 @@
-# build_assistant/codegen/GeneratedCodeSection.py
+# build_assistant/codegen/AbstractCodeSectionWithContent.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -10,29 +10,28 @@ import re
 
 from contextlib import contextmanager
 
+from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
+from build_assistant.codegen.codegen_utils import filter_lines
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
-class GeneratedCodeSection:
-    source = None
-
-    code_lines = None
+class AbstractCodeSectionWithContent(AbstractCodeSection):
+    content_lines = None
     indent_level = None
 
     def __init__(self, source, initial_indent_level):
-        self.code_lines = list()
+        super().__init__(source)
+
+        self.content_lines = list()
         self.indent_level = initial_indent_level
 
-        self.source = source
-
-    def gen_lines(self):
-        for line in self.code_lines:
-            yield line
+    def gen_content_lines(self):
+        return filter_lines(self.content_lines)
 
     # Basics
 
     def line(self, line):
-        self.code_lines.append((self._get_indent() + line).rstrip())
+        self.content_lines.append((self._get_indent() + line).rstrip())
         return self
 
     def nl(self):
