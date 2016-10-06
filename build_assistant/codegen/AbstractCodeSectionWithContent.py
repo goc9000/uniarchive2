@@ -12,7 +12,6 @@ from contextlib import contextmanager
 
 from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
 from build_assistant.codegen.GeneralizedHeadSection import GeneralizedHeadSection
-from build_assistant.codegen.codegen_utils import filter_lines
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
@@ -26,16 +25,9 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         self.content_items = list()
         self.indent_level = initial_indent_level
 
-    def gen_content_lines(self):
-        def gen():
-            for item in self.content_items:
-                if isinstance(item, AbstractCodeSection):
-                    for line in item.gen_lines():
-                        yield line
-                else:
-                    yield item
-
-        return filter_lines(gen())
+    def gen_content_items(self):
+        for item in self.content_items:
+            yield item
 
     # Basics
 

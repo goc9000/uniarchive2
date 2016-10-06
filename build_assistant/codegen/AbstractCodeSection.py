@@ -6,6 +6,8 @@
 #
 # Licensed under the GPL-3
 
+from build_assistant.codegen.codegen_utils import filter_lines
+
 
 class AbstractCodeSection:
     source = None
@@ -14,4 +16,15 @@ class AbstractCodeSection:
         self.source = source
 
     def gen_lines(self):
+        def gen():
+            for item in self.gen_items():
+                if isinstance(item, AbstractCodeSection):
+                    for line in item.gen_lines():
+                        yield line
+                else:
+                    yield item
+
+        return filter_lines(gen())
+
+    def gen_items(self):
         raise NotImplementedError

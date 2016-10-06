@@ -36,7 +36,7 @@ class GeneralizedHeadSection(AbstractCodeSection):
         self.decorations = decorations
         self.closer = closer
 
-    def gen_lines(self):
+    def gen_items(self):
         if self.inherits is not None and len(self.inherits) == 0:
             self.inherits = None
 

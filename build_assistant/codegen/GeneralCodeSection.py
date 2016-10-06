@@ -14,5 +14,5 @@ class GeneralCodeSection(AbstractCodeSectionWithContent):
     def __init__(self, source, initial_indent_level):
         super().__init__(source, initial_indent_level)
 
-    def gen_lines(self):
-        return self.gen_content_lines()
+    def gen_items(self):
+        return self.gen_content_items()
