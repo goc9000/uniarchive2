@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSection
+from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
 
 
 class GeneralizedHeadSection(AbstractCodeSection):
