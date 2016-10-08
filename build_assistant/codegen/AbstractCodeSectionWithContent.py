@@ -47,6 +47,10 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     def nl(self):
         return self.line('')
 
+    def subsection(self, section):
+        self.content_items.append(section)
+        return self
+
     # Comments
 
     def line_comment(self, comment):

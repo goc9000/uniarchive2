@@ -9,6 +9,7 @@
 from collections import namedtuple
 
 from build_assistant.AutoGenConfig import GenericPolymorphicConfig
+from build_assistant.codegen.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import classname_to_varname
 
@@ -130,23 +131,14 @@ class GenericPolymorphicAugment(Augment):
                 block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
 
     def gen_debug_write_field_code(self, method, fields):
-        def commit_regular_fields(block, regular_fields_line):
-            if regular_fields_line is not None:
-                block.line(regular_fields_line + ';')
+        def write_regular_field(block, regular_fields_section, field_config):
+            if regular_fields_section is None:
+                regular_fields_section = WriteToStreamSection(block.source, block.indent_level, 'stream')
+                block.subsection(regular_fields_section)
 
-        def write_regular_field(block, regular_fields_line, field_config):
-            if regular_fields_line is None:
-                regular_fields_line = 'stream'
+            regular_fields_section.add_item((field_config.debug_write_header(), field_config.as_print_rvalue(block)))
 
-            added_text = ' << {0} << {1}'.format(field_config.debug_write_header(), field_config.as_print_rvalue(block))
-
-            if not block.line_fits(regular_fields_line + added_text + ';'):
-                commit_regular_fields(block, regular_fields_line)
-                regular_fields_line = 'stream'
-
-            regular_fields_line += added_text
-
-            return regular_fields_line
+            return regular_fields_section
 
         def write_irregular_field(block, field_config):
             if field_config.is_optional:
@@ -174,20 +166,17 @@ class GenericPolymorphicAugment(Augment):
                 'stream << {0} << {1};'.format(field_config.debug_write_header(), field_config.as_print_rvalue(block))
             )
 
-        regular_fields_line = None
+        regular_fields_section = None
 
         for field_config in fields:
             # First, write regular fields
             if not (field_config.is_optional or field_config.maybe_singleton):
-                regular_fields_line = write_regular_field(method, regular_fields_line, field_config)
+                regular_fields_section = write_regular_field(method, regular_fields_section, field_config)
                 continue
 
-            commit_regular_fields(method, regular_fields_line)
-            regular_fields_line = None
+            regular_fields_section = None
 
             write_irregular_field(method, field_config)
-
-        commit_regular_fields(method, regular_fields_line)
 
     def gen_debug_write_operator(self, cpp_source):
         varname = classname_to_varname(self.class_name())
