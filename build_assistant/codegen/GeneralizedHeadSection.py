@@ -10,6 +10,27 @@ from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeS
 
 
 class GeneralizedHeadSection(AbstractCodeSection):
+    """
+    A generalized head is a section of code that looks like this:
+
+        HEAD(param1, param2, param3) : inherit1, inherit2, inherit3;
+
+    or, alternatively, when items don't fit:
+
+        HEAD(
+          param1,
+          param2
+          param3
+        ) : inherit1, inherit2,
+            inherit3;
+
+    Note how this matches constructors, function declarations, but also the head of for loops, class definitions, etc.
+    The fully general form is:
+
+        <head> [ "(" <params[0]> <param_separator> params[1] <param_separator> ... ")" ] <decorations>
+               [ ":" <inherits[0]> "," <inherits[1]> "," ... ] <closer>
+    """
+
     indent_level = None
 
     inherits = None
