@@ -29,6 +29,15 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         for item in self.content_items:
             yield item
 
+    def deepest_open_section(self):
+        if len(self.content_items) == 0:
+            return self
+
+        if not isinstance(self.content_items[-1], AbstractCodeSectionWithContent):
+            return self
+
+        return self.content_items[-1].deepest_open_section()
+
     # Basics
 
     def line(self, line):
@@ -57,15 +66,23 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     @contextmanager
     def indented_section(self):
-        self.indent_level += 1
-        yield self
-        self.indent_level -= 1
+        from build_assistant.codegen.GeneralCodeSection import GeneralCodeSection
+
+        section = GeneralCodeSection(self.source, self.indent_level + 1)
+
+        self.content_items.append(section)
+
+        yield section
 
     @contextmanager
     def unindented_section(self):
-        self.indent_level -= 1
-        yield self
-        self.indent_level += 1
+        from build_assistant.codegen.GeneralCodeSection import GeneralCodeSection
+
+        section = GeneralCodeSection(self.source, self.indent_level - 1)
+
+        self.content_items.append(section)
+
+        yield section
 
     def line_fits(self, line):
         return self.indent_level * self.source.core.codegen_cfg.indent_size + len(line) \
@@ -151,7 +168,8 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         with self.unindented_section() as section:
             section.line(kind + ':')
 
-        yield self
+            with section.indented_section() as content_section:
+                yield content_section
 
     # Statement blocks
 
@@ -163,7 +181,8 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         with self.unindented_section() as section:
             section.line('} else {')
 
-        yield self
+            with section.indented_section() as content_section:
+                yield content_section
 
     def for_each_block(self, type, value, range, nl_after=True):
         self.source.use_symbol(type)
@@ -198,7 +217,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     def function(self, function_name, return_type, *params, declare=False):
         if declare:
-            self.source.companion.code.declare_fn(function_name, return_type, *_adjust_params_for_declare(params))
+            self._companion_code().declare_fn(function_name, return_type, *_adjust_params_for_declare(params))
 
         self.source.use_symbols(return_type, *(type for type, _ in params))
 
@@ -209,7 +228,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     def method(self, class_name, function_name, return_type, *params, const=False, virtual=False, declare=False):
         if declare:
-            self.source.companion.code.declare_fn(
+            self._companion_code().declare_fn(
                 function_name, return_type, *_adjust_params_for_declare(params), const=const, virtual=virtual
             )
 
@@ -223,7 +242,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     def constructor(self, class_name, *params, inherits=None, declare=False):
         if declare:
-            self.source.companion.code.declare_constructor(class_name, *_adjust_params_for_declare(params))
+            self._companion_code().declare_constructor(class_name, *_adjust_params_for_declare(params))
 
         self.source.use_symbols(*(type for type, _ in params))
 
@@ -232,6 +251,9 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
             params=[type + ' ' + name for type, name in params],
             inherits=inherits
         )
+
+    def _companion_code(self):
+        return self.source.companion.code.deepest_open_section()
 
     # Fields
 

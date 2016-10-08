@@ -134,7 +134,8 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
         return None
 
     def gen_subtype_method(self, cpp_code):
-        cpp_code.source.companion.code.declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
+        cpp_code.source.companion.code.deepest_open_section() \
+            .declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
 
     def gen_event_name_method(self, cpp_code):
         with cpp_code.method(
