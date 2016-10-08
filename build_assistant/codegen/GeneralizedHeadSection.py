@@ -33,7 +33,12 @@ class GeneralizedHeadSection(AbstractCodeSection):
 
     indent_level = None
 
+    head = None
+    params = None
+    param_separator = None
     inherits = None
+    decorations = None
+    closer = None
 
     def __init__(
         self,
