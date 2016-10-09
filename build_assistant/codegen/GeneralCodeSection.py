@@ -11,8 +11,8 @@ from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeS
 
 class GeneralCodeSection(AbstractCodeSectionWithContent):
 
-    def __init__(self, source, initial_indent_level):
-        super().__init__(source, initial_indent_level)
+    def __init__(self, source):
+        super().__init__(source)
 
-    def gen_items(self):
+    def gen_items(self, indent_level):
         return self.gen_content_items()

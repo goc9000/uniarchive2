@@ -15,18 +15,23 @@ class AbstractCodeSection:
     def __init__(self, source):
         self.source = source
 
-    def gen_lines(self):
+    def gen_lines(self, indent_level):
         def gen():
-            for item in self.gen_items():
+            for item in self.gen_items(indent_level):
                 if isinstance(item, AbstractCodeSection):
-                    for line in item.gen_lines():
+                    for line in item.gen_lines(indent_level):
                         yield line
                 elif item == '':
                     yield ''
                 else:
-                    yield item
+                    yield ' ' * (indent_level * self.source.core.codegen_cfg.indent_size) + item
 
         return filter_lines(gen())
 
-    def gen_items(self):
+    def gen_items(self, indent_level):
         raise NotImplementedError
+
+    def _line_fits(self, indent_level, line):
+        return indent_level * self.source.core.codegen_cfg.indent_size + len(line) \
+               <= self.source.core.codegen_cfg.gutter_width
+

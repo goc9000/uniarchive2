@@ -11,19 +11,16 @@ import re
 from contextlib import contextmanager
 
 from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
-from build_assistant.codegen.GeneralizedHeadSection import GeneralizedHeadSection
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
 class AbstractCodeSectionWithContent(AbstractCodeSection):
     content_items = None
-    indent_level = None
 
-    def __init__(self, source, initial_indent_level):
+    def __init__(self, source):
         super().__init__(source)
 
         self.content_items = list()
-        self.indent_level = initial_indent_level
 
     def gen_content_items(self):
         for item in self.content_items:
@@ -41,7 +38,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     # Basics
 
     def line(self, line):
-        self.content_items.append((self._get_indent() + line).rstrip())
+        self.content_items.append(line.rstrip())
         return self
 
     def nl(self):
@@ -70,9 +67,9 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     @contextmanager
     def indented_section(self):
-        from build_assistant.codegen.GeneralCodeSection import GeneralCodeSection
+        from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 
-        section = GeneralCodeSection(self.source, self.indent_level + 1)
+        section = IndentedCodeSection(self.source, 1)
 
         self.content_items.append(section)
 
@@ -80,20 +77,13 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     @contextmanager
     def unindented_section(self):
-        from build_assistant.codegen.GeneralCodeSection import GeneralCodeSection
+        from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 
-        section = GeneralCodeSection(self.source, self.indent_level - 1)
+        section = IndentedCodeSection(self.source, -1)
 
         self.content_items.append(section)
 
         yield section
-
-    def line_fits(self, line):
-        return self.indent_level * self.source.core.codegen_cfg.indent_size + len(line) \
-               <= self.source.core.codegen_cfg.gutter_width
-
-    def _get_indent(self):
-        return ' ' * (self.indent_level * self.source.core.codegen_cfg.indent_size)
 
     # Toplevel blocks
 
@@ -163,7 +153,9 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         return self
 
     def _generalized_head(self, *args, **kwargs):
-        self.content_items.append(GeneralizedHeadSection(self.source, self.indent_level, *args, **kwargs))
+        from build_assistant.codegen.GeneralizedHeadSection import GeneralizedHeadSection
+
+        self.content_items.append(GeneralizedHeadSection(self.source, *args, **kwargs))
 
         return self
 

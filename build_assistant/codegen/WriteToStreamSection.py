@@ -21,15 +21,11 @@ class WriteToStreamSection(AbstractCodeSection):
         stream << item3;
     """
 
-    indent_level = None
-
     stream_name = None
     items = None
 
-    def __init__(self, source, indent_level, stream_name, items=None):
+    def __init__(self, source, stream_name, items=None):
         super().__init__(source)
-
-        self.indent_level = indent_level
 
         self.stream_name = stream_name
         self.items = items or list()
@@ -37,7 +33,7 @@ class WriteToStreamSection(AbstractCodeSection):
     def add_item(self, item):
         self.items.append(item)
 
-    def gen_items(self):
+    def gen_items(self, indent_level):
         if len(self.items) == 0:
             return
 
@@ -49,18 +45,11 @@ class WriteToStreamSection(AbstractCodeSection):
             else:
                 item_text = item
 
-            if not self._line_fits(partial_line + ' << ' + item_text + ';'):
-                yield self._render_line(partial_line + ';')
+            if not self._line_fits(indent_level, partial_line + ' << ' + item_text + ';'):
+                yield partial_line + ';'
 
                 partial_line = self.stream_name
 
             partial_line += ' << ' + item_text
 
-        yield self._render_line(partial_line + ';')
-
-    def _line_fits(self, line):
-        return self.indent_level * self.source.core.codegen_cfg.indent_size + len(line) \
-               <= self.source.core.codegen_cfg.gutter_width
-
-    def _render_line(self, line):
-        return ' ' * (self.indent_level * self.source.core.codegen_cfg.indent_size) + line
+        yield partial_line + ';'

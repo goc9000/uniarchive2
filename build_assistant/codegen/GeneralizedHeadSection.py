@@ -7,6 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
+from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 
 
 class GeneralizedHeadSection(AbstractCodeSection):
@@ -31,8 +32,6 @@ class GeneralizedHeadSection(AbstractCodeSection):
                [ ":" <inherits[0]> "," <inherits[1]> "," ... ] <closer>
     """
 
-    indent_level = None
-
     head = None
     params = None
     param_separator = None
@@ -43,7 +42,6 @@ class GeneralizedHeadSection(AbstractCodeSection):
     def __init__(
         self,
         source,
-        indent_level,
         head,
         params=None,
         param_separator=',',
@@ -53,8 +51,6 @@ class GeneralizedHeadSection(AbstractCodeSection):
     ):
         super().__init__(source)
 
-        self.indent_level = indent_level
-
         self.head = head
         self.params = params
         self.param_separator = param_separator
@@ -62,7 +58,7 @@ class GeneralizedHeadSection(AbstractCodeSection):
         self.decorations = decorations
         self.closer = closer
 
-    def gen_items(self):
+    def gen_items(self, indent_level):
         if self.inherits is not None and len(self.inherits) == 0:
             self.inherits = None
 
@@ -76,26 +72,26 @@ class GeneralizedHeadSection(AbstractCodeSection):
             one_line += ' : ' + ', '.join(self.inherits)
         one_line += self.closer
 
-        if self._line_fits(one_line):
-            yield self._render_line(one_line)
+        if self._line_fits(indent_level, one_line):
+            yield one_line
             return
 
-        if self.inherits is not None and self._line_fits(without_inherits):  # Then, try to break at the inherits
-            yield self._render_line(without_inherits)
+        # Then, try to break at the inherits
+        if self.inherits is not None and self._line_fits(indent_level, without_inherits):
+            yield without_inherits
             inherits_base = ' '
         elif self.params is not None:  # Try to break at the params
-            yield self._render_line(self.head + '(')
+            yield self.head + '('
 
+            params_section = IndentedCodeSection(self.source, 1)
             for index, param in enumerate(self.params):
-                yield self._render_line(
-                    param + (self.param_separator if index < len(self.params) - 1 else ''),
-                    self.indent_level + 1
-                )
+                params_section.line(param + (self.param_separator if index < len(self.params) - 1 else ''))
+            yield params_section
 
             inherits_base = ')' + (self.decorations or '')
 
             if self.inherits is None:
-                yield self._render_line(inherits_base + self.closer)
+                yield inherits_base + self.closer
                 return
         else:
             assert False, "Head too long: {0}".format(self.head)
@@ -106,17 +102,10 @@ class GeneralizedHeadSection(AbstractCodeSection):
             item_and_sep = item + (',' if index < len(self.inherits) - 1 else self.closer)
             try_line = line + ' ' + item_and_sep
 
-            if not self._line_fits(try_line):
-                yield self._render_line(line)
+            if not self._line_fits(indent_level, try_line):
+                yield line
                 line = ' ' * (len(inherits_base) + 3) + item_and_sep
             else:
                 line = try_line
 
-        yield self._render_line(line)
-
-    def _line_fits(self, line):
-        return self.indent_level * self.source.core.codegen_cfg.indent_size + len(line) \
-               <= self.source.core.codegen_cfg.gutter_width
-
-    def _render_line(self, line, indent_level=None):
-        return ' ' * ((indent_level or self.indent_level) * self.source.core.codegen_cfg.indent_size) + line
+        yield line
