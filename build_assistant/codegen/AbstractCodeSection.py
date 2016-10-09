@@ -21,6 +21,8 @@ class AbstractCodeSection:
                 if isinstance(item, AbstractCodeSection):
                     for line in item.gen_lines():
                         yield line
+                elif item == '':
+                    yield ''
                 else:
                     yield item
 
