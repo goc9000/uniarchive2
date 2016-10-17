@@ -22,7 +22,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         self.content_items = list()
 
-    def gen_content_items(self):
+    def _gen_content_items(self):
         for item in self.content_items:
             yield item
 

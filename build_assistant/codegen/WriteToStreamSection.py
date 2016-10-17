@@ -33,7 +33,7 @@ class WriteToStreamSection(AbstractCodeSection):
     def add_item(self, item):
         self.items.append(item)
 
-    def gen_items(self, indent_level):
+    def _gen_items(self, indent_level):
         if len(self.items) == 0:
             return
 
