@@ -98,48 +98,13 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         return self._colon_block('protected')
 
     @contextmanager
-    def _generalized_block(
-        self,
-        head,
-        params=None,
-        param_separator=',',
-        inherits=None,
-        decorations=None,
-        semicolon=False,
-        nl_after=True
-    ):
-        """
-        A generalized block looks like this:
-        HEAD(param1, param2, param3)[decorations] : inherit1, inherit2, inherit3 {
-        }
+    def _generalized_block(self, *args, **kwargs):
+        from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
 
-        or, alternatively, when items don't fit:
+        block = GeneralizedBlockSection(self.source, *args, **kwargs)
 
-        HEAD(
-          param1,
-          param2
-          param3
-        )[decorations] : inherit1, inherit2,
-                         inherit3 {
-        }
-        """
-
-        self._generalized_head(
-            head,
-            params=params,
-            param_separator=param_separator,
-            inherits=inherits,
-            decorations=decorations,
-            closer=' {'
-        )
-
-        with self.indented_section() as section:
-            yield section
-
-        self.line('}' + (';' if semicolon else ''))
-
-        if nl_after:
-            self.nl()
+        self.content_items.append(block)
+        yield block
 
         return self
 
