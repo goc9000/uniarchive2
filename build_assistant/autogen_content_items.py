@@ -49,15 +49,15 @@ def gen_content_items(autogen_config, autogen_core):
         with h_source.code.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
             with struct.public_block() as block:
                 item_config.gen_field_declarations(block)
-                item_config.gen_constructors(cpp_source.code)
+                item_config.gen_constructors(cpp_source.code, block)
                 item_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
                 block.nl()
-                item_config.gen_subtype_method(cpp_source.code)
+                item_config.gen_subtype_method(cpp_source.code, block)
 
             struct.nl()
 
             with struct.protected_block() as block:
-                item_config.gen_protected_block_code(cpp_source.code)
+                item_config.gen_protected_block_code(cpp_source.code, block)
 
             item_config.gen_private_block(struct)
 
@@ -83,27 +83,27 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
 
-    def gen_subtype_method(self, cpp_source):
-        with cpp_source.method(
-            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare=True
+    def gen_subtype_method(self, cpp_code, struct_block):
+        with cpp_code.method(
+            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
         ) as method:
             method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
 
-    def gen_protected_block_code(self, cpp_source):
-        self._gen_debug_write_method(cpp_source)
+    def gen_protected_block_code(self, cpp_code, struct_block):
+        self._gen_debug_write_method(cpp_code, struct_block)
 
     def implicitly_covered_symbols(self):
         return [
             'QDebug', 'vector', SUBTYPE_ENUM  # Through RawMessageContentItem
         ]
 
-    def _gen_debug_write_method(self, cpp_source):
-        with cpp_source.method(
+    def _gen_debug_write_method(self, cpp_code, struct_block):
+        with cpp_code.method(
             self.class_name(),
             'writeToDebugStreamImpl',
             'void',
             ('QDebug', 'stream'),
-            const=True, virtual=True, declare=True
+            const=True, virtual=True, declare_in=struct_block
         ) as method:
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')
@@ -178,40 +178,39 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
             for constructor in super().constructors():
                 yield constructor
 
-    def gen_protected_block_code(self, cpp_source):
-        self._gen_tag_name_method(cpp_source)
-        self._gen_debug_write_method(cpp_source)
+    def gen_protected_block_code(self, cpp_code, struct_block):
+        self._gen_tag_name_method(cpp_code, struct_block)
+        self._gen_debug_write_method(cpp_code, struct_block)
 
     def implicitly_covered_symbols(self):
         return super().implicitly_covered_symbols() + [
             'QString',  # Through AbstractTag
         ]
 
-    def _gen_tag_name_method(self, cpp_source):
-        with cpp_source.method(
-            self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare=True
+    def _gen_tag_name_method(self, cpp_code, struct_block):
+        with cpp_code.method(
+            self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare_in=struct_block
         ) as method:
             method.line("return {0};".format(cpp_string_literal(self._tag_name_for_display())))
 
     def _debug_write_method_name(self):
         return 'write' + ('OpenTag' if self.tag_type == ContentItemTagType.STANDARD else '') + 'AttributesToDebugStream'
 
-    def _gen_debug_write_method(self, cpp_source):
+    def _gen_debug_write_method(self, cpp_code, struct_block):
         if len(self.fields) == 0 and not self.custom_debug_write_method:
             return
 
-        with cpp_source.method(
+        with cpp_code.method(
             self.class_name(),
             self._debug_write_method_name(),
             'void',
             ('QDebug', 'stream'),
-            const=True, virtual=True, declare=True
+            const=True, virtual=True, declare_in=struct_block
         ) as method:
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')
             else:
                 self.gen_debug_write_field_code(method, self.fields)
-
 
     def _tag_name_for_display(self):
         if self.tag_name_override is not None:

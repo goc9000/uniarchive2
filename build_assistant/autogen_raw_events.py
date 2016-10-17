@@ -56,18 +56,18 @@ def gen_raw_events(autogen_config, autogen_core):
 
             with struct.public_block() as block:
                 event_config.gen_field_declarations(block)
-                event_config.gen_constructors(cpp_source.code)
+                event_config.gen_constructors(cpp_source.code, block)
                 event_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
 
                 block.nl()
-                event_config.gen_subtype_method(cpp_source.code)
+                event_config.gen_subtype_method(cpp_source.code, block)
                 block.nl()
-                event_config.gen_event_name_method(cpp_source.code)
+                event_config.gen_event_name_method(cpp_source.code, block)
 
             struct.nl()
 
-            with struct.protected_block() as _:
-                event_config.gen_debug_write_details_method(cpp_source.code)
+            with struct.protected_block() as block:
+                event_config.gen_debug_write_details_method(cpp_source.code, block)
 
             event_config.gen_private_block(struct)
 
@@ -80,26 +80,26 @@ def gen_base_raw_event(base_event_config, autogen_core):
     with h_source.code.struct_block(class_name) as struct:
         with struct.public_block() as block:
             base_event_config.gen_field_declarations(block)
-            base_event_config.gen_constructors(cpp_source.code)
+            base_event_config.gen_constructors(cpp_source.code, block)
             base_event_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
 
             block.nl().line('POLYMORPHIC_HELPERS').nl()
             block.source.include("utils/language/polymorphic_helpers.h")
 
-            base_event_config.gen_subtype_method(cpp_source.code)
+            base_event_config.gen_subtype_method(cpp_source.code, block)
             block.nl()
-            base_event_config.gen_event_name_method(cpp_source.code)
+            base_event_config.gen_event_name_method(cpp_source.code, block)
             block.nl()
-            base_event_config.gen_debug_write_method(cpp_source.code)
+            base_event_config.gen_debug_write_method(cpp_source.code, block)
 
         struct.nl()
 
-        with struct.protected_block() as _:
-            base_event_config.gen_debug_write_details_method(cpp_source.code)
+        with struct.protected_block() as block:
+            base_event_config.gen_debug_write_details_method(cpp_source.code, block)
 
         base_event_config.gen_private_block(struct)
 
-    base_event_config.gen_debug_write_operator(cpp_source.code)
+    base_event_config.gen_debug_write_operator(cpp_source.code, h_source.code)
 
     return h_source
 
@@ -110,13 +110,13 @@ class AbstractEventConfigAugment(GenericPolymorphicAugment):
 
         GenericPolymorphicAugment.__init__(self, event_config, autogen_core, field_augment=EventFieldAugment)
 
-    def gen_subtype_method(self, cpp_code):
+    def gen_subtype_method(self, cpp_code, block):
         raise NotImplementedError
 
-    def gen_event_name_method(self, cpp_code):
+    def gen_event_name_method(self, cpp_code, block):
         raise NotImplementedError
 
-    def gen_debug_write_details_method(self, cpp_code):
+    def gen_debug_write_details_method(self, cpp_code, block):
         raise NotImplementedError
 
 
@@ -133,17 +133,16 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
     def parent_class(self, no_template=None):
         return None
 
-    def gen_subtype_method(self, cpp_code):
-        cpp_code.source.companion.code.deepest_open_section() \
-            .declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
+    def gen_subtype_method(self, cpp_code, struct_block):
+        struct_block.declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
 
-    def gen_event_name_method(self, cpp_code):
+    def gen_event_name_method(self, cpp_code, block):
         with cpp_code.method(
-            self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare=True
+            self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=block
         ) as method:
             method.line("return name_for_raw_event_sub_type(subType());")
 
-    def gen_debug_write_method(self, cpp_code):
+    def gen_debug_write_method(self, cpp_code, block):
         time_field = None
         index_field = None
 
@@ -157,7 +156,7 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
                 remaining_fields.append(field_config)
 
         with cpp_code.method(
-            'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare=True
+            'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare_in=block
         ) as method:
             method \
                 .field('QDebugStateSaver', 'saver(stream)') \
@@ -170,10 +169,10 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
 
             self.gen_debug_write_field_code(method, remaining_fields)
 
-    def gen_debug_write_details_method(self, cpp_code):
+    def gen_debug_write_details_method(self, cpp_code, block):
         with cpp_code.method(
             self.class_name(), 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'),
-            const=True, virtual=True, declare=True
+            const=True, virtual=True, declare_in=block
         ) as _:
             pass
 
@@ -201,26 +200,26 @@ class EventConfigAugment(AbstractEventConfigAugment):
         else:
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
 
-    def gen_subtype_method(self, cpp_code):
+    def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(
-            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare=True
+            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
         ) as method:
             method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
 
-    def gen_event_name_method(self, cpp_code):
+    def gen_event_name_method(self, cpp_code, struct_block):
         if self.custom_name_method:
             with cpp_code.method(
-                self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare=True
+                self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=struct_block
             ) as method:
                 method.custom_section('Name method')
 
-    def gen_debug_write_details_method(self, cpp_code):
+    def gen_debug_write_details_method(self, cpp_code, struct_block):
         with cpp_code.method(
             self.class_name(),
             'write' + ('FailableEvent' if self.fail_reason_enum is not None else '') + 'DetailsToDebugStream',
             'void',
             ('QDebug' + (' UNUSED' if len(self.fields) == 0 else ''), 'stream'),
-            const=True, virtual=True, declare=True
+            const=True, virtual=True, declare_in=struct_block
         ) as method:
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')

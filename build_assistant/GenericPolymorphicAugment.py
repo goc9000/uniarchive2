@@ -103,10 +103,10 @@ class GenericPolymorphicAugment(Augment):
 
             block.nl()
 
-    def gen_constructors(self, cpp_code):
+    def gen_constructors(self, cpp_code, struct_block):
         for ctor_info in self.constructors():
             with cpp_code.constructor(
-                 self.class_name(), *ctor_info.params, inherits=ctor_info.subconstructors, declare=True
+                 self.class_name(), *ctor_info.params, inherits=ctor_info.subconstructors, declare_in=struct_block
             ) as cons:
                 for line in ctor_info.init_statements:
                     cons.line(line)
@@ -178,12 +178,12 @@ class GenericPolymorphicAugment(Augment):
 
             write_irregular_field(method, field_config)
 
-    def gen_debug_write_operator(self, cpp_source):
+    def gen_debug_write_operator(self, cpp_code, h_code):
         varname = classname_to_varname(self.class_name())
 
-        with cpp_source.function(
+        with cpp_code.function(
             'operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR({0})'.format(self.class_name()), varname),
-            declare=True
+            declare_in=h_code
         ) as method:
             method \
                 .line('{0}->writeToDebugStream(stream);'.format(varname)) \
