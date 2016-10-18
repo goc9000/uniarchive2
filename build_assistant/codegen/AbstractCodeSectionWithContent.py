@@ -117,11 +117,14 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     @contextmanager
     def _colon_block(self, kind):
-        with self.unindented_section() as section:
-            section.line(kind + ':')
+        from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
 
-            with section.indented_section() as content_section:
-                yield content_section
+        block = VisibilityBlockSection(self.source, kind)
+
+        self.content_items.append(block)
+        yield block
+
+        return self
 
     # Statement blocks
 
