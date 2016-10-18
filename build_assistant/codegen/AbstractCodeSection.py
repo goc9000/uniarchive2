@@ -13,6 +13,15 @@ class AbstractCodeSection:
     def __init__(self, source):
         self.source = source
 
+    def __enter__(self):
+        """
+        This class is a do-nothing context manager to enable convenient constructs like "with section: ..."
+        """
+        return self
+
+    def __exit__(self, *_args):
+        return None
+
     def gen_lines(self, indent_level):
         return self._gen_lines_for_items(self._gen_items(indent_level), indent_level)
 

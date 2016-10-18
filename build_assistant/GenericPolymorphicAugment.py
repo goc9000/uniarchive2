@@ -133,8 +133,7 @@ class GenericPolymorphicAugment(Augment):
     def gen_debug_write_field_code(self, method, fields):
         def write_regular_field(block, regular_fields_section, field_config):
             if regular_fields_section is None:
-                regular_fields_section = WriteToStreamSection(block.source, 'stream')
-                block.subsection(regular_fields_section)
+                regular_fields_section = block.subsection(WriteToStreamSection(block.source, 'stream'))
 
             regular_fields_section.add_item((field_config.debug_write_header(), field_config.as_print_rvalue(block)))
 

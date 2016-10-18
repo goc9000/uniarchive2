@@ -8,8 +8,6 @@
 
 import re
 
-from contextlib import contextmanager
-
 from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
@@ -37,7 +35,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     def subsection(self, section):
         self.content_items.append(section)
-        return self
+        return section
 
     # Comments
 
@@ -56,38 +54,22 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     # Indent
 
-    @contextmanager
     def indented_section(self):
         from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 
-        section = IndentedCodeSection(self.source, 1)
+        return self.subsection(IndentedCodeSection(self.source, 1))
 
-        self.content_items.append(section)
-
-        yield section
-
-    @contextmanager
     def unindented_section(self):
         from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 
-        section = IndentedCodeSection(self.source, -1)
-
-        self.content_items.append(section)
-
-        yield section
+        return self.subsection(IndentedCodeSection(self.source, -1))
 
     # Toplevel blocks
 
-    @contextmanager
     def enum_class_block(self, name):
         from build_assistant.codegen.EnumBlockSection import EnumBlockSection
 
-        section = EnumBlockSection(self.source, name, enum_class=True)
-        self.content_items.append(section)
-
-        yield section
-
-        return self
+        return self.subsection(EnumBlockSection(self.source, name, enum_class=True))
 
     def class_block(self, name, inherits=None):
         return self._struct_or_class_block(name, inherits, False)
@@ -95,7 +77,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     def struct_block(self, name, inherits=None):
         return self._struct_or_class_block(name, inherits, True)
 
-    @contextmanager
     def _struct_or_class_block(self, name, inherits, struct):
         from build_assistant.codegen.ClassBlockSection import ClassBlockSection
 
@@ -103,12 +84,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         self.source.use_symbols(*inherits)
 
-        section = ClassBlockSection(self.source, name, inherits=inherits, struct=struct)
-        self.content_items.append(section)
-
-        yield section
-
-        return self
+        return self.subsection(ClassBlockSection(self.source, name, inherits=inherits, struct=struct))
 
     def public_block(self):
         return self._colon_block('public')
@@ -119,16 +95,10 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     def protected_block(self):
         return self._colon_block('protected')
 
-    @contextmanager
     def _generalized_block(self, *args, **kwargs):
         from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
 
-        block = GeneralizedBlockSection(self.source, *args, **kwargs)
-
-        self.content_items.append(block)
-        yield block
-
-        return self
+        return self.subsection(GeneralizedBlockSection(self.source, *args, **kwargs))
 
     def _generalized_head(self, *args, **kwargs):
         from build_assistant.codegen.GeneralizedHeadSection import GeneralizedHeadSection
@@ -137,29 +107,21 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         return self
 
-    @contextmanager
     def _colon_block(self, kind):
         from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
 
-        block = VisibilityBlockSection(self.source, kind)
-
-        self.content_items.append(block)
-        yield block
-
-        return self
+        return self.subsection(VisibilityBlockSection(self.source, kind))
 
     # Statement blocks
 
     def if_block(self, *conditions, operator='&&', nl_after=True):
         return self._generalized_block('if ', params=conditions, param_separator=' '+operator, nl_after=nl_after)
 
-    @contextmanager
     def else_block(self):  # Note: use within if block
         with self.unindented_section() as section:
             section.line('} else {')
 
-            with section.indented_section() as content_section:
-                yield content_section
+            return section.indented_section()
 
     def for_each_block(self, type, value, range, nl_after=True):
         self.source.use_symbol(type)
@@ -169,12 +131,10 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     def switch_block(self, switch_by):
         return self._generalized_block('switch ', params=[switch_by])
 
-    @contextmanager
     def case_block(self, case_label):
         self.line('case ' + case_label + ':')
 
-        with self.indented_section() as section:
-            yield section
+        return self.indented_section()
 
     # Functions
 
