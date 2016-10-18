@@ -78,15 +78,37 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     # Toplevel blocks
 
+    @contextmanager
     def enum_class_block(self, name):
-        return self._generalized_block('enum class ' + name, semicolon=True)
+        from build_assistant.codegen.EnumBlockSection import EnumBlockSection
+
+        section = EnumBlockSection(self.source, name, enum_class=True)
+        self.content_items.append(section)
+
+        yield section
+
+        return self
+
+    def class_block(self, name, inherits=None):
+        return self._struct_or_class_block(name, inherits, False)
 
     def struct_block(self, name, inherits=None):
+        return self._struct_or_class_block(name, inherits, True)
+
+    @contextmanager
+    def _struct_or_class_block(self, name, inherits, struct):
+        from build_assistant.codegen.ClassBlockSection import ClassBlockSection
+
         inherits = inherits or list()
 
         self.source.use_symbols(*inherits)
 
-        return self._generalized_block('struct ' + name, inherits=inherits, semicolon=True)
+        section = ClassBlockSection(self.source, name, inherits=inherits, struct=struct)
+        self.content_items.append(section)
+
+        yield section
+
+        return self
 
     def public_block(self):
         return self._colon_block('public')
