@@ -129,12 +129,9 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         return self._generalized_block('for ', params=['{0} {1} : {2}'.format(type, value, range)], nl_after=nl_after)
 
     def switch_block(self, switch_by):
-        return self._generalized_block('switch ', params=[switch_by])
+        from build_assistant.codegen.SwitchBlockSection import SwitchBlockSection
 
-    def case_block(self, case_label):
-        self.line('case ' + case_label + ':')
-
-        return self.indented_section()
+        return self.subsection(SwitchBlockSection(self.source, switch_by))
 
     # Functions
 
