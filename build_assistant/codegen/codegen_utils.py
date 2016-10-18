@@ -14,13 +14,19 @@ def cpp_string_literal(text):
 
 
 def filter_lines(lines):
-    """Collapses multiple empty lines into one, and filters out trailing empty lines"""
+    """Collapses multiple empty lines into one, and filters out leading & trailing empty lines"""
     has_empty_line = False
+    first_line = True
+
     for line in lines:
         if line != '':
             if has_empty_line:
-                yield ''
+                if not first_line:
+                    yield ''
                 has_empty_line = False
+
             yield line
+
+            first_line = False
         else:
             has_empty_line = True
