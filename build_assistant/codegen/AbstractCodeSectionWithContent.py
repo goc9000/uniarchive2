@@ -115,13 +115,9 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     # Statement blocks
 
     def if_block(self, *conditions, operator='&&', nl_after=True):
-        return self._generalized_block('if ', params=conditions, param_separator=' '+operator, nl_after=nl_after)
+        from build_assistant.codegen.IfBlockSection import IfBlockSection
 
-    def else_block(self):  # Note: use within if block
-        with self.unindented_section() as section:
-            section.line('} else {')
-
-            return section.indented_section()
+        return self.subsection(IfBlockSection(self.source, conditions, operator=operator, nl_after=nl_after))
 
     def for_each_block(self, type, value, range, nl_after=True):
         self.source.use_symbol(type)
