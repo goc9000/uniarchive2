@@ -7,6 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
+from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
 
 
 class ClassBlockSection(GeneralizedBlockSection):
@@ -17,3 +18,15 @@ class ClassBlockSection(GeneralizedBlockSection):
             inherits=inherits,
             semicolon=True,
         )
+
+    def public_block(self):
+        return self._visibility_block('public')
+
+    def private_block(self):
+        return self._visibility_block('private')
+
+    def protected_block(self):
+        return self._visibility_block('protected')
+
+    def _visibility_block(self, kind):
+        return self.subsection(VisibilityBlockSection(self.source, kind))

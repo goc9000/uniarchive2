@@ -86,15 +86,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         return self.subsection(ClassBlockSection(self.source, name, inherits=inherits, struct=struct))
 
-    def public_block(self):
-        return self._colon_block('public')
-
-    def private_block(self):
-        return self._colon_block('private')
-
-    def protected_block(self):
-        return self._colon_block('protected')
-
     def _generalized_block(self, *args, **kwargs):
         from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
 
@@ -106,11 +97,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         self.content_items.append(GeneralizedHeadSection(self.source, *args, **kwargs))
 
         return self
-
-    def _colon_block(self, kind):
-        from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
-
-        return self.subsection(VisibilityBlockSection(self.source, kind))
 
     # Statement blocks
 
