@@ -1,4 +1,4 @@
-# build_assistant/codegen/IndentedCodeSection.py
+# build_assistant/codegen/TopLevelCodeSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -9,16 +9,10 @@
 from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 
 
-class IndentedCodeSection(AbstractCodeSectionWithContent):
-    indent_delta = None
+class TopLevelCodeSection(AbstractCodeSectionWithContent):
 
-    def __init__(self, source, indent_delta):
+    def __init__(self, source):
         super().__init__(source)
-
-        self.indent_delta = indent_delta
-
-    def gen_lines(self, indent_level):
-        return super().gen_lines(indent_level + self.indent_delta)
 
     def _gen_items(self, indent_level):
         return self._gen_content_items()
