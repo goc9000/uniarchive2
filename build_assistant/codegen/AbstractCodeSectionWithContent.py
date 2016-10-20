@@ -54,26 +54,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     # Toplevel blocks
 
-    def enum_class_block(self, name):
-        from build_assistant.codegen.EnumBlockSection import EnumBlockSection
-
-        return self.subsection(EnumBlockSection(self.source, name, enum_class=True))
-
-    def class_block(self, name, inherits=None):
-        return self._struct_or_class_block(name, inherits, False)
-
-    def struct_block(self, name, inherits=None):
-        return self._struct_or_class_block(name, inherits, True)
-
-    def _struct_or_class_block(self, name, inherits, struct):
-        from build_assistant.codegen.ClassBlockSection import ClassBlockSection
-
-        inherits = inherits or list()
-
-        self.source.use_symbols(*inherits)
-
-        return self.subsection(ClassBlockSection(self.source, name, inherits=inherits, struct=struct))
-
     def _generalized_block(self, *args, **kwargs):
         from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
 

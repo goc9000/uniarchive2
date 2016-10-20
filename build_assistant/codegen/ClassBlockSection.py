@@ -8,9 +8,10 @@
 
 from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
 from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
+from build_assistant.codegen.mixins.DeclareClassStuffMixin import DeclareClassStuffMixin
 
 
-class ClassBlockSection(GeneralizedBlockSection):
+class ClassBlockSection(GeneralizedBlockSection, DeclareClassStuffMixin):
     def __init__(self, source, name, inherits=None, struct=False):
         super().__init__(
             source,

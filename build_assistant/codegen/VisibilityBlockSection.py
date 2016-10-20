@@ -8,10 +8,11 @@
 
 from build_assistant.codegen.AbstractBlockSection import AbstractBlockSection
 from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
+from build_assistant.codegen.mixins.DeclareClassStuffMixin import DeclareClassStuffMixin
 from build_assistant.util.empty_generator import empty_generator
 
 
-class VisibilityBlockSection(AbstractBlockSection):
+class VisibilityBlockSection(AbstractBlockSection, DeclareClassStuffMixin):
     kind = None
 
     def __init__(self, source, kind):
