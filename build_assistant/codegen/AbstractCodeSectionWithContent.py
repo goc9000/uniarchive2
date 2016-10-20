@@ -52,18 +52,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         return self
 
-    # Indent
-
-    def indented_section(self):
-        from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
-
-        return self.subsection(IndentedCodeSection(self.source, 1))
-
-    def unindented_section(self):
-        from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
-
-        return self.subsection(IndentedCodeSection(self.source, -1))
-
     # Toplevel blocks
 
     def enum_class_block(self, name):
