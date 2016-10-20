@@ -94,9 +94,11 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         return self.subsection(IfBlockSection(self.source, conditions, operator=operator, nl_after=nl_after))
 
     def for_each_block(self, type, value, range, nl_after=True):
+        from build_assistant.codegen.ForEachBlockSection import ForEachBlockSection
+
         self.source.use_symbol(type)
 
-        return self._generalized_block('for ', params=['{0} {1} : {2}'.format(type, value, range)], nl_after=nl_after)
+        return self.subsection(ForEachBlockSection(self.source, type, value, range, nl_after=nl_after))
 
     def switch_block(self, switch_by):
         from build_assistant.codegen.SwitchBlockSection import SwitchBlockSection
