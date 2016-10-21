@@ -9,10 +9,11 @@
 import re
 
 from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
+from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
-class AbstractCodeSectionWithContent(AbstractCodeSection):
+class AbstractCodeSectionWithContent(AbstractCodeSection, ProceduralCodeMixin):
     content_items = None
 
     def __init__(self, source):
@@ -65,25 +66,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         self.content_items.append(GeneralizedHeadSection(self.source, *args, **kwargs))
 
         return self
-
-    # Statement blocks
-
-    def if_block(self, *conditions, operator='&&', nl_after=True):
-        from build_assistant.codegen.IfBlockSection import IfBlockSection
-
-        return self.subsection(IfBlockSection(self.source, conditions, operator=operator, nl_after=nl_after))
-
-    def for_each_block(self, type, value, range, nl_after=True):
-        from build_assistant.codegen.ForEachBlockSection import ForEachBlockSection
-
-        self.source.use_symbol(type)
-
-        return self.subsection(ForEachBlockSection(self.source, type, value, range, nl_after=nl_after))
-
-    def switch_block(self, switch_by):
-        from build_assistant.codegen.SwitchBlockSection import SwitchBlockSection
-
-        return self.subsection(SwitchBlockSection(self.source, switch_by))
 
     # Functions
 

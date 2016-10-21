@@ -6,11 +6,10 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-
 
 class DeclareEnumsMixin:
     def enum_class_block(self, name):
+        from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
         from build_assistant.codegen.EnumBlockSection import EnumBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
