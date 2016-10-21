@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 from build_assistant.codegen.mixins.DeclareEnumsMixin import DeclareEnumsMixin
 
 

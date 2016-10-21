@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
+from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
 from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
 from build_assistant.codegen.mixins.DeclareClassStuffMixin import DeclareClassStuffMixin
 

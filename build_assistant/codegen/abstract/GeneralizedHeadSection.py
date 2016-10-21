@@ -1,4 +1,4 @@
-# build_assistant/codegen/GeneralizedHeadSection.py
+# build_assistant/codegen/abstract/GeneralizedHeadSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
+from build_assistant.codegen.abstract.AbstractCodeSection import AbstractCodeSection
 from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 
 

@@ -9,7 +9,7 @@
 
 class DeclareEnumsMixin:
     def enum_class_block(self, name):
-        from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+        from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
         from build_assistant.codegen.EnumBlockSection import EnumBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)

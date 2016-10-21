@@ -1,4 +1,4 @@
-# build_assistant/codegen/AbstractCodeSectionWithContent.py
+# build_assistant/codegen/abstract/AbstractCodeSectionWithContent.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -8,7 +8,7 @@
 
 import re
 
-from build_assistant.codegen.AbstractCodeSection import AbstractCodeSection
+from build_assistant.codegen.abstract.AbstractCodeSection import AbstractCodeSection
 from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
@@ -56,12 +56,12 @@ class AbstractCodeSectionWithContent(AbstractCodeSection, ProceduralCodeMixin):
     # Toplevel blocks
 
     def _generalized_block(self, *args, **kwargs):
-        from build_assistant.codegen.GeneralizedBlockSection import GeneralizedBlockSection
+        from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
 
         return self.subsection(GeneralizedBlockSection(self.source, *args, **kwargs))
 
     def _generalized_head(self, *args, **kwargs):
-        from build_assistant.codegen.GeneralizedHeadSection import GeneralizedHeadSection
+        from build_assistant.codegen.abstract.GeneralizedHeadSection import GeneralizedHeadSection
 
         self.content_items.append(GeneralizedHeadSection(self.source, *args, **kwargs))
 

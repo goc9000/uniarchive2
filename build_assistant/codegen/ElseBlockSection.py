@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.codegen.AbstractBlockSection import AbstractBlockSection
+from build_assistant.codegen.abstract.AbstractBlockSection import AbstractBlockSection
 from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 from build_assistant.util.empty_generator import empty_generator
 

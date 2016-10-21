@@ -1,4 +1,4 @@
-# build_assistant/codegen/AbstractCodeSection.py
+# build_assistant/codegen/abstract/AbstractCodeSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

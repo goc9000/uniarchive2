@@ -1,4 +1,4 @@
-# build_assistant/codegen/AbstractBlockSection.py
+# build_assistant/codegen/abstract/AbstractBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.codegen_utils import filter_lines
-from build_assistant.codegen.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 
 
 class AbstractBlockSection(AbstractCodeSectionWithContent):
