@@ -1,4 +1,4 @@
-# build_assistant/codegen/SwitchBlockSection.py
+# build_assistant/codegen/statements/SwitchBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
-from build_assistant.codegen.CaseBlockSection import CaseBlockSection
+from build_assistant.codegen.statements.CaseBlockSection import CaseBlockSection
 
 
 class SwitchBlockSection(GeneralizedBlockSection):

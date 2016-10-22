@@ -10,7 +10,7 @@
 class ProceduralCodeMixin:
     def if_block(self, *conditions, operator='&&', nl_after=True):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-        from build_assistant.codegen.IfBlockSection import IfBlockSection
+        from build_assistant.codegen.statements.IfBlockSection import IfBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
 
@@ -18,7 +18,7 @@ class ProceduralCodeMixin:
 
     def for_each_block(self, type, value, range, nl_after=True):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-        from build_assistant.codegen.ForEachBlockSection import ForEachBlockSection
+        from build_assistant.codegen.statements.ForEachBlockSection import ForEachBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
 
@@ -28,7 +28,7 @@ class ProceduralCodeMixin:
 
     def switch_block(self, switch_by):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-        from build_assistant.codegen.SwitchBlockSection import SwitchBlockSection
+        from build_assistant.codegen.statements.SwitchBlockSection import SwitchBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
 

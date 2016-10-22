@@ -1,4 +1,4 @@
-# build_assistant/codegen/IfBlockSection.py
+# build_assistant/codegen/statements/IfBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
-from build_assistant.codegen.ElseBlockSection import ElseBlockSection
+from build_assistant.codegen.statements.ElseBlockSection import ElseBlockSection
 
 
 class IfBlockSection(GeneralizedBlockSection):

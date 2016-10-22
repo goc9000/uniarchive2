@@ -1,4 +1,4 @@
-# build_assistant/codegen/CaseBlockSection.py
+# build_assistant/codegen/statements/CaseBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
