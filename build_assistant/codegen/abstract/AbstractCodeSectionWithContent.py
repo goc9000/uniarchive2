@@ -84,17 +84,18 @@ class AbstractCodeSectionWithContent(AbstractCodeSection, ProceduralCodeMixin):
         return self._generalized_head(class_name, params=[type + ' ' + name for type, name in params])
 
     def function(self, function_name, return_type, *params, declare_in=None):
+        from build_assistant.codegen.functions.FunctionBlockSection import FunctionBlockSection
+
         if declare_in is not None:
             declare_in.declare_fn(function_name, return_type, *_adjust_params_for_declare(params))
 
         self.source.use_symbols(return_type, *(type for type, _ in params))
 
-        return self._generalized_block(
-            return_type + ' ' + function_name,
-            params=[type + ' ' + name for type, name in params]
-        )
+        return self.subsection(FunctionBlockSection(self.source, function_name, return_type, *params))
 
     def method(self, class_name, function_name, return_type, *params, const=False, virtual=False, declare_in=None):
+        from build_assistant.codegen.functions.MethodBlockSection import MethodBlockSection
+
         if declare_in is not None:
             declare_in.declare_fn(
                 function_name, return_type, *_adjust_params_for_declare(params), const=const, virtual=virtual
@@ -102,23 +103,24 @@ class AbstractCodeSectionWithContent(AbstractCodeSection, ProceduralCodeMixin):
 
         self.source.use_symbols(return_type, *(type for type, _ in params))
 
-        return self._generalized_block(
-            return_type + ' ' + class_name + '::' + function_name,
-            params=[type + ' ' + name for type, name in params],
-            decorations=(' const' if const else '')
-        )
+        return self.subsection(MethodBlockSection(
+            self.source,
+            class_name,
+            function_name,
+            return_type,
+            *params,
+            const=const,
+        ))
 
     def constructor(self, class_name, *params, inherits=None, declare_in=None):
+        from build_assistant.codegen.functions.ConstructorBlockSection import ConstructorBlockSection
+
         if declare_in is not None:
             declare_in.declare_constructor(class_name, *_adjust_params_for_declare(params))
 
         self.source.use_symbols(*(type for type, _ in params))
 
-        return self._generalized_block(
-            class_name + '::' + class_name,
-            params=[type + ' ' + name for type, name in params],
-            inherits=inherits
-        )
+        return self.subsection(ConstructorBlockSection(self.source, class_name, *params, inherits=inherits))
 
     # Fields
 
