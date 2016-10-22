@@ -7,9 +7,10 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
+from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 
 
-class ForEachBlockSection(GeneralizedBlockSection):
+class ForEachBlockSection(GeneralizedBlockSection, ProceduralCodeMixin):
     def __init__(self, source, type, value, range, nl_after=True):
         super().__init__(
             source,

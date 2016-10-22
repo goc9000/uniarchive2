@@ -7,11 +7,12 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.AbstractBlockSection import AbstractBlockSection
+from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 from build_assistant.util.empty_generator import empty_generator
 
 
-class ElseBlockSection(AbstractBlockSection):
+class ElseBlockSection(AbstractBlockSection, ProceduralCodeMixin):
     def __init__(self, source):
         super().__init__(source)
 

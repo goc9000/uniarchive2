@@ -8,9 +8,10 @@
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
 from build_assistant.codegen.statements.ElseBlockSection import ElseBlockSection
+from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 
 
-class IfBlockSection(GeneralizedBlockSection):
+class IfBlockSection(GeneralizedBlockSection, ProceduralCodeMixin):
     def __init__(self, source, conditions, operator='&&', nl_after=True):
         super().__init__(
             source,

@@ -9,11 +9,10 @@
 import re
 
 from build_assistant.codegen.abstract.AbstractCodeSection import AbstractCodeSection
-from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
-class AbstractCodeSectionWithContent(AbstractCodeSection, ProceduralCodeMixin):
+class AbstractCodeSectionWithContent(AbstractCodeSection):
     content_items = None
 
     def __init__(self, source):

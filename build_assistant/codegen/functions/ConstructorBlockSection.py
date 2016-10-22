@@ -7,9 +7,10 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
+from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 
 
-class ConstructorBlockSection(GeneralizedBlockSection):
+class ConstructorBlockSection(GeneralizedBlockSection, ProceduralCodeMixin):
     def __init__(self, source, class_name, *params, inherits=None):
         super().__init__(
             source,

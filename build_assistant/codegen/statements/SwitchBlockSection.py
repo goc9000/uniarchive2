@@ -8,9 +8,10 @@
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
 from build_assistant.codegen.statements.CaseBlockSection import CaseBlockSection
+from build_assistant.codegen.mixins.ProceduralCodeMixin import ProceduralCodeMixin
 
 
-class SwitchBlockSection(GeneralizedBlockSection):
+class SwitchBlockSection(GeneralizedBlockSection, ProceduralCodeMixin):
     def __init__(self, source, switch_by, nl_after=True):
         super().__init__(source, 'switch ', params=[switch_by], nl_after=nl_after)
 
