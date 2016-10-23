@@ -54,11 +54,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
     # Toplevel blocks
 
-    def _generalized_block(self, *args, **kwargs):
-        from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
-
-        return self.subsection(GeneralizedBlockSection(self.source, *args, **kwargs))
-
     def _generalized_head(self, *args, **kwargs):
         from build_assistant.codegen.abstract.GeneralizedHeadSection import GeneralizedHeadSection
 
