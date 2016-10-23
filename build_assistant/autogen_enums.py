@@ -61,24 +61,24 @@ def gen_enums(autogen_config, autogen_core):
             with fn.switch_block(varname) as sw:
                 for value in enum_config.values:
                     with sw.case_block(name + '::' + value.constant) as c:
-                        c.line('return {0};'.format(cpp_string_literal(value.text)))
+                        c.code_line('return {0}', cpp_string_literal(value.text))
 
-            fn.line('invariant_violation("Invalid {0} value (%d)", {1});'.format(name, varname))
+            fn.code_line('invariant_violation("Invalid {0} value (%d)", {1})', name, varname)
 
         h_source.code.nl()
 
         with cpp_source.code.function(
             'operator<< ', 'QDebug', ('QDebug', 'stream'), parameter_spec, declare_in=h_source.code
         ) as fn:
-            fn.line('stream << QP({0}({1}));'.format(name_for_function, varname)) \
+            fn.code_line('stream << QP({0}({1}))', name_for_function, varname) \
               .nl() \
-              .line('return stream;')
+              .code_line('return stream')
 
             cpp_source.use_symbol('QP')
 
         with cpp_source.code.function(
             'operator<< ', 'QDataStream&', ('QDataStream&', 'mut_stream'), parameter_spec, declare_in=h_source.code
         ) as fn:
-            fn.line('mut_stream << (quint32){0};'.format(varname)) \
+            fn.code_line('mut_stream << (quint32){0}', varname) \
                 .nl() \
-                .line('return mut_stream;')
+                .code_line('return mut_stream')

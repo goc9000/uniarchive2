@@ -87,7 +87,7 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
         with cpp_code.method(
             self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
         ) as method:
-            method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
+            method.code_line("return {0}::{1}", SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper())
 
     def gen_protected_block_code(self, cpp_code, struct_block):
         self._gen_debug_write_method(cpp_code, struct_block)
@@ -111,11 +111,11 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
                 item_name = self.debug_write_name_override or self._name
 
                 if len(self.fields) == 0:
-                    method.line('stream << "[{0}]";'.format(item_name))
+                    method.code_line('stream << "[{0}]"', item_name)
                 else:
-                    method.line('stream << "[{0}";'.format(item_name))
+                    method.code_line('stream << "[{0}"', item_name)
                     self.gen_debug_write_field_code(method, self.fields)
-                    method.line('stream << "]";')
+                    method.code_line('stream << "]"')
 
 
 class ContentItemFieldAugment(GenericPolymorphicFieldAugment):
@@ -191,7 +191,7 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
         with cpp_code.method(
             self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare_in=struct_block
         ) as method:
-            method.line("return {0};".format(cpp_string_literal(self._tag_name_for_display())))
+            method.code_line("return {0}", cpp_string_literal(self._tag_name_for_display()))
 
     def _debug_write_method_name(self):
         return 'write' + ('OpenTag' if self.tag_type == ContentItemTagType.STANDARD else '') + 'AttributesToDebugStream'

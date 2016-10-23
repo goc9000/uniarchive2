@@ -12,6 +12,13 @@ class ProceduralCodeMixin:
     This mixin is added to code sections that contain procedural constructs, such as if, else, switch, etc. Examples
     of such sections include functions, methods, as well as if/for/etc. blocks themselves.
     """
+    def code_line(self, line_format, *args, **kwargs):
+        from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+
+        assert isinstance(self, AbstractCodeSectionWithContent)
+
+        return self.line(line_format.format(*args, **kwargs) + ';')
+
     def declare_var(self, type, name, default_value=None):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 

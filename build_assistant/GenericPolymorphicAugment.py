@@ -112,7 +112,7 @@ class GenericPolymorphicAugment(Augment):
                     cons.line(line)
 
                 if self.has_mandatory_fields_sanity_check():
-                    cons.line('sanityCheckMandatoryParameters();')
+                    cons.code_line('sanityCheckMandatoryParameters()')
 
                 for field in ctor_info.extra_fields:
                     field.gen_param_check(cons, disambiguate=True)
@@ -151,18 +151,19 @@ class GenericPolymorphicAugment(Augment):
                 rvalue = field_config.as_print_rvalue(block)
 
                 with block.if_block('{0} == 1'.format(field_config.as_subfield_value('size()')), nl_after=False) as b:
-                    b.line('stream << {0} << {1};'.format(
+                    b.code_line(
+                        'stream << {0} << {1}',
                         field_config.singularized().debug_write_header(),
-                        field_config.as_subfield_value('front()')
-                    ))
+                        field_config.as_subfield_value('front()'),
+                    )
                     with b.else_block() as e:
-                        b.line('stream << {0} << {1};'.format(field_config.debug_write_header(), rvalue))
+                        e.code_line('stream << {0} << {1}', field_config.debug_write_header(), rvalue)
             else:
                 write_irregular_field3(block, field_config)
 
         def write_irregular_field3(block, field_config):
-            block.line(
-                'stream << {0} << {1};'.format(field_config.debug_write_header(), field_config.as_print_rvalue(block))
+            block.code_line(
+                'stream << {0} << {1}', field_config.debug_write_header(), field_config.as_print_rvalue(block)
             )
 
         regular_fields_section = None
@@ -185,8 +186,8 @@ class GenericPolymorphicAugment(Augment):
             declare_in=h_code
         ) as method:
             method \
-                .line('{0}->writeToDebugStream(stream);'.format(varname)) \
-                .line('return stream;')
+                .code_line('{0}->writeToDebugStream(stream)', varname) \
+                .code_line('return stream')
 
     def has_private_block(self):
         return self.has_mandatory_fields_sanity_check()

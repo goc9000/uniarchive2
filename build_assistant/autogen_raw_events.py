@@ -140,7 +140,7 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
         with cpp_code.method(
             self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=block
         ) as method:
-            method.line("return name_for_raw_event_sub_type(subType());")
+            method.code_line('return name_for_raw_event_sub_type(subType())')
 
     def gen_debug_write_method(self, cpp_code, block):
         time_field = None
@@ -160,11 +160,11 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
         ) as method:
             method \
                 .declare_var('QDebugStateSaver', 'saver(stream)') \
-                .line('stream.nospace();').nl() \
-                .line('stream << "#" << {0} << " ";'.format(index_field.as_print_rvalue(cpp_code))) \
-                .line('stream << "[" << {0} << "] ";'.format(time_field.as_print_rvalue(cpp_code))).nl() \
-                .line('stream << QP(eventName());') \
-                .line('writeDetailsToDebugStream(stream);').nl()
+                .code_line('stream.nospace()').nl() \
+                .code_line('stream << "#" << {0} << " "', index_field.as_print_rvalue(cpp_code)) \
+                .code_line('stream << "[" << {0} << "] "', time_field.as_print_rvalue(cpp_code)).nl() \
+                .code_line('stream << QP(eventName())') \
+                .code_line('writeDetailsToDebugStream(stream)').nl()
             cpp_code.source.use_symbol('QP')
 
             self.gen_debug_write_field_code(method, remaining_fields)
@@ -204,7 +204,7 @@ class EventConfigAugment(AbstractEventConfigAugment):
         with cpp_code.method(
             self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
         ) as method:
-            method.line("return {0}::{1};".format(SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper()))
+            method.code_line("return {0}::{1}", SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper())
 
     def gen_event_name_method(self, cpp_code, struct_block):
         if self.custom_name_method:
