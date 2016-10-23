@@ -19,6 +19,12 @@ class ProceduralCodeMixin:
 
         return self.line(line_format.format(*args, **kwargs) + ';')
 
+    def ret(self, expr_format, *args, **kwargs):
+        """
+        Shortcut for the frequently used "return ...;" code line.
+        """
+        return self.code_line('return ' + expr_format, *args, **kwargs)
+
     def declare_var(self, type, name, default_value=None):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 

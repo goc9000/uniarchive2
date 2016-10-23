@@ -187,7 +187,7 @@ class GenericPolymorphicAugment(Augment):
         ) as method:
             method \
                 .code_line('{0}->writeToDebugStream(stream)', varname) \
-                .code_line('return stream')
+                .ret('stream')
 
     def has_private_block(self):
         return self.has_mandatory_fields_sanity_check()

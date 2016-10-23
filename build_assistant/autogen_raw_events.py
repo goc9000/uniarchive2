@@ -140,7 +140,7 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
         with cpp_code.method(
             self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=block
         ) as method:
-            method.code_line('return name_for_raw_event_sub_type(subType())')
+            method.ret('name_for_raw_event_sub_type(subType())')
 
     def gen_debug_write_method(self, cpp_code, block):
         time_field = None
@@ -204,7 +204,7 @@ class EventConfigAugment(AbstractEventConfigAugment):
         with cpp_code.method(
             self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
         ) as method:
-            method.code_line("return {0}::{1}", SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper())
+            method.ret('{0}::{1}', SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper())
 
     def gen_event_name_method(self, cpp_code, struct_block):
         if self.custom_name_method:
