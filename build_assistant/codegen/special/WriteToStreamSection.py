@@ -1,4 +1,4 @@
-# build_assistant/codegen/WriteToStreamSection.py
+# build_assistant/codegen/special/WriteToStreamSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

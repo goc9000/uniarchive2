@@ -9,7 +9,7 @@
 from collections import namedtuple
 
 from build_assistant.AutoGenConfig import GenericPolymorphicConfig
-from build_assistant.codegen.WriteToStreamSection import WriteToStreamSection
+from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import classname_to_varname
 
