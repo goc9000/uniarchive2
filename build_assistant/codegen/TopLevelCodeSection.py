@@ -7,10 +7,10 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-from build_assistant.codegen.mixins.DeclareEnumsMixin import DeclareEnumsMixin
+from build_assistant.codegen.mixins.NonProceduralCodeMixin import NonProceduralCodeMixin
 
 
-class TopLevelCodeSection(AbstractCodeSectionWithContent, DeclareEnumsMixin):
+class TopLevelCodeSection(AbstractCodeSectionWithContent, NonProceduralCodeMixin):
 
     def __init__(self, source):
         super().__init__(source)
