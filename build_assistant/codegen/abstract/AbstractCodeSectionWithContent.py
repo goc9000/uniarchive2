@@ -22,7 +22,7 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
         for item in self.content_items:
             yield item
 
-    # Basics
+    # Basic constructs applicable to any section
 
     def line(self, line):
         self.content_items.append(line.rstrip())
@@ -34,8 +34,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
     def subsection(self, section):
         self.content_items.append(section)
         return section
-
-    # Comments
 
     def line_comment(self, comment):
         for line in comment.split("\n"):
@@ -50,26 +48,17 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         return self
 
-    # Toplevel blocks
-
-    def _generalized_head(self, *args, **kwargs):
-        from build_assistant.codegen.abstract.GeneralizedHeadSection import GeneralizedHeadSection
-
-        self.content_items.append(GeneralizedHeadSection(self.source, *args, **kwargs))
-
-        return self
-
-    # Calls
-
-    def call(self, function, *values):
-        return self._generalized_head(function, params=values)
-
-    # Custom sections
-
     def custom_section(self, name):
         self.source.custom_sections.add(name)
 
         self.line(BEGIN_CUSTOM_SECTION_LINE_PREFIX + name)
         self.line(END_CUSTOM_SECTION_LINE_PREFIX + name)
+
+        return self
+
+    def _generalized_head(self, *args, **kwargs):
+        from build_assistant.codegen.abstract.GeneralizedHeadSection import GeneralizedHeadSection
+
+        self.content_items.append(GeneralizedHeadSection(self.source, *args, **kwargs))
 
         return self

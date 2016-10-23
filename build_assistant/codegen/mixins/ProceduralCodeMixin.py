@@ -21,6 +21,13 @@ class ProceduralCodeMixin:
 
         return self.line('{0} {1}{2};'.format(type, name, ' = ' + default_value if default_value is not None else ''))
 
+    def call(self, function, *values):
+        from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+
+        assert isinstance(self, AbstractCodeSectionWithContent)
+
+        return self._generalized_head(function, params=values)
+
     def if_block(self, *conditions, operator='&&', nl_after=True):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
         from build_assistant.codegen.statements.IfBlockSection import IfBlockSection
