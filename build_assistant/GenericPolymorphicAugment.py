@@ -126,7 +126,6 @@ class GenericPolymorphicAugment(Augment):
 
     def gen_private_block(self, struct):
         if self.has_private_block():
-            struct.nl()
             with struct.private_block() as block:
                 block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
 

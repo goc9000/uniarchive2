@@ -54,8 +54,6 @@ def gen_content_items(autogen_config, autogen_core):
                 block.nl()
                 item_config.gen_subtype_method(cpp_source.code, block)
 
-            struct.nl()
-
             with struct.protected_block() as block:
                 item_config.gen_protected_block_code(cpp_source.code, block)
 

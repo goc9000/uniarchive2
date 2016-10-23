@@ -64,8 +64,6 @@ def gen_raw_events(autogen_config, autogen_core):
                 block.nl()
                 event_config.gen_event_name_method(cpp_source.code, block)
 
-            struct.nl()
-
             with struct.protected_block() as block:
                 event_config.gen_debug_write_details_method(cpp_source.code, block)
 
@@ -91,8 +89,6 @@ def gen_base_raw_event(base_event_config, autogen_core):
             base_event_config.gen_event_name_method(cpp_source.code, block)
             block.nl()
             base_event_config.gen_debug_write_method(cpp_source.code, block)
-
-        struct.nl()
 
         with struct.protected_block() as block:
             base_event_config.gen_debug_write_details_method(cpp_source.code, block)
