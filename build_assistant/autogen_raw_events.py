@@ -159,7 +159,7 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
             'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare_in=block
         ) as method:
             method \
-                .field('QDebugStateSaver', 'saver(stream)') \
+                .declare_var('QDebugStateSaver', 'saver(stream)') \
                 .line('stream.nospace();').nl() \
                 .line('stream << "#" << {0} << " ";'.format(index_field.as_print_rvalue(cpp_code))) \
                 .line('stream << "[" << {0} << "] ";'.format(time_field.as_print_rvalue(cpp_code))).nl() \

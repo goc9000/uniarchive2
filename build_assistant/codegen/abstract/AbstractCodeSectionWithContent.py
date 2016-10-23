@@ -59,13 +59,6 @@ class AbstractCodeSectionWithContent(AbstractCodeSection):
 
         return self
 
-    # Fields
-
-    def field(self, type, name, default_value=None):
-        self.source.use_symbol(type)
-
-        return self.line('{0} {1}{2};'.format(type, name, ' = ' + default_value if default_value is not None else ''))
-
     # Calls
 
     def call(self, function, *values):

@@ -81,6 +81,15 @@ class NonProceduralCodeMixin(DeclareEnumsMixin):
 
         return self.subsection(ConstructorBlockSection(self.source, class_name, *params, inherits=inherits))
 
+    def field(self, type, name, default_value=None):
+        from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+
+        assert isinstance(self, AbstractCodeSectionWithContent)
+
+        self.source.use_symbol(type)
+
+        return self.line('{0} {1}{2};'.format(type, name, ' = ' + default_value if default_value is not None else ''))
+
 
 def _adjust_params_for_declare(params):
     return [(re.sub(r'\s+UNUSED\s*$', '', type), name) for type, name in params]
