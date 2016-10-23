@@ -22,7 +22,7 @@ class TopLevelCodeSection(AbstractCodeSectionWithContent, NonProceduralCodeMixin
         return self._struct_or_class_block(name, inherits, True)
 
     def _struct_or_class_block(self, name, inherits, struct):
-        from build_assistant.codegen.ClassBlockSection import ClassBlockSection
+        from build_assistant.codegen.declarations.ClassBlockSection import ClassBlockSection
 
         inherits = inherits or list()
 

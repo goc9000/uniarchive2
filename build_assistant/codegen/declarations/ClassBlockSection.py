@@ -1,4 +1,4 @@
-# build_assistant/codegen/ClassBlockSection.py
+# build_assistant/codegen/declarations/ClassBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
-from build_assistant.codegen.VisibilityBlockSection import VisibilityBlockSection
+from build_assistant.codegen.declarations.VisibilityBlockSection import VisibilityBlockSection
 from build_assistant.codegen.mixins.DeclareClassStuffMixin import DeclareClassStuffMixin
 
 

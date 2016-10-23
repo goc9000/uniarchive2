@@ -1,4 +1,4 @@
-# build_assistant/codegen/EnumBlockSection.py
+# build_assistant/codegen/declarations/EnumBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

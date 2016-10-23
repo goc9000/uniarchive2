@@ -1,4 +1,4 @@
-# build_assistant/codegen/VisibilityBlockSection.py
+# build_assistant/codegen/declarations/VisibilityBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

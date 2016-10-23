@@ -17,7 +17,7 @@ class NonProceduralCodeMixin:
     """
     def enum_class_block(self, name):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-        from build_assistant.codegen.EnumBlockSection import EnumBlockSection
+        from build_assistant.codegen.declarations.EnumBlockSection import EnumBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
 
