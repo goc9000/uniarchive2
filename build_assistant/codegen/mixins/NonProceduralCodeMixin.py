@@ -8,15 +8,21 @@
 
 import re
 
-from build_assistant.codegen.mixins.DeclareEnumsMixin import DeclareEnumsMixin
 
-
-class NonProceduralCodeMixin(DeclareEnumsMixin):
+class NonProceduralCodeMixin:
     """
     This mixin is added to code sections that contain general non-procedural constructs, such as field, function or
     enum declarations. Note that class declarations are not included in this definition, as they can only be declared
     in a top-level code section.
     """
+    def enum_class_block(self, name):
+        from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+        from build_assistant.codegen.EnumBlockSection import EnumBlockSection
+
+        assert isinstance(self, AbstractCodeSectionWithContent)
+
+        return self.subsection(EnumBlockSection(self.source, name, enum_class=True))
+
     def declare_fn(self, function_name, return_type, *params, const=False, virtual=False, abstract=False):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 
