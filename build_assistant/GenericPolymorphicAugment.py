@@ -39,9 +39,6 @@ class GenericPolymorphicAugment(Augment):
     def parent_class(self, no_template=None):
         raise NotImplementedError
 
-    def has_private_block(self):
-        return self.has_mandatory_fields_sanity_check()
-
     def has_mandatory_fields(self):
         return any(f.is_mandatory() for f in self.fields)
 
@@ -137,8 +134,8 @@ class GenericPolymorphicAugment(Augment):
                         field.gen_param_check(method)
 
     def gen_private_block(self, struct):
-        if self.has_private_block():
-            with struct.private_block() as block:
+        with struct.private_block() as block:
+            if self.has_mandatory_fields_sanity_check():
                 block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
 
     def gen_debug_write_field_code(self, method, fields):
