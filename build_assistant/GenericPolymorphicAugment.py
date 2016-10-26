@@ -39,6 +39,15 @@ class GenericPolymorphicAugment(Augment):
     def parent_class(self, no_template=None):
         raise NotImplementedError
 
+    def has_private_block(self):
+        return self.has_mandatory_fields_sanity_check()
+
+    def has_mandatory_fields(self):
+        return any(f.is_mandatory() for f in self.fields)
+
+    def has_mandatory_fields_sanity_check(self):
+        return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
+
     def constructors(self):
         base_fields = self.mandatory_base_fields()
         free_fields = self.fields
@@ -190,12 +199,3 @@ class GenericPolymorphicAugment(Augment):
             method \
                 .code_line('{0}->writeToDebugStream(stream)', varname) \
                 .ret('stream')
-
-    def has_private_block(self):
-        return self.has_mandatory_fields_sanity_check()
-
-    def has_mandatory_fields(self):
-        return any(f.is_mandatory() for f in self.fields)
-
-    def has_mandatory_fields_sanity_check(self):
-        return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
