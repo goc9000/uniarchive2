@@ -11,17 +11,36 @@ from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import Abst
 
 
 class AbstractBlockSection(AbstractCodeSectionWithContent):
+    auto_collapse = None  # Return no lines if content is empty
 
-    def __init__(self, source):
+    def __init__(self, source, auto_collapse=False):
         super().__init__(source)
 
+        self.auto_collapse = auto_collapse
+
     def gen_lines(self, indent_level):
-        for line in self._gen_lines_for_items(self._gen_header_items(indent_level), indent_level):
-            yield line
-        for line in filter_lines(self._gen_lines_for_items(self._gen_items(indent_level), indent_level)):
-            yield line
-        for line in self._gen_lines_for_items(self._gen_footer_items(indent_level), indent_level):
-            yield line
+        if not self.auto_collapse:
+            for line in self._gen_lines_for_items(self._gen_header_items(indent_level), indent_level):
+                yield line
+            for line in filter_lines(self._gen_lines_for_items(self._gen_items(indent_level), indent_level)):
+                yield line
+            for line in self._gen_lines_for_items(self._gen_footer_items(indent_level), indent_level):
+                yield line
+        else:
+            header_emitted = False
+
+            for line in filter_lines(self._gen_lines_for_items(self._gen_items(indent_level), indent_level)):
+                if not header_emitted:
+                    header_emitted = True
+
+                    for header_line in self._gen_lines_for_items(self._gen_header_items(indent_level), indent_level):
+                        yield header_line
+
+                yield line
+
+            if header_emitted:
+                for line in self._gen_lines_for_items(self._gen_footer_items(indent_level), indent_level):
+                    yield line
 
     def _gen_header_items(self, indent_level):
         raise NotImplementedError

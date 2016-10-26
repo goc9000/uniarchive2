@@ -56,9 +56,10 @@ class GeneralizedBlockSection(AbstractBlockSection):
         inherits=None,
         decorations=None,
         semicolon=False,
-        nl_after=True
+        nl_after=True,
+        auto_collapse=False,
     ):
-        super().__init__(source)
+        super().__init__(source, auto_collapse=auto_collapse)
 
         self.head = head
         self.params = params

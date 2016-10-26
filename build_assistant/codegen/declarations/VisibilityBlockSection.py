@@ -15,8 +15,8 @@ from build_assistant.util.empty_generator import empty_generator
 class VisibilityBlockSection(AbstractBlockSection, DeclareClassStuffMixin):
     kind = None
 
-    def __init__(self, source, kind):
-        super().__init__(source)
+    def __init__(self, source, kind, auto_collapse=True):
+        super().__init__(source, auto_collapse=auto_collapse)
 
         self.kind = kind
 
