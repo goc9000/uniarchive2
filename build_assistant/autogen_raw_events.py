@@ -47,55 +47,17 @@ def gen_raw_events(autogen_config, autogen_core):
 
     for rel_path, name, event_config in autogen_config.raw_events:
         event_config = EventConfigAugment(name, event_config, autogen_core, base_config=base_event_config)
-        class_name = event_config.class_name()
 
-        cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), class_name)
+        cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), event_config.class_name())
+        h_source.cover_symbols_from(base_event_h)
 
-        with h_source.code.struct_block(class_name, inherits=[event_config.parent_class()]) as struct:
-            h_source.cover_symbols_from(base_event_h)
-
-            with struct.public_block() as block:
-                event_config.gen_field_declarations(block)
-                event_config.gen_constructors(cpp_source.code, block)
-                event_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
-
-                block.nl()
-                event_config.gen_subtype_method(cpp_source.code, block)
-                block.nl()
-                event_config.gen_event_name_method(cpp_source.code, block)
-
-            with struct.protected_block() as block:
-                event_config.gen_debug_write_details_method(cpp_source.code, block)
-
-            event_config.gen_private_block(struct)
+        event_config.gen_code(cpp_source, h_source)
 
 
 def gen_base_raw_event(base_event_config, autogen_core):
-    class_name = base_event_config.class_name()
+    cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH, base_event_config.class_name())
 
-    cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH, class_name)
-
-    with h_source.code.struct_block(class_name) as struct:
-        with struct.public_block() as block:
-            base_event_config.gen_field_declarations(block)
-            base_event_config.gen_constructors(cpp_source.code, block)
-            base_event_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
-
-            block.nl().line('POLYMORPHIC_HELPERS').nl()
-            block.source.include("utils/language/polymorphic_helpers.h")
-
-            base_event_config.gen_subtype_method(cpp_source.code, block)
-            block.nl()
-            base_event_config.gen_event_name_method(cpp_source.code, block)
-            block.nl()
-            base_event_config.gen_debug_write_method(cpp_source.code, block)
-
-        with struct.protected_block() as block:
-            base_event_config.gen_debug_write_details_method(cpp_source.code, block)
-
-        base_event_config.gen_private_block(struct)
-
-    base_event_config.gen_debug_write_operator(cpp_source.code, h_source.code)
+    base_event_config.gen_code(cpp_source, h_source)
 
     return h_source
 
@@ -128,6 +90,29 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
 
     def parent_class(self, no_template=None):
         return None
+
+    def gen_code(self, cpp_source, h_source):
+        with h_source.code.struct_block(self.class_name()) as struct:
+            with struct.public_block() as block:
+                self.gen_field_declarations(block)
+                self.gen_constructors(cpp_source.code, block)
+                self.gen_mandatory_fields_sanity_check_method(cpp_source.code)
+
+                block.nl().line('POLYMORPHIC_HELPERS').nl()
+                block.source.include("utils/language/polymorphic_helpers.h")
+
+                self.gen_subtype_method(cpp_source.code, block)
+                block.nl()
+                self.gen_event_name_method(cpp_source.code, block)
+                block.nl()
+                self.gen_debug_write_method(cpp_source.code, block)
+
+            with struct.protected_block() as block:
+                self.gen_debug_write_details_method(cpp_source.code, block)
+
+            self.gen_private_block(struct)
+
+        self.gen_debug_write_operator(cpp_source.code, h_source.code)
 
     def gen_subtype_method(self, cpp_code, struct_block):
         struct_block.declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
@@ -195,6 +180,23 @@ class EventConfigAugment(AbstractEventConfigAugment):
             return 'RawFailableEvent'
         else:
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
+
+    def gen_code(self, cpp_source, h_source):
+        with h_source.code.struct_block(self.class_name(), inherits=[self.parent_class()]) as struct:
+            with struct.public_block() as block:
+                self.gen_field_declarations(block)
+                self.gen_constructors(cpp_source.code, block)
+                self.gen_mandatory_fields_sanity_check_method(cpp_source.code)
+
+                block.nl()
+                self.gen_subtype_method(cpp_source.code, block)
+                block.nl()
+                self.gen_event_name_method(cpp_source.code, block)
+
+            with struct.protected_block() as block:
+                self.gen_debug_write_details_method(cpp_source.code, block)
+
+            self.gen_private_block(struct)
 
     def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(

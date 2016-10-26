@@ -90,6 +90,9 @@ class GenericPolymorphicAugment(Augment):
 
             extra_enabled_fields.add(field_config.name)
 
+    def gen_code(self, cpp_source, h_source):
+        raise NotImplementedError
+
     def gen_field_declarations(self, block):
         if len(self.fields) > 0:
             for index, field in enumerate(self.fields):

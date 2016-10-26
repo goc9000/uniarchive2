@@ -46,18 +46,7 @@ def gen_content_items(autogen_config, autogen_core):
 
         h_source.cover_symbols(item_config.implicitly_covered_symbols())
 
-        with h_source.code.struct_block(class_name, inherits=[item_config.parent_class()]) as struct:
-            with struct.public_block() as block:
-                item_config.gen_field_declarations(block)
-                item_config.gen_constructors(cpp_source.code, block)
-                item_config.gen_mandatory_fields_sanity_check_method(cpp_source.code)
-                block.nl()
-                item_config.gen_subtype_method(cpp_source.code, block)
-
-            with struct.protected_block() as block:
-                item_config.gen_protected_block_code(cpp_source.code, block)
-
-            item_config.gen_private_block(struct)
+        item_config.gen_code(cpp_source, h_source)
 
 
 class ContentItemConfigAugment(GenericPolymorphicAugment):
@@ -80,6 +69,20 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
 
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
+
+    def gen_code(self, cpp_source, h_source):
+        with h_source.code.struct_block(self.class_name(), inherits=[self.parent_class()]) as struct:
+            with struct.public_block() as block:
+                self.gen_field_declarations(block)
+                self.gen_constructors(cpp_source.code, block)
+                self.gen_mandatory_fields_sanity_check_method(cpp_source.code)
+                block.nl()
+                self.gen_subtype_method(cpp_source.code, block)
+
+            with struct.protected_block() as block:
+                self.gen_protected_block_code(cpp_source.code, block)
+
+            self.gen_private_block(struct)
 
     def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(
