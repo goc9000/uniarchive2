@@ -96,7 +96,18 @@ class GenericPolymorphicAugment(Augment):
 
             extra_enabled_fields.add(field_config.name)
 
+    def class_inherits(self):
+        return [self.parent_class()] if self.parent_class() is not None else None
+
     def gen_code(self, cpp_source, h_source):
+        with h_source.code.struct_block(self.class_name(), inherits=self.class_inherits()) as struct_block:
+            public_block = struct_block.public_block()
+            protected_block = struct_block.protected_block()
+            private_block = struct_block.private_block()
+
+        self.gen_code_impl(cpp_source, h_source, public_block, protected_block, private_block)
+
+    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
         raise NotImplementedError
 
     def gen_field_declarations(self, block):
@@ -126,17 +137,14 @@ class GenericPolymorphicAugment(Augment):
                 for field in ctor_info.extra_fields:
                     field.gen_param_check(cons, disambiguate=True)
 
-    def gen_mandatory_fields_sanity_check_method(self, cpp_code):
+    def gen_mandatory_fields_sanity_check_method(self, cpp_code, private_block):
         if self.has_mandatory_fields_sanity_check():
-            with cpp_code.method(self.class_name(), 'sanityCheckMandatoryParameters', 'void', const=True) as method:
+            with cpp_code.method(
+                self.class_name(), 'sanityCheckMandatoryParameters', 'void', const=True, declare_in=private_block
+            ) as method:
                 for field in self.fields:
                     if field.is_mandatory() and field.is_checkable():
                         field.gen_param_check(method)
-
-    def gen_private_block(self, struct):
-        with struct.private_block() as block:
-            if self.has_mandatory_fields_sanity_check():
-                block.declare_fn('sanityCheckMandatoryParameters', 'void', const=True)
 
     def gen_debug_write_field_code(self, method, fields):
         def write_regular_field(block, regular_fields_section, field_config):

@@ -70,19 +70,15 @@ class ContentItemConfigAugment(GenericPolymorphicAugment):
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
 
-    def gen_code(self, cpp_source, h_source):
-        with h_source.code.struct_block(self.class_name(), inherits=[self.parent_class()]) as struct:
-            with struct.public_block() as block:
-                self.gen_field_declarations(block)
-                self.gen_constructors(cpp_source.code, block)
-                self.gen_mandatory_fields_sanity_check_method(cpp_source.code)
-                block.nl()
-                self.gen_subtype_method(cpp_source.code, block)
+    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
+        with public_block as block:
+            self.gen_field_declarations(block)
+            self.gen_constructors(cpp_source.code, block)
+            self.gen_mandatory_fields_sanity_check_method(cpp_source.code, private_block)
+            block.nl()
+            self.gen_subtype_method(cpp_source.code, block)
 
-            with struct.protected_block() as block:
-                self.gen_protected_block_code(cpp_source.code, block)
-
-            self.gen_private_block(struct)
+        self.gen_protected_block_code(cpp_source.code, protected_block)
 
     def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(

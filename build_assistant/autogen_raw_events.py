@@ -91,26 +91,22 @@ class BaseEventConfigAugment(AbstractEventConfigAugment):
     def parent_class(self, no_template=None):
         return None
 
-    def gen_code(self, cpp_source, h_source):
-        with h_source.code.struct_block(self.class_name()) as struct:
-            with struct.public_block() as block:
-                self.gen_field_declarations(block)
-                self.gen_constructors(cpp_source.code, block)
-                self.gen_mandatory_fields_sanity_check_method(cpp_source.code)
+    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
+        with public_block as block:
+            self.gen_field_declarations(block)
+            self.gen_constructors(cpp_source.code, block)
+            self.gen_mandatory_fields_sanity_check_method(cpp_source.code, private_block)
 
-                block.nl().line('POLYMORPHIC_HELPERS').nl()
-                block.source.include("utils/language/polymorphic_helpers.h")
+            block.nl().line('POLYMORPHIC_HELPERS').nl()
+            block.source.include("utils/language/polymorphic_helpers.h")
 
-                self.gen_subtype_method(cpp_source.code, block)
-                block.nl()
-                self.gen_event_name_method(cpp_source.code, block)
-                block.nl()
-                self.gen_debug_write_method(cpp_source.code, block)
+            self.gen_subtype_method(cpp_source.code, block)
+            block.nl()
+            self.gen_event_name_method(cpp_source.code, block)
+            block.nl()
+            self.gen_debug_write_method(cpp_source.code, block)
 
-            with struct.protected_block() as block:
-                self.gen_debug_write_details_method(cpp_source.code, block)
-
-            self.gen_private_block(struct)
+        self.gen_debug_write_details_method(cpp_source.code, protected_block)
 
         self.gen_debug_write_operator(cpp_source.code, h_source.code)
 
@@ -181,22 +177,18 @@ class EventConfigAugment(AbstractEventConfigAugment):
         else:
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
 
-    def gen_code(self, cpp_source, h_source):
-        with h_source.code.struct_block(self.class_name(), inherits=[self.parent_class()]) as struct:
-            with struct.public_block() as block:
-                self.gen_field_declarations(block)
-                self.gen_constructors(cpp_source.code, block)
-                self.gen_mandatory_fields_sanity_check_method(cpp_source.code)
+    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
+        with public_block as block:
+            self.gen_field_declarations(block)
+            self.gen_constructors(cpp_source.code, block)
+            self.gen_mandatory_fields_sanity_check_method(cpp_source.code, private_block)
 
-                block.nl()
-                self.gen_subtype_method(cpp_source.code, block)
-                block.nl()
-                self.gen_event_name_method(cpp_source.code, block)
+            block.nl()
+            self.gen_subtype_method(cpp_source.code, block)
+            block.nl()
+            self.gen_event_name_method(cpp_source.code, block)
 
-            with struct.protected_block() as block:
-                self.gen_debug_write_details_method(cpp_source.code, block)
-
-            self.gen_private_block(struct)
+        self.gen_debug_write_details_method(cpp_source.code, protected_block)
 
     def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(
