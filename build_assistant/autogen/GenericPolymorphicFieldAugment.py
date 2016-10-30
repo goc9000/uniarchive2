@@ -1,4 +1,4 @@
-# build_assistant/GenericPolymorphicFieldAugment.py
+# build_assistant/autogen/GenericPolymorphicFieldAugment.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #

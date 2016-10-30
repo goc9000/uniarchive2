@@ -1,4 +1,4 @@
-# build_assistant/GenericPolymorphicAugment.py
+# build_assistant/autogen/GenericPolymorphicAugment.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -6,15 +6,11 @@
 #
 # Licensed under the GPL-3
 
-from collections import namedtuple
-
 from build_assistant.AutoGenConfig import GenericPolymorphicConfig
+from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import classname_to_varname
-
-
-ConstructorInfo = namedtuple('ConstructorInfo', ['params', 'subconstructors', 'init_statements', 'extra_fields'])
 
 
 class GenericPolymorphicAugment(Augment):
