@@ -199,17 +199,17 @@ def parse_content_item_config(entity_config):
     def parse_content_item_tag_field(attrs):
         prefixes = attrs['prefixes']
         del attrs['prefixes']
-        return ContentItemTagFieldConfig(**attrs, is_primary=('primary' in prefixes))
+        return TagContentItemFieldConfig(**attrs, is_primary=('primary' in prefixes))
 
     def parse_tag_type(tag_type):
         if tag_type is None:
             return None
         elif tag_type == 'standard':
-            return ContentItemTagType.STANDARD
+            return TagContentItemType.STANDARD
         elif tag_type == 'symmetric':
-            return ContentItemTagType.SYMMETRIC
+            return TagContentItemType.SYMMETRIC
         elif tag_type == 'self-closing':
-            return ContentItemTagType.SELF_CLOSING
+            return TagContentItemType.SELF_CLOSING
 
         assert False, 'Unsupported tag type: {0}'.format(tag_type)
 
@@ -221,7 +221,7 @@ def parse_content_item_config(entity_config):
     }), 'Unsupported custom directive'
 
     if 'tag type' in preparsed.options:
-        return ContentItemTagConfig(
+        return TagContentItemConfig(
             **parse_generic_polymorphic_config(preparsed, parse_content_item_tag_field, supported_prefixes=['primary']),
             tag_type=parse_tag_type(preparsed.options['tag type']),
             tag_name_override=preparsed.options.get('tag name'),
@@ -294,10 +294,10 @@ class ContentItemFieldConfig(GenericPolymorphicFieldConfig):
         )
 
 
-ContentItemTagType = Enum('ContentItemTagType', ['STANDARD', 'SYMMETRIC', 'SELF_CLOSING'])
+TagContentItemType = Enum('ContentItemTagType', ['STANDARD', 'SYMMETRIC', 'SELF_CLOSING'])
 
 
-class ContentItemTagConfig(ContentItemConfig):
+class TagContentItemConfig(ContentItemConfig):
     def __init__(self, _superclass_fields=None, **kwargs):
         ContentItemConfig.__init__(
             self,
@@ -306,7 +306,7 @@ class ContentItemTagConfig(ContentItemConfig):
         )
 
 
-class ContentItemTagFieldConfig(ContentItemFieldConfig):
+class TagContentItemFieldConfig(ContentItemFieldConfig):
     def __init__(self, _superclass_fields=None, **kwargs):
         ContentItemFieldConfig.__init__(
             self,

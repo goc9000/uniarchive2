@@ -1,4 +1,4 @@
-# build_assistant/autogen/content_items/ContentItemConfigAugment.py
+# build_assistant/autogen/content_items/TagContentItemConfigAugment.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -6,40 +6,40 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import ContentItemTagType, ContentItemTagConfig
+from build_assistant.AutoGenConfig import TagContentItemType, TagContentItemConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.autogen.content_items.ContentItemConfigAugment import ContentItemConfigAugment
-from build_assistant.autogen.content_items.ContentItemTagFieldAugment import ContentItemTagFieldAugment
+from build_assistant.autogen.content_items.TagContentItemFieldAugment import TagContentItemFieldAugment
 from build_assistant.codegen.codegen_utils import cpp_string_literal
 
 
-class ContentItemTagConfigAugment(ContentItemConfigAugment):
+class TagContentItemConfigAugment(ContentItemConfigAugment):
     def __init__(self, name, item_config, autogen_core):
-        assert isinstance(item_config, ContentItemTagConfig), 'Augmented object should be ContentItemTagConfig'
+        assert isinstance(item_config, TagContentItemConfig), 'Augmented object should be ContentItemTagConfig'
 
         ContentItemConfigAugment.__init__(
             self, name, item_config, autogen_core,
-            field_augment_override=lambda field_config, core: ContentItemTagFieldAugment(field_config, core, self)
+            field_augment_override=lambda field_config, core: TagContentItemFieldAugment(field_config, core, self)
         )
 
     def parent_class(self, no_template=False):
-        if self.tag_type == ContentItemTagType.STANDARD:
+        if self.tag_type == TagContentItemType.STANDARD:
             return 'StandardTag'
-        elif self.tag_type == ContentItemTagType.SYMMETRIC:
+        elif self.tag_type == TagContentItemType.SYMMETRIC:
             return 'SymmetricTag'
-        elif self.tag_type == ContentItemTagType.SELF_CLOSING:
+        elif self.tag_type == TagContentItemType.SELF_CLOSING:
             return 'SelfClosingTag'
 
         assert False, 'Unsupported tag_type: {0}'.format(self.tag_type)
 
     def constructors(self):
-        if self.tag_type == ContentItemTagType.SYMMETRIC:
+        if self.tag_type == TagContentItemType.SYMMETRIC:
             for constructor in super().constructors():
                 yield constructor._replace(
                     params=[('bool', 'open')] + constructor.params,
                     subconstructors=['SymmetricTag(open)'] + constructor.subconstructors[1:]
                 )
-        elif self.tag_type == ContentItemTagType.STANDARD:
+        elif self.tag_type == TagContentItemType.STANDARD:
             closed_constructor_covered = False
 
             for constructor in super().constructors():
@@ -82,7 +82,7 @@ class ContentItemTagConfigAugment(ContentItemConfigAugment):
             method.ret('{0}', cpp_string_literal(self._tag_name_for_display()))
 
     def _debug_write_method_name(self):
-        return 'write' + ('OpenTag' if self.tag_type == ContentItemTagType.STANDARD else '') + 'AttributesToDebugStream'
+        return 'write' + ('OpenTag' if self.tag_type == TagContentItemType.STANDARD else '') + 'AttributesToDebugStream'
 
     def _gen_debug_write_method(self, cpp_code, struct_block):
         if len(self.fields) == 0 and not self.custom_debug_write_method:
