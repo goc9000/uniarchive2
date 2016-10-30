@@ -8,6 +8,7 @@
 
 from build_assistant.autogen.AutoGenConfig import RawEventConfig
 from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
+from build_assistant.autogen.raw_events.constants import SUBTYPE_ENUM
 from build_assistant.autogen.raw_events.EventFieldCodeGenerator import EventFieldCodeGenerator
 
 
@@ -18,6 +19,9 @@ class AbstractEventCodeGenerator(GenericPolymorphicCodeGenerator):
         GenericPolymorphicCodeGenerator.__init__(
             self, event_config, autogen_core, field_augment=EventFieldCodeGenerator
         )
+
+    def subtype_enum(self):
+        return SUBTYPE_ENUM
 
     def gen_subtype_method(self, cpp_code, block):
         raise NotImplementedError

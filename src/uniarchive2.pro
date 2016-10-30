@@ -283,7 +283,6 @@ HEADERS += \
     utils/language/JavaStyleIterator.h \
     utils/language/callback_adapter.hpp \
     utils/language/invariant.h \
-    utils/language/polymorphic_helpers.h \
     utils/language/shortcuts.h \
     utils/polymorphics/IPolymorphic.h \
     utils/polymorphics/StandardPolymorphic.h \

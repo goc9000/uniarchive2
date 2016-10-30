@@ -6,7 +6,6 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.autogen.raw_events.constants import SUBTYPE_ENUM
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 
 
@@ -21,7 +20,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         return 'RawEvent'
 
     def parent_class(self, no_template=None):
-        return None
+        return 'IPolymorphic' if no_template else 'IPolymorphic<{0}>'.format(self.subtype_enum())
 
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
         with public_block as block:
@@ -29,10 +28,6 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             self.gen_constructors(cpp_source.code, block)
             self.gen_mandatory_fields_sanity_check_method(cpp_source.code, private_block)
 
-            block.nl().line('POLYMORPHIC_HELPERS').nl()
-            block.source.include("utils/language/polymorphic_helpers.h")
-
-            self.gen_subtype_method(cpp_source.code, block)
             block.nl()
             self.gen_event_name_method(cpp_source.code, block)
             block.nl()
@@ -41,9 +36,6 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         self.gen_debug_write_details_method(cpp_source.code, protected_block)
 
         self.gen_debug_write_operator(cpp_source.code, h_source.code)
-
-    def gen_subtype_method(self, cpp_code, struct_block):
-        struct_block.declare_fn('subType', SUBTYPE_ENUM, const=True, virtual=True, abstract=True)
 
     def gen_event_name_method(self, cpp_code, block):
         with cpp_code.method(

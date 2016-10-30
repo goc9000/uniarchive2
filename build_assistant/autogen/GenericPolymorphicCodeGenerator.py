@@ -26,6 +26,9 @@ class GenericPolymorphicCodeGenerator(Augment):
 
         self._core = autogen_core
 
+    def subtype_enum(self):
+        raise NotImplementedError
+
     def mandatory_base_fields(self):
         raise NotImplementedError
 

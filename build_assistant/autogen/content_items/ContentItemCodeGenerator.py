@@ -25,6 +25,9 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
 
         self._name = name
 
+    def subtype_enum(self):
+        return SUBTYPE_ENUM
+
     def mandatory_base_fields(self):
         return []
 
@@ -46,16 +49,16 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
 
     def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(
-            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
+            self.class_name(), 'subType', self.subtype_enum(), const=True, virtual=True, declare_in=struct_block
         ) as method:
-            method.ret('{0}::{1}', SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper())
+            method.ret('{0}::{1}', self.subtype_enum(), camelcase_to_underscore(self._name).upper())
 
     def gen_protected_block_code(self, cpp_code, struct_block):
         self._gen_debug_write_method(cpp_code, struct_block)
 
     def implicitly_covered_symbols(self):
         return [
-            'QDebug', 'vector', SUBTYPE_ENUM  # Through RawMessageContentItem
+            'QDebug', 'vector', self.subtype_enum()  # Through RawMessageContentItem
         ]
 
     def _gen_debug_write_method(self, cpp_code, struct_block):

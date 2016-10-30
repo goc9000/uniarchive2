@@ -12,19 +12,17 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENTITEM_H
 
 #include "intermediate_format/content/RawMessageContentItemSubType.h"
-#include "utils/language/polymorphic_helpers.h"
 #include "utils/language/shortcuts.h"
+#include "utils/polymorphics/IPolymorphic.h"
 
 #include <QDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-struct RawMessageContentItem {
+using namespace uniarchive2::utils::polymorphics;
+
+struct RawMessageContentItem : IPolymorphic<RawMessageContentItemSubType> {
 public:
-    POLYMORPHIC_HELPERS
-
-    virtual RawMessageContentItemSubType subType() const = 0;
-
     void writeToDebugStream(QDebug stream) const;
 
 protected:

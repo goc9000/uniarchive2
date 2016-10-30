@@ -6,7 +6,6 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.autogen.raw_events.constants import SUBTYPE_ENUM
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore
 
@@ -49,9 +48,9 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_subtype_method(self, cpp_code, struct_block):
         with cpp_code.method(
-            self.class_name(), 'subType', SUBTYPE_ENUM, const=True, virtual=True, declare_in=struct_block
+            self.class_name(), 'subType', self.subtype_enum(), const=True, virtual=True, declare_in=struct_block
         ) as method:
-            method.ret('{0}::{1}', SUBTYPE_ENUM, camelcase_to_underscore(self._name).upper())
+            method.ret('{0}::{1}', self.subtype_enum(), camelcase_to_underscore(self._name).upper())
 
     def gen_event_name_method(self, cpp_code, struct_block):
         if self.custom_name_method:
