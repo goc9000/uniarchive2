@@ -1,4 +1,4 @@
-# build_assistant/SymbolRegistry.py
+# build_assistant/autogen/SymbolRegistry.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -11,7 +11,7 @@ import re
 from enum import Enum
 from collections import namedtuple
 
-from build_assistant.includes import IncludeType, local_include, std_include, qt_include, local_use, std_use, \
+from build_assistant.codegen.includes import IncludeType, local_include, std_include, qt_include, local_use, std_use, \
     normalize_include_path
 from build_assistant.util.util import scan_files
 from build_assistant.util.VirtualPath import VirtualPath
@@ -69,8 +69,8 @@ class SymbolRegistry:
 
     @staticmethod
     def build(base_src_dir, autogen_config, code_gen_cfg):
-        from build_assistant.autogen_enums import autogen_enums_index
-        from build_assistant.autogen_raw_events import autogen_raw_events_index
+        from build_assistant.autogen.gen_enums import autogen_enums_index
+        from build_assistant.autogen.raw_events.gen_main import autogen_raw_events_index
 
         def is_type_file(path):
             return re.match(r'^[A-Z][A-Za-z0-9_]*[.]h$', path.basename())

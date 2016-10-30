@@ -10,10 +10,11 @@ import re
 
 from collections import namedtuple
 
-from build_assistant.autogen_common import HASH_LINE_PREFIX, BEGIN_CUSTOM_SECTION_LINE_PREFIX, compute_content_hash
-from build_assistant.codegen.TopLevelCodeSection import TopLevelCodeSection
 from build_assistant.codegen.codegen_utils import filter_lines
-from build_assistant.includes import IncludeType, UseType, normalize_include_path, normalize_use_path
+from build_assistant.codegen.constants import HASH_LINE_PREFIX, BEGIN_CUSTOM_SECTION_LINE_PREFIX
+from build_assistant.codegen.hashing import compute_content_hash
+from build_assistant.codegen.includes import IncludeType, UseType, normalize_include_path, normalize_use_path
+from build_assistant.codegen.TopLevelCodeSection import TopLevelCodeSection
 from build_assistant.util.VirtualPath import VirtualPath
 
 

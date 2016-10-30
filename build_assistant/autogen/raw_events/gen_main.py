@@ -1,4 +1,4 @@
-# build_assistant/autogen_raw_events.py
+# build_assistant/autogen/raw_events/gen_main.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -6,8 +6,8 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import EnumConfig, EnumValue
-from build_assistant.autogen.raw_events.event_gen_constants import BASE_EVENTS_PATH, SUBTYPE_ENUM
+from build_assistant.autogen.AutoGenConfig import EnumConfig, EnumValue
+from build_assistant.autogen.raw_events.constants import BASE_EVENTS_PATH, SUBTYPE_ENUM
 from build_assistant.autogen.raw_events.BaseEventCodeGenerator import BaseEventCodeGenerator
 from build_assistant.autogen.raw_events.EventCodeGenerator import EventCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore

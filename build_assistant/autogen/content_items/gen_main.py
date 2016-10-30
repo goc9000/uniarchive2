@@ -1,4 +1,4 @@
-# build_assistant/autogen_content_items.py
+# build_assistant/autogen/content_items/gen_main.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -6,8 +6,8 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import TagContentItemConfig, EnumConfig, EnumValue
-from build_assistant.autogen.content_items.content_item_gen_constants import BASE_CONTENT_ITEMS_PATH, SUBTYPE_ENUM
+from build_assistant.autogen.AutoGenConfig import TagContentItemConfig, EnumConfig, EnumValue
+from build_assistant.autogen.content_items.constants import BASE_CONTENT_ITEMS_PATH, SUBTYPE_ENUM
 from build_assistant.autogen.content_items.ContentItemCodeGenerator import ContentItemCodeGenerator
 from build_assistant.autogen.content_items.TagContentItemCodeGenerator import TagContentItemCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore

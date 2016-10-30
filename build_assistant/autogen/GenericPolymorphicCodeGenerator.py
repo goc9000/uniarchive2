@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import GenericPolymorphicConfig
+from build_assistant.autogen.AutoGenConfig import GenericPolymorphicConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment

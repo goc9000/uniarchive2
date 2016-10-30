@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import TagContentItemType, TagContentItemFieldConfig
+from build_assistant.autogen.AutoGenConfig import TagContentItemType, TagContentItemFieldConfig
 from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
 
 

@@ -1,4 +1,4 @@
-# build_assistant/autogen_common.py
+# build_assistant/autogen/gen_enums.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -6,8 +6,8 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.autogen_raw_events import autogen_raw_events_subtype_enum
-from build_assistant.autogen_content_items import autogen_content_items_subtype_enum
+from build_assistant.autogen.raw_events.gen_main import autogen_raw_events_subtype_enum
+from build_assistant.autogen.content_items.gen_main import autogen_content_items_subtype_enum
 from build_assistant.codegen.codegen_utils import cpp_string_literal
 from build_assistant.util.grammar import classname_to_varname, camelcase_to_underscore
 

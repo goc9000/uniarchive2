@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import RawEventConfig
+from build_assistant.autogen.AutoGenConfig import RawEventConfig
 from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
 from build_assistant.autogen.raw_events.EventFieldCodeGenerator import EventFieldCodeGenerator
 

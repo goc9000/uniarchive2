@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.autogen.raw_events.event_gen_constants import SUBTYPE_ENUM
+from build_assistant.autogen.raw_events.constants import SUBTYPE_ENUM
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 
 

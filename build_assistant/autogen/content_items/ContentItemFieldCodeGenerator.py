@@ -6,7 +6,7 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import ContentItemFieldConfig
+from build_assistant.autogen.AutoGenConfig import ContentItemFieldConfig
 from build_assistant.autogen.GenericPolymorphicFieldCodeGenerator import GenericPolymorphicFieldCodeGenerator
 
 

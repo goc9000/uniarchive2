@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.codegen.abstract.AbstractCodeSection import AbstractCodeSection
-from build_assistant.autogen_common import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
+from build_assistant.codegen.constants import BEGIN_CUSTOM_SECTION_LINE_PREFIX, END_CUSTOM_SECTION_LINE_PREFIX
 
 
 class AbstractCodeSectionWithContent(AbstractCodeSection):

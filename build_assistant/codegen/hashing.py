@@ -1,4 +1,4 @@
-# build_assistant/autogen_common.py
+# build_assistant/codegen/hashing.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -8,10 +8,8 @@
 
 import hashlib
 
-
-HASH_LINE_PREFIX = ' * Codegen hash (sha256):'
-BEGIN_CUSTOM_SECTION_LINE_PREFIX = '// BEGIN CUSTOM SECTION: '
-END_CUSTOM_SECTION_LINE_PREFIX = '// END CUSTOM SECTION: '
+from build_assistant.codegen.constants import HASH_LINE_PREFIX, BEGIN_CUSTOM_SECTION_LINE_PREFIX, \
+    END_CUSTOM_SECTION_LINE_PREFIX
 
 
 def compute_content_hash(lines):

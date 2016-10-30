@@ -1,4 +1,4 @@
-# build_assistant/autogen/content_items/content_item_gen_constants.py
+# build_assistant/autogen/raw_events/constants.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -9,5 +9,5 @@
 from build_assistant.util.VirtualPath import VirtualPath
 
 
-BASE_CONTENT_ITEMS_PATH = VirtualPath(['intermediate_format', 'content'])
-SUBTYPE_ENUM = 'RawMessageContentItemSubType'
+BASE_EVENTS_PATH = VirtualPath(['intermediate_format', 'events'])
+SUBTYPE_ENUM = 'RawEventSubType'

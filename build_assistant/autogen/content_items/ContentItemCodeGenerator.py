@@ -6,9 +6,9 @@
 #
 # Licensed under the GPL-3
 
-from build_assistant.AutoGenConfig import ContentItemConfig
+from build_assistant.autogen.AutoGenConfig import ContentItemConfig
 from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
-from build_assistant.autogen.content_items.content_item_gen_constants import SUBTYPE_ENUM
+from build_assistant.autogen.content_items.constants import SUBTYPE_ENUM
 from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore
 
