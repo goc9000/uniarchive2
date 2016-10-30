@@ -1,4 +1,4 @@
-# build_assistant/autogen/GenericPolymorphicAugment.py
+# build_assistant/autogen/GenericPolymorphicCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -13,7 +13,7 @@ from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import classname_to_varname
 
 
-class GenericPolymorphicAugment(Augment):
+class GenericPolymorphicCodeGenerator(Augment):
     _core = None
 
     def __init__(self, poly_config, autogen_core, field_augment=None):

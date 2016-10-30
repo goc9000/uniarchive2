@@ -1,4 +1,4 @@
-# build_assistant/autogen/raw_events/EventConfigAugment.py
+# build_assistant/autogen/raw_events/EventCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,16 +7,16 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.raw_events.event_gen_constants import SUBTYPE_ENUM
-from build_assistant.autogen.raw_events.AbstractEventConfigAugment import AbstractEventConfigAugment
+from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore
 
 
-class EventConfigAugment(AbstractEventConfigAugment):
+class EventCodeGenerator(AbstractEventCodeGenerator):
     _name = None
     _base_config = None
 
     def __init__(self, name, event_config, autogen_core, base_config=None):
-        AbstractEventConfigAugment.__init__(self, event_config, autogen_core)
+        AbstractEventCodeGenerator.__init__(self, event_config, autogen_core)
         self._name = name
         self._base_config = base_config
 

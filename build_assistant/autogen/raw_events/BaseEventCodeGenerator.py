@@ -1,4 +1,4 @@
-# build_assistant/autogen/raw_events/BaseEventConfigAugment.py
+# build_assistant/autogen/raw_events/BaseEventCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,12 +7,12 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.raw_events.event_gen_constants import SUBTYPE_ENUM
-from build_assistant.autogen.raw_events.AbstractEventConfigAugment import AbstractEventConfigAugment
+from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 
 
-class BaseEventConfigAugment(AbstractEventConfigAugment):
+class BaseEventCodeGenerator(AbstractEventCodeGenerator):
     def __init__(self, event_config, autogen_core):
-        AbstractEventConfigAugment.__init__(self, event_config, autogen_core)
+        AbstractEventCodeGenerator.__init__(self, event_config, autogen_core)
 
     def mandatory_base_fields(self):
         return list()

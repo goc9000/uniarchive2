@@ -1,4 +1,4 @@
-# build_assistant/autogen/content_items/TagContentItemFieldAugment.py
+# build_assistant/autogen/content_items/TagContentItemFieldCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,17 +7,17 @@
 # Licensed under the GPL-3
 
 from build_assistant.AutoGenConfig import TagContentItemType, TagContentItemFieldConfig
-from build_assistant.autogen.content_items.ContentItemFieldAugment import ContentItemFieldAugment
+from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
 
 
-class TagContentItemFieldAugment(ContentItemFieldAugment):
+class TagContentItemFieldCodeGenerator(ContentItemFieldCodeGenerator):
     _parent_tag = None
 
     def __init__(self, field_config, autogen_core, parent_tag):
         assert isinstance(field_config, TagContentItemFieldConfig), \
             'Augmented object should be TagContentItemFieldConfig'
 
-        ContentItemFieldAugment.__init__(self, field_config, autogen_core)
+        ContentItemFieldCodeGenerator.__init__(self, field_config, autogen_core)
 
         self._parent_tag = parent_tag
 

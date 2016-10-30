@@ -1,4 +1,4 @@
-# build_assistant/autogen/GenericPolymorphicFieldAugment.py
+# build_assistant/autogen/GenericPolymorphicFieldCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -13,7 +13,7 @@ from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import camelcase_to_underscore, singular
 
 
-class GenericPolymorphicFieldAugment(Augment):
+class GenericPolymorphicFieldCodeGenerator(Augment):
     _core = None
 
     _base_type = None

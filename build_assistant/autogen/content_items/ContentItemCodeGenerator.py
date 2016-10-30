@@ -1,4 +1,4 @@
-# build_assistant/autogen/content_items/ContentItemConfigAugment.py
+# build_assistant/autogen/content_items/ContentItemCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,20 +7,20 @@
 # Licensed under the GPL-3
 
 from build_assistant.AutoGenConfig import ContentItemConfig
-from build_assistant.autogen.GenericPolymorphicAugment import GenericPolymorphicAugment
+from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
 from build_assistant.autogen.content_items.content_item_gen_constants import SUBTYPE_ENUM
-from build_assistant.autogen.content_items.ContentItemFieldAugment import ContentItemFieldAugment
+from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore
 
 
-class ContentItemConfigAugment(GenericPolymorphicAugment):
+class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
     _name = None
 
     def __init__(self, name, item_config, autogen_core, field_augment_override=None):
         assert isinstance(item_config, ContentItemConfig), 'Augmented object should be ContentItemConfig'
 
-        GenericPolymorphicAugment.__init__(
-            self, item_config, autogen_core, field_augment=field_augment_override or ContentItemFieldAugment
+        GenericPolymorphicCodeGenerator.__init__(
+            self, item_config, autogen_core, field_augment=field_augment_override or ContentItemFieldCodeGenerator
         )
 
         self._name = name

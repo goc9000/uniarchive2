@@ -1,4 +1,4 @@
-# build_assistant/autogen/raw_events/AbstractEventConfigAugment.py
+# build_assistant/autogen/raw_events/AbstractEventCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -7,15 +7,17 @@
 # Licensed under the GPL-3
 
 from build_assistant.AutoGenConfig import RawEventConfig
-from build_assistant.autogen.GenericPolymorphicAugment import GenericPolymorphicAugment
-from build_assistant.autogen.raw_events.EventFieldAugment import EventFieldAugment
+from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
+from build_assistant.autogen.raw_events.EventFieldCodeGenerator import EventFieldCodeGenerator
 
 
-class AbstractEventConfigAugment(GenericPolymorphicAugment):
+class AbstractEventCodeGenerator(GenericPolymorphicCodeGenerator):
     def __init__(self, event_config, autogen_core):
         assert isinstance(event_config, RawEventConfig), 'Augmented object should be RawEventConfig'
 
-        GenericPolymorphicAugment.__init__(self, event_config, autogen_core, field_augment=EventFieldAugment)
+        GenericPolymorphicCodeGenerator.__init__(
+            self, event_config, autogen_core, field_augment=EventFieldCodeGenerator
+        )
 
     def gen_subtype_method(self, cpp_code, block):
         raise NotImplementedError

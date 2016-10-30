@@ -8,8 +8,8 @@
 
 from build_assistant.AutoGenConfig import TagContentItemConfig, EnumConfig, EnumValue
 from build_assistant.autogen.content_items.content_item_gen_constants import BASE_CONTENT_ITEMS_PATH, SUBTYPE_ENUM
-from build_assistant.autogen.content_items.ContentItemConfigAugment import ContentItemConfigAugment
-from build_assistant.autogen.content_items.TagContentItemConfigAugment import TagContentItemConfigAugment
+from build_assistant.autogen.content_items.ContentItemCodeGenerator import ContentItemCodeGenerator
+from build_assistant.autogen.content_items.TagContentItemCodeGenerator import TagContentItemCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore
 
 
@@ -30,9 +30,9 @@ def autogen_content_items_subtype_enum(autogen_config):
 def gen_content_items(autogen_config, autogen_core):
     for rel_path, name, item_config in autogen_config.content_items:
         if isinstance(item_config, TagContentItemConfig):
-            item_config = TagContentItemConfigAugment(name, item_config, autogen_core)
+            item_config = TagContentItemCodeGenerator(name, item_config, autogen_core)
         else:
-            item_config = ContentItemConfigAugment(name, item_config, autogen_core)
+            item_config = ContentItemCodeGenerator(name, item_config, autogen_core)
 
         class_name = item_config.class_name()
 

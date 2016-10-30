@@ -1,4 +1,4 @@
-# build_assistant/autogen/content_items/TagContentItemConfigAugment.py
+# build_assistant/autogen/content_items/TagContentItemCodeGenerator.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -8,18 +8,18 @@
 
 from build_assistant.AutoGenConfig import TagContentItemType, TagContentItemConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
-from build_assistant.autogen.content_items.ContentItemConfigAugment import ContentItemConfigAugment
-from build_assistant.autogen.content_items.TagContentItemFieldAugment import TagContentItemFieldAugment
+from build_assistant.autogen.content_items.ContentItemCodeGenerator import ContentItemCodeGenerator
+from build_assistant.autogen.content_items.TagContentItemFieldCodeGenerator import TagContentItemFieldCodeGenerator
 from build_assistant.codegen.codegen_utils import cpp_string_literal
 
 
-class TagContentItemConfigAugment(ContentItemConfigAugment):
+class TagContentItemCodeGenerator(ContentItemCodeGenerator):
     def __init__(self, name, item_config, autogen_core):
         assert isinstance(item_config, TagContentItemConfig), 'Augmented object should be ContentItemTagConfig'
 
-        ContentItemConfigAugment.__init__(
+        ContentItemCodeGenerator.__init__(
             self, name, item_config, autogen_core,
-            field_augment_override=lambda field_config, core: TagContentItemFieldAugment(field_config, core, self)
+            field_augment_override=lambda field_config, core: TagContentItemFieldCodeGenerator(field_config, core, self)
         )
 
     def parent_class(self, no_template=False):

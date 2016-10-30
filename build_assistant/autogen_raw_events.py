@@ -8,8 +8,8 @@
 
 from build_assistant.AutoGenConfig import EnumConfig, EnumValue
 from build_assistant.autogen.raw_events.event_gen_constants import BASE_EVENTS_PATH, SUBTYPE_ENUM
-from build_assistant.autogen.raw_events.EventConfigAugment import EventConfigAugment
-from build_assistant.autogen.raw_events.BaseEventConfigAugment import BaseEventConfigAugment
+from build_assistant.autogen.raw_events.BaseEventCodeGenerator import BaseEventCodeGenerator
+from build_assistant.autogen.raw_events.EventCodeGenerator import EventCodeGenerator
 from build_assistant.util.grammar import camelcase_to_underscore
 
 
@@ -37,12 +37,12 @@ def autogen_raw_events_subtype_enum(autogen_config):
 
 
 def gen_raw_events(autogen_config, autogen_core):
-    base_event_config = BaseEventConfigAugment(autogen_config.base_raw_event, autogen_core)
+    base_event_config = BaseEventCodeGenerator(autogen_config.base_raw_event, autogen_core)
 
     base_event_h = gen_base_raw_event(base_event_config, autogen_core)
 
     for rel_path, name, event_config in autogen_config.raw_events:
-        event_config = EventConfigAugment(name, event_config, autogen_core, base_config=base_event_config)
+        event_config = EventCodeGenerator(name, event_config, autogen_core, base_config=base_event_config)
 
         cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), event_config.class_name())
         h_source.cover_symbols_from(base_event_h)
