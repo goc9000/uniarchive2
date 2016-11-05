@@ -9,21 +9,20 @@
  */
 
 #include "intermediate_format/content/RawMessageContentItem.h"
+#include "utils/language/shortcuts.h"
 
 #include <QDebugStateSaver>
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
+
+void RawMessageContentItem::serializeToStreamImpl(QDataStream UNUSED &mut_stream) const {
+}
 
 void RawMessageContentItem::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
     stream.nospace();
 
     writeToDebugStreamImpl(stream);
-}
-
-QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) item) {
-    item->writeToDebugStream(stream);
-    return stream;
 }
 
 }}}

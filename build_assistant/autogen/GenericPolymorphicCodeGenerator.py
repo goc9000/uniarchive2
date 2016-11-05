@@ -192,14 +192,3 @@ class GenericPolymorphicCodeGenerator(Augment):
             regular_fields_section = None
 
             write_irregular_field(method, field_config)
-
-    def gen_debug_write_operator(self, cpp_code, h_code):
-        varname = classname_to_varname(self.class_name())
-
-        with cpp_code.function(
-            'operator<< ', 'QDebug', ('QDebug', 'stream'), ('CPTR({0})'.format(self.class_name()), varname),
-            declare_in=h_code
-        ) as method:
-            method \
-                .code_line('{0}->writeToDebugStream(stream)', varname) \
-                .ret('stream')

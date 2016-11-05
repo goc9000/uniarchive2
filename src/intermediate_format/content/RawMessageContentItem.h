@@ -13,7 +13,7 @@
 
 #include "intermediate_format/content/RawMessageContentItemSubType.h"
 #include "utils/language/shortcuts.h"
-#include "utils/polymorphics/IPolymorphic.h"
+#include "utils/polymorphics/StandardPolymorphic.h"
 
 #include <QDebug>
 
@@ -21,15 +21,15 @@ namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace uniarchive2::utils::polymorphics;
 
-struct RawMessageContentItem : IPolymorphic<RawMessageContentItemSubType> {
+struct RawMessageContentItem : StandardPolymorphic<RawMessageContentItemSubType> {
 public:
     void writeToDebugStream(QDebug stream) const;
 
 protected:
+    virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
+
     virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
-
-QDebug operator<< (QDebug stream, CPTR(RawMessageContentItem) content_item);
 
 }}}
 

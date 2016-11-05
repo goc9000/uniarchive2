@@ -20,7 +20,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         return 'RawEvent'
 
     def parent_class(self, no_template=None):
-        return 'IPolymorphic' if no_template else 'IPolymorphic<{0}>'.format(self.subtype_enum())
+        return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
 
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
         with public_block as block:
@@ -33,15 +33,22 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             block.nl()
             self.gen_debug_write_method(cpp_source.code, block)
 
+        self.gen_serialize_fields_method(cpp_source.code, protected_block)
+        protected_block.nl()
         self.gen_debug_write_details_method(cpp_source.code, protected_block)
-
-        self.gen_debug_write_operator(cpp_source.code, h_source.code)
 
     def gen_event_name_method(self, cpp_code, block):
         with cpp_code.method(
             self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=block
         ) as method:
             method.ret('name_for_raw_event_sub_type(subType())')
+
+    def gen_serialize_fields_method(self, cpp_code, protected_block):
+        with cpp_code.method(
+            self.class_name(), 'serializeToStreamImpl', 'void', ('QDataStream& UNUSED', 'mut_stream'),
+            const=True, virtual=True, declare_in=protected_block
+        ) as _:
+            pass
 
     def gen_debug_write_method(self, cpp_code, block):
         time_field = None
