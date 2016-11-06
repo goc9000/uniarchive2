@@ -21,8 +21,9 @@ struct AbstractTag : RawMessageContentItem {
 public:
     AbstractTag();
 
-protected:
     virtual QString tagName() const = 0;
+
+protected:
     virtual bool isClosed() const = 0;
 
     virtual void writeToDebugStreamImpl(QDebug stream) const;
