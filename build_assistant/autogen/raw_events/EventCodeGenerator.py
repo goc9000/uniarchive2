@@ -40,7 +40,9 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
         self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
         self.gen_key_informational_methods(cpp_source.code, public_block)
         public_block.nl()
-        self.gen_debug_write_details_method(cpp_source.code, protected_block)
+        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
+        public_block.nl()
+        protected_block.nl()
 
     def gen_event_name_method(self, cpp_code, public_block):
         if self.custom_name_method:
@@ -49,13 +51,16 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             ) as method:
                 method.custom_section('Name method')
 
-    def gen_debug_write_details_method(self, cpp_code, struct_block):
+    def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
+        self.gen_debug_write_details_method(cpp_code, protected_block)
+
+    def gen_debug_write_details_method(self, cpp_code, protected_block):
         with cpp_code.method(
             self.class_name(),
             'write' + ('FailableEvent' if self.fail_reason_enum is not None else '') + 'DetailsToDebugStream',
             'void',
             ('QDebug' + (' UNUSED' if len(self.fields) == 0 else ''), 'stream'),
-            const=True, virtual=True, declare_in=struct_block
+            const=True, virtual=True, declare_in=protected_block
         ) as method:
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')

@@ -77,10 +77,7 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
         ) as method:
             method.ret('{0}', cpp_string_literal(self._tag_name_for_display()))
 
-    def _debug_write_method_name(self):
-        return 'write' + ('OpenTag' if self.tag_type == TagContentItemType.STANDARD else '') + 'AttributesToDebugStream'
-
-    def _gen_debug_write_method(self, cpp_code, struct_block):
+    def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         if len(self.fields) == 0 and not self.custom_debug_write_method:
             return
 
@@ -89,12 +86,15 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             self._debug_write_method_name(),
             'void',
             ('QDebug', 'stream'),
-            const=True, virtual=True, declare_in=struct_block
+            const=True, virtual=True, declare_in=protected_block
         ) as method:
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')
             else:
                 self.gen_debug_write_field_code(method, self.fields)
+
+    def _debug_write_method_name(self):
+        return 'write' + ('OpenTag' if self.tag_type == TagContentItemType.STANDARD else '') + 'AttributesToDebugStream'
 
     def _tag_name_for_display(self):
         if self.tag_name_override is not None:

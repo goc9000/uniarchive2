@@ -29,5 +29,5 @@ class AbstractEventCodeGenerator(GenericPolymorphicCodeGenerator):
     def gen_event_name_method(self, cpp_code, public_block):
         raise NotImplementedError
 
-    def gen_debug_write_details_method(self, cpp_code, block):
+    def gen_debug_write_details_method(self, cpp_code, protected_block):
         raise NotImplementedError

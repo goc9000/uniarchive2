@@ -26,11 +26,13 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
         self.gen_key_informational_methods(cpp_source.code, public_block)
         public_block.nl()
-        self.gen_debug_write_method(cpp_source.code, public_block)
 
         self.gen_serialize_fields_method(cpp_source.code, protected_block)
         protected_block.nl()
-        self.gen_debug_write_details_method(cpp_source.code, protected_block)
+
+        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
+        public_block.nl()
+        protected_block.nl()
 
     def gen_subtype_method(self, _cpp_code, _public_block):
         pass  # Do not generate this method as this is a base class
@@ -48,7 +50,11 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         ) as _:
             pass
 
-    def gen_debug_write_method(self, cpp_code, block):
+    def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
+        self._gen_debug_write_method(cpp_code, public_block)
+        self.gen_debug_write_details_method(cpp_code, protected_block)
+
+    def _gen_debug_write_method(self, cpp_code, public_block):
         time_field = None
         index_field = None
 
@@ -62,7 +68,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
                 remaining_fields.append(field_config)
 
         with cpp_code.method(
-            'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare_in=block
+            'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare_in=public_block
         ) as method:
             method \
                 .declare_var('QDebugStateSaver', 'saver(stream)') \
@@ -75,9 +81,9 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
             self.gen_debug_write_field_code(method, remaining_fields)
 
-    def gen_debug_write_details_method(self, cpp_code, block):
+    def gen_debug_write_details_method(self, cpp_code, protected_block):
         with cpp_code.method(
             self.class_name(), 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'),
-            const=True, virtual=True, declare_in=block
+            const=True, virtual=True, declare_in=protected_block
         ) as _:
             pass

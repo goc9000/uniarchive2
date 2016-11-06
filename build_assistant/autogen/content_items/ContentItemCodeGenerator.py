@@ -49,15 +49,17 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
         self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
         self.gen_key_informational_methods(cpp_source.code, public_block)
         public_block.nl()
-        self._gen_debug_write_method(cpp_source.code, protected_block)
+        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
+        public_block.nl()
+        protected_block.nl()
 
-    def _gen_debug_write_method(self, cpp_code, struct_block):
+    def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         with cpp_code.method(
             self.class_name(),
             'writeToDebugStreamImpl',
             'void',
             ('QDebug', 'stream'),
-            const=True, virtual=True, declare_in=struct_block
+            const=True, virtual=True, declare_in=protected_block
         ) as method:
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')
