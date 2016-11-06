@@ -40,17 +40,16 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
     def parent_class(self, no_template=False):
         return 'RawMessageContentItem'
 
-    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-        self.gen_protected_block_code(cpp_source.code, protected_block)
-
-    def gen_protected_block_code(self, cpp_code, struct_block):
-        self._gen_debug_write_method(cpp_code, struct_block)
-
     def implicitly_covered_symbols(self):
         return [
             'QDebug', 'vector', self.subtype_enum()  # Through RawMessageContentItem
         ]
+
+    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
+        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
+        self.gen_key_informational_methods(cpp_source.code, public_block)
+        public_block.nl()
+        self._gen_debug_write_method(cpp_source.code, protected_block)
 
     def _gen_debug_write_method(self, cpp_code, struct_block):
         with cpp_code.method(

@@ -161,6 +161,9 @@ class GenericPolymorphicCodeGenerator(Augment):
         ) as method:
             method.ret('{0}::{1}', self.subtype_enum(), self.subtype_value())
 
+    def gen_key_informational_methods(self, cpp_code, public_block):
+        pass  # Nothing by default
+
     def gen_debug_write_field_code(self, method, fields):
         def write_regular_field(block, regular_fields_section, field_config):
             if regular_fields_section is None:

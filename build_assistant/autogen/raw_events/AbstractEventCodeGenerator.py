@@ -23,7 +23,10 @@ class AbstractEventCodeGenerator(GenericPolymorphicCodeGenerator):
     def subtype_enum(self):
         return SUBTYPE_ENUM
 
-    def gen_event_name_method(self, cpp_code, block):
+    def gen_key_informational_methods(self, cpp_code, public_block):
+        self.gen_event_name_method(cpp_code, public_block)
+
+    def gen_event_name_method(self, cpp_code, public_block):
         raise NotImplementedError
 
     def gen_debug_write_details_method(self, cpp_code, block):

@@ -66,18 +66,14 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             for constructor in super().constructors():
                 yield constructor
 
-    def gen_protected_block_code(self, cpp_code, struct_block):
-        self._gen_tag_name_method(cpp_code, struct_block)
-        self._gen_debug_write_method(cpp_code, struct_block)
-
     def implicitly_covered_symbols(self):
         return super().implicitly_covered_symbols() + [
             'QString',  # Through AbstractTag
         ]
 
-    def _gen_tag_name_method(self, cpp_code, struct_block):
+    def gen_key_informational_methods(self, cpp_code, public_block):
         with cpp_code.method(
-            self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare_in=struct_block
+            self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare_in=public_block
         ) as method:
             method.ret('{0}', cpp_string_literal(self._tag_name_for_display()))
 

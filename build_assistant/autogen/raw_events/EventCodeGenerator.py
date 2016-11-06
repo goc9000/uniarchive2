@@ -38,16 +38,14 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
         self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-
-        with public_block as block:
-            self.gen_event_name_method(cpp_source.code, block)
-
+        self.gen_key_informational_methods(cpp_source.code, public_block)
+        public_block.nl()
         self.gen_debug_write_details_method(cpp_source.code, protected_block)
 
-    def gen_event_name_method(self, cpp_code, struct_block):
+    def gen_event_name_method(self, cpp_code, public_block):
         if self.custom_name_method:
             with cpp_code.method(
-                self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=struct_block
+                self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=public_block
             ) as method:
                 method.custom_section('Name method')
 

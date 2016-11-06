@@ -24,11 +24,9 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
         self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-
-        with public_block as block:
-            self.gen_event_name_method(cpp_source.code, block)
-            block.nl()
-            self.gen_debug_write_method(cpp_source.code, block)
+        self.gen_key_informational_methods(cpp_source.code, public_block)
+        public_block.nl()
+        self.gen_debug_write_method(cpp_source.code, public_block)
 
         self.gen_serialize_fields_method(cpp_source.code, protected_block)
         protected_block.nl()
