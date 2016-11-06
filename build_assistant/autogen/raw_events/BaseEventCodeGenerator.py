@@ -23,12 +23,9 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
 
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        with public_block as block:
-            self.gen_field_declarations(block)
-            self.gen_constructors(cpp_source.code, block)
-            self.gen_mandatory_fields_sanity_check_method(cpp_source.code, private_block)
+        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
 
-            block.nl()
+        with public_block as block:
             self.gen_event_name_method(cpp_source.code, block)
             block.nl()
             self.gen_debug_write_method(cpp_source.code, block)
@@ -36,6 +33,9 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         self.gen_serialize_fields_method(cpp_source.code, protected_block)
         protected_block.nl()
         self.gen_debug_write_details_method(cpp_source.code, protected_block)
+
+    def gen_subtype_method(self, _cpp_code, _public_block):
+        pass  # Do not generate this method as this is a base class
 
     def gen_event_name_method(self, cpp_code, block):
         with cpp_code.method(

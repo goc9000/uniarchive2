@@ -41,13 +41,7 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
         return 'RawMessageContentItem'
 
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        with public_block as block:
-            self.gen_field_declarations(block)
-            self.gen_constructors(cpp_source.code, block)
-            self.gen_mandatory_fields_sanity_check_method(cpp_source.code, private_block)
-            block.nl()
-            self.gen_subtype_method(cpp_source.code, block)
-
+        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
         self.gen_protected_block_code(cpp_source.code, protected_block)
 
     def gen_protected_block_code(self, cpp_code, struct_block):

@@ -111,6 +111,14 @@ class GenericPolymorphicCodeGenerator(Augment):
     def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
         raise NotImplementedError
 
+    def gen_base_public_declarations(self, cpp_code, public_block, private_block):
+        self.gen_field_declarations(public_block)
+        self.gen_constructors(cpp_code, public_block)
+        self.gen_mandatory_fields_sanity_check_method(cpp_code, private_block)
+        public_block.nl()
+        self.gen_subtype_method(cpp_code, public_block)
+        public_block.nl()
+
     def gen_field_declarations(self, block):
         if len(self.fields) > 0:
             for index, field in enumerate(self.fields):
