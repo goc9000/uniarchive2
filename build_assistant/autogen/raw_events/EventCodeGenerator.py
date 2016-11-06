@@ -19,6 +19,9 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
         self._name = name
         self._base_config = base_config
 
+    def subtype_value(self):
+        return camelcase_to_underscore(self._name).upper()
+
     def mandatory_base_fields(self):
         return [f for f in self._base_config.fields if f.is_mandatory()]
 
@@ -45,12 +48,6 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             self.gen_event_name_method(cpp_source.code, block)
 
         self.gen_debug_write_details_method(cpp_source.code, protected_block)
-
-    def gen_subtype_method(self, cpp_code, struct_block):
-        with cpp_code.method(
-            self.class_name(), 'subType', self.subtype_enum(), const=True, virtual=True, declare_in=struct_block
-        ) as method:
-            method.ret('{0}::{1}', self.subtype_enum(), camelcase_to_underscore(self._name).upper())
 
     def gen_event_name_method(self, cpp_code, struct_block):
         if self.custom_name_method:

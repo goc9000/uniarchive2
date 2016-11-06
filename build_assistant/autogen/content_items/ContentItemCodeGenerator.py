@@ -28,6 +28,9 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
     def subtype_enum(self):
         return SUBTYPE_ENUM
 
+    def subtype_value(self):
+        return camelcase_to_underscore(self._name).upper()
+
     def mandatory_base_fields(self):
         return []
 
@@ -46,12 +49,6 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             self.gen_subtype_method(cpp_source.code, block)
 
         self.gen_protected_block_code(cpp_source.code, protected_block)
-
-    def gen_subtype_method(self, cpp_code, struct_block):
-        with cpp_code.method(
-            self.class_name(), 'subType', self.subtype_enum(), const=True, virtual=True, declare_in=struct_block
-        ) as method:
-            method.ret('{0}::{1}', self.subtype_enum(), camelcase_to_underscore(self._name).upper())
 
     def gen_protected_block_code(self, cpp_code, struct_block):
         self._gen_debug_write_method(cpp_code, struct_block)

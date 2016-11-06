@@ -10,7 +10,6 @@ from build_assistant.autogen.AutoGenConfig import GenericPolymorphicConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment
-from build_assistant.util.grammar import classname_to_varname
 
 
 class GenericPolymorphicCodeGenerator(Augment):
@@ -27,6 +26,9 @@ class GenericPolymorphicCodeGenerator(Augment):
         self._core = autogen_core
 
     def subtype_enum(self):
+        raise NotImplementedError
+
+    def subtype_value(self):
         raise NotImplementedError
 
     def mandatory_base_fields(self):
@@ -144,6 +146,12 @@ class GenericPolymorphicCodeGenerator(Augment):
                 for field in self.fields:
                     if field.is_mandatory() and field.is_checkable():
                         field.gen_param_check(method)
+
+    def gen_subtype_method(self, cpp_code, public_block):
+        with cpp_code.method(
+            self.class_name(), 'subType', self.subtype_enum(), const=True, virtual=True, declare_in=public_block
+        ) as method:
+            method.ret('{0}::{1}', self.subtype_enum(), self.subtype_value())
 
     def gen_debug_write_field_code(self, method, fields):
         def write_regular_field(block, regular_fields_section, field_config):
