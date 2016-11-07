@@ -22,18 +22,6 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
     def parent_class(self, no_template=None):
         return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
 
-    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-        self.gen_key_informational_methods(cpp_source.code, public_block)
-        public_block.nl()
-
-        self.gen_serialize_fields_method(cpp_source.code, protected_block)
-        protected_block.nl()
-
-        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
-        public_block.nl()
-        protected_block.nl()
-
     def gen_subtype_method(self, _cpp_code, _public_block):
         pass  # Do not generate this method as this is a base class
 
@@ -43,7 +31,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         ) as method:
             method.ret('name_for_raw_event_sub_type(subType())')
 
-    def gen_serialize_fields_method(self, cpp_code, protected_block):
+    def gen_serialize_methods(self, cpp_code, protected_block):
         with cpp_code.method(
             self.class_name(), 'serializeToStreamImpl', 'void', ('QDataStream& UNUSED', 'mut_stream'),
             const=True, virtual=True, declare_in=protected_block

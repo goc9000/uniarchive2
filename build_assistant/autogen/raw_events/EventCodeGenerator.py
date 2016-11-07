@@ -36,14 +36,6 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
         else:
             return 'RawFailableEvent<{0}>'.format(self.fail_reason_enum)
 
-    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-        self.gen_key_informational_methods(cpp_source.code, public_block)
-        public_block.nl()
-        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
-        public_block.nl()
-        protected_block.nl()
-
     def gen_event_name_method(self, cpp_code, public_block):
         if self.custom_name_method:
             with cpp_code.method(

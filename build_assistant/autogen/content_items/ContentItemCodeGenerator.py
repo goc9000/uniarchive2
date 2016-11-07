@@ -45,14 +45,6 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             'QDebug', 'vector', self.subtype_enum()  # Through RawMessageContentItem
         ]
 
-    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-        self.gen_key_informational_methods(cpp_source.code, public_block)
-        public_block.nl()
-        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
-        public_block.nl()
-        protected_block.nl()
-
     def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         with cpp_code.method(
             self.class_name(),

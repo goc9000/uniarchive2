@@ -106,10 +106,16 @@ class GenericPolymorphicCodeGenerator(Augment):
             protected_block = struct_block.protected_block()
             private_block = struct_block.private_block()
 
-        self.gen_code_impl(cpp_source, h_source, public_block, protected_block, private_block)
+        self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
+        self.gen_key_informational_methods(cpp_source.code, public_block)
+        public_block.nl()
 
-    def gen_code_impl(self, cpp_source, h_source, public_block, protected_block, private_block):
-        raise NotImplementedError
+        self.gen_serialize_methods(cpp_source.code, protected_block)
+        protected_block.nl()
+
+        self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
+        public_block.nl()
+        protected_block.nl()
 
     def gen_base_public_declarations(self, cpp_code, public_block, private_block):
         self.gen_field_declarations(public_block)
@@ -162,6 +168,12 @@ class GenericPolymorphicCodeGenerator(Augment):
             method.ret('{0}::{1}', self.subtype_enum(), self.subtype_value())
 
     def gen_key_informational_methods(self, cpp_code, public_block):
+        pass  # Nothing by default
+
+    def gen_serialize_methods(self, cpp_code, protected_block):
+        pass  # Nothing by default
+
+    def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
         pass  # Nothing by default
 
     def gen_debug_write_field_code(self, method, fields):
