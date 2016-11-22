@@ -177,49 +177,17 @@ class GenericPolymorphicCodeGenerator(Augment):
         pass  # Nothing by default
 
     def gen_debug_write_field_code(self, method, fields):
-        def write_regular_field(block, regular_fields_section, field_config):
-            if regular_fields_section is None:
-                regular_fields_section = block.subsection(WriteToStreamSection(block.source, 'stream'))
-
-            regular_fields_section.add_item((field_config.debug_write_header(), field_config.as_print_rvalue(block)))
-
-            return regular_fields_section
-
-        def write_irregular_field(block, field_config):
-            if field_config.is_optional:
-                with block.if_block(field_config.name, nl_after=False) as b:
-                    write_irregular_field2(b, field_config)
-            else:
-                write_irregular_field2(block, field_config)
-
-        def write_irregular_field2(block, field_config):
-            if field_config.maybe_singleton:
-                rvalue = field_config.as_print_rvalue(block)
-
-                with block.if_block('{0} == 1'.format(field_config.as_subfield_value('size()')), nl_after=False) as b:
-                    b.code_line(
-                        'stream << {0} << {1}',
-                        field_config.singularized().debug_write_header(),
-                        field_config.as_subfield_value('front()'),
-                    )
-                    with b.else_block() as e:
-                        e.code_line('stream << {0} << {1}', field_config.debug_write_header(), rvalue)
-            else:
-                write_irregular_field3(block, field_config)
-
-        def write_irregular_field3(block, field_config):
-            block.code_line(
-                'stream << {0} << {1}', field_config.debug_write_header(), field_config.as_print_rvalue(block)
-            )
-
         regular_fields_section = None
 
         for field_config in fields:
-            # First, write regular fields
-            if not (field_config.is_optional or field_config.maybe_singleton):
-                regular_fields_section = write_regular_field(method, regular_fields_section, field_config)
-                continue
+            if field_config.is_regular_for_debug_write():
+                if regular_fields_section is None:
+                    regular_fields_section = method.subsection(WriteToStreamSection(method.source, 'stream'))
 
-            regular_fields_section = None
+                regular_fields_section.add_item(
+                    (field_config.debug_write_header(), field_config.as_print_rvalue(method))
+                )
+            else:
+                regular_fields_section = None
 
-            write_irregular_field(method, field_config)
+                field_config.gen_irregular_debug_write_code(method)

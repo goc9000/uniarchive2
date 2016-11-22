@@ -166,3 +166,24 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
                     value_expr,
                     cpp_string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
                 )
+
+    def is_regular_for_debug_write(self):
+        return not (self.is_optional or self.maybe_singleton)
+
+    def gen_irregular_debug_write_code(self, method):
+        block = method
+
+        if self.is_optional:
+            block = block.if_block(self.name, nl_after=False)
+
+        if self.maybe_singleton:
+            if_block = block.if_block('{0} == 1'.format(self.as_subfield_value('size()')), nl_after=False) \
+                .code_line(
+                    'stream << {0} << {1}',
+                    self.singularized().debug_write_header(),
+                    self.as_subfield_value('front()'),
+                )
+
+            block = if_block.else_block()
+
+        block.code_line('stream << {0} << {1}', self.debug_write_header(), self.as_print_rvalue(block))
