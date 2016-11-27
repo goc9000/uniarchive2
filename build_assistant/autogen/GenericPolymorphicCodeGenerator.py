@@ -176,6 +176,10 @@ class GenericPolymorphicCodeGenerator(Augment):
     def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
         pass  # Nothing by default
 
+    def gen_serialize_field_code(self, method, fields):
+        # TODO: implement this
+        method.line_comment('TODO: add field serialization code')
+
     def gen_debug_write_field_code(self, method, fields):
         regular_fields_section = None
 

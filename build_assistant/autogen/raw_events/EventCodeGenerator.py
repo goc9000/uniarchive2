@@ -43,6 +43,19 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             ) as method:
                 method.custom_section('Name method')
 
+    def gen_serialize_methods(self, cpp_code, protected_block):
+        self.gen_serialize_details_method(cpp_code, protected_block)
+
+    def gen_serialize_details_method(self, cpp_code, protected_block):
+        with cpp_code.method(
+            self.class_name(),
+            'serialize' + ('FailableEvent' if self.fail_reason_enum is not None else '') + 'DetailsToStream',
+            'void',
+            ('QDataStream&' + (' UNUSED' if len(self.fields) == 0 else ''), 'mut_stream'),
+            const=True, virtual=True, declare_in=protected_block
+        ) as method:
+            self.gen_serialize_field_code(method, self.fields)
+
     def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         self.gen_debug_write_details_method(cpp_code, protected_block)
 

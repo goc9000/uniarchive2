@@ -14,10 +14,13 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/serialization_helpers.h"
 
 #include <QtDebug>
 
 namespace uniarchive2 { namespace intermediate_format { namespace events {
+
+using namespace uniarchive2::utils::serialization;
 
 using namespace std;
 using namespace std::experimental;
@@ -30,6 +33,16 @@ public:
     RawFailableEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {}
 
 protected:
+    void serializeDetailsToStream(QDataStream& mut_stream) const {
+        mut_stream << reasonFailed;
+
+        serializeFailableEventDetailsToStream(mut_stream);
+    }
+
+    virtual void serializeFailableEventDetailsToStream(QDataStream& UNUSED mut_stream) const {
+        // Override this in children
+    }
+
     void writeDetailsToDebugStream(QDebug stream) const {
         if (reasonFailed) {
             stream << " FAILED";
@@ -42,6 +55,7 @@ protected:
     }
 
     virtual void writeFailableEventDetailsToDebugStream(QDebug UNUSED stream) const {
+        // Override this in children
     }
 };
 

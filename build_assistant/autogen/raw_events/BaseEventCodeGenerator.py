@@ -32,11 +32,23 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             method.ret('name_for_raw_event_sub_type(subType())')
 
     def gen_serialize_methods(self, cpp_code, protected_block):
+        self._gen_serialize_method(cpp_code, protected_block)
+        self.gen_serialize_details_method(cpp_code, protected_block)
+
+    def _gen_serialize_method(self, cpp_code, protected_block):
         with cpp_code.method(
-            self.class_name(), 'serializeToStreamImpl', 'void', ('QDataStream& UNUSED', 'mut_stream'),
+            self.class_name(), 'serializeToStreamImpl', 'void', ('QDataStream&', 'mut_stream'),
             const=True, virtual=True, declare_in=protected_block
-        ) as _:
-            pass
+        ) as method:
+            self.gen_serialize_field_code(method, self.fields)
+
+            method.nl().code_line('serializeDetailsToStream(mut_stream)')
+
+    def gen_serialize_details_method(self, cpp_code, protected_block):
+        cpp_code.method(
+            self.class_name(), 'serializeDetailsToStream', 'void', ('QDataStream&', 'mut_stream'),
+            const=True, virtual=True, declare_in=protected_block
+        ).line_comment('Override this in children')
 
     def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
         self._gen_debug_write_method(cpp_code, public_block)
