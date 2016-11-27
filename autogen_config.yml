@@ -93,7 +93,7 @@ poly subtype enums:
 
 base raw event:
   - ApparentTime timestamp
-  - uint indexInConversation as index
+  - uint32_t indexInConversation as index
   - ..
   - ?QByteArray skypeGUID
 
@@ -112,7 +112,7 @@ raw events:
       - ApparentSubject initiator
       - ApparentSubject([]) peers
       - ..
-      - ?uint durationSeconds
+      - ?uint16_t durationSeconds
       - ..
       - ?QString skypeCallGUID
       - ?QString syntheticCallGUID
@@ -174,7 +174,7 @@ raw events:
     OfferFileGroup:
       - ApparentSubject sender
       - ?ApparentSubject recipient
-      - uint numFiles
+      - uint16_t numFiles
     ReceiveFile:
       - ApparentSubject receiver
       - ?ApparentSubject sender

@@ -14,8 +14,11 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-EventRangeProvenance::EventRangeProvenance(TAKE(Provenance) base, uint first_event_index, uint last_event_index)
-    : base(move(base)), firstEventIndex(first_event_index), lastEventIndex(last_event_index) {
+EventRangeProvenance::EventRangeProvenance(
+    TAKE(Provenance) base,
+    uint32_t first_event_index,
+    uint32_t last_event_index
+) : base(move(base)), firstEventIndex(first_event_index), lastEventIndex(last_event_index) {
 }
 
 ProvenanceSubType EventRangeProvenance::subType() const {

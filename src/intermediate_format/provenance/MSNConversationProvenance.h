@@ -19,9 +19,9 @@ namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 class MSNConversationProvenance : public Provenance {
 public:
     unique_ptr<Provenance> base;
-    uint sessionID;
+    uint32_t sessionID;
 
-    MSNConversationProvenance(TAKE(Provenance) base, uint session_id);
+    MSNConversationProvenance(TAKE(Provenance) base, uint32_t session_id);
 
     virtual ProvenanceSubType subType() const;
 

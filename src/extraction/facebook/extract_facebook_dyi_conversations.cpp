@@ -144,7 +144,7 @@ static RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawCo
 
     // Reverse and renumber messages
     move(events_in_reverse.rbegin(), events_in_reverse.rend(), back_inserter(conversation.events));
-    uint message_index = 0;
+    uint32_t message_index = 0;
     for (auto& message : conversation.events) {
         message->indexInConversation = message_index++;
     }

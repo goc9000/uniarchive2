@@ -146,7 +146,7 @@ static void convert_events(
 );
 static CEDE(RawEvent) convert_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     int type,
     int chatmsg_type,
     TAKE(ApparentSubject) subject,
@@ -159,7 +159,7 @@ static CEDE(RawEvent) convert_event(
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     bool is_action_message,
@@ -176,20 +176,20 @@ static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element);
 
 static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
 static CEDE(RawEvent) convert_complex_join_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     TAKE_VEC(ApparentSubject) identities,
     IMM(RawConversation) home_conversation
 );
 static CEDE(RawEvent) convert_file_transfer_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
@@ -689,7 +689,7 @@ static void convert_events(
             RawConversation& mut_conversation = mut_indexed_conversations.at(key);
 
             ApparentTime event_time = ApparentTime::fromUnixTimestamp(timestamp);
-            uint event_index = mut_conversation.events.size();
+            uint32_t event_index = (uint32_t)mut_conversation.events.size();
 
             auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(author), from_dispname);
             auto identities = deserialize_identities(serialized_identities);
@@ -732,7 +732,7 @@ static void convert_events(
 
 static CEDE(RawEvent) convert_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     int type,
     int chatmsg_type,
     TAKE(ApparentSubject) subject,
@@ -913,7 +913,7 @@ static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString
 
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     bool is_action_message,
@@ -1033,7 +1033,7 @@ static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {
 
 static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 ) {
@@ -1059,7 +1059,7 @@ static CEDE(RawSendContactsEvent) convert_send_contacts_event(
 
 static CEDE(RawEvent) convert_complex_join_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     TAKE_VEC(ApparentSubject) identities,
     IMM(RawConversation) home_conversation
@@ -1092,7 +1092,7 @@ static CEDE(RawEvent) convert_complex_join_event(
 
 static CEDE(RawEvent) convert_file_transfer_event(
     IMM(ApparentTime) event_time,
-    uint event_index,
+    uint32_t event_index,
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 ) {

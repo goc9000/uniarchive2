@@ -47,13 +47,13 @@ struct PreParsedEvent {
 
 static RawConversation init_conversation(IMM(QString) filename);
 static vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data);
-static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint event_index);
+static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint32_t event_index);
 static ApparentTime parse_timestamp(IMM(QString) time_text);
-static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint event_index, IMM(QString) content);
+static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint32_t event_index, IMM(QString) content);
 static CEDE(ApparentSubject) parse_subject(IMM(QString) raw_subject);
 static CEDE(RawEvent) parse_message(
     IMM(ApparentTime) timestamp,
-    uint event_index,
+    uint32_t event_index,
     IMM(QString) raw_subject,
     IMM(QString) content
 );
@@ -134,7 +134,7 @@ vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data) {
     return raw_events;
 }
 
-static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint event_index) {
+static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint32_t event_index) {
     ApparentTime timestamp = parse_timestamp(raw_event.raw_timestamp);
 
     return raw_event.raw_screen_name.isEmpty()
@@ -152,7 +152,7 @@ static ApparentTime parse_timestamp(IMM(QString) time_text) {
     return timestamp;
 }
 
-static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint event_index, IMM(QString) content) {
+static CEDE(RawEvent) parse_system_event(IMM(ApparentTime) timestamp, uint32_t event_index, IMM(QString) content) {
     QREGEX_MATCH_CI(
         match,
         "^("\
@@ -190,7 +190,7 @@ static CEDE(ApparentSubject) parse_subject(IMM(QString) raw_subject) {
 
 static CEDE(RawEvent) parse_message(
     IMM(ApparentTime) timestamp,
-    uint event_index,
+    uint32_t event_index,
     IMM(QString) raw_subject,
     IMM(QString) text_content
 ) {

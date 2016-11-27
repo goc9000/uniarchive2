@@ -55,7 +55,7 @@ static void seek_to_start_of_events(QTextStream& mut_stream);
 
 static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(RawConversation) conversation);
 static CEDE(RawMessageEvent) parse_message(
-    uint index,
+    uint32_t index,
     IMM(QString) color,
     IMM(ApparentTime) timestamp,
     IMM(QString) sender,
@@ -167,7 +167,7 @@ static CEDE(RawEvent) parse_event(IMM(QRegularExpressionMatch) event_match, IMM(
 }
 
 static CEDE(RawMessageEvent) parse_message(
-    uint index,
+    uint32_t index,
     IMM(QString) color,
     IMM(ApparentTime) timestamp,
     IMM(QString) sender,

@@ -14,7 +14,7 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-MSNConversationProvenance::MSNConversationProvenance(TAKE(Provenance) base, uint session_id)
+MSNConversationProvenance::MSNConversationProvenance(TAKE(Provenance) base, uint32_t session_id)
     : base(move(base)), sessionID(session_id) {
 }
 

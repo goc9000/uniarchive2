@@ -150,6 +150,8 @@ def parse_generic_polymorphic_config(preparsed_entity, field_parser, supported_p
 
         prefixes, optionality, base_type, multiplicity, name, short_name, default_value = match.groups()
 
+        assert base_type not in ['uint', 'int'], "Use ints of specified size for field '{0}'".format(name)
+
         raw_attrs = dict(
             name=name,
             base_type=base_type,

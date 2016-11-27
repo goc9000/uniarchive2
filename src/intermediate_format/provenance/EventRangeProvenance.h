@@ -19,10 +19,10 @@ namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 class EventRangeProvenance : public Provenance {
 public:
     unique_ptr<Provenance> base;
-    uint firstEventIndex;
-    uint lastEventIndex;
+    uint32_t firstEventIndex;
+    uint32_t lastEventIndex;
 
-    EventRangeProvenance(TAKE(Provenance) base, uint first_event_index, uint last_event_index);
+    EventRangeProvenance(TAKE(Provenance) base, uint32_t first_event_index, uint32_t last_event_index);
 
     virtual ProvenanceSubType subType() const;
 

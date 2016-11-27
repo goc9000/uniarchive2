@@ -30,7 +30,7 @@ struct RawFailableEvent : RawEvent {
 public:
     optional<TReason> reasonFailed;
 
-    RawFailableEvent(IMM(ApparentTime) timestamp, uint index) : RawEvent(timestamp, index) {}
+    RawFailableEvent(IMM(ApparentTime) timestamp, uint32_t index) : RawEvent(timestamp, index) {}
 
 protected:
     void serializeDetailsToStream(QDataStream& mut_stream) const {
