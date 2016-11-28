@@ -37,22 +37,16 @@ def autogen_raw_events_subtype_enum(autogen_config):
 
 
 def gen_raw_events(autogen_config, autogen_core):
-    base_event_config = BaseEventCodeGenerator(autogen_config.base_raw_event, autogen_core)
+    base_event_generator = BaseEventCodeGenerator(autogen_config.base_raw_event, autogen_core)
 
-    base_event_h = gen_base_raw_event(base_event_config, autogen_core)
+    cpp_source, base_event_h = autogen_core.new_pair(BASE_EVENTS_PATH, base_event_generator.class_name())
+
+    base_event_generator.gen_code(cpp_source, base_event_h)
 
     for rel_path, name, event_config in autogen_config.raw_events:
-        event_config = EventCodeGenerator(name, event_config, autogen_core, base_config=base_event_config)
+        event_generator = EventCodeGenerator(name, event_config, autogen_core, base_config=base_event_generator)
 
-        cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), event_config.class_name())
+        cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH.append(rel_path), event_generator.class_name())
         h_source.cover_symbols_from(base_event_h)
 
-        event_config.gen_code(cpp_source, h_source)
-
-
-def gen_base_raw_event(base_event_config, autogen_core):
-    cpp_source, h_source = autogen_core.new_pair(BASE_EVENTS_PATH, base_event_config.class_name())
-
-    base_event_config.gen_code(cpp_source, h_source)
-
-    return h_source
+        event_generator.gen_code(cpp_source, h_source)
