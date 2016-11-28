@@ -63,7 +63,7 @@ void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {
     invariant(file.isWritable(), "Could not open output file '%s'", QP(filename));
 
     QDataStream stream(&file);
-    stream << (quint32)BINARY_FORMAT_VERSION;
+    stream << (uint32_t)BINARY_FORMAT_VERSION;
     stream << this;
 }
 

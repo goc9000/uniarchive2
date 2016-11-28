@@ -19,7 +19,7 @@
 
 template<typename T>
 QDataStream& operator<< (QDataStream& mut_stream, IMM(std::vector<T>) items) {
-    mut_stream << (quint32)items.size();
+    mut_stream << (uint32_t)items.size();
     for (IMM(auto) item : items) {
         mut_stream << item;
     }

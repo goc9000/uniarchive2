@@ -13,7 +13,6 @@
 
 #include "utils/language/shortcuts.h"
 
-#include <QtGlobal>
 #include <QByteArray>
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
@@ -34,13 +33,13 @@ struct YahooProtocolEvent {
         OFFLINE = 6,
     };
 
-    quint32 timestamp;
+    uint32_t timestamp;
     Type type;
     Direction direction;
     QByteArray text;
     QByteArray extra;
 
-    YahooProtocolEvent(quint32 timestamp, Type type, Direction direction, IMM(QByteArray) text, IMM(QByteArray) extra)
+    YahooProtocolEvent(uint32_t timestamp, Type type, Direction direction, IMM(QByteArray) text, IMM(QByteArray) extra)
         : timestamp(timestamp), type(type), direction(direction), text(text), extra(extra) {
     }
 };

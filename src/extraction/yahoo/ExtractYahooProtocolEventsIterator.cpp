@@ -30,7 +30,7 @@ bool ExtractYahooProtocolEventsIterator::hasNext() const {
 }
 
 YahooProtocolEvent ExtractYahooProtocolEventsIterator::next() {
-    quint32 timestamp = readInt();
+    uint32_t timestamp = readInt();
     YahooProtocolEvent::Type event_type = (YahooProtocolEvent::Type)readInt();
     YahooProtocolEvent::Direction direction = (YahooProtocolEvent::Direction)readInt();
 
@@ -42,8 +42,8 @@ YahooProtocolEvent ExtractYahooProtocolEventsIterator::next() {
     return YahooProtocolEvent(timestamp, event_type, direction, text, extra);
 }
 
-quint32 ExtractYahooProtocolEventsIterator::readInt() {
-    quint32 value;
+uint32_t ExtractYahooProtocolEventsIterator::readInt() {
+    uint32_t value;
     reader >> value;
     checkState();
 
@@ -51,11 +51,11 @@ quint32 ExtractYahooProtocolEventsIterator::readInt() {
 }
 
 QByteArray ExtractYahooProtocolEventsIterator::readRawString() {
-    quint32 length = readInt();
+    uint32_t length = readInt();
     invariant(length <= reader.device()->bytesAvailable(), "Corrupt binary data in Yahoo Messenger archive");
 
     QByteArray raw_string = reader.device()->read(length);
-    invariant((quint32)raw_string.length() == length, "Read failure while parsing Yahoo Messenger archive");
+    invariant((uint32_t)raw_string.length() == length, "Read failure while parsing Yahoo Messenger archive");
 
     return raw_string;
 }

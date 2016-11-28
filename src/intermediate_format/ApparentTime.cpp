@@ -26,7 +26,7 @@ QString format_utc_offset(int offset_quarters);
 ApparentTime::ApparentTime() {
 }
 
-ApparentTime ApparentTime::fromUnixTimestamp(quint32 unix_timestamp) {
+ApparentTime ApparentTime::fromUnixTimestamp(uint32_t unix_timestamp) {
     QDateTime timestamp = QDateTime::fromTime_t(unix_timestamp, Qt::UTC);
 
     ApparentTime time;

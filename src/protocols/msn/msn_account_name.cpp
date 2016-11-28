@@ -53,7 +53,7 @@ void assert_likely_valid_encoded_msn_account_name(IMM(QString) account_name) {
     );
 }
 
-static quint32 update_messenger_hash(quint32 old_hash, QChar character) {
+static uint32_t update_messenger_hash(uint32_t old_hash, QChar character) {
     return (old_hash * 101) + character.unicode();
 }
 
@@ -65,7 +65,7 @@ FullAccountName parse_encoded_msn_account(IMM(QString) account_name) {
     uint assumed_length = (uint)match.capturedLength(1);
     uint full_length = (uint)account_name.length();
 
-    quint32 base_hash = 0;
+    uint32_t base_hash = 0;
     for (uint i = 0; i < assumed_length; i++) {
         base_hash = update_messenger_hash(base_hash, account_name[i]);
     }
@@ -76,10 +76,10 @@ FullAccountName parse_encoded_msn_account(IMM(QString) account_name) {
             // The hash is a 32-bit number, so it cannot possibly be longer than 10 characters
             continue;
         }
-        quint32 expected_hash = account_name.midRef(assumed_length, expected_hash_length).toUInt();
+        uint32_t expected_hash = account_name.midRef(assumed_length, expected_hash_length).toUInt();
 
         static QStringList MSN_EMAIL_DOMAINS {"hotmail.com", "live.com", "outlook.com"};
-        quint32 hash = update_messenger_hash(base_hash, '@');
+        uint32_t hash = update_messenger_hash(base_hash, '@');
 
         for (IMM(auto) domain : MSN_EMAIL_DOMAINS) {
             for (const QChar character : domain) {

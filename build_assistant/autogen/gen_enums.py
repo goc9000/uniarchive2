@@ -71,6 +71,6 @@ def gen_enums(autogen_config, autogen_core):
 
         cpp_source.code.function(
             'operator<< ', 'QDataStream&', ('QDataStream&', 'mut_stream'), parameter_spec, declare_in=h_source.code
-        ).code_line('mut_stream << (quint32){0}', varname) \
+        ).code_line('mut_stream << (uint32_t){0}', varname) \
             .nl() \
             .ret('mut_stream')

@@ -193,9 +193,9 @@ static ApparentTime parse_event_time(IMM(QDomElement) event_element) {
 
     local_time.setTimeSpec(Qt::UTC);
 
-    qint64 offsetMsecs = absolute_time.msecsTo(local_time);
+    int64_t offsetMsecs = absolute_time.msecsTo(local_time);
     int offsetQuarters = (int)lround(offsetMsecs / 900000.0);
-    qint64 difference = abs(offsetQuarters * 900000 - (int)offsetMsecs);
+    int64_t difference = abs(offsetQuarters * 900000 - (int)offsetMsecs);
 
     invariant(abs(offsetQuarters) < 14*4, "Local and absolute time too far apart (>14h)");
     invariant(difference < 2000, "Local and absolute time not offset by a whole number of quarter-hours");

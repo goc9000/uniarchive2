@@ -33,7 +33,7 @@ private:
     QDataStream reader;
     QByteArray local_account_name;
 
-    quint32 readInt();
+    uint32_t readInt();
     QByteArray readRawString();
     void decryptRawString(QByteArray& string) const;
     void checkState() const;

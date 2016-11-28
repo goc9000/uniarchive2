@@ -44,7 +44,7 @@ public:
     static RawConversationCollection from(vector<RawConversation>&& conversations);
 
 private:
-    const quint32 BINARY_FORMAT_VERSION = 1;
+    const uint32_t BINARY_FORMAT_VERSION = 1;
 };
 
 QDebug operator<< (QDebug stream, IMM(RawConversationCollection) conversations);
