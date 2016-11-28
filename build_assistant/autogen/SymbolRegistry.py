@@ -69,7 +69,7 @@ class SymbolRegistry:
 
     @staticmethod
     def build(base_src_dir, autogen_config, code_gen_cfg):
-        from build_assistant.autogen.gen_enums import autogen_enums_index
+        from build_assistant.autogen.enums.gen_main import autogen_enums_index
         from build_assistant.autogen.raw_events.gen_main import autogen_raw_events_index
 
         def is_type_file(path):
