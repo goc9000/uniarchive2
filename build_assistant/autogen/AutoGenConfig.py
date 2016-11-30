@@ -94,10 +94,13 @@ def parse_enum_config(entity_config):
 
         text, constant, int_value, comment = match.groups()
 
+        assert int_value is None or re.match(r'^-?[0-9]+$', int_value), \
+            "Invalid enum value int_value (must be an int): " + int_value
+
         return EnumValue(
             text=text,
             constant=constant or text_to_constant_name(text),
-            int_value=int_value,
+            int_value=int(int_value) if int_value is not None else None,
             comment=comment
         )
 

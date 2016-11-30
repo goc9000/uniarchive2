@@ -48,7 +48,7 @@ class EnumCodeGenerator(Augment):
         line = value.constant
 
         if value.int_value is not None:
-            line += ' = ' + value.int_value
+            line += ' = {0}'.format(value.int_value)
 
         line += ','
 
