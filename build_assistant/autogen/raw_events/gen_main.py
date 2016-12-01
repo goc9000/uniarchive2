@@ -33,6 +33,7 @@ def autogen_raw_events_subtype_enum(autogen_config):
             ) for _, name, _ in sorted(autogen_config.raw_events, key=lambda tup: tup[0].add(tup[1]).to_text())
         ],
         internal_comment=None,
+        underlying_type_override=None,
     )
 
 

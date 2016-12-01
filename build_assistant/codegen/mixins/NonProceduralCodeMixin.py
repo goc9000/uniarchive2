@@ -15,13 +15,13 @@ class NonProceduralCodeMixin:
     enum declarations. Note that class declarations are not included in this definition, as they can only be declared
     in a top-level code section.
     """
-    def enum_class_block(self, name):
+    def enum_class_block(self, name, underlying_type=None):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
         from build_assistant.codegen.declarations.EnumBlockSection import EnumBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
 
-        return self.subsection(EnumBlockSection(self.source, name, enum_class=True))
+        return self.subsection(EnumBlockSection(self.source, name, enum_class=True, underlying_type=underlying_type))
 
     def declare_fn(self, function_name, return_type, *params, const=False, virtual=False, abstract=False):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent

@@ -24,6 +24,7 @@ def autogen_content_items_subtype_enum(autogen_config):
             ) for _, name, _ in sorted(autogen_config.content_items, key=lambda tup: tup[0].add(tup[1]).to_text())
         ],
         internal_comment=None,
+        underlying_type_override=None,
     )
 
 

@@ -22,7 +22,7 @@ AutoGenConfig = namedtuple(
 )
 AutoGenEntry = namedtuple('AutoGenEntry', ['path', 'name', 'config'])
 
-EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment'])
+EnumConfig = namedtuple('EnumConfig', ['values', 'internal_comment', 'underlying_type_override'])
 EnumValue = namedtuple('EnumValue', ['text', 'constant', 'int_value', 'comment'])
 
 GenericEntityConfig = namedtuple('GenericEntityConfig', ['fields', 'field_breaks', 'options'])
@@ -101,14 +101,15 @@ def parse_enum_config(entity_config):
             text=text,
             constant=constant or text_to_constant_name(text),
             int_value=int(int_value) if int_value is not None else None,
-            comment=comment
+            comment=comment,
         )
 
     preparsed = preparse_entity(entity_config, 'value')
 
     return EnumConfig(
         values=[parse_enum_value(field) for field in preparsed.fields],
-        internal_comment=preparsed.options.get('internal comment')
+        internal_comment=preparsed.options.get('internal comment'),
+        underlying_type_override=preparsed.options.get('underlying type'),
     )
 
 
@@ -122,7 +123,8 @@ def parse_poly_subtype_enum_config(entity_config):
                 comment=None,
             ) for item in parse_vectorish(entity_config)
         ],
-        internal_comment=None
+        internal_comment=None,
+        underlying_type_override=None,
     )
 
 
