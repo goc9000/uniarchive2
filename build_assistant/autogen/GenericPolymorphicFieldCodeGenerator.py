@@ -107,13 +107,8 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         if self._base_type == 'QUrl' and not self.is_list:
             return self.as_subfield_value('url()')
 
-        if self.uses_unique_ptr() and not self.is_list:
-            rvalue_expr += '.get()'
-        else:
-            if self.uses_optional():
-                rvalue_expr = '*' + rvalue_expr
-            if self.is_list:
-                destination_code.source.include("utils/qt/debug_extras.h")  # For printing vectors
+        if self.uses_unique_ptr() or self.uses_optional() or self.is_list:
+            destination_code.source.include("utils/qt/debug_extras.h")
 
         return rvalue_expr
 
