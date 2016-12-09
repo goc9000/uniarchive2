@@ -17,7 +17,7 @@
 
 namespace uniarchive2 { namespace graphics {
 
-Color::Color(unsigned char r, unsigned char g, unsigned char b) : r(r), g(g), b(b) {
+Color::Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {
 }
 
 QString Color::toHTMLFormat() const {
@@ -31,9 +31,9 @@ Color Color::fromHTMLFormat(IMM(QString) text) {
     );
 
     return Color(
-        (unsigned char)match.captured("r").toInt(nullptr, 16),
-        (unsigned char)match.captured("g").toInt(nullptr, 16),
-        (unsigned char)match.captured("b").toInt(nullptr, 16)
+        (uint8_t)match.captured("r").toInt(nullptr, 16),
+        (uint8_t)match.captured("g").toInt(nullptr, 16),
+        (uint8_t)match.captured("b").toInt(nullptr, 16)
     );
 }
 

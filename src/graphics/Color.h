@@ -20,11 +20,11 @@ namespace uniarchive2 { namespace graphics {
 
 struct Color {
 public:
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
 
-    Color(unsigned char r, unsigned char g, unsigned char b);
+    Color(uint8_t r, uint8_t g, uint8_t b);
 
     QString toHTMLFormat() const;
 
