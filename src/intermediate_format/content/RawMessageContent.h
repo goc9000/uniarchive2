@@ -13,6 +13,7 @@
 
 #include "intermediate_format/content/RawMessageContentItem.h"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/ISerializable.h"
 
 #include <QtDebug>
 #include <QString>
@@ -22,8 +23,9 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace std;
+using namespace uniarchive2::utils::serialization;
 
-class RawMessageContent {
+class RawMessageContent : public ISerializable {
 public:
     vector<unique_ptr<RawMessageContentItem>> items;
 
@@ -31,6 +33,8 @@ public:
     static RawMessageContent fromPlainText(IMM(QString) text);
 
     void addItem(TAKE(RawMessageContentItem) item);
+
+    virtual void serializeToStream(QDataStream& mut_stream) const;
 };
 
 QDebug operator<< (QDebug stream, IMM(RawMessageContent) content);
