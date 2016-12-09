@@ -33,7 +33,7 @@ void RawEvent::serializeToStreamImpl(QDataStream& mut_stream) const {
     serializeDetailsToStream(mut_stream);
 }
 
-void RawEvent::serializeDetailsToStream(QDataStream& mut_stream) const {
+void RawEvent::serializeDetailsToStream(QDataStream& UNUSED mut_stream) const {
     // Override this in children
 }
 

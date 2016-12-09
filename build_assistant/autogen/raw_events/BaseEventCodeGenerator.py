@@ -46,7 +46,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_serialize_details_method(self, cpp_code, protected_block):
         cpp_code.method(
-            self.class_name(), 'serializeDetailsToStream', 'void', ('QDataStream&', 'mut_stream'),
+            self.class_name(), 'serializeDetailsToStream', 'void', ('QDataStream& UNUSED', 'mut_stream'),
             const=True, virtual=True, declare_in=protected_block
         ).line_comment('Override this in children')
 
