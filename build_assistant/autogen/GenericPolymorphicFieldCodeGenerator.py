@@ -98,6 +98,15 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         """
         return '{0}({1})'.format(self.name, self.as_rvalue())
 
+    def as_serialize_rvalue(self, destination_code):
+        """
+        Renders an expression that can be passed to a QDataStream so as to serialize this field, provided it is regular.
+        """
+        if self.uses_unique_ptr() or self.uses_optional() or self.is_list:
+            destination_code.source.include("utils/serialization/serialization_helpers.h")
+
+        return self.name
+
     def as_print_rvalue(self, destination_code):
         """
         Renders an expression for the debug-printable value of this field.
@@ -161,6 +170,14 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
                     value_expr,
                     cpp_string_literal("Parameter '{0}' cannot have empty value".format(self.local_name()))
                 )
+
+    def is_regular_for_serialize(self):
+        return not (self.is_optional and self._type_info.type_kind == TypeKind.POLYMORPHIC and not self.is_list)
+
+    def gen_irregular_serialize_code(self, method):
+        method.source.include("utils/serialization/serialization_helpers.h")
+
+        method.code_line('serialize_optional_unique_ptr(mut_stream, {0})', self.name)
 
     def is_regular_for_debug_write(self):
         return not (self.is_optional or self.maybe_singleton)

@@ -177,8 +177,17 @@ class GenericPolymorphicCodeGenerator(Augment):
         pass  # Nothing by default
 
     def gen_serialize_field_code(self, method, fields):
-        # TODO: implement this
-        method.line_comment('TODO: add field serialization code')
+        regular_fields_section = None
+        for field_config in fields:
+            if field_config.is_regular_for_serialize():
+                if regular_fields_section is None:
+                    regular_fields_section = method.subsection(WriteToStreamSection(method.source, 'mut_stream'))
+
+                regular_fields_section.add_item(field_config.as_serialize_rvalue(method))
+            else:
+                regular_fields_section = None
+
+                field_config.gen_irregular_serialize_code(method)
 
     def gen_debug_write_field_code(self, method, fields):
         regular_fields_section = None
