@@ -37,6 +37,10 @@ Color Color::fromHTMLFormat(IMM(QString) text) {
     );
 }
 
+void Color::serializeToStream(QDataStream& mut_stream) const {
+    mut_stream << r << g << b;
+}
+
 QDebug operator<< (QDebug stream, IMM(Color) color) {
     stream << QP(color.toHTMLFormat());
 

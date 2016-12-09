@@ -15,10 +15,13 @@
 #include <QString>
 
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/ISerializable.h"
 
 namespace uniarchive2 { namespace graphics {
 
-struct Color {
+using namespace uniarchive2::utils::serialization;
+
+struct Color : ISerializable {
 public:
     uint8_t r;
     uint8_t g;
@@ -29,6 +32,9 @@ public:
     QString toHTMLFormat() const;
 
     static Color fromHTMLFormat(IMM(QString) text);
+
+protected:
+    void serializeToStream(QDataStream& mut_stream) const;
 };
 
 QDebug operator<< (QDebug stream, IMM(Color) color);
