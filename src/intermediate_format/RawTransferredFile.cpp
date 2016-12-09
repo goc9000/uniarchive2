@@ -11,6 +11,7 @@
 #include "intermediate_format/RawTransferredFile.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/serialization/serialization_helpers.h"
 
 #include <QDebugStateSaver>
 
@@ -20,6 +21,10 @@ RawTransferredFile::RawTransferredFile(IMM(QString) filename): filename(filename
 }
 
 RawTransferredFile::RawTransferredFile(IMM(QString) filename, uint64_t size): filename(filename), size(size) {
+}
+
+void RawTransferredFile::serializeToStream(QDataStream& mut_stream) const {
+    mut_stream << filename << size;
 }
 
 QDebug operator<< (QDebug stream, IMM(RawTransferredFile) file) {

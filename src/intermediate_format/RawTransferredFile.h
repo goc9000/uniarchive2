@@ -13,6 +13,7 @@
 
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/ISerializable.h"
 
 #include <QtDebug>
 #include <QString>
@@ -22,14 +23,17 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 using namespace std::experimental;
+using namespace uniarchive2::utils::serialization;
 
-struct RawTransferredFile {
+struct RawTransferredFile : public ISerializable {
 public:
     QString filename;
     optional<uint64_t> size;
 
     explicit RawTransferredFile(IMM(QString) filename);
     RawTransferredFile(IMM(QString) filename, uint64_t size);
+
+    virtual void serializeToStream(QDataStream& mut_stream) const;
 };
 
 QDebug operator<< (QDebug stream, IMM(RawTransferredFile) time);
