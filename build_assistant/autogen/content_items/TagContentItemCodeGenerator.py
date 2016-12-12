@@ -77,6 +77,19 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
         ) as method:
             method.ret('{0}', cpp_string_literal(self._tag_name_for_display()))
 
+    def gen_serialize_methods(self, cpp_code, protected_block):
+        with cpp_code.method(
+            self.class_name(),
+            self._serialize_attrs_method_name(),
+            'void',
+            ('QDataStream&' + (' UNUSED' if len(self.fields) == 0 else ''), 'mut_stream'),
+            const=True, virtual=True, declare_in=protected_block
+        ) as method:
+            self.gen_serialize_field_code(method, self.fields)
+
+    def _serialize_attrs_method_name(self):
+        return 'serialize' + ('OpenTag' if self.tag_type == TagContentItemType.STANDARD else '') + 'AttributesToStream'
+
     def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         if len(self.fields) == 0 and not self.custom_debug_write_method:
             return

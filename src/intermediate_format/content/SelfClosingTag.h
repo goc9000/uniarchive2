@@ -21,6 +21,10 @@ public:
 
 protected:
     virtual bool isClosed() const;
+
+    virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
+    virtual void serializeAttributesToStream(QDataStream& mut_stream) const = 0;
+
     virtual void writeAttributesToDebugStream(QDebug stream) const;
 };
 

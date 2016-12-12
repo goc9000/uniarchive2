@@ -45,6 +45,16 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             'QDebug', 'vector', self.subtype_enum()  # Through RawMessageContentItem
         ]
 
+    def gen_serialize_methods(self, cpp_code, protected_block):
+        with cpp_code.method(
+            self.class_name(),
+            'serializeToStreamImpl',
+            'void',
+            ('QDataStream&' + (' UNUSED' if len(self.fields) == 0 else ''), 'mut_stream'),
+            const=True, virtual=True, declare_in=protected_block
+        ) as method:
+            self.gen_serialize_field_code(method, self.fields)
+
     def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         with cpp_code.method(
             self.class_name(),

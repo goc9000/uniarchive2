@@ -15,9 +15,6 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
-void RawMessageContentItem::serializeToStreamImpl(QDataStream UNUSED &mut_stream) const {
-}
-
 void RawMessageContentItem::writeToDebugStream(QDebug stream) const {
     QDebugStateSaver saver(stream);
     stream.nospace();

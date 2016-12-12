@@ -19,6 +19,12 @@ bool SymmetricTag::isClosed() const {
     return !open;
 }
 
+void SymmetricTag::serializeToStreamImpl(QDataStream& mut_stream) const {
+    mut_stream << open;
+
+    serializeAttributesToStream(mut_stream);
+}
+
 void SymmetricTag::writeAttributesToDebugStream(QDebug UNUSED stream) const {
 }
 

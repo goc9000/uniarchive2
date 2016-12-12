@@ -19,6 +19,14 @@ bool StandardTag::isClosed() const {
     return !open;
 }
 
+void StandardTag::serializeToStreamImpl(QDataStream& mut_stream) const {
+    mut_stream << open;
+
+    if (open) {
+        serializeOpenTagAttributesToStream(mut_stream);
+    }
+}
+
 void StandardTag::writeAttributesToDebugStream(QDebug stream) const {
     if (open) {
         writeOpenTagAttributesToDebugStream(stream);

@@ -19,6 +19,10 @@ bool SelfClosingTag::isClosed() const {
     return false;
 }
 
+void SelfClosingTag::serializeToStreamImpl(QDataStream& mut_stream) const {
+    serializeAttributesToStream(mut_stream);
+}
+
 void SelfClosingTag::writeAttributesToDebugStream(QDebug UNUSED stream) const {
 }
 

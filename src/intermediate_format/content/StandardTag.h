@@ -23,6 +23,10 @@ public:
 
 protected:
     virtual bool isClosed() const;
+
+    virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
+    virtual void serializeOpenTagAttributesToStream(QDataStream& mut_stream) const = 0;
+
     virtual void writeAttributesToDebugStream(QDebug stream) const;
     virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
 };
