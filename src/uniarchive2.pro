@@ -284,11 +284,14 @@ HEADERS += \
     utils/language/callback_adapter.hpp \
     utils/language/invariant.h \
     utils/language/shortcuts.h \
+    utils/language/template_utils.hpp \
     utils/polymorphics/IPolymorphic.h \
     utils/polymorphics/StandardPolymorphic.h \
     utils/qt/debug_extras.h \
     utils/qt/shortcuts.h \
+    utils/serialization/IDeserializable.h \
     utils/serialization/ISerializable.h \
+    utils/serialization/deserialization_helpers.h \
     utils/serialization/serialization_helpers.h \
     utils/sqlite/internal/ColumnExtractor.hpp \
     utils/sqlite/internal/DataTupleGenerator.hpp \
