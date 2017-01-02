@@ -1,4 +1,4 @@
-# build_assistant/codegen/statements/CaseBlockSection.py
+# build_assistant/codegen/statements/switch/AbstractCaseBlockSection.py
 #
 # (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
 #
@@ -12,16 +12,9 @@ from build_assistant.codegen.IndentedCodeSection import IndentedCodeSection
 from build_assistant.util.empty_generator import empty_generator
 
 
-class CaseBlockSection(AbstractBlockSection, ProceduralCodeMixin):
-    label = None
-
-    def __init__(self, source, label):
+class AbstractCaseBlockSection(AbstractBlockSection, ProceduralCodeMixin):
+    def __init__(self, source):
         super().__init__(source)
-
-        self.label = label
-
-    def _gen_header_items(self, indent_level):
-        yield 'case ' + self.label + ':'
 
     def _gen_items(self, indent_level):
         content = IndentedCodeSection(self.source, 1)

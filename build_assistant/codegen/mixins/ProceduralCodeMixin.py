@@ -61,7 +61,7 @@ class ProceduralCodeMixin:
 
     def switch_block(self, switch_by):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
-        from build_assistant.codegen.statements.SwitchBlockSection import SwitchBlockSection
+        from build_assistant.codegen.statements.switch.SwitchBlockSection import SwitchBlockSection
 
         assert isinstance(self, AbstractCodeSectionWithContent)
 
