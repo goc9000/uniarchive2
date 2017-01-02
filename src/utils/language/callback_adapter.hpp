@@ -1,5 +1,5 @@
 /**
- * utils/language/callback_adapter.h
+ * utils/language/callback_adapter.hpp
  *
  * (C) Copyright 2014-present  Cristian Dinu <goc9000@gmail.com>
  *
@@ -8,8 +8,8 @@
  * Licensed under the GPL-3
  */
 
-#ifndef UNIARCHIVE2_UTILS_LANGUAGE_CALLBACK_ADAPTER_H
-#define UNIARCHIVE2_UTILS_LANGUAGE_CALLBACK_ADAPTER_H
+#ifndef UNIARCHIVE2_UTILS_LANGUAGE_CALLBACK_ADAPTER_HPP
+#define UNIARCHIVE2_UTILS_LANGUAGE_CALLBACK_ADAPTER_HPP
 
 #include <functional>
 
@@ -33,4 +33,4 @@ typename detail::memfun_type<decltype (&F::operator())>::type callback_adapter(F
 
 }}}
 
-#endif //UNIARCHIVE2_UTILS_LANGUAGE_CALLBACK_ADAPTER_H
+#endif //UNIARCHIVE2_UTILS_LANGUAGE_CALLBACK_ADAPTER_HPP
