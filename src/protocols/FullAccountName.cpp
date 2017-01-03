@@ -9,6 +9,7 @@
  */
 
 #include "protocols/FullAccountName.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/shortcuts.h"
 
 #include <QtDebug>
@@ -21,6 +22,10 @@ FullAccountName::FullAccountName() : protocol(IMProtocol::INVALID), accountName(
 
 FullAccountName::FullAccountName(IMProtocol protocol, IMM(QString) account_name)
     : protocol(protocol), accountName(account_name) {
+}
+
+FullAccountName FullAccountName::deserializeFromStream(QDataStream& mut_stream) {
+    return FullAccountName(must_deserialize(mut_stream, IMProtocol), must_deserialize(mut_stream, QString));
 }
 
 void FullAccountName::serializeToStream(QDataStream& mut_stream) const {
