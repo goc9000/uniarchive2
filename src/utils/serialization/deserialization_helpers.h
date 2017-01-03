@@ -24,6 +24,7 @@
     uniarchive2::utils::serialization::_must_deserialize_impl<type>(stream, #type, 0)
 
 template<typename T> QDataStream& operator>> (QDataStream& mut_stream, std::vector<T>& mut_items);
+template<typename T> QDataStream& operator>> (QDataStream& mut_stream, std::experimental::optional<T>& mut_item);
 template<typename T> QDataStream& operator>> (QDataStream& mut_stream, QFlags<T>& mut_flags);
 
 namespace uniarchive2 { namespace utils { namespace serialization {
@@ -90,6 +91,19 @@ QDataStream& operator>> (QDataStream& mut_stream, std::vector<T>& mut_items) {
 
     for (uint32_t i = 0; i < n_elements; i++) {
         mut_items.push_back(must_deserialize(mut_stream, T));
+    }
+
+    return mut_stream;
+}
+
+template<typename T>
+QDataStream& operator>> (QDataStream& mut_stream, std::experimental::optional<T>& mut_item) {
+    bool has_value = must_deserialize(mut_stream, bool);
+
+    if (has_value) {
+        mut_item = must_deserialize(mut_stream, T);
+    } else {
+        mut_item = std::experimental::optional<T>();
     }
 
     return mut_stream;
