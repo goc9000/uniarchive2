@@ -23,9 +23,13 @@
 #define must_deserialize(stream, type) \
     uniarchive2::utils::serialization::_must_deserialize_impl<type>(stream, #type, 0)
 
+#define must_deserialize_optional_unique_ptr(stream, type) \
+    uniarchive2::utils::serialization::_must_deserialize_optional_unique_ptr_impl<type>(stream)
+
 template<typename T> QDataStream& operator>> (QDataStream& mut_stream, std::vector<T>& mut_items);
 template<typename T> QDataStream& operator>> (QDataStream& mut_stream, std::experimental::optional<T>& mut_item);
 template<typename T> QDataStream& operator>> (QDataStream& mut_stream, QFlags<T>& mut_flags);
+template<typename T> QDataStream& operator>> (QDataStream& mut_stream, unique_ptr<T>& mut_ptr);
 
 namespace uniarchive2 { namespace utils { namespace serialization {
 
@@ -81,6 +85,19 @@ _must_deserialize_impl(QDataStream& mut_stream, char const * const type_name, un
     return item;
 }
 
+template<typename T>
+unique_ptr<T> _must_deserialize_optional_unique_ptr_impl(QDataStream& mut_stream) {
+    unique_ptr<T> value;
+
+    bool has_value = must_deserialize(mut_stream, bool);
+
+    if (has_value) {
+        return must_deserialize(mut_stream, unique_ptr<T>);
+    }
+
+    return value;
+}
+
 }}}
 
 template<typename T>
@@ -112,6 +129,13 @@ QDataStream& operator>> (QDataStream& mut_stream, std::experimental::optional<T>
 template<typename T>
 QDataStream& operator>> (QDataStream& mut_stream, QFlags<T>& mut_flags) {
     mut_flags = (QFlags<T>)must_deserialize(mut_stream, int);
+
+    return mut_stream;
+}
+
+template<typename T>
+QDataStream& operator>> (QDataStream& mut_stream, unique_ptr<T>& mut_ptr) {
+    mut_ptr = T::deserializeFromStream(mut_stream);
 
     return mut_stream;
 }
