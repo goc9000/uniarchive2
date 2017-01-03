@@ -10,6 +10,7 @@
 
 #include "intermediate_format/ApparentTime.h"
 #include "utils/language/invariant.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/serialization/serialization_helpers.h"
 #include "utils/qt/shortcuts.h"
 
@@ -96,6 +97,18 @@ bool ApparentTime::hasSpecifiedTime() const {
 
 bool ApparentTime::hasSpecifiedSeconds() const {
     return hasSpecifiedTime() && secondsSpecified;
+}
+
+ApparentTime ApparentTime::deserializeFromStream(QDataStream& mut_stream) {
+    ApparentTime time;
+
+    mut_stream >> time.date >> time.time >> time.secondsSpecified >> time.reference;
+
+    if (time.reference == ApparentTimeReference::SPECIFIED) {
+        mut_stream >> time.utcOffsetQuarters >> time.timeZoneAbbreviation >> time.timeZoneID;
+    }
+
+    return time;
 }
 
 void ApparentTime::serializeToStream(QDataStream& mut_stream) const {

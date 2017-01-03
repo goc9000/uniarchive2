@@ -15,6 +15,7 @@
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 #include "utils/serialization/ISerializable.h"
+#include "utils/serialization/IDeserializableStatic.h"
 
 #include <QDebug>
 #include <QByteArray>
@@ -28,7 +29,7 @@ namespace uniarchive2 { namespace intermediate_format {
 using namespace std::experimental;
 using namespace uniarchive2::utils::serialization;
 
-struct ApparentTime : ISerializable {
+struct ApparentTime : ISerializable, IDeserializableStatic {
 public:
     // These three fields form the "mantissa" of the date, i.e. the day/hour/etc. numbers relative to a reference
     optional<QDate> date;
@@ -56,6 +57,7 @@ public:
     bool hasSpecifiedTime() const;
     bool hasSpecifiedSeconds() const;
 
+    static ApparentTime deserializeFromStream(QDataStream& mut_stream);
     void serializeToStream(QDataStream& mut_stream) const;
 };
 
