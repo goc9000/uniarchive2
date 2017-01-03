@@ -11,6 +11,7 @@
 #ifndef UNIARCHIVE2_UTILS_SERIALIZATION_DESERIALIZATION_HELPERS_H
 #define UNIARCHIVE2_UTILS_SERIALIZATION_DESERIALIZATION_HELPERS_H
 
+#include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
 #include "utils/language/template_utils.hpp"
 #include "utils/external_libs/optional.hpp"
@@ -23,7 +24,7 @@ namespace uniarchive2 { namespace utils { namespace serialization {
 
 using namespace uniarchive2::utils::language;
 
-static std::string extract_type_name(char const * const type_name, unsigned int type_depth) {
+static inline std::string extract_type_name(char const * const type_name, unsigned int type_depth) {
     int start = 0;
     int end = strlen(type_name) - 1;
 
@@ -85,7 +86,7 @@ QDataStream& operator>> (QDataStream& mut_stream, QFlags<T>& mut_flags) {
 }
 
 template<typename T>
-QDataStream& operator>> (QDataStream& mut_stream, vector<T>& mut_items) {
+QDataStream& operator>> (QDataStream& mut_stream, std::vector<T>& mut_items) {
     mut_items.clear();
 
     uint32_t n_elements = must_deserialize(mut_stream, uint32_t);
