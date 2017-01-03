@@ -289,7 +289,7 @@ HEADERS += \
     utils/polymorphics/StandardPolymorphic.h \
     utils/qt/debug_extras.h \
     utils/qt/shortcuts.h \
-    utils/serialization/IDeserializable.h \
+    utils/serialization/IDeserializableStatic.h \
     utils/serialization/ISerializable.h \
     utils/serialization/deserialization_helpers.h \
     utils/serialization/serialization_helpers.h \

@@ -14,7 +14,7 @@
 #include "utils/language/shortcuts.h"
 #include "utils/language/template_utils.hpp"
 #include "utils/external_libs/optional.hpp"
-#include "utils/serialization/IDeserializable.h"
+#include "utils/serialization/IDeserializableStatic.h"
 
 #include <QDataStream>
 
@@ -51,17 +51,17 @@ static std::string extract_type_name(char const * const type_name, unsigned int 
 #define must_deserialize(stream, type) _must_deserialize_impl<type>(stream, #type, 0)
 
 template<typename T>
-typename std::enable_if<is_base_of<IDeserializable, T>::value, T>::type
+typename std::enable_if<is_base_of<IDeserializableStatic, T>::value, T>::type
 _must_deserialize_impl(
     QDataStream& mut_stream,
     char const * const UNUSED type_name,
     unsigned int UNUSED type_depth
 ) {
-    return T(mut_stream);
+    return T::deserializeFromStream(mut_stream);
 }
 
 template<typename T>
-typename std::enable_if<!is_vector_type<T>::value && !is_base_of<IDeserializable, T>::value, T>::type
+typename std::enable_if<!is_base_of<IDeserializableStatic, T>::value, T>::type
 _must_deserialize_impl(QDataStream& mut_stream, char const * const type_name, unsigned int type_depth) {
     T item;
 
@@ -75,19 +75,16 @@ _must_deserialize_impl(QDataStream& mut_stream, char const * const type_name, un
 }
 
 template<typename T>
-typename std::enable_if<is_vector_type<T>::value, T>::type
-_must_deserialize_impl(QDataStream& mut_stream, char const * const type_name, unsigned int type_depth) {
-    T elements;
+QDataStream& operator>> (QDataStream& mut_stream, vector<T>& mut_items) {
+    mut_items.clear();
 
     uint32_t n_elements = must_deserialize(mut_stream, uint32_t);
 
     for (uint32_t i = 0; i < n_elements; i++) {
-        elements.push_back(
-            _must_deserialize_impl<typename extract_vector_type<T>::type>(mut_stream, type_name, type_depth + 1)
-        );
+        mut_items.push_back(must_deserialize(mut_stream, T));
     }
 
-    return elements;
+    return mut_stream;
 }
 
 }}}
