@@ -17,6 +17,7 @@
 #include "utils/serialization/IDeserializableStatic.h"
 
 #include <QDataStream>
+#include <QFlags>
 
 namespace uniarchive2 { namespace utils { namespace serialization {
 
@@ -60,6 +61,8 @@ _must_deserialize_impl(
     return T::deserializeFromStream(mut_stream);
 }
 
+template<typename T> QDataStream& operator>> (QDataStream& mut_stream, QFlags<T>& mut_flags);
+
 template<typename T>
 typename std::enable_if<!is_base_of<IDeserializableStatic, T>::value, T>::type
 _must_deserialize_impl(QDataStream& mut_stream, char const * const type_name, unsigned int type_depth) {
@@ -72,6 +75,13 @@ _must_deserialize_impl(QDataStream& mut_stream, char const * const type_name, un
     }
 
     return item;
+}
+
+template<typename T>
+QDataStream& operator>> (QDataStream& mut_stream, QFlags<T>& mut_flags) {
+    mut_flags = (QFlags<T>)must_deserialize(mut_stream, int);
+
+    return mut_stream;
 }
 
 template<typename T>
