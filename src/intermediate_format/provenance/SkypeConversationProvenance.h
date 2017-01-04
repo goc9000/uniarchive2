@@ -38,6 +38,8 @@ public:
 
     virtual CEDE(Provenance) clone() const;
 
+    static CEDE(SkypeConversationProvenance) deserializeFromStream(QDataStream& mut_stream, bool skip_type = false);
+
 protected:
     virtual void serializeToStreamImpl(QDataStream &mut_stream) const;
 

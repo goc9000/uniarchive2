@@ -35,6 +35,8 @@ public:
 
     static CEDE(AdiumArchiveFileProvenance) fromQFileInfo(IMM(QFileInfo) file_info);
 
+    static CEDE(AdiumArchiveFileProvenance) deserializeFromStream(QDataStream& mut_stream, bool skip_type = false);
+
 protected:
     virtual void serializeToStreamSubImpl(QDataStream &mut_stream) const;
 

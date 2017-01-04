@@ -13,17 +13,20 @@
 
 #include "utils/polymorphics/IPolymorphic.h"
 #include "utils/serialization/ISerializable.h"
+#include "utils/serialization/IDeserializableDynamic.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
 
 #include <QDebug>
+#include <QDataStream>
 
 namespace uniarchive2 { namespace utils { namespace polymorphics {
 
 using namespace uniarchive2::utils::serialization;
 
 template<typename SubTypeEnumT>
-class StandardPolymorphic : public IPolymorphic<SubTypeEnumT>, public ISerializable {
+class StandardPolymorphic : public IPolymorphic<SubTypeEnumT>, public ISerializable, public IDeserializableDynamic {
 public:
     virtual void serializeToStream(QDataStream& mut_stream) const {
         mut_stream << this->subType();
@@ -33,6 +36,20 @@ public:
     virtual void writeToDebugStream(QDebug stream) const = 0;
 
 protected:
+    static void maybeDeserializeType(bool skip_type, QDataStream& mut_stream, SubTypeEnumT expected_type) {
+        if (skip_type) {
+            return;
+        }
+
+        SubTypeEnumT actual_type = must_deserialize(mut_stream, SubTypeEnumT);
+
+        invariant(
+            actual_type == expected_type,
+            "Encountered unexpected subtype when deserializing (%d instead of %d)",
+            (int)actual_type, (int)expected_type
+        );
+    }
+
     virtual void serializeToStreamImpl(QDataStream &mut_stream) const = 0;
 };
 

@@ -36,6 +36,8 @@ public:
 
     static CEDE(ArchiveFileProvenance) fromQFileInfo(ArchiveFormat format, IMM(QFileInfo) file_info);
 
+    static CEDE(ArchiveFileProvenance) deserializeFromStream(QDataStream& mut_stream, bool skip_type = false);
+
 protected:
     virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
     virtual void serializeToStreamSubImpl(QDataStream& mut_stream) const;

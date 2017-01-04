@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/provenance/AdiumArchiveFileProvenance.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
@@ -28,6 +29,26 @@ CEDE(Provenance) AdiumArchiveFileProvenance::clone() const {
 
     provenance->as<AdiumArchiveFileProvenance>()->adiumVersion = adiumVersion;
     provenance->as<AdiumArchiveFileProvenance>()->adiumBuildID = adiumBuildID;
+
+    return provenance;
+}
+
+CEDE(AdiumArchiveFileProvenance) AdiumArchiveFileProvenance::deserializeFromStream(
+    QDataStream& mut_stream,
+    bool skip_type
+) {
+    maybeDeserializeType(skip_type, mut_stream, ProvenanceSubType::ADIUM_ARCHIVE_FILE);
+
+    ArchiveFormat format = must_deserialize(mut_stream, ArchiveFormat);
+
+    invariant(format == ArchiveFormat::ADIUM, "Expected archive format ADIUM for AdiumArchiveFileProvenance");
+
+    unique_ptr<AdiumArchiveFileProvenance> provenance = make_unique<AdiumArchiveFileProvenance>(
+        must_deserialize(mut_stream, QString),
+        must_deserialize(mut_stream, ApparentTime)
+    );
+
+    mut_stream >> provenance->adiumVersion >> provenance->adiumBuildID;
 
     return provenance;
 }

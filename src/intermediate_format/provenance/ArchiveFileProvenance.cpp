@@ -9,6 +9,8 @@
  */
 
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "utils/serialization/deserialization_helpers.h"
+#include "utils/serialization/serialization_helpers.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
@@ -28,12 +30,23 @@ CEDE(Provenance) ArchiveFileProvenance::clone() const {
     return make_unique<ArchiveFileProvenance>(archiveFormat, fullFilename, lastModifiedTime);
 }
 
+CEDE(ArchiveFileProvenance) ArchiveFileProvenance::deserializeFromStream(QDataStream& mut_stream, bool skip_type) {
+    maybeDeserializeType(skip_type, mut_stream, ProvenanceSubType::ARCHIVE_FILE);
+
+    return make_unique<ArchiveFileProvenance>(
+        must_deserialize(mut_stream, ArchiveFormat),
+        must_deserialize(mut_stream, QString),
+        must_deserialize(mut_stream, ApparentTime)
+    );
+}
+
 void ArchiveFileProvenance::serializeToStreamImpl(QDataStream& mut_stream) const {
     mut_stream << archiveFormat << fullFilename << lastModifiedTime;
     serializeToStreamSubImpl(mut_stream);
 }
 
 void ArchiveFileProvenance::serializeToStreamSubImpl(QDataStream& UNUSED mut_stream) const {
+    // No fields to serialize
 }
 
 void ArchiveFileProvenance::writeToDebugStreamImpl(QDebug stream) const {

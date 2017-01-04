@@ -23,6 +23,8 @@ class Provenance : public StandardPolymorphic<ProvenanceSubType> {
 public:
     virtual CEDE(Provenance) clone() const = 0;
 
+    static CEDE(Provenance) deserializeFromStream(QDataStream& mut_stream);
+
     void writeToDebugStream(QDebug stream) const;
 
 protected:
