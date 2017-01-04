@@ -7,6 +7,8 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
+from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 class BaseEventCodeGenerator(AbstractEventCodeGenerator):
@@ -17,7 +19,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         return list()
 
     def class_name(self):
-        return 'RawEvent'
+        return BASE_EVENT_CLASS
 
     def parent_class(self, no_template=None):
         return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
@@ -68,7 +70,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
                 remaining_fields.append(field_config)
 
         with cpp_code.method(
-            'RawEvent', 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare_in=public_block
+            self.class_name(), 'writeToDebugStream', 'void', ('QDebug', 'stream'), const=True, declare_in=public_block
         ) as method:
             method \
                 .declare_var('QDebugStateSaver', 'saver(stream)') \

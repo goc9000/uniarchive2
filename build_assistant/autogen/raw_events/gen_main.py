@@ -7,19 +7,17 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.AutoGenConfig import EnumConfig, EnumValue
-from build_assistant.autogen.raw_events.constants import BASE_EVENTS_PATH, SUBTYPE_ENUM
+from build_assistant.autogen.raw_events.constants import BASE_EVENTS_PATH, SUBTYPE_ENUM, BASE_EVENT_CLASS
+from build_assistant.autogen.raw_events.common import event_class_name, event_subtype_value
 from build_assistant.autogen.raw_events.BaseEventCodeGenerator import BaseEventCodeGenerator
 from build_assistant.autogen.raw_events.EventCodeGenerator import EventCodeGenerator
-from build_assistant.util.grammar import camelcase_to_underscore
 
 
 def autogen_raw_events_index(autogen_config):
-    yield BASE_EVENTS_PATH, 'RawEvent'
+    yield BASE_EVENTS_PATH, BASE_EVENT_CLASS
 
     for path, name, _ in autogen_config.raw_events:
-        yield BASE_EVENTS_PATH.append(path), 'Raw' + name + 'Event'
-
-    return []
+        yield BASE_EVENTS_PATH.append(path), event_class_name(name)
 
 
 def autogen_raw_events_subtype_enum(autogen_config):
@@ -27,7 +25,7 @@ def autogen_raw_events_subtype_enum(autogen_config):
         values=[
             EnumValue(
                 text=name,
-                constant=camelcase_to_underscore(name).upper(),
+                constant=event_subtype_value(name),
                 int_value=None,
                 comment=None,
             ) for _, name, _ in sorted(autogen_config.raw_events, key=lambda tup: tup[0].add(tup[1]).to_text())

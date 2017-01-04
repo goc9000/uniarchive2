@@ -7,6 +7,8 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
+from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS
+from build_assistant.autogen.raw_events.common import event_class_name, event_subtype_value
 from build_assistant.util.grammar import camelcase_to_underscore
 
 
@@ -20,17 +22,17 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
         self._base_config = base_config
 
     def subtype_value(self):
-        return camelcase_to_underscore(self._name).upper()
+        return event_subtype_value(self._name)
 
     def mandatory_base_fields(self):
         return [f for f in self._base_config.fields if f.is_mandatory()]
 
     def class_name(self):
-        return 'Raw' + self._name + 'Event'
+        return event_class_name(self._name)
 
     def parent_class(self, no_template=False):
         if self.fail_reason_enum is None:
-            return 'RawEvent'
+            return BASE_EVENT_CLASS
         elif no_template:
             return 'RawFailableEvent'
         else:

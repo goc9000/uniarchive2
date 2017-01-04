@@ -11,3 +11,5 @@ from build_assistant.util.VirtualPath import VirtualPath
 
 BASE_EVENTS_PATH = VirtualPath(['intermediate_format', 'events'])
 SUBTYPE_ENUM = 'RawEventSubType'
+
+BASE_EVENT_CLASS = 'RawEvent'
