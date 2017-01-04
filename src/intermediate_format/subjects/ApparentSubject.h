@@ -26,7 +26,7 @@ public:
         IsIdentity = (1 << 0),
         IsPeer     = (1 << 1),
     };
-    Q_DECLARE_FLAGS(Hints, Hint);
+    Q_DECLARE_FLAGS(Hints, Hint)
 
     Hints hints;
 
@@ -43,7 +43,7 @@ protected:
     virtual void writeToDebugStreamImpl(QDebug stream) const = 0;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(ApparentSubject::Hints);
+Q_DECLARE_OPERATORS_FOR_FLAGS(ApparentSubject::Hints)
 
 }}}
 
