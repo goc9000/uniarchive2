@@ -12,23 +12,39 @@ from build_assistant.autogen.raw_events.common import event_class_name, event_su
 from build_assistant.autogen.raw_events.BaseEventCodeGenerator import BaseEventCodeGenerator
 from build_assistant.autogen.raw_events.EventCodeGenerator import EventCodeGenerator
 
+from collections import namedtuple
 
-def autogen_raw_events_index(autogen_config):
-    yield BASE_EVENTS_PATH, BASE_EVENT_CLASS
 
-    for path, name, _ in autogen_config.raw_events:
-        yield BASE_EVENTS_PATH.append(path), event_class_name(name)
+RawEventsIndexEntry = namedtuple('RawEventsIndexEntry', ['event_name', 'path', 'class_name', 'subtype_constant'])
+
+
+def autogen_raw_events_index(autogen_config, include_base=True):
+    if include_base:
+        yield RawEventsIndexEntry(
+            event_name=None,
+            path=BASE_EVENTS_PATH,
+            class_name=BASE_EVENT_CLASS,
+            subtype_constant=None
+        )
+
+    for path, name, _ in sorted(autogen_config.raw_events, key=lambda tup: tup[0].add(tup[1]).to_text()):
+        yield RawEventsIndexEntry(
+            event_name=name,
+            path=BASE_EVENTS_PATH.append(path),
+            class_name=event_class_name(name),
+            subtype_constant=event_subtype_value(name)
+        )
 
 
 def autogen_raw_events_subtype_enum(autogen_config):
     return BASE_EVENTS_PATH, SUBTYPE_ENUM, EnumConfig(
         values=[
             EnumValue(
-                text=name,
-                constant=event_subtype_value(name),
+                text=event.event_name,
+                constant=event.subtype_constant,
                 int_value=None,
                 comment=None,
-            ) for _, name, _ in sorted(autogen_config.raw_events, key=lambda tup: tup[0].add(tup[1]).to_text())
+            ) for event in autogen_raw_events_index(autogen_config, include_base=False)
         ],
         internal_comment=None,
         underlying_type_override=None,

@@ -122,12 +122,12 @@ class SymbolRegistry:
                 include=local_include(physical_path(path, name)),
                 use=local_use(namespace_path(path)),
             )
-        for path, name in autogen_raw_events_index(autogen_config):
-            symbols[name] = SymbolInfo(
+        for event in autogen_raw_events_index(autogen_config):
+            symbols[event.class_name] = SymbolInfo(
                 is_type=True,
                 type_kind=TypeKind.POLYMORPHIC,
-                include=local_include(physical_path(path, name)),
-                use=local_use(namespace_path(path)),
+                include=local_include(physical_path(event.path, event.class_name)),
+                use=local_use(namespace_path(event.path)),
             )
 
         return SymbolRegistry(symbols)
