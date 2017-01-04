@@ -8,7 +8,7 @@
 
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS
-from build_assistant.util.VirtualPath import VirtualPath
+from build_assistant.codegen.ParamInfo import ParamInfo
 
 
 class BaseEventCodeGenerator(AbstractEventCodeGenerator):
@@ -48,7 +48,8 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_serialize_details_method(self, cpp_code, protected_block):
         cpp_code.method(
-            self.class_name(), 'serializeDetailsToStream', 'void', ('QDataStream& UNUSED', 'mut_stream'),
+            self.class_name(), 'serializeDetailsToStream', 'void',
+            ParamInfo(type='QDataStream&', name='mut_stream', unused=True),
             const=True, virtual=True, declare_in=protected_block
         ).line_comment('Override this in children')
 
@@ -85,7 +86,8 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_debug_write_details_method(self, cpp_code, protected_block):
         with cpp_code.method(
-            self.class_name(), 'writeDetailsToDebugStream', 'void', ('QDebug UNUSED', 'stream'),
+            self.class_name(), 'writeDetailsToDebugStream', 'void',
+            ParamInfo(type='QDebug', name='stream', unused=True),
             const=True, virtual=True, declare_in=protected_block
         ) as _:
             pass

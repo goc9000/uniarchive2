@@ -15,6 +15,6 @@ class ConstructorBlockSection(GeneralizedBlockSection, ProceduralCodeMixin):
         super().__init__(
             source,
             class_name + '::' + class_name,
-            params=[type + ' ' + name for type, name in params],
+            params=[param.render_for_implementation() for param in params],
             inherits=inherits,
         )

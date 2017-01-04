@@ -10,6 +10,7 @@ from build_assistant.autogen.AutoGenConfig import ContentItemConfig
 from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
 from build_assistant.autogen.content_items.constants import SUBTYPE_ENUM
 from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
+from build_assistant.codegen.ParamInfo import ParamInfo
 from build_assistant.util.grammar import camelcase_to_underscore
 
 
@@ -50,7 +51,7 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             self.class_name(),
             'serializeToStreamImpl',
             'void',
-            ('QDataStream&' + (' UNUSED' if len(self.fields) == 0 else ''), 'mut_stream'),
+            ParamInfo(type='QDataStream&', name='mut_stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
             self.gen_serialize_field_code(method, self.fields)

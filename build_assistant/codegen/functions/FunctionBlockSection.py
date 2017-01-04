@@ -15,5 +15,5 @@ class FunctionBlockSection(GeneralizedBlockSection, ProceduralCodeMixin):
         super().__init__(
             source,
             return_type + ' ' + function_name,
-            params=[type + ' ' + name for type, name in params],
+            params=[param.render_for_implementation() for param in params],
         )

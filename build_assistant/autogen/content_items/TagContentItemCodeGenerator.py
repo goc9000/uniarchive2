@@ -11,6 +11,7 @@ from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.autogen.content_items.ContentItemCodeGenerator import ContentItemCodeGenerator
 from build_assistant.autogen.content_items.TagContentItemFieldCodeGenerator import TagContentItemFieldCodeGenerator
 from build_assistant.codegen.codegen_utils import cpp_string_literal
+from build_assistant.codegen.ParamInfo import ParamInfo
 
 
 class TagContentItemCodeGenerator(ContentItemCodeGenerator):
@@ -82,7 +83,7 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             self.class_name(),
             self._serialize_attrs_method_name(),
             'void',
-            ('QDataStream&' + (' UNUSED' if len(self.fields) == 0 else ''), 'mut_stream'),
+            ParamInfo(type='QDataStream&', name='mut_stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
             self.gen_serialize_field_code(method, self.fields)

@@ -9,7 +9,7 @@
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS
 from build_assistant.autogen.raw_events.common import event_class_name, event_subtype_value
-from build_assistant.util.grammar import camelcase_to_underscore
+from build_assistant.codegen.ParamInfo import ParamInfo
 
 
 class EventCodeGenerator(AbstractEventCodeGenerator):
@@ -53,7 +53,7 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             self.class_name(),
             'serialize' + ('FailableEvent' if self.fail_reason_enum is not None else '') + 'DetailsToStream',
             'void',
-            ('QDataStream&' + (' UNUSED' if len(self.fields) == 0 else ''), 'mut_stream'),
+            ParamInfo(type='QDataStream&', name='mut_stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
             self.gen_serialize_field_code(method, self.fields)
@@ -66,7 +66,7 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             self.class_name(),
             'write' + ('FailableEvent' if self.fail_reason_enum is not None else '') + 'DetailsToDebugStream',
             'void',
-            ('QDebug' + (' UNUSED' if len(self.fields) == 0 else ''), 'stream'),
+            ParamInfo(type='QDebug', name='stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
             if self.custom_debug_write_method:
