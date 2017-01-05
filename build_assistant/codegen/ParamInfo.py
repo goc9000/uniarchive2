@@ -13,12 +13,13 @@ class ParamInfo(FrozenStruct):
     def __init__(self, _superclass_fields=None, **kwargs):
         FrozenStruct.__init__(
             self,
-            ['type', 'name', 'unused'] + (_superclass_fields or list()),
-            {'unused': False, **kwargs}
+            ['type', 'name', 'unused', 'default_value'] + (_superclass_fields or list()),
+            {'unused': False, 'default_value': None, **kwargs}
         )
 
     def render_for_declaration(self):
-        return self.type + ' ' + self.name
+        return self.type + ' ' + self.name + \
+            ('' if self.default_value is None else '='+self.default_value)
 
     def render_for_implementation(self):
         return self.type + (' UNUSED ' if self.unused else ' ') + self.name
