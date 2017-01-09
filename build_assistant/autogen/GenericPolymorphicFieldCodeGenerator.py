@@ -8,6 +8,7 @@
 
 from build_assistant.autogen.AutoGenConfig import GenericPolymorphicFieldConfig
 from build_assistant.codegen.codegen_utils import cpp_string_literal
+from build_assistant.codegen.ParamInfo import ParamInfo
 from build_assistant.autogen.SymbolRegistry import TypeKind
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import camelcase_to_underscore, singular
@@ -77,7 +78,7 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
             elif type_kind != TypeKind.PRIMITIVE or self.is_list:
                 cpp_type = 'IMM({0})'.format(cpp_type)
 
-        return cpp_type, self.local_name()
+        return ParamInfo(type=cpp_type, name=self.local_name())
 
     def as_rvalue(self):
         """
