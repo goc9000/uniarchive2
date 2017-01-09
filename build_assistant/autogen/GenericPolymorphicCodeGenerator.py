@@ -47,7 +47,7 @@ class GenericPolymorphicCodeGenerator(Augment):
     def has_mandatory_fields_sanity_check(self):
         return any(f.is_mandatory() and f.is_checkable() for f in self.fields)
 
-    def constructors(self):
+    def constructors(self, enable_convenience_constructors_for_vectors=True):
         base_fields = self.mandatory_base_fields()
         free_fields = self.fields
         parent_constructor = \
@@ -68,29 +68,30 @@ class GenericPolymorphicCodeGenerator(Augment):
                 extra_fields=extra_fields,
             )
 
-            # Generate convenience constructor for the first singularizable field
-            for index, field_config in enumerate(inited_fields):
-                if field_config.maybe_singleton:
-                    singularized = field_config.singularized()
+            if enable_convenience_constructors_for_vectors:
+                # Generate convenience constructor for the first singularizable field
+                for index, field_config in enumerate(inited_fields):
+                    if field_config.maybe_singleton:
+                        singularized = field_config.singularized()
 
-                    params = \
-                        [f.as_param() for f in base_fields + inited_fields[:index]] + \
-                        [singularized.as_param()] + \
-                        [f.as_param() for f in inited_fields[index + 1:]]
+                        params = \
+                            [f.as_param() for f in base_fields + inited_fields[:index]] + \
+                            [singularized.as_param()] + \
+                            [f.as_param() for f in inited_fields[index + 1:]]
 
-                    subcons = parent_constructor + \
-                              [f.as_initializer() for f in inited_fields[:index]] + \
-                              [f.as_initializer() for f in inited_fields[index + 1:]]
+                        subcons = parent_constructor + \
+                                  [f.as_initializer() for f in inited_fields[:index]] + \
+                                  [f.as_initializer() for f in inited_fields[index + 1:]]
 
-                    yield ConstructorInfo(
-                        params=params,
-                        subconstructors=subcons,
-                        init_statements=[
-                            '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
-                        ],
-                        extra_fields=extra_fields,
-                    )
-                    break
+                        yield ConstructorInfo(
+                            params=params,
+                            subconstructors=subcons,
+                            init_statements=[
+                                '{0}.push_back({1});'.format(field_config.name, singularized.as_rvalue())
+                            ],
+                            extra_fields=extra_fields,
+                        )
+                        break
 
             field_config = next(maybe_addable_fields, None)
             if field_config is None:

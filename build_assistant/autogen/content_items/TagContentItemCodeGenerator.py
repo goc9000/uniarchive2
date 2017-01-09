@@ -33,20 +33,20 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
 
         assert False, 'Unsupported tag_type: {0}'.format(self.tag_type)
 
-    def constructors(self):
+    def constructors(self, *args, **kwargs):
         if self.tag_type == TagContentItemType.SYMMETRIC:
-            for constructor in super().constructors():
+            for constructor in super().constructors(*args, **kwargs):
                 yield constructor._replace(
-                    params=[('bool', 'open')] + constructor.params,
+                    params=[ParamInfo(type='bool', name='open')] + constructor.params,
                     subconstructors=['SymmetricTag(open)'] + constructor.subconstructors[1:]
                 )
         elif self.tag_type == TagContentItemType.STANDARD:
             closed_constructor_covered = False
 
-            for constructor in super().constructors():
+            for constructor in super().constructors(*args, **kwargs):
                 if len(constructor.params) == 0:
                     yield constructor._replace(
-                        params=[('bool', 'open')],
+                        params=[ParamInfo(type='bool', name='open')],
                         subconstructors=['StandardTag(open)'] + constructor.subconstructors[1:]
                     )
                     closed_constructor_covered = True
@@ -64,7 +64,7 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
                 )
 
         else:
-            for constructor in super().constructors():
+            for constructor in super().constructors(*args, **kwargs):
                 yield constructor
 
     def implicitly_covered_symbols(self):
