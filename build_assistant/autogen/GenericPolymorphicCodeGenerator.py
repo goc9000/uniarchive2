@@ -10,6 +10,7 @@ from build_assistant.autogen.AutoGenConfig import GenericPolymorphicConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment
+from build_assistant.util.VirtualPath import VirtualPath
 
 
 class GenericPolymorphicCodeGenerator(Augment):
@@ -110,7 +111,9 @@ class GenericPolymorphicCodeGenerator(Augment):
         self.gen_key_informational_methods(cpp_source.code, public_block)
         public_block.nl()
 
+        self.gen_deserialize_methods(cpp_source.code, public_block, protected_block)
         self.gen_serialize_methods(cpp_source.code, protected_block)
+        public_block.nl()
         protected_block.nl()
 
         self.gen_debug_write_methods(cpp_source.code, public_block, protected_block)
@@ -170,6 +173,9 @@ class GenericPolymorphicCodeGenerator(Augment):
     def gen_key_informational_methods(self, cpp_code, public_block):
         pass  # Nothing by default
 
+    def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
+        pass  # Nothing by default
+
     def gen_serialize_methods(self, cpp_code, protected_block):
         pass  # Nothing by default
 
@@ -204,3 +210,8 @@ class GenericPolymorphicCodeGenerator(Augment):
                 regular_fields_section = None
 
                 field_config.gen_irregular_debug_write_code(method)
+
+    def add_deserialization_headers(self, source):
+        source \
+            .include('utils/serialization/deserialization_helpers.h') \
+            .use(VirtualPath([source.core.codegen_cfg.base_namespace, 'utils', 'serialization']))

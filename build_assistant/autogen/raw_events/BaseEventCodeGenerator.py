@@ -7,7 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
-from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS
+from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS, SUBTYPE_ENUM
 from build_assistant.codegen.ParamInfo import ParamInfo
 
 
@@ -32,6 +32,30 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=block
         ) as method:
             method.ret('name_for_raw_event_sub_type(subType())')
+
+    def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
+        from build_assistant.autogen.raw_events.gen_main import autogen_raw_events_index
+
+        self.add_deserialization_headers(cpp_code.source)
+
+        with cpp_code.method(
+            self.class_name(), 'deserializeFromStream', 'CEDE({0})'.format(self.class_name()),
+            ('QDataStream&', 'mut_stream'),
+            static=True, declare_in=public_block
+        ) as method:
+            method.code_line('{0} subtype = must_deserialize(mut_stream, {0})', self.subtype_enum()).nl()
+
+            with method.switch_block('subtype') as sw:
+                for event in autogen_raw_events_index(cpp_code.source.core.autogen_config, include_base=False):
+                    cpp_code.source.use_symbol(event.class_name)
+
+                    sw.case_block(SUBTYPE_ENUM + '::' + event.subtype_constant) \
+                        .ret('{0}::deserializeFromStream(mut_stream, true)', event.class_name)
+
+            method.code_line(
+                'invariant_violation("Invalid deserialized {0} subtype (code: %d)", (int)subtype)',
+                self.class_name()
+            )
 
     def gen_serialize_methods(self, cpp_code, protected_block):
         self._gen_serialize_method(cpp_code, protected_block)

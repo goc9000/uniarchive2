@@ -45,6 +45,17 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             ) as method:
                 method.custom_section('Name method')
 
+    def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
+        self.add_deserialization_headers(cpp_code.source)
+
+        with cpp_code.method(
+            self.class_name(), 'deserializeFromStream', 'CEDE({0})'.format(self.class_name()),
+            ('QDataStream&', 'mut_stream'), ParamInfo(type='bool', name='skip_type', default_value='false'),
+            static=True, declare_in=public_block
+        ) as method:
+            # TODO: implement this
+            method.code_line('invariant_violation("{0} deserialization not yet implemented")', self.class_name())
+
     def gen_serialize_methods(self, cpp_code, protected_block):
         self.gen_serialize_details_method(cpp_code, protected_block)
 
