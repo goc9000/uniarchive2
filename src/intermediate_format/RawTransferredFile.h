@@ -13,6 +13,7 @@
 
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/IDeserializableStatic.h"
 #include "utils/serialization/ISerializable.h"
 
 #include <QtDebug>
@@ -25,7 +26,7 @@ namespace uniarchive2 { namespace intermediate_format {
 using namespace std::experimental;
 using namespace uniarchive2::utils::serialization;
 
-struct RawTransferredFile : public ISerializable {
+struct RawTransferredFile : public ISerializable, public IDeserializableStatic {
 public:
     QString filename;
     optional<uint64_t> size;
@@ -33,6 +34,7 @@ public:
     explicit RawTransferredFile(IMM(QString) filename);
     RawTransferredFile(IMM(QString) filename, uint64_t size);
 
+    static RawTransferredFile deserializeFromStream(QDataStream& mut_stream);
     virtual void serializeToStream(QDataStream& mut_stream) const;
 };
 
