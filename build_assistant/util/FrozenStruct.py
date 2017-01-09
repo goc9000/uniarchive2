@@ -27,6 +27,11 @@ class FrozenStruct:
         assert not self._frozen, 'Object cannot be updated after freezing'
         object.__setattr__(self, key, value)
 
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + \
+               ', '.join(field + '=' + self.__getattribute__(field).__repr__() for field in self._fields) + \
+               ')'
+
     def _replace(self, **kwargs):
         current_fields = {field: getattr(self, field) for field in self._fields}
         current_fields.update(kwargs)
