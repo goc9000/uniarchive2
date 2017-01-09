@@ -8,7 +8,7 @@
 
 from build_assistant.autogen.AutoGenConfig import ContentItemConfig
 from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
-from build_assistant.autogen.content_items.constants import SUBTYPE_ENUM
+from build_assistant.autogen.content_items.constants import SUBTYPE_ENUM, BASE_CONTENT_ITEMS_CLASS
 from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
 from build_assistant.codegen.ParamInfo import ParamInfo
 from build_assistant.util.grammar import camelcase_to_underscore
@@ -39,7 +39,7 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
         return self._name
 
     def parent_class(self, no_template=False):
-        return 'RawMessageContentItem'
+        return BASE_CONTENT_ITEMS_CLASS
 
     def implicitly_covered_symbols(self):
         return [

@@ -11,3 +11,5 @@ from build_assistant.util.VirtualPath import VirtualPath
 
 BASE_CONTENT_ITEMS_PATH = VirtualPath(['intermediate_format', 'content'])
 SUBTYPE_ENUM = 'RawMessageContentItemSubType'
+
+BASE_CONTENT_ITEMS_CLASS = 'RawMessageContentItem'
