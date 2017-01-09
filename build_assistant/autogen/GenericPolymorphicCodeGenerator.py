@@ -183,26 +183,26 @@ class GenericPolymorphicCodeGenerator(Augment):
     def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
         pass  # Nothing by default
 
-    def gen_serialize_field_code(self, method, fields):
+    def gen_serialize_field_code(self, method, stream_name, fields):
         regular_fields_section = None
         for field_config in fields:
             if field_config.is_regular_for_serialize():
                 if regular_fields_section is None:
-                    regular_fields_section = method.subsection(WriteToStreamSection(method.source, 'mut_stream'))
+                    regular_fields_section = method.subsection(WriteToStreamSection(method.source, stream_name))
 
                 regular_fields_section.add_item(field_config.as_serialize_rvalue(method))
             else:
                 regular_fields_section = None
 
-                field_config.gen_irregular_serialize_code(method)
+                field_config.gen_irregular_serialize_code(method, stream_name)
 
-    def gen_debug_write_field_code(self, method, fields):
+    def gen_debug_write_field_code(self, method, stream_name, fields):
         regular_fields_section = None
 
         for field_config in fields:
             if field_config.is_regular_for_debug_write():
                 if regular_fields_section is None:
-                    regular_fields_section = method.subsection(WriteToStreamSection(method.source, 'stream'))
+                    regular_fields_section = method.subsection(WriteToStreamSection(method.source, stream_name))
 
                 regular_fields_section.add_item(
                     (field_config.debug_write_header(), field_config.as_print_rvalue(method))
@@ -210,7 +210,7 @@ class GenericPolymorphicCodeGenerator(Augment):
             else:
                 regular_fields_section = None
 
-                field_config.gen_irregular_debug_write_code(method)
+                field_config.gen_irregular_debug_write_code(method, stream_name)
 
     def add_deserialization_headers(self, source):
         source \

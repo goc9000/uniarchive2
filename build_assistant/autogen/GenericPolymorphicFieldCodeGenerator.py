@@ -175,15 +175,15 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
     def is_regular_for_serialize(self):
         return not (self.is_optional and self._type_info.type_kind == TypeKind.POLYMORPHIC and not self.is_list)
 
-    def gen_irregular_serialize_code(self, method):
+    def gen_irregular_serialize_code(self, method, stream_name):
         method.source.include("utils/serialization/serialization_helpers.h")
 
-        method.code_line('serialize_optional_unique_ptr(mut_stream, {0})', self.name)
+        method.code_line('serialize_optional_unique_ptr({0}, {1})', stream_name, self.name)
 
     def is_regular_for_debug_write(self):
         return not (self.is_optional or self.maybe_singleton)
 
-    def gen_irregular_debug_write_code(self, method):
+    def gen_irregular_debug_write_code(self, method, stream_name):
         block = method
 
         if self.is_optional:
@@ -192,11 +192,12 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         if self.maybe_singleton:
             if_block = block.if_block('{0} == 1'.format(self.as_subfield_value('size()')), nl_after=False) \
                 .code_line(
-                    'stream << {0} << {1}',
+                    '{0} << {1} << {2}',
+                    stream_name,
                     self.singularized().debug_write_header(),
                     self.as_subfield_value('front()'),
                 )
 
             block = if_block.else_block()
 
-        block.code_line('stream << {0} << {1}', self.debug_write_header(), self.as_print_rvalue(block))
+        block.code_line('{0} << {1} << {2}', stream_name, self.debug_write_header(), self.as_print_rvalue(block))

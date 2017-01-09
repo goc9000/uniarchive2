@@ -66,7 +66,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             self.class_name(), 'serializeToStreamImpl', 'void', ('QDataStream&', 'mut_stream'),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
-            self.gen_serialize_field_code(method, self.fields)
+            self.gen_serialize_field_code(method, 'mut_stream', self.fields)
 
             method.nl().code_line('serializeDetailsToStream(mut_stream)')
 
@@ -106,7 +106,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
                 .code_line('writeDetailsToDebugStream(stream)').nl()
             cpp_code.source.use_symbol('QP')
 
-            self.gen_debug_write_field_code(method, remaining_fields)
+            self.gen_debug_write_field_code(method, 'stream', remaining_fields)
 
     def gen_debug_write_details_method(self, cpp_code, protected_block):
         with cpp_code.method(

@@ -54,7 +54,7 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             ParamInfo(type='QDataStream&', name='mut_stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
-            self.gen_serialize_field_code(method, self.fields)
+            self.gen_serialize_field_code(method, 'mut_stream', self.fields)
 
     def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):
         with cpp_code.method(
@@ -73,5 +73,5 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
                     method.code_line('stream << "[{0}]"', item_name)
                 else:
                     method.code_line('stream << "[{0}"', item_name)
-                    self.gen_debug_write_field_code(method, self.fields)
+                    self.gen_debug_write_field_code(method, 'stream', self.fields)
                     method.code_line('stream << "]"')

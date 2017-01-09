@@ -86,7 +86,7 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             ParamInfo(type='QDataStream&', name='mut_stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
-            self.gen_serialize_field_code(method, self.fields)
+            self.gen_serialize_field_code(method, 'mut_stream', self.fields)
 
     def _serialize_attrs_method_name(self):
         return 'serialize' + ('OpenTag' if self.tag_type == TagContentItemType.STANDARD else '') + 'AttributesToStream'
@@ -105,7 +105,7 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             if self.custom_debug_write_method:
                 method.custom_section('Debug write method')
             else:
-                self.gen_debug_write_field_code(method, self.fields)
+                self.gen_debug_write_field_code(method, 'stream', self.fields)
 
     def _debug_write_method_name(self):
         return 'write' + ('OpenTag' if self.tag_type == TagContentItemType.STANDARD else '') + 'AttributesToDebugStream'
