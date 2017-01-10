@@ -27,6 +27,8 @@ public:
 
     virtual CEDE(ApparentSubject) clone() const;
 
+    static CEDE(ImplicitSubject) deserializeFromStream(QDataStream& mut_stream, bool skip_type=false);
+
 protected:
     virtual void serializeToStreamSubImpl(QDataStream &mut_stream) const;
 

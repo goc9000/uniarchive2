@@ -9,8 +9,7 @@
  */
 
 #include "intermediate_format/subjects/ImplicitSubject.h"
-#include "utils/language/invariant.h"
-#include "utils/qt/shortcuts.h"
+#include "utils/serialization/deserialization_helpers.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
@@ -23,6 +22,13 @@ ApparentSubjectSubType ImplicitSubject::subType() const {
 
 CEDE(ApparentSubject) ImplicitSubject::clone() const {
     return make_unique<ImplicitSubject>(kind, hints);
+}
+
+CEDE(ImplicitSubject) ImplicitSubject::deserializeFromStream(QDataStream& mut_stream, bool skip_type) {
+    maybeDeserializeType(skip_type, mut_stream, ApparentSubjectSubType::IMPLICIT);
+    Hints hints = must_deserialize(mut_stream, Hints);
+
+    return make_unique<ImplicitSubject>(must_deserialize(mut_stream, ImplicitSubjectKind), hints);
 }
 
 void ImplicitSubject::serializeToStreamSubImpl(QDataStream& mut_stream) const {

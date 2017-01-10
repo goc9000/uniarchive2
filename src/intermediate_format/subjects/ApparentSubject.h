@@ -34,6 +34,8 @@ public:
 
     virtual CEDE(ApparentSubject) clone() const = 0;
 
+    static CEDE(ApparentSubject) deserializeFromStream(QDataStream& mut_stream);
+
     void writeToDebugStream(QDebug stream) const;
 
 protected:

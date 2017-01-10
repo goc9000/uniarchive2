@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/subjects/AccountSubject.h"
+#include "utils/serialization/deserialization_helpers.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
@@ -21,6 +22,13 @@ ApparentSubjectSubType AccountSubject::subType() const {
 
 CEDE(ApparentSubject) AccountSubject::clone() const {
     return make_unique<AccountSubject>(account, hints);
+}
+
+CEDE(AccountSubject) AccountSubject::deserializeFromStream(QDataStream& mut_stream, bool skip_type) {
+    maybeDeserializeType(skip_type, mut_stream, ApparentSubjectSubType::ACCOUNT);
+    Hints hints = must_deserialize(mut_stream, Hints);
+
+    return make_unique<AccountSubject>(must_deserialize(mut_stream, FullAccountName), hints);
 }
 
 void AccountSubject::serializeToStreamSubImpl(QDataStream &mut_stream) const {

@@ -22,6 +22,8 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 using namespace uniarchive2::protocols;
 
 class FullySpecifiedSubject : public ApparentSubject {
+    friend class ApparentSubject;
+
 public:
     FullAccountName accountName;
     QString screenName;
@@ -31,6 +33,8 @@ public:
     virtual ApparentSubjectSubType subType() const;
 
     virtual CEDE(ApparentSubject) clone() const;
+
+    static CEDE(FullySpecifiedSubject) deserializeFromStream(QDataStream& mut_stream, bool skip_type=false);
 
 protected:
     virtual void serializeToStreamSubImpl(QDataStream &mut_stream) const;

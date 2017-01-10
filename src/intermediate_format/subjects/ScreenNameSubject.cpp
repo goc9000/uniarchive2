@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/subjects/ScreenNameSubject.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
@@ -23,6 +24,13 @@ ApparentSubjectSubType ScreenNameSubject::subType() const {
 
 CEDE(ApparentSubject) ScreenNameSubject::clone() const {
     return make_unique<ScreenNameSubject>(screenName, hints);
+}
+
+CEDE(ScreenNameSubject) ScreenNameSubject::deserializeFromStream(QDataStream& mut_stream, bool skip_type) {
+    maybeDeserializeType(skip_type, mut_stream, ApparentSubjectSubType::SCREEN_NAME);
+    Hints hints = must_deserialize(mut_stream, Hints);
+
+    return make_unique<ScreenNameSubject>(must_deserialize(mut_stream, QString), hints);
 }
 
 void ScreenNameSubject::serializeToStreamSubImpl(QDataStream &mut_stream) const {

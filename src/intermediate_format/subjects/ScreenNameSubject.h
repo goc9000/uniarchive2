@@ -19,6 +19,8 @@
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class ScreenNameSubject : public ApparentSubject {
+    friend class ApparentSubject;
+
 public:
     QString screenName;
 
@@ -27,6 +29,8 @@ public:
     virtual ApparentSubjectSubType subType() const;
 
     virtual CEDE(ApparentSubject) clone() const;
+
+    static CEDE(ScreenNameSubject) deserializeFromStream(QDataStream& mut_stream, bool skip_type=false);
 
 protected:
     virtual void serializeToStreamSubImpl(QDataStream &mut_stream) const;

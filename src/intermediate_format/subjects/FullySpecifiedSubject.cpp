@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
@@ -26,6 +27,17 @@ ApparentSubjectSubType FullySpecifiedSubject::subType() const {
 
 CEDE(ApparentSubject) FullySpecifiedSubject::clone() const {
     return make_unique<FullySpecifiedSubject>(accountName, screenName, hints);
+}
+
+CEDE(FullySpecifiedSubject) FullySpecifiedSubject::deserializeFromStream(QDataStream& mut_stream, bool skip_type) {
+    maybeDeserializeType(skip_type, mut_stream, ApparentSubjectSubType::FULLY_SPECIFIED);
+    Hints hints = must_deserialize(mut_stream, Hints);
+
+    return make_unique<FullySpecifiedSubject>(
+        must_deserialize(mut_stream, FullAccountName),
+        must_deserialize(mut_stream, QString),
+        hints
+    );
 }
 
 void FullySpecifiedSubject::serializeToStreamSubImpl(QDataStream &mut_stream) const {
