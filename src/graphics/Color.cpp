@@ -14,6 +14,7 @@
 #include "graphics/Color.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/serialization/deserialization_helpers.h"
 
 namespace uniarchive2 { namespace graphics {
 
@@ -34,6 +35,14 @@ Color Color::fromHTMLFormat(IMM(QString) text) {
         (uint8_t)match.captured("r").toInt(nullptr, 16),
         (uint8_t)match.captured("g").toInt(nullptr, 16),
         (uint8_t)match.captured("b").toInt(nullptr, 16)
+    );
+}
+
+Color Color::deserializeFromStream(QDataStream& mut_stream) {
+    return Color(
+        must_deserialize(mut_stream, uint8_t),
+        must_deserialize(mut_stream, uint8_t),
+        must_deserialize(mut_stream, uint8_t)
     );
 }
 
