@@ -8,9 +8,9 @@
 
 from build_assistant.autogen.AutoGenConfig import GenericPolymorphicConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
+from build_assistant.autogen.common_code import add_deserialization_headers
 from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
 from build_assistant.util.Augment import Augment
-from build_assistant.util.VirtualPath import VirtualPath
 
 
 class GenericPolymorphicCodeGenerator(Augment):
@@ -183,6 +183,28 @@ class GenericPolymorphicCodeGenerator(Augment):
     def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
         pass  # Nothing by default
 
+    def gen_deserialization_manifold(self, cpp_code, public_block, item_index):
+        add_deserialization_headers(cpp_code.source)
+
+        with cpp_code.method(
+            self.class_name(), 'deserializeFromStream', 'CEDE({0})'.format(self.class_name()),
+            ('QDataStream&', 'mut_stream'),
+            static=True, declare_in=public_block
+        ) as method:
+            method.code_line('{0} subtype = must_deserialize(mut_stream, {0})', self.subtype_enum()).nl()
+
+            with method.switch_block('subtype') as sw:
+                for entry in item_index:
+                    cpp_code.source.use_symbol(entry.class_name)
+
+                    sw.case_block(self.subtype_enum() + '::' + entry.subtype_constant) \
+                        .ret('{0}::deserializeFromStream(mut_stream, true)', entry.class_name)
+
+            method.code_line(
+                'invariant_violation("Invalid deserialized {0} subtype (code: %d)", (int)subtype)',
+                self.class_name()
+            )
+
     def gen_serialize_field_code(self, method, stream_name, fields):
         regular_fields_section = None
         for field_config in fields:
@@ -211,8 +233,3 @@ class GenericPolymorphicCodeGenerator(Augment):
                 regular_fields_section = None
 
                 field_config.gen_irregular_debug_write_code(method, stream_name)
-
-    def add_deserialization_headers(self, source):
-        source \
-            .include('utils/serialization/deserialization_helpers.h') \
-            .use(VirtualPath([source.core.codegen_cfg.base_namespace, 'utils', 'serialization']))

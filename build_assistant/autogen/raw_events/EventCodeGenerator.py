@@ -9,6 +9,7 @@
 from build_assistant.autogen.raw_events.AbstractEventCodeGenerator import AbstractEventCodeGenerator
 from build_assistant.autogen.raw_events.constants import BASE_EVENT_CLASS
 from build_assistant.autogen.raw_events.common import event_class_name, event_subtype_value
+from build_assistant.autogen.common_code import add_deserialization_headers
 from build_assistant.codegen.ParamInfo import ParamInfo
 
 
@@ -46,7 +47,7 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
                 method.custom_section('Name method')
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
-        self.add_deserialization_headers(cpp_code.source)
+        add_deserialization_headers(cpp_code.source)
 
         with cpp_code.method(
             self.class_name(), 'deserializeFromStream', 'CEDE({0})'.format(self.class_name()),

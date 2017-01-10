@@ -11,6 +11,7 @@ from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolym
 from build_assistant.autogen.content_items.constants import SUBTYPE_ENUM, BASE_CONTENT_ITEMS_CLASS
 from build_assistant.autogen.content_items.common import content_item_class_name, content_item_subtype_value
 from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
+from build_assistant.autogen.common_code import add_deserialization_headers
 from build_assistant.codegen.ParamInfo import ParamInfo
 
 
@@ -45,6 +46,16 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
         return [
             'QDebug', 'vector', self.subtype_enum()  # Through RawMessageContentItem
         ]
+
+    def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
+        add_deserialization_headers(cpp_code.source)
+
+        with cpp_code.method(
+            self.class_name(), 'deserializeFromStream', 'CEDE({0})'.format(self.class_name()),
+            ('QDataStream&', 'mut_stream'), ParamInfo(type='bool', name='skip_type', default_value='false'),
+            static=True, declare_in=public_block
+        ) as method:
+            method.code_line('invariant_violation("{0} deserialization not yet implemented")', self.class_name())
 
     def gen_serialize_methods(self, cpp_code, protected_block):
         with cpp_code.method(

@@ -40,6 +40,13 @@ class BaseContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
     def gen_subtype_method(self, _cpp_code, _public_block):
         pass  # Do not generate this method as this is a base class
 
+    def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
+        from build_assistant.autogen.content_items.gen_main import autogen_content_items_index
+
+        item_index = autogen_content_items_index(cpp_code.source.core.autogen_config, include_base=False)
+
+        self.gen_deserialization_manifold(cpp_code, public_block, item_index)
+
     def gen_serialize_methods(self, cpp_code, protected_block):
         protected_block.declare_method(
             'serializeToStreamImpl', 'void', ('QDataStream&', 'mut_stream'),
