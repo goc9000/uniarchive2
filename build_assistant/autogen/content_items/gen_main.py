@@ -7,22 +7,46 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.AutoGenConfig import TagContentItemConfig, EnumConfig, EnumValue
-from build_assistant.autogen.content_items.constants import BASE_CONTENT_ITEMS_PATH, SUBTYPE_ENUM
+from build_assistant.autogen.content_items.constants import BASE_CONTENT_ITEMS_PATH, BASE_CONTENT_ITEMS_CLASS, \
+    SUBTYPE_ENUM
+from build_assistant.autogen.content_items.common import content_item_class_name, content_item_subtype_value
 from build_assistant.autogen.content_items.BaseContentItemCodeGenerator import BaseContentItemCodeGenerator
 from build_assistant.autogen.content_items.ContentItemCodeGenerator import ContentItemCodeGenerator
 from build_assistant.autogen.content_items.TagContentItemCodeGenerator import TagContentItemCodeGenerator
-from build_assistant.util.grammar import camelcase_to_underscore
+
+from collections import namedtuple
+
+
+RawContentItemsIndexEntry = namedtuple('RawEventsIndexEntry', ['item_name', 'path', 'class_name', 'subtype_constant'])
+
+
+def autogen_content_items_index(autogen_config, include_base=True):
+    if include_base:
+        yield RawContentItemsIndexEntry(
+            item_name=None,
+            path=BASE_CONTENT_ITEMS_PATH,
+            class_name=BASE_CONTENT_ITEMS_CLASS,
+            subtype_constant=None
+        )
+
+    for path, name, _ in sorted(autogen_config.content_items, key=lambda tup: tup[0].add(tup[1]).to_text()):
+        yield RawContentItemsIndexEntry(
+            item_name=name,
+            path=BASE_CONTENT_ITEMS_PATH.append(path),
+            class_name=content_item_class_name(name),
+            subtype_constant=content_item_subtype_value(name)
+        )
 
 
 def autogen_content_items_subtype_enum(autogen_config):
     return BASE_CONTENT_ITEMS_PATH, SUBTYPE_ENUM, EnumConfig(
         values=[
             EnumValue(
-                text=name,
-                constant=camelcase_to_underscore(name).upper(),
+                text=item.item_name,
+                constant=item.subtype_constant,
                 int_value=None,
                 comment=None,
-            ) for _, name, _ in sorted(autogen_config.content_items, key=lambda tup: tup[0].add(tup[1]).to_text())
+            ) for item in autogen_content_items_index(autogen_config, include_base=False)
         ],
         internal_comment=None,
         underlying_type_override=None,

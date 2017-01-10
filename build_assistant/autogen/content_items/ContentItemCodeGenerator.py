@@ -9,9 +9,9 @@
 from build_assistant.autogen.AutoGenConfig import ContentItemConfig
 from build_assistant.autogen.GenericPolymorphicCodeGenerator import GenericPolymorphicCodeGenerator
 from build_assistant.autogen.content_items.constants import SUBTYPE_ENUM, BASE_CONTENT_ITEMS_CLASS
+from build_assistant.autogen.content_items.common import content_item_class_name, content_item_subtype_value
 from build_assistant.autogen.content_items.ContentItemFieldCodeGenerator import ContentItemFieldCodeGenerator
 from build_assistant.codegen.ParamInfo import ParamInfo
-from build_assistant.util.grammar import camelcase_to_underscore
 
 
 class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
@@ -30,13 +30,13 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
         return SUBTYPE_ENUM
 
     def subtype_value(self):
-        return camelcase_to_underscore(self._name).upper()
+        return content_item_subtype_value(self._name)
 
     def mandatory_base_fields(self):
         return []
 
     def class_name(self):
-        return self._name
+        return content_item_class_name(self._name)
 
     def parent_class(self, no_template=False):
         return BASE_CONTENT_ITEMS_CLASS
