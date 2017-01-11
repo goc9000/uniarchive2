@@ -10,6 +10,7 @@
 
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/TextSection.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/serialization/serialization_helpers.h"
 
 #include <QDebugStateSaver>
@@ -30,6 +31,14 @@ void RawMessageContent::addItem(TAKE(RawMessageContentItem) item) {
     if (item) {
         items.push_back(move(item));
     }
+}
+
+RawMessageContent RawMessageContent::deserializeFromStream(QDataStream& mut_stream) {
+    RawMessageContent content;
+
+    mut_stream >> content.items;
+
+    return content;
 }
 
 void RawMessageContent::serializeToStream(QDataStream& mut_stream) const {

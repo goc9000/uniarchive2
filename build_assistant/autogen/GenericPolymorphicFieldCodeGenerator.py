@@ -7,9 +7,10 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.AutoGenConfig import GenericPolymorphicFieldConfig
+from build_assistant.autogen.SymbolRegistry import TypeKind
+from build_assistant.autogen.common_code import add_deserialization_headers
 from build_assistant.codegen.codegen_utils import cpp_string_literal
 from build_assistant.codegen.ParamInfo import ParamInfo
-from build_assistant.autogen.SymbolRegistry import TypeKind
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import camelcase_to_underscore, singular
 
@@ -36,19 +37,25 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         return self.short_name or camelcase_to_underscore(self.name)
 
     def as_field_decl(self):
+        return self.type_for_storage(), self.name, self.default_value
+
+    def type_for_storage(self, for_local=False):
         cpp_type = self._base_type
         if self.uses_unique_ptr():
             cpp_type = 'unique_ptr<{0}>'.format(cpp_type)
         if self.is_list:
             cpp_type = 'vector<{0}>'.format(cpp_type)
-        if self.uses_optional():
+        if self.uses_optional(for_local=for_local):
             cpp_type = 'optional<{0}>'.format(cpp_type)
 
-        return cpp_type, self.name, self.default_value
+        return cpp_type
 
-    def uses_optional(self):
-        """Whether storage for this field uses the optional<T> template"""
-        return self._is_optional_for_storage() and not \
+    def uses_optional(self, for_local=False):
+        """
+        Whether storage for this field uses the optional<T> template. If for_local is True, the same is reported
+        for storage in a local variable, where different rules may apply.
+        """
+        return (self.is_optional if for_local else self._is_optional_for_storage()) and not \
             (self._type_info.type_kind == TypeKind.POLYMORPHIC and not self.is_list)
 
     def _is_optional_for_storage(self):
@@ -68,7 +75,7 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
 
         cpp_type = self._base_type
         if type_kind == TypeKind.POLYMORPHIC:
-            cpp_type = ('TAKE_VEC({0})' if self.is_list else 'TAKE({0})').format(cpp_type)
+            cpp_type = 'TAKE{0}({1})'.format('_VEC' if self.is_list else '', cpp_type)
         else:
             if self.is_list:
                 cpp_type = 'vector<{0}>'.format(cpp_type)
@@ -179,6 +186,18 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         method.source.include("utils/serialization/serialization_helpers.h")
 
         method.code_line('serialize_optional_unique_ptr({0}, {1})', stream_name, self.name)
+
+    def gen_deserialize_to_var(self, method, stream_name):
+        add_deserialization_headers(method.source)
+
+        cpp_type = self.type_for_storage(for_local=True)
+
+        if self.is_regular_for_serialize():
+            initializer = 'must_deserialize({0}, {1})'.format(stream_name, cpp_type)
+        else:
+            initializer = 'must_deserialize_optional_unique_ptr({0}, {1})'.format(stream_name, self._base_type)
+
+        method.declare_var(cpp_type, self.local_name(), initializer)
 
     def is_regular_for_debug_write(self):
         return not (self.is_optional or self.maybe_singleton)

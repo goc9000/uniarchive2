@@ -55,7 +55,32 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             ('QDataStream&', 'mut_stream'), ParamInfo(type='bool', name='skip_type', default_value='false'),
             static=True, declare_in=public_block
         ) as method:
-            method.code_line('invariant_violation("{0} deserialization not yet implemented")', self.class_name())
+            method.code_line(
+                'maybeDeserializeType(skip_type, mut_stream, {0}::{1})', self.subtype_enum(), self.subtype_value()
+            ).nl()
+
+            self._pre_deserialize_fields_hook(method)
+
+            for field in self.fields:
+                field.gen_deserialize_to_var(method, 'mut_stream')
+
+            method.nl().call(
+                'unique_ptr<{0}> item = make_unique<{0}>'.format(self.class_name()),
+                *self._extra_deserialization_constructor_params(),
+                *[field.as_rvalue() for field in self.fields if field.is_mandatory()]
+            )
+
+            for field in self.fields:
+                if not field.is_mandatory():
+                    method.code_line('item->{0} = {1}', field.name, field.as_rvalue())
+
+            method.nl().ret('item')
+
+    def _pre_deserialize_fields_hook(self, method):
+        pass  # Nothing to do normally
+
+    def _extra_deserialization_constructor_params(self):
+        return []
 
     def gen_serialize_methods(self, cpp_code, protected_block):
         with cpp_code.method(

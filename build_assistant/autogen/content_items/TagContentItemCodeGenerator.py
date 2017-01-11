@@ -78,6 +78,30 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
         ) as method:
             method.ret('{0}', cpp_string_literal(self._tag_name_for_display()))
 
+    def _pre_deserialize_fields_hook(self, method):
+        if self.tag_type == TagContentItemType.STANDARD:
+            method \
+                .if_block('!must_deserialize(mut_stream, bool)') \
+                .ret('make_unique<{0}>({1})', self.class_name(), '' if self.has_mandatory_fields() else 'false')
+            return
+        elif self.tag_type == TagContentItemType.SYMMETRIC:
+            method.declare_var('bool', 'open', 'must_deserialize(mut_stream, bool)')
+            return
+        elif self.tag_type == TagContentItemType.SELF_CLOSING:
+            return
+
+        assert False, 'Unsupported tag_type: {0}'.format(self.tag_type)
+
+    def _extra_deserialization_constructor_params(self):
+        if self.tag_type == TagContentItemType.STANDARD:
+            return [] if self.has_mandatory_fields() else ['true']
+        elif self.tag_type == TagContentItemType.SYMMETRIC:
+            return ['open']
+        elif self.tag_type == TagContentItemType.SELF_CLOSING:
+            return []
+
+        assert False, 'Unsupported tag_type: {0}'.format(self.tag_type)
+
     def gen_serialize_methods(self, cpp_code, protected_block):
         with cpp_code.method(
             self.class_name(),
