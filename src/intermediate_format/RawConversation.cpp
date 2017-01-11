@@ -10,6 +10,7 @@
 
 #include "intermediate_format/RawConversation.h"
 #include "utils/serialization/serialization_helpers.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/debug_extras.h"
 
 #include <QDebugStateSaver>
@@ -42,6 +43,21 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     if (prototype.provenance) {
         convo.provenance = prototype.provenance->clone();
     }
+
+    return convo;
+}
+
+RawConversation RawConversation::deserializeFromStream(QDataStream& mut_stream) {
+    RawConversation convo(must_deserialize(mut_stream, IMProtocol));
+
+    convo.identity = must_deserialize_optional_unique_ptr(mut_stream, ApparentSubject);
+
+    mut_stream >> convo.declaredPeers >> convo.isConference >> convo.conferenceTitle >> convo.declaredStartDate;
+
+    convo.declaredInitiator = must_deserialize_optional_unique_ptr(mut_stream, ApparentSubject);
+    convo.provenance = must_deserialize_optional_unique_ptr(mut_stream, Provenance);
+
+    mut_stream >> convo.events;
 
     return convo;
 }

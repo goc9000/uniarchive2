@@ -13,6 +13,7 @@
 
 #include "intermediate_format/RawConversation.h"
 #include "utils/language/shortcuts.h"
+#include "utils/serialization/IDeserializableStatic.h"
 #include "utils/serialization/ISerializable.h"
 
 #include <vector>
@@ -24,9 +25,11 @@ namespace uniarchive2 { namespace intermediate_format {
 using namespace std;
 using namespace uniarchive2::utils::serialization;
 
-class RawConversationCollection : public ISerializable {
+class RawConversationCollection : public ISerializable, public IDeserializableStatic {
 public:
     vector<RawConversation> conversations;
+
+    RawConversationCollection();
 
     void take(RawConversation&& conversation);
     void take(vector<RawConversation>&& conversations);
@@ -36,6 +39,8 @@ public:
     vector<RawConversation>::const_iterator end() const;
 
     void writeToBinaryFile(IMM(QString) filename) const;
+
+    static RawConversationCollection deserializeFromStream(QDataStream& mut_stream);
     virtual void serializeToStream(QDataStream& mut_stream) const;
 
     void writeToDebugStream(QDebug stream, bool summarize_conversations = true) const;
@@ -43,8 +48,10 @@ public:
     static RawConversationCollection from(RawConversation&& conversation);
     static RawConversationCollection from(vector<RawConversation>&& conversations);
 
+    static RawConversationCollection loadFromBinaryFile(IMM(QString) filename);
+
 private:
-    const uint32_t BINARY_FORMAT_VERSION = 1;
+    static const uint32_t BINARY_FORMAT_VERSION = 1;
 };
 
 QDebug operator<< (QDebug stream, IMM(RawConversationCollection) conversations);

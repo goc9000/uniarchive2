@@ -10,6 +10,7 @@
 
 #include "intermediate_format/RawConversationCollection.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/serialization/deserialization_helpers.h"
 #include "utils/serialization/serialization_helpers.h"
 
 #include <QDebugStateSaver>
@@ -19,6 +20,10 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 using namespace uniarchive2::utils::serialization;
+
+RawConversationCollection::RawConversationCollection() {
+    // Nothing to initialize
+}
 
 RawConversationCollection RawConversationCollection::from(RawConversation&& conversation) {
     RawConversationCollection collection;
@@ -67,8 +72,35 @@ void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {
     stream << this;
 }
 
+RawConversationCollection RawConversationCollection::deserializeFromStream(QDataStream& mut_stream) {
+    return RawConversationCollection::from(must_deserialize(mut_stream, vector<RawConversation>));
+}
+
 void RawConversationCollection::serializeToStream(QDataStream& mut_stream) const {
     mut_stream << conversations;
+}
+
+RawConversationCollection RawConversationCollection::loadFromBinaryFile(IMM(QString) filename) {
+    QFile file(filename);
+    file.open(QFile::ReadOnly);
+    invariant(file.isReadable(), "Could not open input file '%s'", QP(filename));
+
+    QDataStream stream(&file);
+
+    uint32_t format_version = must_deserialize(stream, uint32_t);
+
+    invariant(
+        format_version == BINARY_FORMAT_VERSION,
+        "Can't deserialize conversations from file of different format version (found %08x, expected %08x)",
+        format_version,
+        BINARY_FORMAT_VERSION
+    );
+
+    RawConversationCollection collection = RawConversationCollection::deserializeFromStream(stream);
+
+    invariant(!stream.device() || stream.atEnd(), "Extra data found in conversations file");
+
+    return collection;
 }
 
 void RawConversationCollection::writeToDebugStream(QDebug stream, bool summarize_conversations) const {
