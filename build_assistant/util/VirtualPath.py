@@ -55,6 +55,12 @@ class VirtualPath:
     def replace_basename(self, new_name):
         return self.parent().add(new_name)
 
+    def replace_extension(self, new_extension):
+        assert new_extension == '' or new_extension.startswith('.')
+
+        base, _ = os.path.splitext(self.basename())
+        return self.replace_basename(base + new_extension)
+
     def relative_to(self, other_path):
         assert self.elements[:len(other_path.elements)] == other_path.elements
 
