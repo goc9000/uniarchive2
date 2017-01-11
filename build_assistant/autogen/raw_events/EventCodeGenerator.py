@@ -54,8 +54,40 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             ('QDataStream&', 'mut_stream'), ParamInfo(type='bool', name='skip_type', default_value='false'),
             static=True, declare_in=public_block
         ) as method:
-            # TODO: implement this
-            method.code_line('invariant_violation("{0} deserialization not yet implemented")', self.class_name())
+            method.code_line(
+                'maybeDeserializeType(skip_type, mut_stream, {0}::{1})', self.subtype_enum(), self.subtype_value()
+            ).nl()
+
+            for field in self._base_config.fields:
+                field.gen_deserialize_to_var(method, 'mut_stream')
+
+            if self.fail_reason_enum:
+                method.declare_var(
+                    'optional<{0}>'.format(self.fail_reason_enum),
+                    'fail_reason',
+                    'must_deserialize(mut_stream, optional<{0}>)'.format(self.fail_reason_enum)
+                )
+
+            for field in self.fields:
+                field.gen_deserialize_to_var(method, 'mut_stream')
+
+            method.nl().call(
+                'unique_ptr<{0}> event = make_unique<{0}>'.format(self.class_name()),
+                *[
+                    field.as_rvalue()
+                    for field in self._base_config.fields + self.fields
+                    if field.is_mandatory()
+                ]
+            )
+
+            if self.fail_reason_enum:
+                method.code_line('event->reasonFailed = fail_reason')
+
+            for field in self._base_config.fields + self.fields:
+                if not field.is_mandatory():
+                    method.code_line('event->{0} = {1}', field.name, field.as_rvalue())
+
+            method.nl().ret('event')
 
     def gen_serialize_methods(self, cpp_code, protected_block):
         self.gen_serialize_details_method(cpp_code, protected_block)
