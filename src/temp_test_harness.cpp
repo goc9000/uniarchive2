@@ -21,13 +21,15 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QString>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValueRef>
 #include <QThreadPool>
 #include <QRunnable>
 
-
 #include <map>
+#include <set>
 #include <vector>
 
 namespace uniarchive2 {
@@ -37,7 +39,12 @@ using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format::subjects;
 
 QString remove_trailing_slash(IMM(QString) path);
-RawConversationCollection extract_conversations(IMM(QString) base_input_path);
+set<ArchiveFormat> parse_formats_set(QJsonValueRef json_value);
+RawConversationCollection extract_conversations(
+    IMM(QString) base_input_path,
+    set<ArchiveFormat> include_formats,
+    set<ArchiveFormat> exclude_formats
+);
 void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QString) base_output_path);
 
 
@@ -57,7 +64,11 @@ void run_test_harness(IMM(QString) config_file) {
     invariant(QDir(base_input_path).exists(), "Test input dir %s does not exist", QP(base_input_path));
     invariant(QDir(base_output_path).exists(), "Test output dir %s does not exist", QP(base_output_path));
 
-    auto convos = extract_conversations(base_input_path);
+    auto convos = extract_conversations(
+        base_input_path,
+        parse_formats_set(doc.object()["include_formats"]),
+        parse_formats_set(doc.object()["exclude_formats"])
+    );
     dump_conversations(convos, base_output_path + "/debug_dump");
 
     convos.writeToBinaryFile(base_output_path + "/binary_dump.bin");
@@ -65,6 +76,35 @@ void run_test_harness(IMM(QString) config_file) {
 
 QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
+}
+
+set<ArchiveFormat> parse_formats_set(QJsonValueRef json_value) {
+    set<ArchiveFormat> formats;
+
+    if (json_value.isNull()) {
+        return formats;
+    }
+    if (json_value.isArray()) {
+        for (IMM(auto) item : json_value.toArray()) {
+            invariant(item.isString(), "Format array value should be JSON string");
+            formats.insert(archive_format_from_symbol(item.toString()));
+        }
+        return formats;
+    }
+    if (json_value.isObject()) {
+        QJsonObject as_object = json_value.toObject();
+        for (IMM(auto) key : as_object.keys()) {
+            invariant(as_object[key].isBool(), "Format dictionary value should have bools as values");
+            if (as_object[key].toBool()) {
+                formats.insert(archive_format_from_symbol(key));
+            }
+        }
+        return formats;
+    }
+
+    invariant_violation("Invalid format for formats set");
+
+    return formats;
 }
 
 class ExtractConversationsTask : public QRunnable {
@@ -83,7 +123,11 @@ public:
     }
 };
 
-RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
+RawConversationCollection extract_conversations(
+    IMM(QString) base_input_path,
+    set<ArchiveFormat> include_formats = set<ArchiveFormat>(),
+    set<ArchiveFormat> exclude_formats = set<ArchiveFormat>()
+) {
     RawConversationCollection convos;
 
     QThreadPool* tp = QThreadPool::globalInstance();
@@ -102,7 +146,16 @@ RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
     };
 
     for (IMM(auto) format_path_glob : inputs) {
-        qDebug() << get<ArchiveFormat>(format_path_glob);
+        ArchiveFormat format = get<ArchiveFormat>(format_path_glob);
+
+        if (!include_formats.empty() && (include_formats.find(format) == include_formats.end())) {
+            continue;
+        }
+        if (exclude_formats.find(format) != exclude_formats.end()) {
+            continue;
+        }
+
+        qDebug() << format;
         QDirIterator files(
             base_input_path + "/" + get<1>(format_path_glob),
             QStringList() << get<2>(format_path_glob),
@@ -113,10 +166,7 @@ RawConversationCollection extract_conversations(IMM(QString) base_input_path) {
         vector<unique_ptr<ExtractConversationsTask>> tasks;
 
         while (files.hasNext()) {
-            tasks.push_back(make_unique<ExtractConversationsTask>(
-                get<ArchiveFormat>(format_path_glob),
-                files.next()
-            ));
+            tasks.push_back(make_unique<ExtractConversationsTask>(format, files.next()));
         }
 
         for (IMM(auto) task : tasks) {
