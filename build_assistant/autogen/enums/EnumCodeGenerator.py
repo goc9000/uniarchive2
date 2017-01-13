@@ -7,6 +7,7 @@
 # Licensed under the GPL-3
 
 from build_assistant.autogen.AutoGenConfig import EnumConfig
+from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
 from build_assistant.codegen.codegen_utils import cpp_string_literal
 from build_assistant.util.Augment import Augment
 from build_assistant.util.grammar import camelcase_to_underscore, classname_to_varname
@@ -33,6 +34,10 @@ class EnumCodeGenerator(Augment):
 
         self._gen_name_for_function(cpp_source, h_source)
         h_source.code.nl()
+        self._gen_symbol_for_function(cpp_source, h_source)
+        self._gen_from_symbol_function(cpp_source, h_source)
+        h_source.code.nl()
+
         self._gen_debug_write_operator(cpp_source, h_source)
         h_source.code.nl()
         self._gen_deserialize_operator(cpp_source, h_source)
@@ -112,6 +117,39 @@ class EnumCodeGenerator(Augment):
 
             fn.code_line(
                 'invariant_violation("Invalid {0} value (%lld)", (int64_t){1})', self._name, self.as_var_name()
+            )
+
+    def _gen_symbol_for_function(self, cpp_source, h_source):
+        with cpp_source.code.function(
+            'symbol_for_{0}'.format(camelcase_to_underscore(self._name)), 'QString', self.as_parameter_spec(),
+            declare_in=h_source.code
+        ) as fn:
+            with fn.switch_block(self.as_var_name()) as sw:
+                for value in self.values:
+                    sw.case_block(self._name + '::' + value.constant) \
+                        .ret('{0}', cpp_string_literal(value.constant.lower()))
+
+            fn.code_line(
+                'invariant_violation("Invalid {0} value (%lld)", (int64_t){1})', self._name, self.as_var_name()
+            )
+
+    def _gen_from_symbol_function(self, cpp_source, h_source):
+        with cpp_source.use_symbol('QP').code.function(
+            '{0}_from_symbol'.format(camelcase_to_underscore(self._name)), self._name, ('IMM(QString)', 'symbol'),
+            declare_in=h_source.code
+        ) as fn:
+            pairs = [
+                (cpp_string_literal(value.constant.lower()), '{0}::{1}'.format(self._name, value.constant))
+                for value in self.values
+            ]
+
+            fn \
+                .declare_qmap('QString', self._name, 'MAP', pairs, const=True, static=True) \
+                .if_block('MAP.contains(symbol)') \
+                .ret('MAP[symbol]')
+
+            fn.code_line(
+                'invariant_violation("Invalid {0} symbol (\'%s\')", QP(symbol))', self._name
             )
 
     def _gen_debug_write_operator(self, cpp_source, h_source):

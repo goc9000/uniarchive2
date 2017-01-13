@@ -34,6 +34,27 @@ class ProceduralCodeMixin:
 
         return self.line('{0} {1}{2};'.format(type, name, ' = ' + default_value if default_value is not None else ''))
 
+    def declare_qmap(self, key_type, value_type, name, pairs, const=False, static=False):
+        from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
+        from build_assistant.codegen.abstract.GeneralizedBlockSection import GeneralizedBlockSection
+
+        assert isinstance(self, AbstractCodeSectionWithContent)
+
+        self.source.use_symbols('QMap', key_type, value_type)
+
+        width = max(len(str(key)) for key, _ in pairs)
+
+        with self.subsection(GeneralizedBlockSection(
+            self.source,
+            ('const ' if const else '') + ('static ' if static else '') +
+            'QMap<{0}, {1}> {2} ='.format(key_type, value_type, name),
+            semicolon=True
+        )) as const_def:
+            for key, value in pairs:
+                const_def.line('{{ {0:{1}} {2} }},'.format(str(key) + ',', width + 1, str(value)))
+
+        return self
+
     def call(self, function, *values):
         from build_assistant.codegen.abstract.AbstractCodeSectionWithContent import AbstractCodeSectionWithContent
 
