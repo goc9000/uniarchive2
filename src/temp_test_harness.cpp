@@ -131,7 +131,7 @@ RawConversationCollection extract_conversations(
             continue;
         }
 
-        qDebug() << format;
+        qDebug() << "    - Extracting:" << format;
         QDirIterator files(
             base_input_path + "/" + get<1>(format_path_glob),
             QStringList() << get<2>(format_path_glob),
@@ -220,6 +220,52 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
     }
 }
 
+RawConversationCollection run_extract_conversations_command(IMM(QJsonObject) command_obj) {
+    QString base_path = parse_existing_folder(command_obj["base_path"]);
+
+    qDebug() << "Extracting conversations at:" << QP(base_path);
+
+    return extract_conversations(
+        base_path,
+        parse_formats_set(command_obj["include_formats"]),
+        parse_formats_set(command_obj["exclude_formats"])
+    );
+}
+
+void run_dump_conversations_command(IMM(QJsonObject) command_obj, IMM(RawConversationCollection) convos) {
+    QString base_folder = parse_existing_folder(command_obj["base_output_path"]);
+    invariant(command_obj["subfolder"].isString(), "Missing 'subfolder' string value");
+    QString subfolder = command_obj["subfolder"].toString();
+    QString final_path = remove_trailing_slash(base_folder + "/" + subfolder);
+
+    qDebug() << "Dumping conversations to:" << QP(final_path);
+
+    dump_conversations(convos, final_path);
+}
+
+void run_commands(QJsonValue commands_json) {
+    invariant(!commands_json.isNull(), "Missing 'commands' key in config");
+    invariant(commands_json.isArray(), "Commands should be an array");
+
+    RawConversationCollection convos;
+
+    for (IMM(auto) command_json : commands_json.toArray()) {
+        invariant(command_json.isObject(), "Command JSON should be object");
+        QJsonObject command_obj = command_json.toObject();
+        invariant(command_obj["command"].isString(), "Missing valid 'command' key");
+
+        QString command = command_obj["command"].toString();
+
+        if (command == "extract_conversations") {
+            convos = run_extract_conversations_command(command_obj);
+        } else if (command == "dump_conversations") {
+            run_dump_conversations_command(command_obj, convos);
+        } else {
+            invariant_violation("Unsupported command: '%s'", QP(command));
+        }
+    }
+}
+
 void run_test_harness(IMM(QString) config_file) {
     QFile file(config_file);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -229,16 +275,9 @@ void run_test_harness(IMM(QString) config_file) {
     QByteArray data = file.readAll();
     QJsonDocument doc = QJsonDocument::fromJson(data);
     invariant(!doc.isNull() && doc.isObject(), "Malformed config file");
+    QJsonObject doc_object = doc.object();
 
-    QString base_input_path = parse_existing_folder(doc.object()["base_input_path"]);
-    QString base_output_path = parse_existing_folder(doc.object()["base_output_path"]);
-
-    auto convos = extract_conversations(
-        base_input_path,
-        parse_formats_set(doc.object()["include_formats"]),
-        parse_formats_set(doc.object()["exclude_formats"])
-    );
-    dump_conversations(convos, base_output_path + "/debug_dump");
+    run_commands(doc_object["commands"]);
 }
 
 }
