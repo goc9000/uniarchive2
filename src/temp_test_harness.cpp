@@ -43,6 +43,17 @@ QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
 }
 
+QString parse_existing_folder(QJsonValueRef json_value) {
+    invariant(!json_value.isNull(), "Missing value for directory");
+    invariant(json_value.isString(), "Directory should be string");
+
+    QString path = json_value.toString();
+
+    invariant(QDir(path).exists(), "Directory '%s' does not exist", QP(path));
+
+    return path;
+}
+
 set<ArchiveFormat> parse_formats_set(QJsonValueRef json_value) {
     set<ArchiveFormat> formats;
 
@@ -219,11 +230,8 @@ void run_test_harness(IMM(QString) config_file) {
     QJsonDocument doc = QJsonDocument::fromJson(data);
     invariant(!doc.isNull() && doc.isObject(), "Malformed config file");
 
-    QString base_input_path = remove_trailing_slash(doc.object()["base_input_path"].toString());
-    QString base_output_path = remove_trailing_slash(doc.object()["base_output_path"].toString());
-
-    invariant(QDir(base_input_path).exists(), "Test input dir %s does not exist", QP(base_input_path));
-    invariant(QDir(base_output_path).exists(), "Test output dir %s does not exist", QP(base_output_path));
+    QString base_input_path = parse_existing_folder(doc.object()["base_input_path"]);
+    QString base_output_path = parse_existing_folder(doc.object()["base_output_path"]);
 
     auto convos = extract_conversations(
         base_input_path,
@@ -231,8 +239,6 @@ void run_test_harness(IMM(QString) config_file) {
         parse_formats_set(doc.object()["exclude_formats"])
     );
     dump_conversations(convos, base_output_path + "/debug_dump");
-
-    convos.writeToBinaryFile(base_output_path + "/binary_dump.bin");
 }
 
 }
