@@ -38,41 +38,6 @@ using namespace std;
 using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format::subjects;
 
-QString remove_trailing_slash(IMM(QString) path);
-set<ArchiveFormat> parse_formats_set(QJsonValueRef json_value);
-RawConversationCollection extract_conversations(
-    IMM(QString) base_input_path,
-    set<ArchiveFormat> include_formats,
-    set<ArchiveFormat> exclude_formats
-);
-void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QString) base_output_path);
-
-
-void run_test_harness(IMM(QString) config_file) {
-    QFile file(config_file);
-    if (!file.open(QIODevice::ReadOnly)) {
-        invariant_violation("Config file not found: %s", QP(config_file));
-    }
-
-    QByteArray data = file.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    invariant(!doc.isNull() && doc.isObject(), "Malformed config file");
-
-    QString base_input_path = remove_trailing_slash(doc.object()["base_input_path"].toString());
-    QString base_output_path = remove_trailing_slash(doc.object()["base_output_path"].toString());
-
-    invariant(QDir(base_input_path).exists(), "Test input dir %s does not exist", QP(base_input_path));
-    invariant(QDir(base_output_path).exists(), "Test output dir %s does not exist", QP(base_output_path));
-
-    auto convos = extract_conversations(
-        base_input_path,
-        parse_formats_set(doc.object()["include_formats"]),
-        parse_formats_set(doc.object()["exclude_formats"])
-    );
-    dump_conversations(convos, base_output_path + "/debug_dump");
-
-    convos.writeToBinaryFile(base_output_path + "/binary_dump.bin");
-}
 
 QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
@@ -242,6 +207,32 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
         QDebug writer(&f);
         convo.writeToDebugStream(writer, true);
     }
+}
+
+void run_test_harness(IMM(QString) config_file) {
+    QFile file(config_file);
+    if (!file.open(QIODevice::ReadOnly)) {
+        invariant_violation("Config file not found: %s", QP(config_file));
+    }
+
+    QByteArray data = file.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    invariant(!doc.isNull() && doc.isObject(), "Malformed config file");
+
+    QString base_input_path = remove_trailing_slash(doc.object()["base_input_path"].toString());
+    QString base_output_path = remove_trailing_slash(doc.object()["base_output_path"].toString());
+
+    invariant(QDir(base_input_path).exists(), "Test input dir %s does not exist", QP(base_input_path));
+    invariant(QDir(base_output_path).exists(), "Test output dir %s does not exist", QP(base_output_path));
+
+    auto convos = extract_conversations(
+        base_input_path,
+        parse_formats_set(doc.object()["include_formats"]),
+        parse_formats_set(doc.object()["exclude_formats"])
+    );
+    dump_conversations(convos, base_output_path + "/debug_dump");
+
+    convos.writeToBinaryFile(base_output_path + "/binary_dump.bin");
 }
 
 }
