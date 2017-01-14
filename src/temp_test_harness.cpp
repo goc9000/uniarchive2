@@ -47,7 +47,7 @@ QString parse_existing_folder(QJsonValueRef json_value) {
     invariant(!json_value.isNull(), "Missing value for directory");
     invariant(json_value.isString(), "Directory should be string");
 
-    QString path = json_value.toString();
+    QString path = remove_trailing_slash(json_value.toString());
 
     invariant(QDir(path).exists(), "Directory '%s' does not exist", QP(path));
 
