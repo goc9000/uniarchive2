@@ -24,7 +24,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonValueRef>
+#include <QJsonValue>
 #include <QThreadPool>
 #include <QRunnable>
 
@@ -43,7 +43,7 @@ QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
 }
 
-QString parse_existing_folder(QJsonValueRef json_value) {
+QString parse_existing_folder(QJsonValue json_value) {
     invariant(!json_value.isNull(), "Missing value for directory");
     invariant(json_value.isString(), "Directory should be string");
 
@@ -54,7 +54,7 @@ QString parse_existing_folder(QJsonValueRef json_value) {
     return path;
 }
 
-set<ArchiveFormat> parse_formats_set(QJsonValueRef json_value) {
+set<ArchiveFormat> parse_formats_set(QJsonValue json_value) {
     set<ArchiveFormat> formats;
 
     if (json_value.isNull()) {
