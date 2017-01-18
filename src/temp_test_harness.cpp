@@ -252,8 +252,15 @@ void run_commands(QJsonValue commands_json) {
     for (IMM(auto) command_json : commands_json.toArray()) {
         invariant(command_json.isObject(), "Command JSON should be object");
         QJsonObject command_obj = command_json.toObject();
-        invariant(command_obj["command"].isString(), "Missing valid 'command' key");
 
+        if (command_obj.contains("skip")) {
+            invariant(command_obj["skip"].isBool(), "'skip' key should be boolean");
+            if (command_obj["skip"].toBool()) {
+                continue;
+            }
+        }
+
+        invariant(command_obj["command"].isString(), "Missing valid 'command' key");
         QString command = command_obj["command"].toString();
 
         if (command == "extract_conversations") {
