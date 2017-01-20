@@ -43,15 +43,21 @@ QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
 }
 
-QString parse_existing_folder(QJsonValue json_value) {
+QString parse_maybe_new_directory(QJsonValue json_value) {
     invariant(!json_value.isNull(), "Missing value for directory");
     invariant(json_value.isString(), "Directory should be string");
 
-    QString path = remove_trailing_slash(json_value.toString());
+    QString dir = remove_trailing_slash(json_value.toString());
 
-    invariant(QDir(path).exists(), "Directory '%s' does not exist", QP(path));
+    return dir;
+}
 
-    return path;
+QString parse_existing_directory(QJsonValue json_value) {
+    QString dir = parse_maybe_new_directory(json_value);
+
+    invariant(QDir(dir).exists(), "Directory '%s' does not exist", QP(dir));
+
+    return dir;
 }
 
 set<ArchiveFormat> parse_formats_set(QJsonValue json_value) {
@@ -159,7 +165,7 @@ RawConversationCollection extract_conversations(
     return convos;
 }
 
-void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QString) base_output_path) {
+void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QString) output_dir) {
     map<QString, uint> filenames_used;
 
     for (IMM(auto) convo : conversations) {
@@ -187,7 +193,7 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
             }
         }
 
-        QDir(base_output_path).mkpath(convo_path.join(QDir::separator()));
+        QDir(output_dir).mkpath(convo_path.join(QDir::separator()));
 
         QString filename;
         QDebug ss(&filename);
@@ -200,7 +206,7 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
             ss << " (Unknown date)";
         }
 
-        QString base_filename = base_output_path + QDir::separator() + convo_path.join(QDir::separator()) +
+        QString base_filename = output_dir + QDir::separator() + convo_path.join(QDir::separator()) +
             QDir::separator() + filename.trimmed() + ".txt";
 
         filenames_used[base_filename]++;
@@ -208,7 +214,7 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
             ss << " (" << filenames_used[base_filename] << ")";
         }
 
-        QString full_filename = base_output_path + QDir::separator() + convo_path.join(QDir::separator()) +
+        QString full_filename = output_dir + QDir::separator() + convo_path.join(QDir::separator()) +
             QDir::separator() + filename.trimmed() + ".txt";
 
         QFile f(full_filename);
@@ -221,7 +227,7 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
 }
 
 RawConversationCollection run_extract_conversations_command(IMM(QJsonObject) command_obj) {
-    QString base_path = parse_existing_folder(command_obj["base_path"]);
+    QString base_path = parse_existing_directory(command_obj["base_path"]);
 
     qDebug() << "Extracting conversations at:" << QP(base_path);
 
@@ -233,14 +239,11 @@ RawConversationCollection run_extract_conversations_command(IMM(QJsonObject) com
 }
 
 void run_dump_conversations_command(IMM(QJsonObject) command_obj, IMM(RawConversationCollection) convos) {
-    QString base_folder = parse_existing_folder(command_obj["base_output_path"]);
-    invariant(command_obj["subfolder"].isString(), "Missing 'subfolder' string value");
-    QString subfolder = command_obj["subfolder"].toString();
-    QString final_path = remove_trailing_slash(base_folder + "/" + subfolder);
+    QString output_dir = parse_maybe_new_directory(command_obj["output_dir"]);
 
-    qDebug() << "Dumping conversations to:" << QP(final_path);
+    qDebug() << "Dumping conversations to:" << QP(output_dir);
 
-    dump_conversations(convos, final_path);
+    dump_conversations(convos, output_dir);
 }
 
 void run_commands(QJsonValue commands_json) {
