@@ -63,7 +63,7 @@ QString parse_existing_directory(QJsonValue json_value) {
 set<ArchiveFormat> parse_formats_set(QJsonValue json_value) {
     set<ArchiveFormat> formats;
 
-    if (json_value.isNull()) {
+    if (json_value.isUndefined()) {
         return formats;
     }
     if (json_value.isArray()) {
@@ -247,7 +247,7 @@ void run_dump_conversations_command(IMM(QJsonObject) command_obj, IMM(RawConvers
 }
 
 void run_commands(QJsonValue commands_json) {
-    invariant(!commands_json.isNull(), "Missing 'commands' key in config");
+    invariant(!commands_json.isUndefined(), "Missing 'commands' key in config");
     invariant(commands_json.isArray(), "Commands should be an array");
 
     RawConversationCollection convos;
