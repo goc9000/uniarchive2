@@ -113,7 +113,12 @@ RawConversationCollection extract_conversations(
     RawConversationCollection convos;
 
     QThreadPool* tp = QThreadPool::globalInstance();
-    tp->setMaxThreadCount(QThread::idealThreadCount() * 2); // oversubscribe 2x
+
+    unsigned int n_threads = QThread::idealThreadCount() * 2; // oversubscribe 2x
+
+    qDebug() << "Using" << n_threads << "threads";
+
+    tp->setMaxThreadCount(n_threads);
 
     vector<tuple<ArchiveFormat, QString, QString>> inputs {
         { ArchiveFormat::SKYPE,               "skype",    "main.db" },
