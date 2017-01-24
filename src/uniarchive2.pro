@@ -10,6 +10,11 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -O3
+
+QMAKE_LFLAGS_RELEASE -= -O1
+
 SOURCES += \
     extraction/adium/extract_adium_conversations.cpp \
     extraction/digsby/extract_digsby_conversations.cpp \
