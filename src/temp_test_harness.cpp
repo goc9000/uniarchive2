@@ -243,6 +243,29 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
     }
 }
 
+void sanity_check_dumped_conversations_dir(IMM(QString) output_dir) {
+    QStringList allowed_dirs { "Digsby", "Facebook", "Jabber", "MSN", "Skype", "WhatsApp", "Yahoo" };
+
+    for (IMM(auto) entry : QDir(output_dir).entryList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
+        invariant(
+            allowed_dirs.contains(entry),
+            "Error: '%s' does not seem to be a folder where conversations were dumped (it contains unrecognized "
+            "entry '%s'). Aborting for safety.",
+            QP(output_dir),
+            QP(entry)
+        );
+    }
+}
+
+void clear_dumped_conversations(IMM(QString) output_dir) {
+    sanity_check_dumped_conversations_dir(output_dir);
+
+    for (IMM(auto) entry : QDir(output_dir).entryList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
+        QString subpath = output_dir + "/" + entry;
+        invariant(QDir(subpath).removeRecursively(), "Failed to remove '%s'", QP(subpath));
+    }
+}
+
 RawConversationCollection run_extract_conversations_command(IMM(QJsonObject) command_obj) {
     QString base_path = parse_existing_directory(command_obj["base_path"]);
 
@@ -260,7 +283,19 @@ void run_dump_conversations_command(IMM(QJsonObject) command_obj, IMM(RawConvers
 
     qDebug() << "Dumping conversations to:" << QP(output_dir);
 
+    if (command_obj["clear_before"].isBool() && command_obj["clear_before"].toBool()) {
+        clear_dumped_conversations(output_dir);
+    }
+
     dump_conversations(convos, output_dir);
+}
+
+void run_clear_dumped_conversations_command(IMM(QJsonObject) command_obj) {
+    QString output_dir = parse_maybe_new_directory(command_obj["output_dir"]);
+
+    qDebug() << "Clearing dumped conversations from:" << QP(output_dir);
+
+    clear_dumped_conversations(output_dir);
 }
 
 void run_commands(QJsonValue commands_json) {
@@ -287,6 +322,8 @@ void run_commands(QJsonValue commands_json) {
             convos = run_extract_conversations_command(command_obj);
         } else if (command == "dump_conversations") {
             run_dump_conversations_command(command_obj, convos);
+        } else if (command == "clear_dumped_conversations") {
+            run_clear_dumped_conversations_command(command_obj);
         } else {
             invariant_violation("Unsupported command: '%s'", QP(command));
         }
