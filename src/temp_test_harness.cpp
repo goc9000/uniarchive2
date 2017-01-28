@@ -170,6 +170,30 @@ RawConversationCollection extract_conversations(
     return convos;
 }
 
+QString base_filename_for_conversation(IMM(RawConversation) convo, int discriminant = 0) {
+    QString filename;
+    QDebug ss(&filename);
+
+    ss.nospace();
+    if (convo.declaredStartDate) {
+        ss << " " << *convo.declaredStartDate;
+    } else if (!convo.events.empty()) {
+        ss << " " << convo.events.front()->timestamp;
+    } else {
+        ss << " (Unknown date)";
+    }
+
+    if (discriminant) {
+        ss << " (" << discriminant << ")";
+    }
+
+    ss << ".txt";
+
+    filename.replace(':', '.');
+
+    return filename.trimmed();
+}
+
 void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QString) output_dir) {
     map<QString, uint> filenames_used;
 
@@ -200,27 +224,15 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
 
         QDir(output_dir).mkpath(convo_path.join(QDir::separator()));
 
-        QString filename;
-        QDebug ss(&filename);
-        ss.nospace();
-        if (convo.declaredStartDate) {
-            ss << " " << *convo.declaredStartDate;
-        } else if (!convo.events.empty()) {
-            ss << " " << convo.events.front()->timestamp;
-        } else {
-            ss << " (Unknown date)";
+        QString destination_dir =
+           output_dir + QDir::separator() + convo_path.join(QDir::separator()) + QDir::separator();
+
+        QString full_filename = destination_dir + base_filename_for_conversation(convo);
+
+        filenames_used[full_filename]++;
+        if (filenames_used[full_filename] > 1) {
+            full_filename = destination_dir + base_filename_for_conversation(convo, filenames_used[full_filename]);
         }
-
-        QString base_filename = output_dir + QDir::separator() + convo_path.join(QDir::separator()) +
-            QDir::separator() + filename.trimmed() + ".txt";
-
-        filenames_used[base_filename]++;
-        if (filenames_used[base_filename] > 1) {
-            ss << " (" << filenames_used[base_filename] << ")";
-        }
-
-        QString full_filename = output_dir + QDir::separator() + convo_path.join(QDir::separator()) +
-            QDir::separator() + filename.trimmed() + ".txt";
 
         QFile f(full_filename);
         f.open(QFile::WriteOnly);
