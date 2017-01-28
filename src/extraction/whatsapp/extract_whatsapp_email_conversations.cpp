@@ -28,6 +28,7 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace whatsapp {
 
@@ -143,7 +144,7 @@ static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint32_t event_
 }
 
 static ApparentTime parse_timestamp(IMM(QString) time_text) {
-    QDateTime datetime = QDateTime::fromString(time_text, "dd/MM/yyyy, hh:mm");
+    QDateTime datetime = QLocale::c().toDateTime(time_text, "dd/MM/yyyy, hh:mm");
     invariant(datetime.isValid(), "Invalid timestamp format: %s", QP(time_text));
 
     ApparentTime timestamp = ApparentTime::fromQDateTimeLocalTime(datetime);

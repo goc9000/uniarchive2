@@ -24,6 +24,7 @@
 #include <QtDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
 
@@ -212,7 +213,7 @@ static ApparentTime parse_message_time(IMM(QString) time_text) {
     QDate date(year, month, day);
     invariant(date.isValid(), "Invalid date: \"%s\"", QP(time_text));
 
-    QTime daytime = QTime::fromString(match.captured(4), "h:mma");
+    QTime daytime = QLocale::c().toTime(match.captured(4), "h:mma");
     invariant(daytime.isValid(), "Invalid time: \"%s\"", QP(match.captured(4)));
 
     int offset_quarters = parse_timezone_offset_in_quarters(match.captured(6));

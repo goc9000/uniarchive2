@@ -36,6 +36,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace msn {
 
@@ -188,7 +189,7 @@ static ApparentTime parse_event_time(IMM(QDomElement) event_element) {
     QString local_time_str =
         read_string_attr(event_element, "Date").append(" ").append(read_string_attr(event_element, "Time"));
 
-    QDateTime local_time = QDateTime::fromString(local_time_str, "dd/MM/yyyy HH:mm:ss");
+    QDateTime local_time = QLocale::c().toDateTime(local_time_str, "dd/MM/yyyy HH:mm:ss");
     invariant(local_time.isValid(), "Failed to parse local Date/Time");
 
     local_time.setTimeSpec(Qt::UTC);

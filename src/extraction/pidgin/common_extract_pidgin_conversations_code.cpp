@@ -82,7 +82,7 @@ static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename
         "found \"%s\""
     );
 
-    QDateTime raw_date = QDateTime::fromString(filename_match.captured("date"), "yyyy-MM-dd.hhmmss");
+    QDateTime raw_date = QLocale::c().toDateTime(filename_match.captured("date"), "yyyy-MM-dd.hhmmss");
 
     if (filename_match.capturedLength("offset")) {
         int offset_quarters = parse_timezone_offset_in_quarters(filename_match.captured("offset"));
@@ -133,7 +133,7 @@ ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) c
         "Could not find time part in \"%s\""
     );
 
-    QTime time = QTime::fromString(
+    QTime time = QLocale::c().toTime(
         match.captured("time_part").toLower(),
         match.capturedLength("ampm") ? "h:mm:ss ap" : "h:mm:ss"
     );
@@ -151,7 +151,7 @@ ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) c
         QStringList date_formats { "d-M-yyyy", "M-d-yyyy", "yyyy-M-d", "yyyy-d-M" };
 
         for (IMM(QString) format : date_formats) {
-            QDate candidate = QDate::fromString(date_part, format);
+            QDate candidate = QLocale::c().toDate(date_part, format);
             if (candidate.isValid()) {
                 candidates.push_back(candidate);
             }

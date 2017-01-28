@@ -36,6 +36,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLocale>
 #include <QStringList>
 #include <QTextCodec>
 #include <QTextStream>
@@ -247,7 +248,7 @@ static CEDE(RawEvent) parse_event(IMM(QString) event_html, IMM(RawConversation) 
     invariant(classes.contains("message"), "Event of unsupported type (is not message): %s", QP(event_html));
     invariant(classes.contains("incoming") || classes.contains("outgoing"), "Missing class 'incoming' or 'outgoing'");
 
-    QDateTime datetime = QDateTime::fromString(match.captured(3), "yyyy-MM-dd HH:mm:ss");
+    QDateTime datetime = QLocale::c().toDateTime(match.captured(3), "yyyy-MM-dd HH:mm:ss");
     datetime.setTimeSpec(Qt::UTC);
     invariant(datetime.isValid(), "Invalid timestamp '%s' (must be yyyy-mm-dd hh:mm:ss)", QP(match.captured(3)));
 
