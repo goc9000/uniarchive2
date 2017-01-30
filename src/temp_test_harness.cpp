@@ -60,6 +60,21 @@ QString parse_existing_directory(QJsonValue json_value) {
     return dir;
 }
 
+QString parse_maybe_new_filename(QJsonValue json_value) {
+    invariant(!json_value.isNull(), "Missing value for filename");
+    invariant(json_value.isString(), "Filename should be string");
+
+    return json_value.toString();
+}
+
+QString parse_existing_filename(QJsonValue json_value) {
+    QString filename = parse_maybe_new_filename(json_value);
+
+    invariant(QFile(filename).exists(), "File '%s' does not exist", QP(filename));
+
+    return filename;
+}
+
 set<ArchiveFormat> parse_formats_set(QJsonValue json_value) {
     set<ArchiveFormat> formats;
 
@@ -298,6 +313,22 @@ void run_clear_dumped_conversations_command(IMM(QJsonObject) command_obj) {
     clear_dumped_conversations(output_dir);
 }
 
+RawConversationCollection run_load_conversations_binary_command(IMM(QJsonObject) command_obj) {
+    QString filename = parse_existing_filename(command_obj["filename"]);
+
+    qDebug() << "Loading conversations from binary file:" << QP(filename);
+
+    return RawConversationCollection::loadFromBinaryFile(filename);
+}
+
+void run_save_conversations_binary_command(IMM(QJsonObject) command_obj, IMM(RawConversationCollection) convos) {
+    QString filename = parse_maybe_new_filename(command_obj["filename"]);
+
+    qDebug() << "Saving conversations to binary file:" << QP(filename);
+
+    convos.writeToBinaryFile(filename);
+}
+
 void run_commands(QJsonValue commands_json) {
     invariant(!commands_json.isUndefined(), "Missing 'commands' key in config");
     invariant(commands_json.isArray(), "Commands should be an array");
@@ -324,6 +355,10 @@ void run_commands(QJsonValue commands_json) {
             run_dump_conversations_command(command_obj, convos);
         } else if (command == "clear_dumped_conversations") {
             run_clear_dumped_conversations_command(command_obj);
+        } else if (command == "load_conversations_binary") {
+            convos = run_load_conversations_binary_command(command_obj);
+        } else if (command == "save_conversations_binary") {
+            run_save_conversations_binary_command(command_obj, convos);
         } else {
             invariant_violation("Unsupported command: '%s'", QP(command));
         }
