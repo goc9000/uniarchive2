@@ -281,15 +281,37 @@ void clear_dumped_conversations(IMM(QString) output_dir) {
     }
 }
 
-RawConversationCollection run_extract_conversations_command(IMM(QJsonObject) command_obj) {
+void load_or_merge_convos(
+    RawConversationCollection& convos,
+    RawConversationCollection&& new_convos,
+    IMM(QJsonObject) command_obj
+) {
+    auto merge_value = command_obj["merge"];
+
+    if (!merge_value.isUndefined()) {
+        invariant(merge_value.isBool(), "Key 'merge' should be a boolean");
+        if (merge_value.toBool()) {
+            convos.take(move(new_convos));
+            return;
+        }
+    }
+
+    convos = move(new_convos);
+}
+
+void run_extract_conversations_command(IMM(QJsonObject) command_obj, RawConversationCollection& convos) {
     QString base_path = parse_existing_directory(command_obj["base_path"]);
 
     qDebug() << "Extracting conversations at:" << QP(base_path);
 
-    return extract_conversations(
-        base_path,
-        parse_formats_set(command_obj["include_formats"]),
-        parse_formats_set(command_obj["exclude_formats"])
+    load_or_merge_convos(
+        convos,
+        extract_conversations(
+            base_path,
+            parse_formats_set(command_obj["include_formats"]),
+            parse_formats_set(command_obj["exclude_formats"])
+        ),
+        command_obj
     );
 }
 
@@ -313,12 +335,16 @@ void run_clear_dumped_conversations_command(IMM(QJsonObject) command_obj) {
     clear_dumped_conversations(output_dir);
 }
 
-RawConversationCollection run_load_conversations_binary_command(IMM(QJsonObject) command_obj) {
+void run_load_conversations_binary_command(IMM(QJsonObject) command_obj, RawConversationCollection& convos) {
     QString filename = parse_existing_filename(command_obj["filename"]);
 
     qDebug() << "Loading conversations from binary file:" << QP(filename);
 
-    return RawConversationCollection::loadFromBinaryFile(filename);
+    load_or_merge_convos(
+        convos,
+        RawConversationCollection::loadFromBinaryFile(filename),
+        command_obj
+    );
 }
 
 void run_save_conversations_binary_command(IMM(QJsonObject) command_obj, IMM(RawConversationCollection) convos) {
@@ -350,13 +376,13 @@ void run_commands(QJsonValue commands_json) {
         QString command = command_obj["command"].toString();
 
         if (command == "extract_conversations") {
-            convos = run_extract_conversations_command(command_obj);
+            run_extract_conversations_command(command_obj, convos);
         } else if (command == "dump_conversations") {
             run_dump_conversations_command(command_obj, convos);
         } else if (command == "clear_dumped_conversations") {
             run_clear_dumped_conversations_command(command_obj);
         } else if (command == "load_conversations_binary") {
-            convos = run_load_conversations_binary_command(command_obj);
+            run_load_conversations_binary_command(command_obj, convos);
         } else if (command == "save_conversations_binary") {
             run_save_conversations_binary_command(command_obj, convos);
         } else {
