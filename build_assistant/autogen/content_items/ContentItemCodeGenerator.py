@@ -90,6 +90,7 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
             ParamInfo(type='QDataStream&', name='mut_stream', unused=(len(self.fields) == 0)),
             const=True, virtual=True, declare_in=protected_block
         ) as method:
+            method.content_if_empty.line_comment('No fields to serialize')
             self.gen_serialize_field_code(method, 'mut_stream', self.fields)
 
     def gen_debug_write_methods(self, cpp_code, _public_block, protected_block):

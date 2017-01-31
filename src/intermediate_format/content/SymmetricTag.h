@@ -27,7 +27,7 @@ protected:
     virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
     virtual void serializeAttributesToStream(QDataStream& mut_stream) const = 0;
 
-    virtual void writeAttributesToDebugStream(QDebug stream) const;
+    virtual void writeAttributesToDebugStream(QDebug stream) const = 0;
 };
 
 }}}

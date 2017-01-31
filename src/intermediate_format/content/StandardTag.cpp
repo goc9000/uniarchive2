@@ -34,7 +34,4 @@ void StandardTag::writeAttributesToDebugStream(QDebug stream) const {
     }
 }
 
-void StandardTag::writeOpenTagAttributesToDebugStream(QDebug UNUSED stream) const {
-}
-
 }}}

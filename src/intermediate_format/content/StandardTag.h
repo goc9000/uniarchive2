@@ -28,7 +28,7 @@ protected:
     virtual void serializeOpenTagAttributesToStream(QDataStream& mut_stream) const = 0;
 
     virtual void writeAttributesToDebugStream(QDebug stream) const;
-    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const;
+    virtual void writeOpenTagAttributesToDebugStream(QDebug stream) const = 0;
 };
 
 }}}

@@ -60,6 +60,7 @@ void ArchiveFileProvenance::writeToDebugStreamImpl(QDebug stream) const {
 }
 
 void ArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug UNUSED stream) const {
+    // No fields to write
 }
 
 CEDE(ArchiveFileProvenance) ArchiveFileProvenance::fromQFileInfo(
