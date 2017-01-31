@@ -13,6 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 StandardTag::StandardTag(bool open) : AbstractTag(), open(open) {
+    // Nothing else to initialize
 }
 
 bool StandardTag::isClosed() const {

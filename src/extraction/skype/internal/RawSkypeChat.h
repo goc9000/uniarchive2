@@ -49,7 +49,9 @@ struct RawSkypeChat {
         IMM(optional<QString>) last_topic_xml,
         uint64_t conv_dbid
     ) : id(id), stringID(string_id), type(type), friendlyName(friendly_name), timestamp(timestamp),
-        lastTopic(last_topic), lastTopicXML(last_topic_xml), convDBID(conv_dbid) {}
+        lastTopic(last_topic), lastTopicXML(last_topic_xml), convDBID(conv_dbid) {
+        // Nothing else to initialize
+    }
 };
 
 }}}}

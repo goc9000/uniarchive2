@@ -18,6 +18,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 RawMessageContent::RawMessageContent() {
+    // Nothing else to initialize
 }
 
 RawMessageContent RawMessageContent::fromPlainText(IMM(QString) text) {

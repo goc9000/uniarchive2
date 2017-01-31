@@ -30,7 +30,9 @@ public:
     uint rowIndex = 0;
     uint numColumns = 0;
 
-    SQLiteRow(SQLiteStmt* stmt) : stmt(stmt) {}
+    SQLiteRow(SQLiteStmt* stmt) : stmt(stmt) {
+        // Nothing else to initialize
+    }
 
     QString columnName(uint colum_index) const;
 

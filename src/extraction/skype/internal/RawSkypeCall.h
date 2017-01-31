@@ -44,7 +44,9 @@ struct RawSkypeCall {
         QString internal_name,
         uint64_t conv_dbid
     ) : id(id), hostIdentity(host_identity), isIncoming(is_incoming), beginTimestamp(begin_timestamp),
-        duration(duration), topic(topic), internalName(internal_name), convDBID(conv_dbid) {}
+        duration(duration), topic(topic), internalName(internal_name), convDBID(conv_dbid) {
+        // Nothing else to initialize
+    }
 };
 
 }}}}

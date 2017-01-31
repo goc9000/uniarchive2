@@ -13,6 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 SymmetricTag::SymmetricTag(bool open) : AbstractTag(), open(open) {
+    // Nothing else to initialize
 }
 
 bool SymmetricTag::isClosed() const {

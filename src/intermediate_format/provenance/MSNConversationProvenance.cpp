@@ -17,6 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
 MSNConversationProvenance::MSNConversationProvenance(TAKE(Provenance) base, uint32_t session_id)
     : base(move(base)), sessionID(session_id) {
+    // Nothing else to initialize
 }
 
 ProvenanceSubType MSNConversationProvenance::subType() const {

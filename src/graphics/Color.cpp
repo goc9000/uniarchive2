@@ -19,6 +19,7 @@
 namespace uniarchive2 { namespace graphics {
 
 Color::Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {
+    // Nothing else to initialize
 }
 
 QString Color::toHTMLFormat() const {

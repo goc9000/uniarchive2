@@ -18,9 +18,11 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 RawConversation::RawConversation() : protocol(IMProtocol::INVALID) {
+    // Nothing else to initialize
 }
 
 RawConversation::RawConversation(IMProtocol protocol) : protocol(protocol) {
+    // Nothing else to initialize
 }
 
 RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {

@@ -18,6 +18,7 @@ AdiumArchiveFileProvenance::AdiumArchiveFileProvenance(
     IMM(QString) full_filename,
     IMM(ApparentTime) last_modified_time
 ) : ArchiveFileProvenance(ArchiveFormat::ADIUM, full_filename, last_modified_time) {
+    // Nothing else to initialize
 }
 
 ProvenanceSubType AdiumArchiveFileProvenance::subType() const {

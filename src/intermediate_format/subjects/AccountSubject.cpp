@@ -14,6 +14,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 AccountSubject::AccountSubject(IMM(FullAccountName) account, Hints hints) : ApparentSubject(hints), account(account) {
+    // Nothing else to initialize
 }
 
 ApparentSubjectSubType AccountSubject::subType() const {

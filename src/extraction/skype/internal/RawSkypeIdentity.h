@@ -24,7 +24,9 @@ struct RawSkypeIdentity {
     RawSkypeIdentity(
         IMM(QString) account_name,
         IMM(QString) screen_name
-    ) : accountName(account_name), screenName(screen_name) {}
+    ) : accountName(account_name), screenName(screen_name) {
+        // Nothing else to initialize
+    }
 };
 
 }}}}

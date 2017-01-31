@@ -20,6 +20,7 @@ EventRangeProvenance::EventRangeProvenance(
     uint32_t first_event_index,
     uint32_t last_event_index
 ) : base(move(base)), firstEventIndex(first_event_index), lastEventIndex(last_event_index) {
+    // Nothing else to initialize
 }
 
 ProvenanceSubType EventRangeProvenance::subType() const {

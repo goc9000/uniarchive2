@@ -32,7 +32,9 @@ struct ParsedHTMLTagInfo {
     vector<QString> noValueAttributes;
     QString originalText;
 
-    ParsedHTMLTagInfo(): valid(false), open(false), closed(false) {};
+    ParsedHTMLTagInfo(): valid(false), open(false), closed(false) {
+        // Nothing else to initialize
+    };
 };
 QDebug operator<< (QDebug stream, IMM(ParsedHTMLTagInfo) tag_info);
 
@@ -42,7 +44,9 @@ struct ParsedHTMLInfo {
     vector<QString> textSections;
     vector<ParsedHTMLTagInfo> tags;
 
-    ParsedHTMLInfo() {};
+    ParsedHTMLInfo() {
+        // Nothing else to initialize
+    };
 };
 QDebug operator<< (QDebug stream, IMM(ParsedHTMLInfo) parse_info);
 

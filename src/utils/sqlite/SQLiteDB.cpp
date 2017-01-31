@@ -15,6 +15,7 @@
 namespace uniarchive2 { namespace utils { namespace sqlite {
 
 SQLiteDB::SQLiteDB() {
+    // Nothing else to initialize
 }
 
 SQLiteDB::SQLiteDB(SQLiteDB&& move_me) {

@@ -18,10 +18,12 @@
 namespace uniarchive2 { namespace protocols {
 
 FullAccountName::FullAccountName() : protocol(IMProtocol::INVALID), accountName("") {
+    // Nothing else to initialize
 }
 
 FullAccountName::FullAccountName(IMProtocol protocol, IMM(QString) account_name)
     : protocol(protocol), accountName(account_name) {
+    // Nothing else to initialize
 }
 
 FullAccountName FullAccountName::deserializeFromStream(QDataStream& mut_stream) {

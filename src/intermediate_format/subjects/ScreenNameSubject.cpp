@@ -16,6 +16,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 ScreenNameSubject::ScreenNameSubject(IMM(QString) screen_name, Hints hints)
   : ApparentSubject(hints), screenName(screen_name) {
+    // Nothing else to initialize
 }
 
 ApparentSubjectSubType ScreenNameSubject::subType() const {

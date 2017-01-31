@@ -21,6 +21,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 ApparentSubject::ApparentSubject(Hints hints) : hints(hints) {
+    // Nothing else to initialize
 }
 
 CEDE(ApparentSubject) ApparentSubject::deserializeFromStream(QDataStream& mut_stream) {

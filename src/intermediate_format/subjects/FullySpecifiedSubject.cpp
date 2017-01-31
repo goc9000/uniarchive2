@@ -19,6 +19,7 @@ FullySpecifiedSubject::FullySpecifiedSubject(
     IMM(QString) screen_name,
     Hints hints
 ) : ApparentSubject(hints), accountName(account_name), screenName(screen_name) {
+    // Nothing else to initialize
 }
 
 ApparentSubjectSubType FullySpecifiedSubject::subType() const {

@@ -14,6 +14,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 ImplicitSubject::ImplicitSubject(ImplicitSubjectKind kind, Hints hints) : ApparentSubject(hints), kind(kind) {
+    // Nothing else to initialize
 }
 
 ApparentSubjectSubType ImplicitSubject::subType() const {

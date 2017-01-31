@@ -41,6 +41,7 @@ struct YahooProtocolEvent {
 
     YahooProtocolEvent(uint32_t timestamp, Type type, Direction direction, IMM(QByteArray) text, IMM(QByteArray) extra)
         : timestamp(timestamp), type(type), direction(direction), text(text), extra(extra) {
+        // Nothing else to initialize
     }
 };
 

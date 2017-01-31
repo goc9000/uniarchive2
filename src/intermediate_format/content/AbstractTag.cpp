@@ -14,6 +14,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 AbstractTag::AbstractTag() : RawMessageContentItem() {
+    // Nothing else to initialize
 }
 
 void AbstractTag::writeToDebugStreamImpl(QDebug stream) const {

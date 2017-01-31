@@ -25,6 +25,7 @@ namespace uniarchive2 { namespace intermediate_format {
 QString format_utc_offset(int offset_quarters);
 
 ApparentTime::ApparentTime() {
+    // Nothing else to initialize
 }
 
 ApparentTime ApparentTime::fromUnixTimestamp(uint32_t unix_timestamp) {

@@ -17,6 +17,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
 SkypeConversationProvenance::SkypeConversationProvenance(TAKE(Provenance) base, uint64_t convo_dbid, QString chatname)
     : base(move(base)), conversationDBID(convo_dbid), chatname(chatname) {
+    // Nothing else to initialize
 }
 
 ProvenanceSubType SkypeConversationProvenance::subType() const {

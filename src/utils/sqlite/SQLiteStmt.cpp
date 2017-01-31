@@ -16,6 +16,7 @@ namespace uniarchive2 { namespace utils { namespace sqlite {
 
 SQLiteStmt::SQLiteStmt(sqlite3_stmt* handle, SQLiteDB* parent_db)
     : handle(handle), parentDB(parent_db), currentRow(this) {
+    // Nothing else to initialize
 }
 
 SQLiteStmt::SQLiteStmt(SQLiteStmt&& move_me) : currentRow(this) {

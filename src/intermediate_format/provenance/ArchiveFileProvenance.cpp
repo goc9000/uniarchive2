@@ -20,6 +20,7 @@ ArchiveFileProvenance::ArchiveFileProvenance(
     IMM(QString) full_filename,
     IMM(ApparentTime) last_modified_time
 ) : archiveFormat(format), fullFilename(full_filename), lastModifiedTime(last_modified_time) {
+    // Nothing else to initialize
 }
 
 ProvenanceSubType ArchiveFileProvenance::subType() const {

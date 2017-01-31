@@ -52,7 +52,9 @@ struct RawSkypeConvo {
         uint64_t time_created,
         IMM(optional<QString>) last_topic
     ) : id(id), type(type), identity(identity), displayName(display_name), givenDisplayName(given_display_name),
-        spawnedFrom(spawned_from), creator(creator), timeCreated(time_created), lastTopic(last_topic) {}
+        spawnedFrom(spawned_from), creator(creator), timeCreated(time_created), lastTopic(last_topic) {
+        // Nothing else to initialize
+    }
 };
 
 }}}}

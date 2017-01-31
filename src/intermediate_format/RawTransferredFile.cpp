@@ -19,9 +19,11 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 RawTransferredFile::RawTransferredFile(IMM(QString) filename): filename(filename) {
+    // Nothing else to initialize
 }
 
 RawTransferredFile::RawTransferredFile(IMM(QString) filename, uint64_t size): filename(filename), size(size) {
+    // Nothing else to initialize
 }
 
 RawTransferredFile RawTransferredFile::deserializeFromStream(QDataStream& mut_stream) {

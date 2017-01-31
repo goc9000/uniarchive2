@@ -13,6 +13,7 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 SelfClosingTag::SelfClosingTag() : AbstractTag() {
+    // Nothing else to initialize
 }
 
 bool SelfClosingTag::isClosed() const {
