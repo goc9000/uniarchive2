@@ -147,6 +147,8 @@ class GenericPolymorphicCodeGenerator(Augment):
             with cpp_code.constructor(
                  self.class_name(), *ctor_info.params, inherits=ctor_info.subconstructors, declare_in=struct_block
             ) as cons:
+                cons.content_if_empty.line_comment('Nothing else to initialize')
+
                 for line in ctor_info.init_statements:
                     cons.line(line)
 
