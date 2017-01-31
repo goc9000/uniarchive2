@@ -53,12 +53,11 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
             method.nl().code_line('serializeDetailsToStream(mut_stream)')
 
-    def gen_serialize_details_method(self, cpp_code, protected_block):
-        cpp_code.method(
-            self.class_name(), 'serializeDetailsToStream', 'void',
-            ParamInfo(type='QDataStream&', name='mut_stream', unused=True),
-            const=True, virtual=True, declare_in=protected_block
-        ).line_comment('Override this in children')
+    def gen_serialize_details_method(self, _cpp_code, protected_block):
+        protected_block.declare_method(
+            'serializeDetailsToStream', 'void', ('QDataStream&', 'mut_stream'),
+            const=True, virtual=True, abstract=True
+        )
 
     def gen_debug_write_methods(self, cpp_code, public_block, protected_block):
         self._gen_debug_write_method(cpp_code, public_block)
@@ -91,10 +90,8 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
             self.gen_debug_write_field_code(method, 'stream', remaining_fields)
 
-    def gen_debug_write_details_method(self, cpp_code, protected_block):
-        with cpp_code.method(
-            self.class_name(), 'writeDetailsToDebugStream', 'void',
-            ParamInfo(type='QDebug', name='stream', unused=True),
-            const=True, virtual=True, declare_in=protected_block
-        ) as _:
-            pass
+    def gen_debug_write_details_method(self, _cpp_code, protected_block):
+        protected_block.declare_method(
+            'writeDetailsToDebugStream', 'void', ('QDebug', 'stream'),
+            const=True, virtual=True, abstract=True
+        )

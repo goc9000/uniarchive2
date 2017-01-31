@@ -41,9 +41,7 @@ protected:
         serializeFailableEventDetailsToStream(mut_stream);
     }
 
-    virtual void serializeFailableEventDetailsToStream(QDataStream& UNUSED mut_stream) const {
-        // Override this in children
-    }
+    virtual void serializeFailableEventDetailsToStream(QDataStream& mut_stream) const = 0;
 
     void writeDetailsToDebugStream(QDebug stream) const {
         if (reasonFailed) {
@@ -56,9 +54,7 @@ protected:
         writeFailableEventDetailsToDebugStream(stream);
     }
 
-    virtual void writeFailableEventDetailsToDebugStream(QDebug UNUSED stream) const {
-        // Override this in children
-    }
+    virtual void writeFailableEventDetailsToDebugStream(QDebug stream) const = 0;
 };
 
 }}}
