@@ -44,7 +44,7 @@ QString remove_trailing_slash(IMM(QString) path) {
 }
 
 QString parse_maybe_new_directory(QJsonValue json_value) {
-    invariant(!json_value.isNull(), "Missing value for directory");
+    invariant(!json_value.isUndefined(), "Missing value for directory");
     invariant(json_value.isString(), "Directory should be string");
 
     QString dir = remove_trailing_slash(json_value.toString());
@@ -61,7 +61,7 @@ QString parse_existing_directory(QJsonValue json_value) {
 }
 
 QString parse_maybe_new_filename(QJsonValue json_value) {
-    invariant(!json_value.isNull(), "Missing value for filename");
+    invariant(!json_value.isUndefined(), "Missing value for filename");
     invariant(json_value.isString(), "Filename should be string");
 
     return json_value.toString();
