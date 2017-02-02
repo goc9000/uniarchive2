@@ -23,6 +23,7 @@ enums:
         - peer busy
         - blocked by privacy settings as PRIVACY_BLOCKED
         - call rejected
+        - insufficient funds
       CurrentCallFailReason:
         - undetermined = 0
         - connection dropped

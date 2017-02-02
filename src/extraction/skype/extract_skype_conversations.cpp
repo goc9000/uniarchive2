@@ -1337,7 +1337,8 @@ static StartCallFailReason parse_start_call_fail_reason(IMM(QString) raw_reason)
         { "no_answer", StartCallFailReason::NO_ANSWER },
         { "busy", StartCallFailReason::PEER_BUSY },
         { "blocked_by_privacy_settings", StartCallFailReason::PRIVACY_BLOCKED },
-        { "manual", StartCallFailReason::CALL_REJECTED }
+        { "manual", StartCallFailReason::CALL_REJECTED },
+        { "insufficient_funds", StartCallFailReason::INSUFFICIENT_FUNDS },
     };
 
     invariant(lookup.count(raw_reason), "Could not parse call failure reason: %s", QP(raw_reason));
