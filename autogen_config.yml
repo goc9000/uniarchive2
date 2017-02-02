@@ -69,6 +69,7 @@ enums:
       - Skype
       - WhatsApp
       - Yahoo
+      - (phone)
 
     IMStatus:
       - (invalid) = 0

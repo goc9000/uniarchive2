@@ -130,6 +130,7 @@ SOURCES += \
     protocols/facebook/facebook_account_name.cpp \
     protocols/jabber/jabber_account_name.cpp \
     protocols/msn/msn_account_name.cpp \
+    protocols/phone/phone_number.cpp \
     protocols/skype/SkypeChatRole.cpp \
     protocols/skype/skype_account_name.cpp \
     protocols/yahoo/yahoo_account_name.cpp \
@@ -273,6 +274,7 @@ HEADERS += \
     protocols/facebook/facebook_account_name.h \
     protocols/jabber/jabber_account_name.h \
     protocols/msn/msn_account_name.h \
+    protocols/phone/phone_number.h \
     protocols/skype/SkypeChatRole.h \
     protocols/skype/skype_account_name.h \
     protocols/yahoo/yahoo_account_name.h \

@@ -13,6 +13,7 @@
 #include "protocols/facebook/facebook_account_name.h"
 #include "protocols/jabber/jabber_account_name.h"
 #include "protocols/msn/msn_account_name.h"
+#include "protocols/phone/phone_number.h"
 #include "protocols/skype/skype_account_name.h"
 #include "protocols/yahoo/yahoo_account_name.h"
 #include "protocols/IMProtocol.h"
@@ -27,6 +28,7 @@ using namespace uniarchive2::protocols::digsby;
 using namespace uniarchive2::protocols::facebook;
 using namespace uniarchive2::protocols::jabber;
 using namespace uniarchive2::protocols::msn;
+using namespace uniarchive2::protocols::phone;
 using namespace uniarchive2::protocols::skype;
 using namespace uniarchive2::protocols::yahoo;
 
@@ -38,6 +40,7 @@ FullAccountName parse_account_generic(IMProtocol protocol, IMM(QString) account_
         case IMProtocol::MSN: return parse_msn_account(account_name);
         case IMProtocol::SKYPE: return parse_skype_account(account_name);
         case IMProtocol::YAHOO: return parse_yahoo_account(account_name);
+        case IMProtocol::PHONE: return parse_phone_account(account_name);
         default:
             invariant_violation("Unsupported protocol for parsing an account: %s", QP(name_for_im_protocol(protocol)));
     }
