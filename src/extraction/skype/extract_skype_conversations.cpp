@@ -13,6 +13,7 @@
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
 #include "extraction/skype/internal/RawSkypeIdentity.h"
+#include "intermediate_format/content/formatting/BoldTag.h"
 #include "intermediate_format/content/formatting/LinkTag.h"
 #include "intermediate_format/content/symbols/SkypeEmoticon.h"
 #include "intermediate_format/content/symbols/FlagIcon.h"
@@ -988,6 +989,14 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
         }
 
         mut_content.addItem(make_unique<LinkTag>(false));
+    } else if (tag_name == "b") {
+        mut_content.addItem(make_unique<BoldTag>(true));
+
+        for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
+            parse_message_content_node(mut_content, child);
+        }
+
+        mut_content.addItem(make_unique<BoldTag>(false));
     } else if (tag_name == "quote") {
         mut_content.addItem(parse_quote_element(element));
     } else if (tag_name == "e_m") {
