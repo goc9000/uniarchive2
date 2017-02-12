@@ -765,10 +765,6 @@ static CEDE(RawEvent) convert_event(
                 edited_by,
                 edited_timestamp
             );
-        case COMBINED_TYPE(68, 0):
-        case COMBINED_TYPE(68, 7):
-        case COMBINED_TYPE(68, 18):
-            return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
         case COMBINED_TYPE(0, 103):
             return make_unique<RawEditedPreviousMessageEvent>(event_time, event_index, move(subject));
 
@@ -871,9 +867,16 @@ static CEDE(RawEvent) convert_event(
                 move(subject)
             );
 
-       // Misc
+        // Shares & transfers
 
-       case COMBINED_TYPE(63, 8):
+        case COMBINED_TYPE(68, 0):
+        case COMBINED_TYPE(68, 7):
+        case COMBINED_TYPE(68, 18):
+            return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
+
+        // Misc
+
+        case COMBINED_TYPE(63, 8):
             return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
     }
 
