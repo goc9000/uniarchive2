@@ -23,6 +23,7 @@ SOURCES += \
     extraction/pidgin/common_extract_pidgin_conversations_code.cpp \
     extraction/pidgin/extract_pidgin_html_conversations.cpp \
     extraction/pidgin/extract_pidgin_txt_conversations.cpp \
+    extraction/skype/internal/query_skype_db.cpp \
     extraction/skype/extract_skype_conversations.cpp \
     extraction/whatsapp/extract_whatsapp_email_conversations.cpp \
     extraction/yahoo/ExtractYahooProtocolEventsIterator.cpp \
@@ -166,6 +167,7 @@ HEADERS += \
     extraction/skype/internal/RawSkypeChat.h \
     extraction/skype/internal/RawSkypeConvo.h \
     extraction/skype/internal/RawSkypeIdentity.h \
+    extraction/skype/internal/query_skype_db.h \
     extraction/skype/extract_skype_conversations.h \
     extraction/whatsapp/extract_whatsapp_email_conversations.h \
     extraction/yahoo/ExtractYahooProtocolEventsIterator.h \
