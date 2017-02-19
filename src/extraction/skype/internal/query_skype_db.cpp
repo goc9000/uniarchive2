@@ -139,4 +139,60 @@ map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB& db) {
     return calls;
 }
 
+map<QString, RawSkypeLinkPreview> query_skype_link_previews(SQLiteDB &db) {
+    map<QString, RawSkypeLinkPreview> previews;
+
+    bool table_exists = db.stmt("SELECT COUNT(*) FROM sqlite_master WHERE name=\"MediaDocuments\" AND type=\"table\"")
+        .singleValue<bool>();
+
+    if (!table_exists) {
+        return previews;
+    }
+
+    db.stmt(
+        "SELECT uri, type, title, description, service, mime_type, web_url, storage_document_id, original_name, "\
+        "       message_id, convo_id "\
+        "FROM MediaDocuments WHERE doc_type=6"
+    ).forEachRow(
+        [&previews](
+            QString uri,
+            QString type,
+            optional<QString> title,
+            optional<QString> description,
+            optional<QString> service,
+            optional<QString> mime_type,
+            QString verify_web_url,
+            optional<uint64_t> verify_storage_document_id,
+            optional<QString> verify_original_name,
+            uint64_t verify_message_id,
+            uint64_t verify_convo_id
+        ) {
+            invariant(uri != "", "Empty URI for link preview");
+            invariant(previews.count(uri) == 0, "Duplicate preview for URI: %s", QP(uri));
+
+            invariant(verify_web_url == uri, "Expected web_url==uri for link preview");
+            invariant(
+                !verify_storage_document_id && !verify_original_name && !verify_message_id && !verify_convo_id,
+                "Expected null storage_document_id, original_name, message_id, convo_id for link preview"
+            );
+
+            if (type == "UrlPreview.1") {
+                // Handle failed link previews
+                invariant(
+                    !title && !description && !service && !mime_type,
+                    "Failed link preview should have null title, description, service and mime_type"
+                );
+
+                return;
+            }
+
+            invariant(mime_type, "Successful link preview should have non-null mime_type");
+            invariant(type.startsWith("UrlPreview.1/"), "Unexpected type for link preview: %s", QP(type));
+
+            previews.emplace(uri, RawSkypeLinkPreview(uri, title, description, service, *mime_type, type));
+        });
+
+    return previews;
+}
+
 }}}}

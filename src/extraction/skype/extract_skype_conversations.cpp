@@ -224,6 +224,8 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
     map<uint64_t, RawSkypeCall> raw_calls = query_raw_skype_calls(db);
 
+    map<QString, RawSkypeLinkPreview> link_previews = query_skype_link_previews(db);
+
     map<uint64_t, unique_ptr<RawEvent>> prescanned_call_events = prescan_call_events(db, raw_calls);
 
     map<QString, RawConversation> indexed_conversations =

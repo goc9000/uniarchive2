@@ -15,6 +15,7 @@
 #include "extraction/skype/internal/RawSkypeConvo.h"
 #include "extraction/skype/internal/RawSkypeChat.h"
 #include "extraction/skype/internal/RawSkypeCall.h"
+#include "extraction/skype/internal/RawSkypeLinkPreview.h"
 #include "utils/sqlite/SQLiteDB.h"
 
 #include <QString>
@@ -31,6 +32,7 @@ map<QString, RawSkypeIdentity> query_raw_skype_identities(SQLiteDB &db);
 map<uint64_t, RawSkypeConvo> query_raw_skype_convos(SQLiteDB &db);
 map<QString, RawSkypeChat> query_raw_skype_chats(SQLiteDB &db);
 map<uint64_t, RawSkypeCall> query_raw_skype_calls(SQLiteDB &db);
+map<QString, RawSkypeLinkPreview> query_skype_link_previews(SQLiteDB &db);
 
 }}}}
 
