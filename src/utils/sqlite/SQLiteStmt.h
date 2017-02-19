@@ -110,6 +110,21 @@ public:
     SQLiteStmt& operator = (SQLiteStmt&& move_me);
     ~SQLiteStmt();
 
+    template<typename T>
+    T singleValue() {
+        startQuery();
+
+        invariant(hasRow(), "Expected exactly one row, found none");
+        invariant(currentRow.numColumns == 1, "Expected exactly one column in the result");
+
+        T value = ColumnExtractor<T>::execute(currentRow, 0);
+
+        nextRow();
+        invariant(!hasRow(), "Expected exactly one row, found multiple");
+
+        return value;
+    }
+
     template<typename F>
     void forEachRow(F&& callback) {
         forEachRowImpl(callback_adapter(callback));
