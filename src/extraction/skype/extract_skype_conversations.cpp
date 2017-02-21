@@ -94,6 +94,17 @@ struct CallEventData {
     }
 };
 
+struct ParseContentContext {
+    ParseContentContext(const map<QString, RawSkypeLinkPreview>& link_previews) : linkPreviews(link_previews) {
+        for (IMM(auto) k_v : link_previews) {
+            unusedLinkPreviews.insert(k_v.first);
+        }
+    }
+
+    const map<QString, RawSkypeLinkPreview>& linkPreviews;
+    set<QString> unusedLinkPreviews;
+};
+
 static map<QString, RawConversation> convert_conversations(
     SQLiteDB& db,
     const map<QString, RawSkypeIdentity>& raw_identities,
@@ -135,7 +146,8 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 static void convert_events(
     SQLiteDB& db,
     map<QString, RawConversation>& mut_indexed_conversations,
-    map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events
+    map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events,
+    const map<QString, RawSkypeLinkPreview>& link_previews
 );
 static CEDE(RawEvent) convert_event(
     IMM(ApparentTime) event_time,
@@ -148,7 +160,8 @@ static CEDE(RawEvent) convert_event(
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
     IMM(optional<int>) new_role,
-    IMM(RawConversation) home_conversation
+    IMM(RawConversation) home_conversation,
+    ParseContentContext& mut_parse_content_context
 );
 static CEDE(RawMessageEvent) convert_message_event(
     IMM(ApparentTime) event_time,
@@ -157,15 +170,33 @@ static CEDE(RawMessageEvent) convert_message_event(
     IMM(QString) body_xml,
     bool is_action_message,
     IMM(optional<QString>) edited_by,
-    IMM(optional<uint64_t>) edited_timestamp
+    IMM(optional<uint64_t>) edited_timestamp,
+    ParseContentContext& mut_parse_content_context
 );
 
 static vector<CEDE(ApparentSubject)> deserialize_identities(IMM(optional<QString>) serialized_identities);
 
-static RawMessageContent parse_message_content(IMM(QString) content_xml);
-static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node);
-static void parse_message_content_element(RawMessageContent& mut_content, IMM(QDomElement) element);
-static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element);
+static RawMessageContent parse_message_content(
+    IMM(QString) content_xml,
+    ParseContentContext& mut_parse_content_context
+);
+static void parse_message_content_node(
+    RawMessageContent& mut_content,
+    IMM(QDomNode) node,
+    ParseContentContext& mut_parse_content_context
+);
+static void parse_message_content_element(
+    RawMessageContent& mut_content,
+    IMM(QDomElement) element,
+    ParseContentContext& mut_parse_content_context
+);
+
+static void parse_link_element(
+    RawMessageContent& mut_content,
+    IMM(QDomElement) element,
+    ParseContentContext &mut_parse_content_context
+);
+static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element, ParseContentContext& mut_parse_content_context);
 
 static CEDE(RawSendContactsEvent) convert_send_contacts_event(
     IMM(ApparentTime) event_time,
@@ -231,7 +262,7 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<QString, RawConversation> indexed_conversations =
         convert_conversations(db, raw_identities, raw_convos, raw_chats, raw_calls, base_provenance.get());
 
-    convert_events(db, indexed_conversations, move(prescanned_call_events));
+    convert_events(db, indexed_conversations, move(prescanned_call_events), link_previews);
 
     vector<RawConversation> conversations;
     for (auto& kv : indexed_conversations) {
@@ -531,15 +562,18 @@ static CEDE(ApparentSubject) make_call_subject(IMM(QString) account_name, CPTR(R
 static void convert_events(
     SQLiteDB& db,
     map<QString, RawConversation>& mut_indexed_conversations,
-    map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events
+    map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events,
+    const map<QString, RawSkypeLinkPreview>& link_previews
 ) {
+    ParseContentContext pcc(link_previews);
+
     db.stmt(
         "SELECT chatname, convo_id, id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
         "       identities, guid, edited_by, edited_timestamp, newrole "\
         "FROM Messages "\
         "ORDER BY timestamp, id"
     ).forEachRow(
-        [&mut_indexed_conversations, &prescanned_call_events](
+        [&mut_indexed_conversations, &prescanned_call_events, &pcc](
             QString chat_string_id,
             uint64_t convo_id,
             uint64_t event_id,
@@ -584,7 +618,8 @@ static void convert_events(
                     edited_by,
                     edited_timestamp,
                     new_role,
-                    mut_conversation
+                    mut_conversation,
+                    pcc
                 );
             }
 
@@ -598,6 +633,8 @@ static void convert_events(
 
             mut_conversation.events.push_back(move(event));
         });
+
+    invariant(pcc.unusedLinkPreviews.empty(), "Some link previews were not used!");
 }
 
 static CEDE(RawEvent) convert_event(
@@ -611,7 +648,8 @@ static CEDE(RawEvent) convert_event(
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
     IMM(optional<int>) new_role,
-    IMM(RawConversation) home_conversation
+    IMM(RawConversation) home_conversation,
+    ParseContentContext& mut_parse_content_context
 ) {
 #define COMBINED_TYPE(t, ct) ((t << 8) + ct)
     invariant((type >= 0) && (type <= 255), "Expected message type to be a byte, found %d", type);
@@ -632,7 +670,8 @@ static CEDE(RawEvent) convert_event(
                 body_xml,
                 (type == 60), // is_action_message
                 edited_by,
-                edited_timestamp
+                edited_timestamp,
+                mut_parse_content_context
             );
         case COMBINED_TYPE(0, 103):
             return make_unique<RawEditedPreviousMessageEvent>(event_time, event_index, move(subject));
@@ -678,7 +717,7 @@ static CEDE(RawEvent) convert_event(
                 event_time,
                 event_index,
                 move(subject),
-                parse_message_content(body_xml)
+                parse_message_content(body_xml, mut_parse_content_context)
             );
         case COMBINED_TYPE(2,15):
             return make_unique<RawChangeConferencePictureEvent>(event_time, event_index, move(subject));
@@ -717,7 +756,7 @@ static CEDE(RawEvent) convert_event(
                 event_index,
                 move(subject),
                 move(identities.front()),
-                parse_message_content(body_xml)
+                parse_message_content(body_xml, mut_parse_content_context)
             );
         case COMBINED_TYPE(51, 18):
             invariant(identities.size() == 1, "Expected exactly 1 subject for friend accept");
@@ -791,13 +830,14 @@ static CEDE(RawMessageEvent) convert_message_event(
     IMM(QString) body_xml,
     bool is_action_message,
     IMM(optional<QString>) edited_by,
-    IMM(optional<uint64_t>) edited_timestamp
+    IMM(optional<uint64_t>) edited_timestamp,
+    ParseContentContext& mut_parse_content_context
 ) {
     unique_ptr<RawMessageEvent> message = make_unique<RawMessageEvent>(
         event_time,
         event_index,
         move(subject),
-        parse_message_content(body_xml)
+        parse_message_content(body_xml, mut_parse_content_context)
     );
 
     message->isAction = is_action_message;
@@ -813,19 +853,26 @@ static CEDE(RawMessageEvent) convert_message_event(
     return message;
 }
 
-static RawMessageContent parse_message_content(IMM(QString) content_xml) {
+static RawMessageContent parse_message_content(
+    IMM(QString) content_xml,
+    ParseContentContext& mut_parse_content_context
+) {
     RawMessageContent content;
 
     QDomDocument xml = xml_from_fragment_string(content_xml, "event", true);
 
-    parse_message_content_node(content, get_dom_root(xml, "event"));
+    parse_message_content_node(content, get_dom_root(xml, "event"), mut_parse_content_context);
 
     return content;
 }
 
-static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomNode) node) {
+static void parse_message_content_node(
+    RawMessageContent& mut_content,
+    IMM(QDomNode) node,
+    ParseContentContext& mut_parse_content_context
+) {
     if (node.isElement()) {
-        parse_message_content_element(mut_content, node.toElement());
+        parse_message_content_element(mut_content, node.toElement(), mut_parse_content_context);
     } else if (node.isText()) {
         IMM(QString) text = node.toText().data();
         if (!text.isEmpty()) {
@@ -836,12 +883,16 @@ static void parse_message_content_node(RawMessageContent& mut_content, IMM(QDomN
     }
 }
 
-static void parse_message_content_element(RawMessageContent& mut_content, IMM(QDomElement) element) {
+static void parse_message_content_element(
+    RawMessageContent& mut_content,
+    IMM(QDomElement) element,
+    ParseContentContext& mut_parse_content_context
+) {
     IMM(QString) tag_name = element.tagName();
 
     if (tag_name == "event") {
         for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
-            parse_message_content_node(mut_content, child);
+            parse_message_content_node(mut_content, child, mut_parse_content_context);
         }
     } else if (tag_name == "ss") {
         mut_content.addItem(make_unique<SkypeEmoticon>(
@@ -854,23 +905,17 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
             read_text_only_content(element)
         ));
     } else if (tag_name == "a") {
-        mut_content.addItem(make_unique<LinkTag>(QUrl(read_only_string_attr(element, "href"))));
-
-        for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
-            parse_message_content_node(mut_content, child);
-        }
-
-        mut_content.addItem(make_unique<LinkTag>(false));
+        parse_link_element(mut_content, element, mut_parse_content_context);
     } else if (tag_name == "b") {
         mut_content.addItem(make_unique<BoldTag>(true));
 
         for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
-            parse_message_content_node(mut_content, child);
+            parse_message_content_node(mut_content, child, mut_parse_content_context);
         }
 
         mut_content.addItem(make_unique<BoldTag>(false));
     } else if (tag_name == "quote") {
-        mut_content.addItem(parse_quote_element(element));
+        mut_content.addItem(parse_quote_element(element, mut_parse_content_context));
     } else if (tag_name == "e_m") {
         // Ignore this tag (a redundant edit marker)
     } else {
@@ -878,7 +923,53 @@ static void parse_message_content_element(RawMessageContent& mut_content, IMM(QD
     }
 }
 
-static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {
+static void parse_link_element(
+    RawMessageContent& mut_content,
+    IMM(QDomElement) element,
+    ParseContentContext &mut_parse_content_context
+) {
+    static const QMap<QString, optional<URLTargetTypeHint>> TYPE_HINTS {
+        { "UrlPreview.1/generic", optional<URLTargetTypeHint>() },
+        { "UrlPreview.1/video", URLTargetTypeHint::VIDEO },
+        { "UrlPreview.1/tweet", URLTargetTypeHint::TWEET },
+    };
+
+    QString raw_url = read_only_string_attr(element, "href");
+
+    unique_ptr<LinkTag> tag = make_unique<LinkTag>(QUrl(raw_url));
+
+    if (mut_parse_content_context.linkPreviews.count(raw_url)) {
+        IMM(RawSkypeLinkPreview) preview_info = mut_parse_content_context.linkPreviews.at(raw_url);
+        RawSharedURLInfo target_info;
+        target_info.title = preview_info.title;
+        target_info.description = preview_info.description;
+        target_info.siteName = preview_info.service;
+        target_info.mimeType = preview_info.mime_type;
+
+        invariant(
+            TYPE_HINTS.count(preview_info.skype_type),
+            "Unrecognized Skype link type: %s", QP(preview_info.skype_type)
+        );
+        target_info.typeHint = TYPE_HINTS[preview_info.skype_type];
+
+        tag->targetInfo = target_info;
+
+        mut_parse_content_context.unusedLinkPreviews.erase(raw_url);
+    }
+
+    mut_content.addItem(move(tag));
+
+    for (QDomNode child = element.firstChild(); !child.isNull(); child = child.nextSibling()) {
+        parse_message_content_node(mut_content, child, mut_parse_content_context);
+    }
+
+    mut_content.addItem(make_unique<LinkTag>(false));
+}
+
+static CEDE(SkypeQuote) parse_quote_element(
+    IMM(QDomElement) element,
+    ParseContentContext& mut_parse_content_context
+) {
     IMM(QDomNodeList) children = element.childNodes();
 
     invariant(children.count() >= 2, "Expected <quote> to have at least 2 subnodes");
@@ -896,7 +987,7 @@ static CEDE(SkypeQuote) parse_quote_element(IMM(QDomElement) element) {
 
     RawMessageContent quote_content;
     for (int i = 1; i < children.count() - 1; i++) {
-        parse_message_content_node(quote_content, children.at(i));
+        parse_message_content_node(quote_content, children.at(i), mut_parse_content_context);
     }
 
     return make_unique<SkypeQuote>(
