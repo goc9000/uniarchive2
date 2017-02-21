@@ -48,6 +48,10 @@ enums:
       - local time  // The local time when the conversation was recorded
       - specified   // At least one of UTC offset, timezone abbreviation or timezone are specified
 
+    URLTargetTypeHint:
+      - video
+      - tweet
+
   protocols:
     ArchiveFormat:
       - (invalid) = 0
@@ -288,6 +292,7 @@ content items:
     LinkTag:
       - tag type: standard
       - primary (?)QUrl url
+      - ?RawSharedURLInfo targetInfo
     YahooAltTag:
       - tag type: standard
         tag name: Alt
