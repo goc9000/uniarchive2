@@ -38,7 +38,7 @@ public:
     virtual void serializeToStream(QDataStream& mut_stream) const;
 };
 
-QDebug operator<< (QDebug stream, IMM(RawTransferredFile) time);
+QDebug operator<< (QDebug stream, IMM(RawTransferredFile) file);
 
 }}
 
