@@ -170,6 +170,7 @@ HEADERS += \
     extraction/skype/internal/RawSkypeConvo.h \
     extraction/skype/internal/RawSkypeIdentity.h \
     extraction/skype/internal/RawSkypeLinkPreview.h \
+    extraction/skype/internal/RawSkypeSharedFile.h \
     extraction/skype/internal/query_skype_db.h \
     extraction/skype/extract_skype_conversations.h \
     extraction/whatsapp/extract_whatsapp_email_conversations.h \

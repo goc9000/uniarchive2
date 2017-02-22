@@ -195,4 +195,47 @@ map<QString, RawSkypeLinkPreview> query_skype_link_previews(SQLiteDB &db) {
     return previews;
 }
 
+map<QString, RawSkypeSharedFile> query_skype_shared_files(SQLiteDB &db) {
+    map<QString, RawSkypeSharedFile> shared_files;
+
+    bool table_exists = db.stmt("SELECT COUNT(*) FROM sqlite_master WHERE name=\"MediaDocuments\" AND type=\"table\"")
+        .singleValue<bool>();
+
+    if (!table_exists) {
+        return shared_files;
+    }
+
+    db.stmt(
+        "SELECT uri, id, doc_type, type, original_name, storage_document_id, message_id, convo_id "\
+        "FROM MediaDocuments WHERE doc_type NOT IN (6,7,8,9,11)"
+    ).forEachRow(
+        [&shared_files](
+            QString uri,
+            uint64_t id,
+            uint64_t doc_type,
+            QString type,
+            QString original_name,
+            uint64_t verify_storage_document_id,
+            uint64_t verify_message_id,
+            uint64_t verify_convo_id
+        ) {
+            invariant(uri != "", "Empty URI for shared file record");
+            invariant(shared_files.count(uri) == 0, "Duplicate shared file record for URI: %s", QP(uri));
+
+            invariant(
+                verify_storage_document_id || verify_message_id || verify_convo_id,
+                "Expected non-null storage_document_id, message_id, or convo_id for shared file"
+            );
+
+            invariant(
+                ((doc_type == 2) && (type == "Picture.1")) || ((doc_type == 10) && (type == "File.1")),
+                "Unexpected doc_type/type pair: %llu / %s", doc_type, QP(type)
+            );
+
+            shared_files.emplace(uri, RawSkypeSharedFile(uri, id, original_name, type));
+        });
+
+    return shared_files;
+}
+
 }}}}
