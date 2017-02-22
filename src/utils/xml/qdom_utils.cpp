@@ -153,6 +153,16 @@ int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     return value;
 }
 
+unsigned int read_uint_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
+    QString value_text = read_string_attr(node, attr_name);
+    bool ok = false;
+    int value = value_text.toUInt(&ok);
+
+    invariant(ok, "Invalid unsigned integer attribute value: '%s'", QP(value_text));
+
+    return value;
+}
+
 QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name) {
     invariant(node.hasAttribute(attr_name), "<%s> node is missing attribute '%s'", QP(node.tagName()), QP(attr_name));
 

@@ -34,6 +34,7 @@ QDomElement child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name
 QDomElement only_child_elem_with_class(IMM(QDomElement) node, IMM(QString) child_name, IMM(QString) class_name);
 
 int read_int_attr(IMM(QDomElement) node, IMM(QString) attr_name);
+unsigned int read_uint_attr(IMM(QDomElement) node, IMM(QString) attr_name);
 QString read_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);
 QString read_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);
 QString read_optional_only_string_attr(IMM(QDomElement) node, IMM(QString) attr_name);

@@ -11,6 +11,7 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWTRANSFERREDFILE_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWTRANSFERREDFILE_H
 
+#include "intermediate_format/RawTransferredFileTypeHint.h"
 #include "utils/external_libs/optional.hpp"
 #include "utils/language/shortcuts.h"
 #include "utils/serialization/IDeserializableStatic.h"
@@ -30,6 +31,7 @@ struct RawTransferredFile : public ISerializable, public IDeserializableStatic {
 public:
     QString filename;
     optional<uint64_t> size;
+    optional<RawTransferredFileTypeHint> typeHint;
 
     explicit RawTransferredFile(IMM(QString) filename);
     RawTransferredFile(IMM(QString) filename, uint64_t size);

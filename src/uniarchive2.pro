@@ -128,6 +128,7 @@ SOURCES += \
     intermediate_format/RawConversationCollection.cpp \
     intermediate_format/RawSharedURLInfo.cpp \
     intermediate_format/RawTransferredFile.cpp \
+    intermediate_format/RawTransferredFileTypeHint.cpp \
     intermediate_format/URLTargetTypeHint.cpp \
     protocols/digsby/digsby_account_name.cpp \
     protocols/facebook/facebook_account_name.cpp \
@@ -277,6 +278,7 @@ HEADERS += \
     intermediate_format/RawConversationCollection.h \
     intermediate_format/RawSharedURLInfo.h \
     intermediate_format/RawTransferredFile.h \
+    intermediate_format/RawTransferredFileTypeHint.h \
     intermediate_format/URLTargetTypeHint.h \
     protocols/digsby/digsby_account_name.h \
     protocols/facebook/facebook_account_name.h \

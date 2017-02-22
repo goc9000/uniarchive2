@@ -27,18 +27,16 @@ RawTransferredFile::RawTransferredFile(IMM(QString) filename, uint64_t size): fi
 }
 
 RawTransferredFile RawTransferredFile::deserializeFromStream(QDataStream& mut_stream) {
-    QString filename = must_deserialize(mut_stream, QString);
-    optional<uint64_t> size = must_deserialize(mut_stream, optional<uint64_t>);
+    RawTransferredFile file(must_deserialize(mut_stream, QString));
 
-    if (size) {
-        return RawTransferredFile(filename, *size);
-    } else {
-        return RawTransferredFile(filename);
-    }
+    file.size = must_deserialize(mut_stream, optional<uint64_t>);
+    file.typeHint = must_deserialize(mut_stream, optional<RawTransferredFileTypeHint>);
+
+    return file;
 }
 
 void RawTransferredFile::serializeToStream(QDataStream& mut_stream) const {
-    mut_stream << filename << size;
+    mut_stream << filename << size << typeHint;
 }
 
 QDebug operator<< (QDebug stream, IMM(RawTransferredFile) file) {
@@ -46,6 +44,9 @@ QDebug operator<< (QDebug stream, IMM(RawTransferredFile) file) {
     stream.nospace() << "[File path=" << file.filename;
     if (file.size) {
         stream << " size=" << *file.size;
+    }
+    if (file.typeHint) {
+        stream << " type_hint=" << *file.typeHint;
     }
     stream << "]";
 

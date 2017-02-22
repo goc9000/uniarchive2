@@ -52,6 +52,9 @@ enums:
       - video
       - tweet
 
+    RawTransferredFileTypeHint:
+      - picture
+
   protocols:
     ArchiveFormat:
       - (invalid) = 0

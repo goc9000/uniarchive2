@@ -95,14 +95,23 @@ struct CallEventData {
 };
 
 struct ParseContentContext {
-    ParseContentContext(const map<QString, RawSkypeLinkPreview>& link_previews) : linkPreviews(link_previews) {
+    ParseContentContext(
+        const map<QString, RawSkypeLinkPreview>& link_previews,
+        const map<QString, RawSkypeSharedFile>& shared_files
+    ) : linkPreviews(link_previews), sharedFiles(shared_files) {
         for (IMM(auto) k_v : link_previews) {
             unusedLinkPreviews.insert(k_v.first);
+        }
+        for (IMM(auto) k_v : shared_files) {
+            unusedSharedFiles.insert(k_v.first);
         }
     }
 
     const map<QString, RawSkypeLinkPreview>& linkPreviews;
     set<QString> unusedLinkPreviews;
+
+    const map<QString, RawSkypeSharedFile>& sharedFiles;
+    set<QString> unusedSharedFiles;
 };
 
 static map<QString, RawConversation> convert_conversations(
@@ -147,7 +156,8 @@ static void convert_events(
     SQLiteDB& db,
     map<QString, RawConversation>& mut_indexed_conversations,
     map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events,
-    const map<QString, RawSkypeLinkPreview>& link_previews
+    const map<QString, RawSkypeLinkPreview>& link_previews,
+    const map<QString, RawSkypeSharedFile>& shared_files
 );
 static CEDE(RawEvent) convert_event(
     IMM(ApparentTime) event_time,
@@ -157,9 +167,11 @@ static CEDE(RawEvent) convert_event(
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     vector<unique_ptr<ApparentSubject>>&& identities,
+    TAKE(ApparentSubject) optional_dialog_partner,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
     IMM(optional<int>) new_role,
+    uint64_t event_id,
     IMM(RawConversation) home_conversation,
     ParseContentContext& mut_parse_content_context
 );
@@ -217,6 +229,26 @@ static CEDE(RawEvent) convert_file_transfer_event(
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml
 );
+static CEDE(RawEvent) convert_file_share_event(
+    IMM(ApparentTime) event_time,
+    uint32_t event_index,
+    TAKE(ApparentSubject) subject,
+    TAKE(ApparentSubject) optional_dialog_partner,
+    IMM(QString) body_xml,
+    uint64_t event_id,
+    ParseContentContext& mut_parse_content_context
+);
+
+static RawTransferredFile parse_shared_file(
+    IMM(QString) body_xml,
+    uint64_t event_id,
+    ParseContentContext& mut_parse_content_context
+);
+static RawTransferredFile parse_shared_file_desperate(
+    uint64_t event_id,
+    ParseContentContext& mut_parse_content_context
+);
+static RawTransferredFile file_from_share(IMM(RawSkypeSharedFile) share);
 
 static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
     SQLiteDB& db,
@@ -263,7 +295,7 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     map<QString, RawConversation> indexed_conversations =
         convert_conversations(db, raw_identities, raw_convos, raw_chats, raw_calls, base_provenance.get());
 
-    convert_events(db, indexed_conversations, move(prescanned_call_events), link_previews);
+    convert_events(db, indexed_conversations, move(prescanned_call_events), link_previews, shared_files);
 
     vector<RawConversation> conversations;
     for (auto& kv : indexed_conversations) {
@@ -564,13 +596,14 @@ static void convert_events(
     SQLiteDB& db,
     map<QString, RawConversation>& mut_indexed_conversations,
     map<uint64_t, unique_ptr<RawEvent>>&& prescanned_call_events,
-    const map<QString, RawSkypeLinkPreview>& link_previews
+    const map<QString, RawSkypeLinkPreview>& link_previews,
+    const map<QString, RawSkypeSharedFile>& shared_files
 ) {
-    ParseContentContext pcc(link_previews);
+    ParseContentContext pcc(link_previews, shared_files);
 
     db.stmt(
         "SELECT chatname, convo_id, id, timestamp, type, chatmsg_type, author, from_dispname, body_xml, "\
-        "       identities, guid, edited_by, edited_timestamp, newrole "\
+        "       dialog_partner, identities, guid, edited_by, edited_timestamp, newrole "\
         "FROM Messages "\
         "ORDER BY timestamp, id"
     ).forEachRow(
@@ -584,6 +617,7 @@ static void convert_events(
             QString author,
             QString from_dispname,
             QString body_xml,
+            optional<QString> raw_dialog_partner,
             optional<QString> serialized_identities,
             optional<QByteArray> skype_guid,
             optional<QString> edited_by,
@@ -597,6 +631,10 @@ static void convert_events(
             uint32_t event_index = (uint32_t)mut_conversation.events.size();
 
             auto subject = make_unique<FullySpecifiedSubject>(parse_skype_account(author), from_dispname);
+            unique_ptr<ApparentSubject> dialog_partner;
+            if (raw_dialog_partner) {
+                dialog_partner = make_unique<AccountSubject>(parse_skype_account(*raw_dialog_partner));
+            }
             auto identities = deserialize_identities(serialized_identities);
 
             unique_ptr<RawEvent> event;
@@ -616,9 +654,11 @@ static void convert_events(
                     move(subject),
                     body_xml,
                     move(identities),
+                    move(dialog_partner),
                     edited_by,
                     edited_timestamp,
                     new_role,
+                    event_id,
                     mut_conversation,
                     pcc
                 );
@@ -646,9 +686,11 @@ static CEDE(RawEvent) convert_event(
     TAKE(ApparentSubject) subject,
     IMM(QString) body_xml,
     TAKE_VEC(ApparentSubject) identities,
+    TAKE(ApparentSubject) optional_dialog_partner,
     IMM(optional<QString>) edited_by,
     IMM(optional<uint64_t>) edited_timestamp,
     IMM(optional<int>) new_role,
+    uint64_t event_id,
     IMM(RawConversation) home_conversation,
     ParseContentContext& mut_parse_content_context
 ) {
@@ -783,31 +825,24 @@ static CEDE(RawEvent) convert_event(
         case COMBINED_TYPE(68, 18):
             return convert_file_transfer_event(event_time, event_index, move(subject), body_xml);
 
+        case COMBINED_TYPE(201, 0):
+        case COMBINED_TYPE(201, 3):
+        case COMBINED_TYPE(254, 3):
+            return convert_file_share_event(
+                event_time,
+                event_index,
+                move(subject),
+                move(optional_dialog_partner),
+                body_xml,
+                event_id,
+                mut_parse_content_context
+            );
+
         // Misc
 
         case COMBINED_TYPE(63, 8):
             return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
     }
-
-
-
-// ADD new MESSAGES
-
-// FIX CALLS (delta timestamp != param)
-
-
-
-
-    // Default
-    QString tmp;
-    QDebug dbg(&tmp);
-
-    return make_unique<RawUninterpretedEvent>(event_time, event_index, tmp.toUtf8() + "?");
-
-
-
-    // TODO: fix this
-
 
     invariant_violation("Unsupported Skype event type (type=%d, chatmsg_type=%d)", type, chatmsg_type);
 }
@@ -1084,6 +1119,141 @@ static CEDE(RawEvent) convert_file_transfer_event(
     }
 
     return make_unique<RawTransferFilesEvent>(event_time, event_index, move(subject), files);
+}
+
+static CEDE(RawEvent) convert_file_share_event(
+    IMM(ApparentTime) event_time,
+    uint32_t event_index,
+    TAKE(ApparentSubject) subject,
+    TAKE(ApparentSubject) optional_dialog_partner,
+    IMM(QString) body_xml,
+    uint64_t event_id,
+    ParseContentContext& mut_parse_content_context
+) {
+    unique_ptr<RawEvent> event = make_unique<RawTransferFilesEvent>(
+        event_time,
+        event_index,
+        move(subject),
+        parse_shared_file(body_xml, event_id, mut_parse_content_context)
+    );
+
+    if (optional_dialog_partner) {
+        event->as<RawTransferFilesEvent>()->recipient = move(optional_dialog_partner);
+    }
+
+    return event;
+}
+
+static RawTransferredFile parse_shared_file(
+    IMM(QString) body_xml,
+    uint64_t event_id,
+    ParseContentContext& mut_parse_content_context
+) {
+    if (body_xml == "%2 received. To view it, go to: %1") {
+        return parse_shared_file_desperate(event_id, mut_parse_content_context);
+    }
+
+    QDomDocument xml = xml_from_fragment_string(body_xml, "root");
+    QDomElement uri_obj_elem = only_child_elem(get_dom_root(xml, "root"), "URIObject");
+
+    QString uri = read_string_attr(uri_obj_elem, "uri");
+
+    invariant(mut_parse_content_context.sharedFiles.count(uri), "Could not find shared file for uri=%s", QP(uri));
+
+    IMM(RawSkypeSharedFile) share = mut_parse_content_context.sharedFiles.at(uri);
+    mut_parse_content_context.unusedSharedFiles.erase(uri);
+
+    invariant(share.type == read_string_attr(uri_obj_elem, "type"), "Mismatch in URIObject.type vs share type");
+
+    RawTransferredFile file = file_from_share(share);
+
+    for (
+         QDomElement child = uri_obj_elem.firstChildElement();
+         !child.isNull();
+         child = child.nextSiblingElement()
+    ) {
+        QString tag = child.tagName();
+
+        if ((tag == "a") || (tag == "Title")) {
+            continue;
+        } else if (tag == "OriginalName") {
+            invariant(share.filename == read_string_attr(child, "v"), "Original name mismatch");
+        } else if (tag == "FileSize") {
+            file.size = read_uint_attr(child, "v");
+        } else if (tag == "meta") {
+            for (int i = 0; i < child.attributes().count(); i++) {
+                auto attr = child.attributes().item(i);
+
+                QString attrName = attr.nodeName();
+
+                if (attrName == "originalName") {
+                    invariant(share.filename == attr.nodeValue(), "Original name mismatch in meta attr");
+                } else if (attrName == "type") {
+                    QString value = attr.nodeValue();
+
+                    if (value == "photo") {
+                        invariant(
+                            !file.typeHint || (*file.typeHint == RawTransferredFileTypeHint::PICTURE),
+                            "Mismatch in share type"
+                        );
+                        file.typeHint = RawTransferredFileTypeHint::PICTURE;
+                    } else {
+                        invariant_violation("Unsupported URIObject.meta.type: %s", QP(value));
+                    }
+                } else {
+                    invariant_violation("Unsupported attr in URIObject.meta: %s", QP(attrName));
+                }
+            }
+        } else {
+            invariant_violation("Unsupported tag in URIObject: %s", QP(tag));
+        }
+    }
+
+    return file;
+}
+
+static RawTransferredFile parse_shared_file_desperate(
+    uint64_t event_id,
+    ParseContentContext& mut_parse_content_context
+) {
+    optional<QString> earliest_share_uri;
+    optional<uint64_t> earliest_share_id;
+
+    for (IMM(auto) uri : mut_parse_content_context.unusedSharedFiles) {
+        IMM(RawSkypeSharedFile) share = mut_parse_content_context.sharedFiles.at(uri);
+
+        if ((share.recordID + 20 < event_id) || (share.recordID >= event_id)) {
+            continue;
+        }
+
+        if (!earliest_share_id || (*earliest_share_id < share.recordID)) {
+            earliest_share_id = share.recordID;
+            earliest_share_uri = uri;
+        }
+    }
+
+    invariant(earliest_share_uri, "Could not find shared file for event with ID=%llu", event_id);
+
+    // TODO: emit a warning when we guess here
+
+    IMM(RawSkypeSharedFile) share = mut_parse_content_context.sharedFiles.at(*earliest_share_uri);
+    mut_parse_content_context.unusedSharedFiles.erase(*earliest_share_uri);
+
+    return file_from_share(share);
+}
+
+static RawTransferredFile file_from_share(IMM(RawSkypeSharedFile) share) {
+    static const QMap<QString, optional<RawTransferredFileTypeHint>> TYPE_HINTS {
+        { "File.1", optional<RawTransferredFileTypeHint>() },
+        { "Picture.1", RawTransferredFileTypeHint::PICTURE },
+    };
+
+    RawTransferredFile file(share.filename);
+
+    invariant(TYPE_HINTS.count(share.type), "Unrecognized Skype share type: %s", QP(share.type));
+    file.typeHint = TYPE_HINTS[share.type];
+
+    return file;
 }
 
 static map<uint64_t, unique_ptr<RawEvent>> prescan_call_events(
