@@ -32,9 +32,9 @@
 #include "intermediate_format/events/conversation/RawJoinConversationEvent.h"
 #include "intermediate_format/events/conversation/RawStartConversationEvent.h"
 #include "intermediate_format/events/file_transfer/RawTransferFilesEvent.h"
-#include "intermediate_format/events/friending/RawContactDeleteEvent.h"
 #include "intermediate_format/events/friending/RawContactRequestEvent.h"
 #include "intermediate_format/events/friending/RawContactRequestAcceptEvent.h"
+#include "intermediate_format/events/system/RawBirthdayNotificationEvent.h"
 #include "intermediate_format/events/RawEditedPreviousMessageEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/events/RawSendContactsEvent.h"
@@ -809,14 +809,6 @@ static CEDE(RawEvent) convert_event(
                 move(subject),
                 move(identities.front())
             );
-        case COMBINED_TYPE(110, 0):
-            invariant(identities.size() == 1, "Expected exactly 1 identity for unfriend event");
-            return make_unique<RawContactDeleteEvent>(
-                event_time,
-                event_index,
-                move(identities.front()),
-                move(subject)
-            );
 
         // Shares & transfers
 
@@ -842,6 +834,8 @@ static CEDE(RawEvent) convert_event(
 
         case COMBINED_TYPE(63, 8):
             return convert_send_contacts_event(event_time, event_index, move(subject), body_xml);
+        case COMBINED_TYPE(110, 0):
+            return make_unique<RawBirthdayNotificationEvent>(event_time, event_index, move(subject));
     }
 
     invariant_violation("Unsupported Skype event type (type=%d, chatmsg_type=%d)", type, chatmsg_type);

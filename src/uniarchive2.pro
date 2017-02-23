@@ -94,6 +94,7 @@ SOURCES += \
     intermediate_format/events/status/RawConnectedEvent.cpp \
     intermediate_format/events/status/RawDisconnectedEvent.cpp \
     intermediate_format/events/status/RawStatusChangeEvent.cpp \
+    intermediate_format/events/system/RawBirthdayNotificationEvent.cpp \
     intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.cpp \
     intermediate_format/events/system/RawLoggingStartedEvent.cpp \
     intermediate_format/events/system/RawLoggingStoppedEvent.cpp \
@@ -243,6 +244,7 @@ HEADERS += \
     intermediate_format/events/status/RawConnectedEvent.h \
     intermediate_format/events/status/RawDisconnectedEvent.h \
     intermediate_format/events/status/RawStatusChangeEvent.h \
+    intermediate_format/events/system/RawBirthdayNotificationEvent.h \
     intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.h \
     intermediate_format/events/system/RawLoggingStartedEvent.h \
     intermediate_format/events/system/RawLoggingStoppedEvent.h \

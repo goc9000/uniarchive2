@@ -224,6 +224,8 @@ raw events:
     LoggingStopped:
     WindowClosed:
     WindowOpened:
+    BirthdayNotification:
+      - ApparentSubject subject
   
   ChangeScreenName:
     - ApparentSubject from
