@@ -40,11 +40,11 @@ using namespace uniarchive2::utils::xml;
 static RawConversation init_prototype(IMM(QString) filename);
 static QString read_identity_screen_name(IMM(QDomElement) root_element);
 static void extract_conversations_in_section(
-    QDomElement& mut_next_element,
+    IMM(QDomElement) section_element,
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype
 );
-static RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype);
+static RawConversation extract_thread(IMM(QDomElement) thread_element, IMM(RawConversation) prototype);
 static void populate_thread_participants(
     IMM(QDomElement) thread_element,
     RawConversation& mut_conversation,
@@ -73,6 +73,7 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename
     element = element.nextSiblingElement();
     while (!element.isNull()) {
         extract_conversations_in_section(element, conversations, prototype);
+        element = element.nextSiblingElement();
     }
 
     return conversations;
@@ -113,32 +114,30 @@ static QString read_identity_screen_name(IMM(QDomElement) root_element) {
 }
 
 static void extract_conversations_in_section(
-    QDomElement& mut_next_element,
+    IMM(QDomElement) section_element,
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype
 ) {
-    invariant(mut_next_element.tagName() == "div", "Expected section <div> to follow");
+    invariant(section_element.tagName() == "div", "Expected section <div> to follow");
 
-    auto thread_element = mut_next_element.firstChildElement();
+    auto thread_element = section_element.firstChildElement();
     while (!thread_element.isNull()) {
         mut_conversations.push_back(extract_thread(thread_element, prototype));
         thread_element = thread_element.nextSiblingElement();
     }
-
-    mut_next_element = mut_next_element.nextSiblingElement();
 }
 
-static RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawConversation) prototype) {
+static RawConversation extract_thread(IMM(QDomElement) thread_element, IMM(RawConversation) prototype) {
     invariant(
-        (mut_thread_element.tagName() == "div") && (mut_thread_element.attribute("class", "") == "thread"),
+        (thread_element.tagName() == "div") && (thread_element.attribute("class", "") == "thread"),
         "Expected thread to be defined by a <div class=\"thread\">"
     );
 
     RawConversation conversation = RawConversation::fromPrototype(prototype);
-    populate_thread_participants(mut_thread_element, conversation, prototype);
+    populate_thread_participants(thread_element, conversation, prototype);
 
     vector<unique_ptr<RawEvent>> events_in_reverse;
-    auto message_element = mut_thread_element.firstChildElement();
+    auto message_element = thread_element.firstChildElement();
     while (!message_element.isNull()) {
         events_in_reverse.push_back(extract_message(message_element));
     }
@@ -149,8 +148,6 @@ static RawConversation extract_thread(QDomElement& mut_thread_element, IMM(RawCo
     for (auto& message : conversation.events) {
         message->indexInConversation = message_index++;
     }
-
-    mut_thread_element = mut_thread_element.nextSiblingElement();
 
     return conversation;
 }
