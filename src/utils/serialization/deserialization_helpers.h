@@ -18,7 +18,6 @@
 #include "utils/serialization/IDeserializableStatic.h"
 
 #include <QDataStream>
-#include <QFlags>
 
 #define must_deserialize(stream, type) \
     uniarchive2::utils::serialization::_must_deserialize_impl<type>(stream, #type, 0)
