@@ -41,7 +41,7 @@ RawConversationCollection extract_conversations_generic(ArchiveFormat format, IM
         case ArchiveFormat::ADIUM:
             return RawConversationCollection::from(extract_adium_conversation(source));
         case ArchiveFormat::DIGSBY:
-            return RawConversationCollection::from(extract_digsby_conversation(filename));
+            return RawConversationCollection::from(extract_digsby_conversation(source));
         case ArchiveFormat::FACEBOOK_DYI:
             return RawConversationCollection::from(extract_facebook_dyi_conversations(source));
         case ArchiveFormat::MSN_MESSENGER_XML:

@@ -18,6 +18,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QDomDocument>
+#include <QIODevice>
 
 namespace uniarchive2 { namespace sources {
 
@@ -42,6 +43,8 @@ public:
      * Returns a filename that can be opened to get the source's data. Not available for all sources.
      */
     virtual QString materializedFilename() const = 0;
+
+    virtual CEDE(QIODevice) openDevice() const = 0;
 
     virtual QByteArray fullData() const = 0;
     virtual QString fullUTF8Text() const;

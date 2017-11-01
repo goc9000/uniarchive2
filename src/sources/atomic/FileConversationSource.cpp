@@ -44,6 +44,16 @@ QString FileConversationSource::materializedFilename() const {
     return fileInfo.absoluteFilePath();
 }
 
+CEDE(QIODevice) FileConversationSource::openDevice() const {
+    unique_ptr<QIODevice> device = make_unique<QFile>(fileInfo.absoluteFilePath());
+
+    if (!device->open(QIODevice::ReadOnly)) {
+        qFatal("Can't open file: %s", QP(filename));
+    }
+
+    return device;
+}
+
 QByteArray FileConversationSource::fullData() const {
     // TODO: there should be a safety limit here to prevent opening excessively large files
 

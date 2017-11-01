@@ -35,8 +35,6 @@
 
 #include <QtDebug>
 #include <QDir>
-#include <QFileInfo>
-#include <QIODevice>
 #include <QLocale>
 #include <QStringList>
 #include <QTextCodec>
@@ -62,8 +60,8 @@ struct InfoFromFilename {
     bool isConference;
 };
 
-static RawConversation init_conversation(IMM(QString) filename);
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
+static RawConversation init_conversation(IMM(AtomicConversationSource) source);
+static InfoFromFilename analyze_conversation_filename(IMM(QString) filename);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 
 static void verify_xml_header(QTextStream& mut_stream);
@@ -77,16 +75,12 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
 static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo) tag_info);
 
 
-RawConversation extract_digsby_conversation(IMM(QString) filename) {
-    RawConversation conversation = init_conversation(filename);
-
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", QP(filename));
-    }
+RawConversation extract_digsby_conversation(IMM(AtomicConversationSource) source) {
+    RawConversation conversation = init_conversation(source);
 
     // Unfortunately we are reduced to manual text processing as the HTML produced by Digsby is occasionally damaged
-    QTextStream stream(&file);
+    unique_ptr<QIODevice> device = source.openDevice();
+    QTextStream stream(device.get());
 
     verify_xml_header(stream);
     seek_start_of_events(stream);
@@ -99,16 +93,12 @@ RawConversation extract_digsby_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-static RawConversation init_conversation(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
+static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
+    QString full_filename = source.logicalFilename();
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(info.identity.protocol);
-    conversation.provenance =
-        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::DIGSBY);
+    conversation.provenance = make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::DIGSBY);
 
     conversation.isConference = info.isConference;
     conversation.identity = make_unique<AccountSubject>(info.identity);

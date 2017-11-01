@@ -31,6 +31,8 @@ public:
 
     QString materializedFilename() const;
 
+    CEDE(QIODevice) openDevice() const;
+
     QByteArray fullData() const;
 
     CEDE(Provenance) asProvenance() const;
