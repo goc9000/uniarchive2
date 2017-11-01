@@ -18,7 +18,7 @@
 
 namespace uniarchive2 { namespace utils { namespace xml {
 
-static QDomDocument parse_xml(QXmlInputSource* source, bool keep_whitespace, IMM(QString) source_name="XML");
+static QDomDocument parse_xml(QXmlInputSource* source, bool keep_whitespace, IMM(QString) source_name);
 
 QDomDocument load_xml_file(IMM(QString) filename, bool keep_whitespace) {
     QFile file(filename);
@@ -31,22 +31,27 @@ QDomDocument load_xml_file(IMM(QString) filename, bool keep_whitespace) {
     return parse_xml(&source, keep_whitespace, "XML file '" + filename + "'");
 }
 
-QDomDocument xml_from_string(IMM(QString) xml_string, bool keep_whitespace) {
+QDomDocument xml_from_string(IMM(QString) xml_string, bool keep_whitespace, IMM(QString) source_name) {
     QXmlInputSource source;
     source.setData(xml_string);
 
-    return parse_xml(&source, keep_whitespace);
+    return parse_xml(&source, keep_whitespace, source_name);
 }
 
-QDomDocument xml_from_fragment_string(IMM(QString) xml_string, IMM(QString) root_node, bool keep_whitespace) {
-    return xml_from_string("<" + root_node + ">" + xml_string + "</" + root_node + ">", keep_whitespace);
+QDomDocument xml_from_fragment_string(
+    IMM(QString) xml_string,
+    IMM(QString) root_node,
+    bool keep_whitespace,
+    IMM(QString) source_name
+) {
+    return xml_from_string("<" + root_node + ">" + xml_string + "</" + root_node + ">", keep_whitespace, source_name);
 }
 
-QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data, bool keep_whitespace) {
+QDomDocument xml_from_raw_data(IMM(QByteArray) raw_data, bool keep_whitespace, IMM(QString) source_name) {
     QXmlInputSource source;
     source.setData(raw_data);
 
-    return parse_xml(&source, keep_whitespace);
+    return parse_xml(&source, keep_whitespace, source_name);
 }
 
 static QDomDocument parse_xml(QXmlInputSource* source, bool keep_whitespace, IMM(QString) source_name) {
