@@ -42,8 +42,6 @@
 
 #include <QtDebug>
 #include <QDir>
-#include <QFileInfo>
-#include <QIODevice>
 #include <QMap>
 #include <QUrl>
 
@@ -72,7 +70,7 @@ struct InfoFromFilename {
     ApparentTime convoStartDate;
 };
 
-static RawConversation init_conversation(IMM(QString) filename);
+static RawConversation init_conversation(IMM(AtomicConversationSource) source);
 static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 static void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
@@ -108,10 +106,10 @@ static CEDE(RawMessageContentItem) convert_event_content_closed_tag_secondary(IM
 static CEDE(TextSection) convert_event_content_text(IMM(QDomText) text_node);
 
 
-RawConversation extract_adium_conversation(IMM(QString) filename) {
-    RawConversation conversation = init_conversation(filename);
+RawConversation extract_adium_conversation(IMM(AtomicConversationSource) source) {
+    RawConversation conversation = init_conversation(source);
 
-    QDomDocument xml = load_xml_file(filename);
+    QDomDocument xml = source.fullXML();
     QDomElement root_element = get_dom_root(xml, "chat");
 
     auto provenance = conversation.provenance->as<AdiumArchiveFileProvenance>();
@@ -129,15 +127,12 @@ RawConversation extract_adium_conversation(IMM(QString) filename) {
     return conversation;
 }
 
-static RawConversation init_conversation(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
+static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
+    QString full_filename = source.logicalFilename();
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(info.identity.protocol);
-    conversation.provenance = make_unique<AdiumArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info));
+    conversation.provenance = make_unique<AdiumArchiveFileProvenance>(source.asProvenance());
 
     conversation.identity = make_unique<AccountSubject>(info.identity);
     conversation.declaredPeers.push_back(make_unique<AccountSubject>(info.peer));

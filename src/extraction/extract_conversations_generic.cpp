@@ -39,7 +39,7 @@ RawConversationCollection extract_conversations_generic(ArchiveFormat format, IM
 
     switch (format) {
         case ArchiveFormat::ADIUM:
-            return RawConversationCollection::from(extract_adium_conversation(filename));
+            return RawConversationCollection::from(extract_adium_conversation(source));
         case ArchiveFormat::DIGSBY:
             return RawConversationCollection::from(extract_digsby_conversation(filename));
         case ArchiveFormat::FACEBOOK_DYI:
