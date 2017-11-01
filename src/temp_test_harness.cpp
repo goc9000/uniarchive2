@@ -39,6 +39,9 @@ using namespace uniarchive2::extraction;
 using namespace uniarchive2::intermediate_format::subjects;
 
 
+typedef map<QString, QString> variables_t;
+
+
 QString remove_trailing_slash(IMM(QString) path) {
     return path.endsWith("/") ? path.left(path.length() - 1) : path;
 }
@@ -391,6 +394,100 @@ void run_commands(QJsonValue commands_json) {
     }
 }
 
+QString apply_variables(IMM(QString) format, IMM(variables_t) variables) {
+    QREGEX(PATTERN, "<([^>]+)>");
+
+    QString value;
+    int last_written_pos = 0;
+
+    auto matches = PATTERN.globalMatch(format);
+    while (matches.hasNext()) {
+        auto match = matches.next();
+        IMM(auto) var_name = match.captured(1);
+
+        value.append(format.midRef(last_written_pos, match.capturedStart() - last_written_pos));
+        last_written_pos = match.capturedEnd();
+
+        invariant(variables.count(var_name), "Variable '%s' not found", QP(var_name));
+
+        value.append(variables.at(var_name));
+    }
+
+    value.append(format.midRef(last_written_pos));
+
+    return value;
+}
+
+QJsonValue apply_variables(IMM(QJsonValue) value, IMM(variables_t) variables) {
+    if (value.isArray()) {
+        IMM(QJsonArray) asArray = value.toArray();
+        QJsonArray result;
+
+        for (IMM(auto) item : asArray) {
+            result.push_back(apply_variables(item, variables));
+        }
+
+        return result;
+    }
+    if (value.isObject()) {
+        IMM(QJsonObject) asObject = value.toObject();
+        QJsonObject result;
+
+        for (IMM(auto) key : asObject.keys()) {
+            result[key] = apply_variables(asObject[key], variables);
+        }
+
+        return result;
+    }
+    if (value.isString()) {
+        return apply_variables(value.toString(), variables);
+    }
+
+    return value;
+}
+
+variables_t read_variables(QJsonValue vars_json) {
+    variables_t variables;
+
+    if (vars_json.isUndefined()) {
+        return variables;
+    }
+
+    invariant(vars_json.isObject(), "Variables should be a dictionary");
+
+    map<QString, QString> definitions;
+    auto as_obj = vars_json.toObject();
+
+    for (IMM(QString) name : as_obj.keys()) {
+        IMM(auto) value = as_obj[name];
+        invariant(value.isString(), "Non-string value for variable '%s'", QP(name));
+
+        definitions[name] = value.toString();
+        variables[name] = "";
+    }
+
+    for (int max_iterations = 20; max_iterations > 0; max_iterations--) {
+        bool changed = false;
+
+        for (IMM(auto) defs_kv : definitions) {
+            IMM(QString) name = defs_kv.first;
+            IMM(QString) old_value = variables[name];
+            IMM(QString) new_value = apply_variables(defs_kv.second, variables);
+
+            if (new_value != old_value) {
+                variables[name] = new_value;
+                changed = true;
+            }
+        }
+
+        if (!changed) {
+            break;
+        }
+    }
+
+    return variables;
+}
+
 void run_test_harness(IMM(QString) config_file) {
     QFile file(config_file);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -402,7 +499,9 @@ void run_test_harness(IMM(QString) config_file) {
     invariant(!doc.isNull() && doc.isObject(), "Malformed config file");
     QJsonObject doc_object = doc.object();
 
-    run_commands(doc_object["commands"]);
+    variables_t variables = read_variables(doc_object["variables"]);
+
+    run_commands(apply_variables(doc_object["commands"], variables));
 }
 
 }
