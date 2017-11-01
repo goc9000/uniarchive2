@@ -32,8 +32,8 @@ public:
     virtual QString debugName() const = 0;
 
     /**
-     * The filename as used for extracting the context of the conversation (e.g. user, date). May not represent an
-     * existing file on disk.
+     * The filename as used for extracting the context of the conversation (e.g. user, date). May not represent a
+     * currently existing file on disk.
      */
     virtual QString logicalFilename() const = 0;
     virtual QString baseName() const = 0;
@@ -41,11 +41,18 @@ public:
 
     /**
      * Returns a filename that can be opened to get the source's data. Not available for all sources.
+     * Use only as a last resort!
      */
     virtual QString materializedFilename() const = 0;
 
+    /**
+     * Open the data as a Qt I/O device. This is guaranteed to try to use streaming if possible.
+     */
     virtual CEDE(QIODevice) openDevice() const = 0;
 
+    /**
+     * Loads all data in memory. Fails on excessively large files.
+     */
     virtual QByteArray fullData() const = 0;
     virtual QString fullUTF8Text() const;
     virtual QDomDocument fullXML(bool keep_whitespace=false) const;
