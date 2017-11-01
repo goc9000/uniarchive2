@@ -12,9 +12,8 @@
 #define UNIARCHIVE2_EXTRACTION_SKYPE_EXTRACT_SKYPE_CONVERSATIONS_H
 
 #include "intermediate_format/RawConversation.h"
+#include "sources/atomic/AtomicConversationSource.h"
 #include "utils/language/shortcuts.h"
-
-#include <QString>
 
 #include <vector>
 
@@ -22,8 +21,9 @@ namespace uniarchive2 { namespace extraction { namespace skype {
 
 using namespace std;
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::sources;
 
-vector<RawConversation> extract_skype_conversations(IMM(QString) filename);
+vector<RawConversation> extract_skype_conversations(IMM(AtomicConversationSource) source);
 
 }}}
 

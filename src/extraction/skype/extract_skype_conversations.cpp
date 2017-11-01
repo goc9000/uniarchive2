@@ -40,7 +40,6 @@
 #include "intermediate_format/events/RawSendContactsEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
-#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
@@ -59,7 +58,6 @@
 #include <map>
 
 #include <QtDebug>
-#include <QFileInfo>
 #include <QUrl>
 
 namespace uniarchive2 { namespace extraction { namespace skype {
@@ -74,6 +72,7 @@ using namespace uniarchive2::intermediate_format::provenance;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::protocols::skype;
+using namespace uniarchive2::sources;
 using namespace uniarchive2::utils::sqlite;
 using namespace uniarchive2::utils::xml;
 
@@ -276,14 +275,12 @@ static StartCallFailReason parse_start_call_fail_reason(IMM(QString) raw_reason)
 static CurrentCallFailReason parse_current_call_fail_reason(IMM(QString) raw_reason);
 
 
-vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
+vector<RawConversation> extract_skype_conversations(IMM(AtomicConversationSource) source) {
     unique_ptr<Provenance> base_provenance =
-        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::SKYPE);
+        make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::SKYPE);
 
-    SQLiteDB db = SQLiteDB::openReadOnly(filename);
+    // TODO: find a way to open SQLite DBs in virtual files.
+    SQLiteDB db = SQLiteDB::openReadOnly(source.materializedFilename());
     map<QString, RawSkypeIdentity> raw_identities = query_raw_skype_identities(db);
     map<uint64_t, RawSkypeConvo> raw_convos = query_raw_skype_convos(db);
     map<QString, RawSkypeChat> raw_chats = query_raw_skype_chats(db);
