@@ -112,6 +112,7 @@ SOURCES += \
     intermediate_format/provenance/AdiumArchiveFileProvenance.cpp \
     intermediate_format/provenance/ArchiveFileProvenance.cpp \
     intermediate_format/provenance/EventRangeProvenance.cpp \
+    intermediate_format/provenance/FileProvenance.cpp \
     intermediate_format/provenance/MSNConversationProvenance.cpp \
     intermediate_format/provenance/Provenance.cpp \
     intermediate_format/provenance/ProvenanceSubType.cpp \
@@ -263,6 +264,7 @@ HEADERS += \
     intermediate_format/provenance/AdiumArchiveFileProvenance.h \
     intermediate_format/provenance/ArchiveFileProvenance.h \
     intermediate_format/provenance/EventRangeProvenance.h \
+    intermediate_format/provenance/FileProvenance.h \
     intermediate_format/provenance/MSNConversationProvenance.h \
     intermediate_format/provenance/Provenance.h \
     intermediate_format/provenance/ProvenanceSubType.h \
