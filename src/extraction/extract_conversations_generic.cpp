@@ -34,7 +34,9 @@ using namespace uniarchive2::extraction::skype;
 using namespace uniarchive2::extraction::whatsapp;
 using namespace uniarchive2::extraction::yahoo;
 
-RawConversationCollection extract_conversations_generic(ArchiveFormat format, IMM(QString) filename) {
+RawConversationCollection extract_conversations_generic(ArchiveFormat format, IMM(AtomicConversationSource) source) {
+    QString filename = source.materializedFilename();
+
     switch (format) {
         case ArchiveFormat::ADIUM:
             return RawConversationCollection::from(extract_adium_conversation(filename));

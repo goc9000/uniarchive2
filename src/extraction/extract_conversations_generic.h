@@ -12,18 +12,18 @@
 #define UNIARCHIVE2_EXTRACTION_EXTRACT_CONVERSATIONS_GENERIC_H
 
 #include "intermediate_format/RawConversationCollection.h"
+#include "sources/atomic/AtomicConversationSource.h"
 #include "protocols/ArchiveFormat.h"
 
 #include "utils/language/shortcuts.h"
-
-#include <QString>
 
 namespace uniarchive2 { namespace extraction {
 
 using namespace uniarchive2::intermediate_format;
 using namespace uniarchive2::protocols;
+using namespace uniarchive2::sources;
 
-RawConversationCollection extract_conversations_generic(ArchiveFormat format, IMM(QString) filename);
+RawConversationCollection extract_conversations_generic(ArchiveFormat format, IMM(AtomicConversationSource) source);
 
 }}
 

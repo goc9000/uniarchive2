@@ -10,6 +10,7 @@
 
 #include "temp_test_harness.h"
 #include "extraction/extract_conversations_generic.h"
+#include "sources/atomic/FileConversationSource.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/ScreenNameSubject.h"
@@ -36,6 +37,7 @@ namespace uniarchive2 {
 
 using namespace std;
 using namespace uniarchive2::extraction;
+using namespace uniarchive2::sources;
 using namespace uniarchive2::intermediate_format::subjects;
 
 
@@ -119,7 +121,7 @@ public:
     }
 
     void run() {
-        result.take(extract_conversations_generic(format, filename));
+        result.take(extract_conversations_generic(format, FileConversationSource(filename)));
     }
 };
 

@@ -145,6 +145,8 @@ SOURCES += \
     protocols/IMProtocol.cpp \
     protocols/IMStatus.cpp \
     protocols/parse_account_generic.cpp \
+    sources/atomic/AtomicConversationSource.cpp \
+    sources/atomic/FileConversationSource.cpp \
     utils/external_libs/sqlite/sqlite3.c \
     utils/html/entities.cpp \
     utils/html/parse_html_lenient.cpp \
@@ -297,6 +299,8 @@ HEADERS += \
     protocols/IMProtocol.h \
     protocols/IMStatus.h \
     protocols/parse_account_generic.h \
+    sources/atomic/AtomicConversationSource.h \
+    sources/atomic/FileConversationSource.h \
     utils/external_libs/sqlite/sqlite3.h \
     utils/external_libs/optional.hpp \
     utils/html/entities.h \
