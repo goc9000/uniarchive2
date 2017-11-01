@@ -45,7 +45,6 @@
 
 #include <QtDebug>
 #include <QDir>
-#include <QFile>
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
@@ -56,7 +55,7 @@ using namespace uniarchive2::protocols::yahoo;
 using namespace uniarchive2::utils::html;
 using namespace uniarchive2::utils::text;
 
-static RawConversation init_prototype(IMM(QString) filename);
+static RawConversation init_prototype(IMM(AtomicConversationSource) source);
 static void flush_conversation(
     vector<RawConversation>& mut_conversations,
     IMM(RawConversation) prototype,
@@ -83,18 +82,12 @@ static CEDE(FontTag) parse_font_tag(IMM(ParsedHTMLTagInfo));
 static CEDE(RawMessageContentItem) parse_yahoo_tag(IMM(QString) tag_text);
 
 
-vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) filename) {
+vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(AtomicConversationSource) source) {
     vector<RawConversation> conversations;
-    RawConversation prototype = init_prototype(filename);
-
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", QP(filename));
-    }
-    QByteArray data = file.readAll();
+    RawConversation prototype = init_prototype(source);
 
     QString local_account_name = prototype.identity->as<AccountSubject>()->account.accountName;
-    ExtractYahooProtocolEventsIterator proto_events(data, local_account_name);
+    ExtractYahooProtocolEventsIterator proto_events(source.fullData(), local_account_name);
 
     vector<unique_ptr<RawEvent>> current_events;
     uint32_t first_event_index = 0;
@@ -118,23 +111,18 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(QString) f
     return conversations;
 }
 
-static RawConversation init_prototype(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
+static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
+    QString full_filename = source.logicalFilename();
 
     QREGEX_MUST_MATCH_CI(
-        match, "^\\d{8}-(.+)[.]dat$", filename.section(QDir::separator(), -1, -1),
+        match, "^\\d{8}-(.+)[.]dat$", full_filename.section(QDir::separator(), -1, -1),
         "Yahoo archive filename does not have the form \"YYYYMMDD-account_name.dat\", it is \"%s\""
     );
     auto local_account = parse_yahoo_account(match.captured(1));
 
     RawConversation conversation(IMProtocol::YAHOO);
-    conversation.provenance = make_unique<ArchiveFileProvenance>(
-        FileProvenance::fromQFileInfo(file_info),
-        ArchiveFormat::YAHOO_MESSENGER_DAT
-    );
+    conversation.provenance =
+        make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::YAHOO_MESSENGER_DAT);
 
     conversation.identity = make_unique<AccountSubject>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));

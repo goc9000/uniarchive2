@@ -55,7 +55,7 @@ RawConversationCollection extract_conversations_generic(ArchiveFormat format, IM
         case ArchiveFormat::WHATSAPP_EMAIL:
             return RawConversationCollection::from(extract_whatsapp_email_conversation(filename));
         case ArchiveFormat::YAHOO_MESSENGER_DAT:
-            return RawConversationCollection::from(extract_yahoo_messenger_dat_conversations(filename));
+            return RawConversationCollection::from(extract_yahoo_messenger_dat_conversations(source));
         default:
             invariant_violation(
                 "Unsupported format for generic extraction of conversations: %s",
