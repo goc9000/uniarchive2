@@ -10,6 +10,7 @@
 
 #include "common_extract_pidgin_conversations_code.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/FullAccountName.h"
@@ -50,7 +51,7 @@ RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_ex
     auto info = analyze_conversation_filename(full_filename, expected_extension);
 
     RawConversation conversation(info.identity.protocol);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(format, file_info);
+    conversation.provenance = make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), format);
 
     conversation.declaredStartDate = info.conversation_date;
     conversation.isConference = info.is_conference;

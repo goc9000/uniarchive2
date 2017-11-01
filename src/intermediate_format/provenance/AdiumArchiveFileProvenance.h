@@ -12,28 +12,21 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_PROVENANCE_ADIUMARCHIVEFILEPROVENANCE_H
 
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
-#include "intermediate_format/ApparentTime.h"
-#include "protocols/ArchiveFormat.h"
 #include "utils/language/shortcuts.h"
 
-#include <QFileInfo>
-
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
-
-using namespace uniarchive2::protocols;
 
 class AdiumArchiveFileProvenance : public ArchiveFileProvenance {
 public:
     QString adiumVersion;
     QString adiumBuildID;
 
-    AdiumArchiveFileProvenance(IMM(QString) full_filename, IMM(ApparentTime) last_modified_time);
+    AdiumArchiveFileProvenance(TAKE(Provenance) base);
+    AdiumArchiveFileProvenance(TAKE(Provenance) base, IMM(QString) adium_version, IMM(QString) adium_build_id);
 
     virtual ProvenanceSubType subType() const;
 
     virtual CEDE(Provenance) clone() const;
-
-    static CEDE(AdiumArchiveFileProvenance) fromQFileInfo(IMM(QFileInfo) file_info);
 
     static CEDE(AdiumArchiveFileProvenance) deserializeFromStream(QDataStream& mut_stream, bool skip_type = false);
 

@@ -11,6 +11,7 @@
 #include "extraction/facebook/extract_facebook_dyi_conversations.h"
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/ScreenNameSubject.h"
@@ -94,7 +95,8 @@ static RawConversation init_prototype(IMM(QString) filename) {
     );
 
     RawConversation conversation(IMProtocol::FACEBOOK);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::FACEBOOK_DYI, file_info);
+    conversation.provenance =
+        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::FACEBOOK_DYI);
 
     return conversation;
 }

@@ -18,6 +18,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/provenance/MSNConversationProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
@@ -132,7 +133,8 @@ static RawConversation init_prototype(IMM(QString) filename) {
     );
 
     RawConversation conversation(IMProtocol::MSN);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::MSN_MESSENGER_XML, file_info);
+    conversation.provenance =
+        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::MSN_MESSENGER_XML);
 
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);
     auto remote_account = parse_optionally_encoded_msn_account(base_name);

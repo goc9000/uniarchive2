@@ -16,6 +16,7 @@
 #include "intermediate_format/events/system/RawEEEncryptionAnnouncementEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "protocols/ArchiveFormat.h"
@@ -91,7 +92,8 @@ static RawConversation init_conversation(IMM(QString) filename) {
     );
 
     RawConversation conversation(IMProtocol::WHATSAPP);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::WHATSAPP_EMAIL, file_info);
+    conversation.provenance =
+        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::WHATSAPP_EMAIL);
 
     // Note that this may be corrected later
     conversation.isConference = false;

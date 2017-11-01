@@ -22,6 +22,7 @@
 #include "intermediate_format/events/RawCorruptedMessageEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "protocols/digsby/digsby_account_name.h"
 #include "protocols/FullAccountName.h"
@@ -106,7 +107,8 @@ static RawConversation init_conversation(IMM(QString) filename) {
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(info.identity.protocol);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::DIGSBY, file_info);
+    conversation.provenance =
+        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::DIGSBY);
 
     conversation.isConference = info.isConference;
     conversation.identity = make_unique<AccountSubject>(info.identity);

@@ -32,6 +32,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/events/RawMessageEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/provenance/EventRangeProvenance.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "protocols/yahoo/yahoo_account_name.h"
@@ -130,7 +131,10 @@ static RawConversation init_prototype(IMM(QString) filename) {
     auto local_account = parse_yahoo_account(match.captured(1));
 
     RawConversation conversation(IMProtocol::YAHOO);
-    conversation.provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::YAHOO_MESSENGER_DAT, file_info);
+    conversation.provenance = make_unique<ArchiveFileProvenance>(
+        FileProvenance::fromQFileInfo(file_info),
+        ArchiveFormat::YAHOO_MESSENGER_DAT
+    );
 
     conversation.identity = make_unique<AccountSubject>(local_account);
     auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));

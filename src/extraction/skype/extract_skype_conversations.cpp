@@ -40,6 +40,7 @@
 #include "intermediate_format/events/RawSendContactsEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/provenance/SkypeConversationProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
@@ -279,7 +280,8 @@ vector<RawConversation> extract_skype_conversations(IMM(QString) filename) {
     QFileInfo file_info(filename);
     invariant(file_info.exists(), "File does not exist: %s", QP(filename));
 
-    unique_ptr<Provenance> base_provenance = ArchiveFileProvenance::fromQFileInfo(ArchiveFormat::SKYPE, file_info);
+    unique_ptr<Provenance> base_provenance =
+        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::SKYPE);
 
     SQLiteDB db = SQLiteDB::openReadOnly(filename);
     map<QString, RawSkypeIdentity> raw_identities = query_raw_skype_identities(db);

@@ -14,10 +14,16 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
+AdiumArchiveFileProvenance::AdiumArchiveFileProvenance(TAKE(Provenance) base)
+  : ArchiveFileProvenance(move(base), ArchiveFormat::ADIUM) {
+    // Nothing else to initialize
+}
+
 AdiumArchiveFileProvenance::AdiumArchiveFileProvenance(
-    IMM(QString) full_filename,
-    IMM(ApparentTime) last_modified_time
-) : ArchiveFileProvenance(ArchiveFormat::ADIUM, full_filename, last_modified_time) {
+    TAKE(Provenance) base,
+    IMM(QString) adium_version,
+    IMM(QString) adium_build_id
+) : ArchiveFileProvenance(move(base), ArchiveFormat::ADIUM), adiumVersion(adium_version), adiumBuildID(adium_build_id) {
     // Nothing else to initialize
 }
 
@@ -26,12 +32,7 @@ ProvenanceSubType AdiumArchiveFileProvenance::subType() const {
 }
 
 CEDE(Provenance) AdiumArchiveFileProvenance::clone() const {
-    unique_ptr<Provenance> provenance = make_unique<AdiumArchiveFileProvenance>(fullFilename, lastModifiedTime);
-
-    provenance->as<AdiumArchiveFileProvenance>()->adiumVersion = adiumVersion;
-    provenance->as<AdiumArchiveFileProvenance>()->adiumBuildID = adiumBuildID;
-
-    return provenance;
+    return make_unique<AdiumArchiveFileProvenance>(base->clone(), adiumVersion, adiumBuildID);
 }
 
 CEDE(AdiumArchiveFileProvenance) AdiumArchiveFileProvenance::deserializeFromStream(
@@ -40,18 +41,16 @@ CEDE(AdiumArchiveFileProvenance) AdiumArchiveFileProvenance::deserializeFromStre
 ) {
     maybeDeserializeType(skip_type, mut_stream, ProvenanceSubType::ADIUM_ARCHIVE_FILE);
 
-    ArchiveFormat format = must_deserialize(mut_stream, ArchiveFormat);
+    unique_ptr<Provenance> base_provenance = must_deserialize(mut_stream, unique_ptr<Provenance>);
 
+    ArchiveFormat format = must_deserialize(mut_stream, ArchiveFormat);
     invariant(format == ArchiveFormat::ADIUM, "Expected archive format ADIUM for AdiumArchiveFileProvenance");
 
-    unique_ptr<AdiumArchiveFileProvenance> provenance = make_unique<AdiumArchiveFileProvenance>(
+    return make_unique<AdiumArchiveFileProvenance>(
+        move(base_provenance),
         must_deserialize(mut_stream, QString),
-        must_deserialize(mut_stream, ApparentTime)
+        must_deserialize(mut_stream, QString)
     );
-
-    mut_stream >> provenance->adiumVersion >> provenance->adiumBuildID;
-
-    return provenance;
 }
 
 void AdiumArchiveFileProvenance::serializeToStreamSubImpl(QDataStream& mut_stream) const {
@@ -65,13 +64,6 @@ void AdiumArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug stream)
     if (!adiumBuildID.isEmpty()) {
         stream << ", adium_build_id=" << QP(adiumBuildID);
     }
-}
-
-CEDE(AdiumArchiveFileProvenance) AdiumArchiveFileProvenance::fromQFileInfo(IMM(QFileInfo) file_info) {
-    return make_unique<AdiumArchiveFileProvenance>(
-        file_info.absoluteFilePath(),
-        ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified())
-    );
 }
 
 }}}

@@ -24,6 +24,7 @@
 #include "intermediate_format/events/RawPingEvent.h"
 #include "intermediate_format/events/RawUninterpretedEvent.h"
 #include "intermediate_format/provenance/AdiumArchiveFileProvenance.h"
+#include "intermediate_format/provenance/FileProvenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
 #include "intermediate_format/subjects/ImplicitSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
@@ -136,7 +137,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(info.identity.protocol);
-    conversation.provenance = AdiumArchiveFileProvenance::fromQFileInfo(file_info);
+    conversation.provenance = make_unique<AdiumArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info));
 
     conversation.identity = make_unique<AccountSubject>(info.identity);
     conversation.declaredPeers.push_back(make_unique<AccountSubject>(info.peer));

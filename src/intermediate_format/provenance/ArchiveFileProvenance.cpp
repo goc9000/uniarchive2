@@ -12,14 +12,12 @@
 #include "utils/serialization/deserialization_helpers.h"
 #include "utils/serialization/serialization_helpers.h"
 #include "utils/language/shortcuts.h"
+#include "utils/qt/debug_extras.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace provenance {
 
-ArchiveFileProvenance::ArchiveFileProvenance(
-    ArchiveFormat format,
-    IMM(QString) full_filename,
-    IMM(ApparentTime) last_modified_time
-) : archiveFormat(format), fullFilename(full_filename), lastModifiedTime(last_modified_time) {
+ArchiveFileProvenance::ArchiveFileProvenance(TAKE(Provenance) base, ArchiveFormat format)
+  : base(move(base)), archiveFormat(format) {
     // Nothing else to initialize
 }
 
@@ -28,21 +26,20 @@ ProvenanceSubType ArchiveFileProvenance::subType() const {
 }
 
 CEDE(Provenance) ArchiveFileProvenance::clone() const {
-    return make_unique<ArchiveFileProvenance>(archiveFormat, fullFilename, lastModifiedTime);
+    return make_unique<ArchiveFileProvenance>(base->clone(), archiveFormat);
 }
 
 CEDE(ArchiveFileProvenance) ArchiveFileProvenance::deserializeFromStream(QDataStream& mut_stream, bool skip_type) {
     maybeDeserializeType(skip_type, mut_stream, ProvenanceSubType::ARCHIVE_FILE);
 
     return make_unique<ArchiveFileProvenance>(
-        must_deserialize(mut_stream, ArchiveFormat),
-        must_deserialize(mut_stream, QString),
-        must_deserialize(mut_stream, ApparentTime)
+        must_deserialize(mut_stream, unique_ptr<Provenance>),
+        must_deserialize(mut_stream, ArchiveFormat)
     );
 }
 
 void ArchiveFileProvenance::serializeToStreamImpl(QDataStream& mut_stream) const {
-    mut_stream << archiveFormat << fullFilename << lastModifiedTime;
+    mut_stream << base << archiveFormat;
     serializeToStreamSubImpl(mut_stream);
 }
 
@@ -51,27 +48,13 @@ void ArchiveFileProvenance::serializeToStreamSubImpl(QDataStream& UNUSED mut_str
 }
 
 void ArchiveFileProvenance::writeToDebugStreamImpl(QDebug stream) const {
-    stream << "ArchiveFile(format=" << archiveFormat << ", path=" << fullFilename;
-    if (lastModifiedTime.isSpecified()) {
-        stream << ", last_modified=" << lastModifiedTime;
-    }
+    stream << "ArchiveFile(from=" << base << ", format=" << archiveFormat;
     writeArchiveDetailsToDebugStream(stream);
     stream << ")";
 }
 
 void ArchiveFileProvenance::writeArchiveDetailsToDebugStream(QDebug UNUSED stream) const {
     // No fields to write
-}
-
-CEDE(ArchiveFileProvenance) ArchiveFileProvenance::fromQFileInfo(
-    ArchiveFormat archive_format,
-    IMM(QFileInfo) file_info
-) {
-    return make_unique<ArchiveFileProvenance>(
-        archive_format,
-        file_info.absoluteFilePath(),
-        ApparentTime::fromQDateTimeUnknownReference(file_info.lastModified())
-    );
 }
 
 }}}
