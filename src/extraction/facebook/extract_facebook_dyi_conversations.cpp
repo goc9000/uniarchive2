@@ -24,7 +24,6 @@
 
 #include <QtDebug>
 #include <QDir>
-#include <QFileInfo>
 #include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
@@ -38,7 +37,7 @@ using namespace uniarchive2::protocols::facebook;
 using namespace uniarchive2::utils::time;
 using namespace uniarchive2::utils::xml;
 
-static RawConversation init_prototype(IMM(QString) filename);
+static RawConversation init_prototype(IMM(AtomicConversationSource) source);
 static QString read_identity_screen_name(IMM(QDomElement) root_element);
 static void extract_conversations_in_section(
     IMM(QDomElement) section_element,
@@ -55,11 +54,11 @@ static CEDE(RawEvent) extract_message(QDomElement& mut_message_element);
 static ApparentTime parse_message_time(IMM(QString) time_text);
 
 
-vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename) {
+vector<RawConversation> extract_facebook_dyi_conversations(IMM(AtomicConversationSource) source) {
     vector<RawConversation> conversations;
-    RawConversation prototype = init_prototype(filename);
+    RawConversation prototype = init_prototype(source);
 
-    QDomDocument xml = load_xml_file(filename);
+    QDomDocument xml = source.fullXML();
     auto root_element = get_dom_root(xml, "html");
 
     QString identity_screen_name = read_identity_screen_name(root_element);
@@ -80,23 +79,19 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(QString) filename
     return conversations;
 }
 
-static RawConversation init_prototype(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
+static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
+    QString full_filename = source.logicalFilename();
     QString parent = full_filename.section(QDir::separator(), -2, -2);
     QString full_base_name = full_filename.section(QDir::separator(), -1, -1);
 
     invariant(
         (parent == "html") && (full_base_name == "messages.htm"),
         "Facebook DYI archive filename should have the form html/messages.htm, instead it looks like: %s",
-        QP(filename.section(QDir::separator(), -2, -1))
+        QP(full_filename.section(QDir::separator(), -2, -1))
     );
 
     RawConversation conversation(IMProtocol::FACEBOOK);
-    conversation.provenance =
-        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::FACEBOOK_DYI);
+    conversation.provenance = make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::FACEBOOK_DYI);
 
     return conversation;
 }

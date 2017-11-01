@@ -43,7 +43,7 @@ RawConversationCollection extract_conversations_generic(ArchiveFormat format, IM
         case ArchiveFormat::DIGSBY:
             return RawConversationCollection::from(extract_digsby_conversation(filename));
         case ArchiveFormat::FACEBOOK_DYI:
-            return RawConversationCollection::from(extract_facebook_dyi_conversations(filename));
+            return RawConversationCollection::from(extract_facebook_dyi_conversations(source));
         case ArchiveFormat::MSN_MESSENGER_XML:
             return RawConversationCollection::from(extract_msn_messenger_xml_conversations(source));
         case ArchiveFormat::PIDGIN_HTML:
