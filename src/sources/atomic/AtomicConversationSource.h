@@ -36,6 +36,7 @@ public:
     virtual QString materializedFilename() const = 0;
 
     virtual QByteArray fullData() const = 0;
+    virtual QString fullUTF8Text() const;
 
     virtual CEDE(Provenance) asProvenance() const = 0;
 };

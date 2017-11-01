@@ -10,6 +10,14 @@
 
 #include "sources/atomic/AtomicConversationSource.h"
 
+#include "utils/text/decoding.h"
+
 namespace uniarchive2 { namespace sources {
+
+using namespace uniarchive2::utils::text;
+
+QString AtomicConversationSource::fullUTF8Text() const {
+    return decode_utf8(fullData());
+}
 
 }}

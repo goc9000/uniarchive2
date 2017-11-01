@@ -53,7 +53,7 @@ RawConversationCollection extract_conversations_generic(ArchiveFormat format, IM
         case ArchiveFormat::SKYPE:
             return RawConversationCollection::from(extract_skype_conversations(source));
         case ArchiveFormat::WHATSAPP_EMAIL:
-            return RawConversationCollection::from(extract_whatsapp_email_conversation(filename));
+            return RawConversationCollection::from(extract_whatsapp_email_conversation(source));
         case ArchiveFormat::YAHOO_MESSENGER_DAT:
             return RawConversationCollection::from(extract_yahoo_messenger_dat_conversations(source));
         default:

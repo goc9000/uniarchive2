@@ -23,12 +23,10 @@
 #include "protocols/IMProtocol.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
-#include "utils/text/load_text_file.h"
 #include "utils/text/split_into_lines.h"
 
 #include <QtDebug>
 #include <QDir>
-#include <QFileInfo>
 #include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace whatsapp {
@@ -47,7 +45,7 @@ struct PreParsedEvent {
     QString raw_content;
 };
 
-static RawConversation init_conversation(IMM(QString) filename);
+static RawConversation init_conversation(IMM(AtomicConversationSource) source);
 static vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data);
 static CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, uint32_t event_index);
 static ApparentTime parse_timestamp(IMM(QString) time_text);
@@ -61,10 +59,10 @@ static CEDE(RawEvent) parse_message(
 );
 
 
-RawConversation extract_whatsapp_email_conversation(IMM(QString)filename) {
-    RawConversation conversation = init_conversation(filename);
+RawConversation extract_whatsapp_email_conversation(IMM(AtomicConversationSource) source) {
+    RawConversation conversation = init_conversation(source);
 
-    for (IMM(auto) raw_event : pre_parse_events(load_utf8_text_file(filename))) {
+    for (IMM(auto) raw_event : pre_parse_events(source.fullUTF8Text())) {
         unique_ptr<RawEvent> event = parse_event(raw_event, (uint)conversation.events.size());
 
         if (event->is<RawCreateConferenceEvent>()) {
@@ -80,11 +78,8 @@ RawConversation extract_whatsapp_email_conversation(IMM(QString)filename) {
     return conversation;
 }
 
-static RawConversation init_conversation(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
+static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
+    QString full_filename = source.logicalFilename();
 
     QREGEX_MUST_MATCH(
         name_match, "^WhatsApp Chat with (.+)[.]txt$", full_filename.section(QDir::separator(), -1, -1),
@@ -92,8 +87,7 @@ static RawConversation init_conversation(IMM(QString) filename) {
     );
 
     RawConversation conversation(IMProtocol::WHATSAPP);
-    conversation.provenance =
-        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::WHATSAPP_EMAIL);
+    conversation.provenance = make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::WHATSAPP_EMAIL);
 
     // Note that this may be corrected later
     conversation.isConference = false;
