@@ -45,7 +45,7 @@ RawConversationCollection extract_conversations_generic(ArchiveFormat format, IM
         case ArchiveFormat::FACEBOOK_DYI:
             return RawConversationCollection::from(extract_facebook_dyi_conversations(filename));
         case ArchiveFormat::MSN_MESSENGER_XML:
-            return RawConversationCollection::from(extract_msn_messenger_xml_conversations(filename));
+            return RawConversationCollection::from(extract_msn_messenger_xml_conversations(source));
         case ArchiveFormat::PIDGIN_HTML:
             return RawConversationCollection::from(extract_pidgin_html_conversation(filename));
         case ArchiveFormat::PIDGIN_TXT:

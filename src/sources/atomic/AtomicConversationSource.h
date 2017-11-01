@@ -17,6 +17,7 @@
 
 #include <QString>
 #include <QByteArray>
+#include <QDomDocument>
 
 namespace uniarchive2 { namespace sources {
 
@@ -25,10 +26,17 @@ using namespace uniarchive2::intermediate_format::provenance;
 class AtomicConversationSource {
 public:
     /**
+     * A name to display for the source in debug/error messages.
+     */
+    virtual QString debugName() const = 0;
+
+    /**
      * The filename as used for extracting the context of the conversation (e.g. user, date). May not represent an
      * existing file on disk.
      */
     virtual QString logicalFilename() const = 0;
+    virtual QString baseName() const = 0;
+    virtual QString extension() const = 0;
 
     /**
      * Returns a filename that can be opened to get the source's data. Not available for all sources.
@@ -37,6 +45,7 @@ public:
 
     virtual QByteArray fullData() const = 0;
     virtual QString fullUTF8Text() const;
+    virtual QDomDocument fullXML(bool keep_whitespace=false) const;
 
     virtual CEDE(Provenance) asProvenance() const = 0;
 };

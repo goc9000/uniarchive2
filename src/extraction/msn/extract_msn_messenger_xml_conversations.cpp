@@ -34,9 +34,6 @@
 #include <QtDebug>
 #include <QDateTime>
 #include <QDir>
-#include <QFile>
-#include <QFileInfo>
-#include <QIODevice>
 #include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace msn {
@@ -49,7 +46,7 @@ using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols::msn;
 using namespace uniarchive2::utils::xml;
 
-static RawConversation init_prototype(IMM(QString) filename);
+static RawConversation init_prototype(IMM(AtomicConversationSource) source);
 static RawConversation extract_conversation_for_session(
     QDomElement& mut_next_element,
     int session_id,
@@ -90,11 +87,11 @@ static CEDE(ApparentSubject) parse_event_actor(IMM(QDomElement) event_element, I
 static RawMessageContent parse_event_text(IMM(QDomElement) event_element);
 
 
-vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) filename) {
+vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(AtomicConversationSource) source) {
     vector<RawConversation> conversations;
-    RawConversation prototype = init_prototype(filename);
+    RawConversation prototype = init_prototype(source);
 
-    QDomDocument xml = load_xml_file(filename);
+    QDomDocument xml = source.fullXML();
     QDomElement root_element = get_dom_root(xml, "Log");
 
     int first_session_id = read_int_attr(root_element, "FirstSessionID");
@@ -111,30 +108,27 @@ vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(QString) fil
     return conversations;
 }
 
-static RawConversation init_prototype(IMM(QString) filename) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
+static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
+    QString full_filename = source.logicalFilename();
     QString grand_parent = full_filename.section(QDir::separator(), -3, -3);
     QString parent = full_filename.section(QDir::separator(), -2, -2);
-    QString base_name = file_info.completeBaseName();
+    QString base_name = source.baseName();
 
     invariant(
         (
             is_likely_valid_optionally_encoded_msn_account_name(grand_parent) &&
             (parent == "History") &&
             is_likely_valid_optionally_encoded_msn_account_name(base_name) &&
-            (file_info.suffix().toLower() == "xml")
+            (source.extension().toLower() == "xml")
         ),
         "MSN archive filename should have the form <local account name>/History/<remote account name>.xml, instead "
             "it looks like: %s",
-        QP(filename.section(QDir::separator(), -3, -1))
+        QP(full_filename.section(QDir::separator(), -3, -1))
     );
 
     RawConversation conversation(IMProtocol::MSN);
     conversation.provenance =
-        make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), ArchiveFormat::MSN_MESSENGER_XML);
+        make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::MSN_MESSENGER_XML);
 
     auto local_account = parse_optionally_encoded_msn_account(grand_parent);
     auto remote_account = parse_optionally_encoded_msn_account(base_name);

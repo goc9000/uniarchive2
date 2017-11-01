@@ -23,7 +23,12 @@ class FileConversationSource : public AtomicConversationSource {
 public:
     FileConversationSource(IMM(QString) filename);
 
+    QString debugName() const;
+
     QString logicalFilename() const;
+    QString baseName() const;
+    QString extension() const;
+
     QString materializedFilename() const;
 
     QByteArray fullData() const;

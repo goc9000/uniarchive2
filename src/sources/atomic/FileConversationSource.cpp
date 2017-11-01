@@ -24,8 +24,20 @@ FileConversationSource::FileConversationSource(IMM(QString) filename) : filename
     invariant(fileInfo.exists(), "File does not exist: %s", QP(filename));
 }
 
+QString FileConversationSource::debugName() const {
+    return filename;
+}
+
 QString FileConversationSource::logicalFilename() const {
     return fileInfo.absoluteFilePath();
+}
+
+QString FileConversationSource::baseName() const {
+    return fileInfo.completeBaseName();
+}
+
+QString FileConversationSource::extension() const {
+    return fileInfo.suffix();
 }
 
 QString FileConversationSource::materializedFilename() const {
