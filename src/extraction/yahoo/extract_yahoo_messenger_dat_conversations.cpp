@@ -44,7 +44,6 @@
 #include "utils/text/decoding.h"
 
 #include <QtDebug>
-#include <QDir>
 
 namespace uniarchive2 { namespace extraction { namespace yahoo {
 
@@ -112,10 +111,8 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(AtomicConv
 }
 
 static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFullFilename();
-
     QREGEX_MUST_MATCH_CI(
-        match, "^\\d{8}-(.+)[.]dat$", full_filename.section(QDir::separator(), -1, -1),
+        match, "^\\d{8}-(.+)[.]dat$", source.logicalFilename(),
         "Yahoo archive filename does not have the form \"YYYYMMDD-account_name.dat\", it is \"%s\""
     );
     auto local_account = parse_yahoo_account(match.captured(1));
@@ -125,10 +122,10 @@ static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
         make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::YAHOO_MESSENGER_DAT);
 
     conversation.identity = make_unique<AccountSubject>(local_account);
-    auto remote_account = parse_yahoo_account(full_filename.section(QDir::separator(), -2, -2));
+    auto remote_account = parse_yahoo_account(source.logicalFilenameSection(-2));
     conversation.declaredPeers.push_back(make_unique<AccountSubject>(remote_account));
 
-    QString top_folder = full_filename.section(QDir::separator(), -3, -3);
+    QString top_folder = source.logicalFilenameSection(-3);
     if (top_folder == "Messages") {
         conversation.isConference = false;
     } else if (top_folder == "Conferences") {

@@ -34,7 +34,6 @@
 #include "utils/text/decoding.h"
 
 #include <QtDebug>
-#include <QDir>
 #include <QLocale>
 #include <QStringList>
 #include <QTextCodec>
@@ -61,7 +60,7 @@ struct InfoFromFilename {
 };
 
 static RawConversation init_conversation(IMM(AtomicConversationSource) source);
-static InfoFromFilename analyze_conversation_filename(IMM(QString) filename);
+static InfoFromFilename analyze_conversation_filename(IMM(AtomicConversationSource) source);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 
 static void verify_xml_header(QTextStream& mut_stream);
@@ -94,8 +93,7 @@ RawConversation extract_digsby_conversation(IMM(AtomicConversationSource) source
 }
 
 static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFullFilename();
-    auto info = analyze_conversation_filename(full_filename);
+    auto info = analyze_conversation_filename(source);
 
     RawConversation conversation(info.identity.protocol);
     conversation.provenance = make_unique<ArchiveFileProvenance>(source.asProvenance(), ArchiveFormat::DIGSBY);
@@ -107,14 +105,14 @@ static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
     return conversation;
 }
 
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+static InfoFromFilename analyze_conversation_filename(IMM(AtomicConversationSource) source) {
     InfoFromFilename info;
 
-    QString logs_folder = full_filename.section(QDir::separator(), -6, -6);
-    QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
-    QString identity_folder = full_filename.section(QDir::separator(), -3, -3);
-    QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
-    QString base_name = full_filename.section(QDir::separator(), -1, -1);
+    QString logs_folder = source.logicalFilenameSection(-6);
+    QString protocol_folder = source.logicalFilenameSection(-4);
+    QString identity_folder = source.logicalFilenameSection(-3);
+    QString peer_folder = source.logicalFilenameSection(-2);
+    QString base_name = source.logicalFilename();
 
     invariant(
         logs_folder == "Digsby Logs",

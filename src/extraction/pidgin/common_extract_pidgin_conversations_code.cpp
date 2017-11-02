@@ -19,7 +19,6 @@
 #include "utils/qt/shortcuts.h"
 
 #include <QtDebug>
-#include <QDir>
 #include <QMap>
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
@@ -71,10 +70,9 @@ static InfoFromFilename analyze_conversation_filename(
 ) {
     InfoFromFilename info;
 
-    QString full_filename = source.logicalFullFilename();
-    QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
-    QString identity_folder = full_filename.section(QDir::separator(), -3, -3);
-    QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
+    QString protocol_folder = source.logicalFilenameSection(-4);
+    QString identity_folder = source.logicalFilenameSection(-3);
+    QString peer_folder = source.logicalFilenameSection(-2);
     QString base_name = source.baseName();
     QString extension = source.extension().toLower();
 

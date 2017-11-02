@@ -23,7 +23,6 @@
 #include "utils/xml/qdom_utils.h"
 
 #include <QtDebug>
-#include <QDir>
 #include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace facebook {
@@ -80,14 +79,13 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(AtomicConversatio
 }
 
 static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFullFilename();
-    QString parent = full_filename.section(QDir::separator(), -2, -2);
-    QString full_base_name = full_filename.section(QDir::separator(), -1, -1);
+    QString parent = source.logicalFilenameSection(-2);
+    QString full_base_name = source.logicalFilename();
 
     invariant(
         (parent == "html") && (full_base_name == "messages.htm"),
         "Facebook DYI archive filename should have the form html/messages.htm, instead it looks like: %s",
-        QP(full_filename.section(QDir::separator(), -2, -1))
+        QP(source.logicalFilenameSections(-2, -1))
     );
 
     RawConversation conversation(IMProtocol::FACEBOOK);

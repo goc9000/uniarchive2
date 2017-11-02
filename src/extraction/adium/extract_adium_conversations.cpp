@@ -41,7 +41,6 @@
 #include <deque>
 
 #include <QtDebug>
-#include <QDir>
 #include <QMap>
 #include <QUrl>
 
@@ -71,7 +70,7 @@ struct InfoFromFilename {
 };
 
 static RawConversation init_conversation(IMM(AtomicConversationSource) source);
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename);
+static InfoFromFilename analyze_conversation_filename(IMM(AtomicConversationSource) source);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 static void verify_identity(IMM(QDomElement) root_element, IMM(FullAccountName) identity);
 
@@ -128,8 +127,7 @@ RawConversation extract_adium_conversation(IMM(AtomicConversationSource) source)
 }
 
 static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFullFilename();
-    auto info = analyze_conversation_filename(full_filename);
+    auto info = analyze_conversation_filename(source);
 
     RawConversation conversation(info.identity.protocol);
     conversation.provenance = make_unique<AdiumArchiveFileProvenance>(source.asProvenance());
@@ -141,12 +139,12 @@ static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
     return conversation;
 }
 
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename) {
+static InfoFromFilename analyze_conversation_filename(IMM(AtomicConversationSource) source) {
     InfoFromFilename info;
 
-    QString logs_folder = full_filename.section(QDir::separator(), -5, -5);
-    QString protocol_and_identity_folder = full_filename.section(QDir::separator(), -4, -4);
-    QString base_name = full_filename.section(QDir::separator(), -1, -1);
+    QString logs_folder = source.logicalFilenameSection(-5);
+    QString protocol_and_identity_folder = source.logicalFilenameSection(-4);
+    QString base_name = source.logicalFilename();
 
     invariant(
         logs_folder == "Logs",

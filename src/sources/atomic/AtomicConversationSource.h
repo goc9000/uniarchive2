@@ -36,6 +36,9 @@ public:
      * currently existing file on disk.
      */
     virtual QString logicalFullFilename() const = 0;
+    virtual QString logicalFilename() const;
+    virtual QString logicalFilenameSection(int index) const;
+    virtual QString logicalFilenameSections(int from, int to) const;
     virtual QString baseName() const = 0;
     virtual QString extension() const = 0;
 

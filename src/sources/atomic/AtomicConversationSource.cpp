@@ -13,10 +13,24 @@
 #include "utils/text/decoding.h"
 #include "utils/xml/qdom_utils.h"
 
+#include <QDir>
+
 namespace uniarchive2 { namespace sources {
 
 using namespace uniarchive2::utils::text;
 using namespace uniarchive2::utils::xml;
+
+QString AtomicConversationSource::logicalFilename() const {
+    return logicalFilenameSection(-1);
+}
+
+QString AtomicConversationSource::logicalFilenameSection(int index) const {
+    return logicalFullFilename().section(QDir::separator(), index, index);
+}
+
+QString AtomicConversationSource::logicalFilenameSections(int from, int to) const {
+    return logicalFullFilename().section(QDir::separator(), from, to);
+}
 
 QString AtomicConversationSource::fullUTF8Text() const {
     return decode_utf8(fullData());

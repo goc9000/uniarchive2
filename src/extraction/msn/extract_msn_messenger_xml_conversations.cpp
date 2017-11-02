@@ -33,7 +33,6 @@
 
 #include <QtDebug>
 #include <QDateTime>
-#include <QDir>
 #include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace msn {
@@ -109,9 +108,8 @@ vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(AtomicConver
 }
 
 static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFullFilename();
-    QString grand_parent = full_filename.section(QDir::separator(), -3, -3);
-    QString parent = full_filename.section(QDir::separator(), -2, -2);
+    QString grand_parent = source.logicalFilenameSection(-3);
+    QString parent = source.logicalFilenameSection(-2);
     QString base_name = source.baseName();
 
     invariant(
@@ -123,7 +121,7 @@ static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
         ),
         "MSN archive filename should have the form <local account name>/History/<remote account name>.xml, instead "
             "it looks like: %s",
-        QP(full_filename.section(QDir::separator(), -3, -1))
+        QP(source.logicalFilenameSections(-3, -1))
     );
 
     RawConversation conversation(IMProtocol::MSN);

@@ -26,7 +26,6 @@
 #include "utils/text/split_into_lines.h"
 
 #include <QtDebug>
-#include <QDir>
 #include <QLocale>
 
 namespace uniarchive2 { namespace extraction { namespace whatsapp {
@@ -79,10 +78,8 @@ RawConversation extract_whatsapp_email_conversation(IMM(AtomicConversationSource
 }
 
 static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFullFilename();
-
     QREGEX_MUST_MATCH(
-        name_match, "^WhatsApp Chat with (.+)[.]txt$", full_filename.section(QDir::separator(), -1, -1),
+        name_match, "^WhatsApp Chat with (.+)[.]txt$", source.logicalFilename(),
         "WhatApp conversation filename should be 'WhatsApp Chat with Peer Name.txt', is instead '%s'"
     );
 
