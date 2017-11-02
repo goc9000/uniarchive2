@@ -71,7 +71,7 @@ static InfoFromFilename analyze_conversation_filename(
 ) {
     InfoFromFilename info;
 
-    QString full_filename = source.logicalFilename();
+    QString full_filename = source.logicalFullFilename();
     QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
     QString identity_folder = full_filename.section(QDir::separator(), -3, -3);
     QString peer_folder = full_filename.section(QDir::separator(), -2, -2);

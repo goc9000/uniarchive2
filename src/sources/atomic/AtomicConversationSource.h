@@ -35,7 +35,7 @@ public:
      * The filename as used for extracting the context of the conversation (e.g. user, date). May not represent a
      * currently existing file on disk.
      */
-    virtual QString logicalFilename() const = 0;
+    virtual QString logicalFullFilename() const = 0;
     virtual QString baseName() const = 0;
     virtual QString extension() const = 0;
 

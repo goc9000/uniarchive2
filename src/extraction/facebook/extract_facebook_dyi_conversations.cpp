@@ -80,7 +80,7 @@ vector<RawConversation> extract_facebook_dyi_conversations(IMM(AtomicConversatio
 }
 
 static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFilename();
+    QString full_filename = source.logicalFullFilename();
     QString parent = full_filename.section(QDir::separator(), -2, -2);
     QString full_base_name = full_filename.section(QDir::separator(), -1, -1);
 

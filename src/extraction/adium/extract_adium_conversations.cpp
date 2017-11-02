@@ -128,7 +128,7 @@ RawConversation extract_adium_conversation(IMM(AtomicConversationSource) source)
 }
 
 static RawConversation init_conversation(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFilename();
+    QString full_filename = source.logicalFullFilename();
     auto info = analyze_conversation_filename(full_filename);
 
     RawConversation conversation(info.identity.protocol);

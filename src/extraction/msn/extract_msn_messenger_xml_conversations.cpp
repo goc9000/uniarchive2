@@ -109,7 +109,7 @@ vector<RawConversation> extract_msn_messenger_xml_conversations(IMM(AtomicConver
 }
 
 static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFilename();
+    QString full_filename = source.logicalFullFilename();
     QString grand_parent = full_filename.section(QDir::separator(), -3, -3);
     QString parent = full_filename.section(QDir::separator(), -2, -2);
     QString base_name = source.baseName();

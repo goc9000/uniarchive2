@@ -112,7 +112,7 @@ vector<RawConversation> extract_yahoo_messenger_dat_conversations(IMM(AtomicConv
 }
 
 static RawConversation init_prototype(IMM(AtomicConversationSource) source) {
-    QString full_filename = source.logicalFilename();
+    QString full_filename = source.logicalFullFilename();
 
     QREGEX_MUST_MATCH_CI(
         match, "^\\d{8}-(.+)[.]dat$", full_filename.section(QDir::separator(), -1, -1),

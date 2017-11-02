@@ -25,7 +25,7 @@ public:
 
     QString debugName() const;
 
-    QString logicalFilename() const;
+    QString logicalFullFilename() const;
     QString baseName() const;
     QString extension() const;
 

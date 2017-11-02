@@ -28,7 +28,7 @@ QString FileConversationSource::debugName() const {
     return filename;
 }
 
-QString FileConversationSource::logicalFilename() const {
+QString FileConversationSource::logicalFullFilename() const {
     return fileInfo.absoluteFilePath();
 }
 
