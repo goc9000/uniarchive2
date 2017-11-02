@@ -15,6 +15,8 @@
 
 #include "utils/qt/shortcuts.h"
 
+#include <QDir>
+
 namespace uniarchive2 { namespace sources {
 
 using namespace uniarchive2::intermediate_format;
@@ -29,7 +31,7 @@ QString FileConversationSource::debugName() const {
 }
 
 QString FileConversationSource::logicalFullFilename() const {
-    return fileInfo.absoluteFilePath();
+    return QDir::fromNativeSeparators(fileInfo.absoluteFilePath());
 }
 
 QString FileConversationSource::baseName() const {

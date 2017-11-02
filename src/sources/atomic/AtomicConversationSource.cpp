@@ -25,11 +25,11 @@ QString AtomicConversationSource::logicalFilename() const {
 }
 
 QString AtomicConversationSource::logicalFilenameSection(int index) const {
-    return logicalFullFilename().section(QDir::separator(), index, index);
+    return logicalFullFilename().section('/', index, index);
 }
 
 QString AtomicConversationSource::logicalFilenameSections(int from, int to) const {
-    return logicalFullFilename().section(QDir::separator(), from, to);
+    return logicalFullFilename().section('/', from, to);
 }
 
 QString AtomicConversationSource::fullUTF8Text() const {
