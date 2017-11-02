@@ -71,7 +71,7 @@ QString LibArchiveEntryConversationSource::logicalFullFilename() const {
 }
 
 QString LibArchiveEntryConversationSource::baseName() const {
-    return QDir::fromNativeSeparators(entryFilename).section('/', -1, -1).section('.', 0, 0);
+    return QDir::fromNativeSeparators(entryFilename).section('/', -1, -1).section('.', 0, -2);
 }
 
 QString LibArchiveEntryConversationSource::extension() const {
