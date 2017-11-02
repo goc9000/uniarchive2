@@ -53,7 +53,7 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
         with cpp_code.method(
             self.class_name(), 'visitSubjectsImpl',
             'void',
-            ParamInfo(type='ApparentSubjectVisitor&', name='visitor', unused=True),  # Assume always unused for now
+            ParamInfo(type='IApparentSubjectVisitor&', name='visitor', unused=True),  # Assume always unused for now
             declare_in=protected_block
         ) as method:
             method.content_if_empty.line_comment('No fields to visit')

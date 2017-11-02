@@ -25,7 +25,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
         return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
 
     def interfaces(self):
-        return ['ApparentSubjectVisitable']
+        return ['IApparentSubjectVisitable']
 
     def gen_subtype_method(self, _cpp_code, _public_block):
         pass  # Do not generate this method as this is a base class
@@ -42,7 +42,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def _gen_visit_subjects_method(self, cpp_code, public_block):
         with cpp_code.method(
-            self.class_name(), 'visitSubjects', 'void', ('ApparentSubjectVisitor&', 'visitor'), declare_in=public_block
+            self.class_name(), 'visitSubjects', 'void', ('IApparentSubjectVisitor&', 'visitor'), declare_in=public_block
         ) as method:
             self.gen_visit_subjects_field_code(method, 'visitor', self.fields)
 
@@ -50,7 +50,7 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def gen_visit_subjects_impl_method(self, _cpp_code, protected_block):
         protected_block.declare_method(
-            'visitSubjectsImpl', 'void', ('ApparentSubjectVisitor&', 'visitor'),
+            'visitSubjectsImpl', 'void', ('IApparentSubjectVisitor&', 'visitor'),
             virtual=True, abstract=True
         )
 
