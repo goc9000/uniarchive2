@@ -110,6 +110,7 @@ SOURCES += \
     intermediate_format/events/RawSendContactsEvent.cpp \
     intermediate_format/events/RawUninterpretedEvent.cpp \
     intermediate_format/provenance/AdiumArchiveFileProvenance.cpp \
+    intermediate_format/provenance/ArchiveEntryProvenance.cpp \
     intermediate_format/provenance/ArchiveFileProvenance.cpp \
     intermediate_format/provenance/EventRangeProvenance.cpp \
     intermediate_format/provenance/FileProvenance.cpp \
@@ -264,6 +265,7 @@ HEADERS += \
     intermediate_format/events/RawSendContactsEvent.h \
     intermediate_format/events/RawUninterpretedEvent.h \
     intermediate_format/provenance/AdiumArchiveFileProvenance.h \
+    intermediate_format/provenance/ArchiveEntryProvenance.h \
     intermediate_format/provenance/ArchiveFileProvenance.h \
     intermediate_format/provenance/EventRangeProvenance.h \
     intermediate_format/provenance/FileProvenance.h \

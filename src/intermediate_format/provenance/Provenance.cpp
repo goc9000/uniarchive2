@@ -10,6 +10,7 @@
 
 #include "intermediate_format/provenance/Provenance.h"
 #include "intermediate_format/provenance/FileProvenance.h"
+#include "intermediate_format/provenance/ArchiveEntryProvenance.h"
 #include "intermediate_format/provenance/ArchiveFileProvenance.h"
 #include "intermediate_format/provenance/AdiumArchiveFileProvenance.h"
 #include "intermediate_format/provenance/EventRangeProvenance.h"
@@ -27,6 +28,8 @@ CEDE(Provenance) Provenance::deserializeFromStream(QDataStream& mut_stream) {
     switch (subtype) {
         case ProvenanceSubType::FILE:
             return FileProvenance::deserializeFromStream(mut_stream, true);
+        case ProvenanceSubType::ARCHIVE_ENTRY:
+            return ArchiveEntryProvenance::deserializeFromStream(mut_stream, true);
         case ProvenanceSubType::ARCHIVE_FILE:
             return ArchiveFileProvenance::deserializeFromStream(mut_stream, true);
         case ProvenanceSubType::ADIUM_ARCHIVE_FILE:

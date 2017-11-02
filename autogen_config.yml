@@ -97,7 +97,7 @@ enums:
 
 poly subtype enums:
   intermediate_format:
-    provenance/ProvenanceSubType: ArchiveFile, AdiumArchiveFile, EventRange, File, MSNConversation, SkypeConversation
+    provenance/ProvenanceSubType: ArchiveEntry, ArchiveFile, AdiumArchiveFile, EventRange, File, MSNConversation, SkypeConversation
     subjects/ApparentSubjectSubType: Implicit, ScreenName, Account, FullySpecified
 
 base raw event:
