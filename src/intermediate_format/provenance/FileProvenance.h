@@ -36,10 +36,7 @@ public:
 
 protected:
     virtual void serializeToStreamImpl(QDataStream& mut_stream) const;
-    virtual void serializeToStreamSubImpl(QDataStream& mut_stream) const;
-
     virtual void writeToDebugStreamImpl(QDebug stream) const;
-    virtual void writeArchiveDetailsToDebugStream(QDebug stream) const;
 };
 
 }}}

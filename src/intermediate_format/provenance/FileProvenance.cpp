@@ -39,24 +39,16 @@ CEDE(FileProvenance) FileProvenance::deserializeFromStream(QDataStream& mut_stre
 
 void FileProvenance::serializeToStreamImpl(QDataStream& mut_stream) const {
     mut_stream << fullFilename << lastModifiedTime;
-    serializeToStreamSubImpl(mut_stream);
-}
-
-void FileProvenance::serializeToStreamSubImpl(QDataStream& UNUSED mut_stream) const {
-    // No fields to serialize
 }
 
 void FileProvenance::writeToDebugStreamImpl(QDebug stream) const {
     stream << "File(path=" << fullFilename;
+
     if (lastModifiedTime.isSpecified()) {
         stream << ", last_modified=" << lastModifiedTime;
     }
-    writeArchiveDetailsToDebugStream(stream);
-    stream << ")";
-}
 
-void FileProvenance::writeArchiveDetailsToDebugStream(QDebug UNUSED stream) const {
-    // No fields to write
+    stream << ")";
 }
 
 CEDE(FileProvenance) FileProvenance::fromQFileInfo(IMM(QFileInfo) file_info) {
