@@ -12,6 +12,7 @@
 #include "extraction/extract_conversations_generic.h"
 #include "sources/atomic/AtomicConversationSource.h"
 #include "sources/atomic/FileConversationSource.h"
+#include "sources/atomic/LibArchiveEntryConversationSource.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/ScreenNameSubject.h"
@@ -19,6 +20,9 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
+
+#include <archive.h>
+#include <archive_entry.h>
 
 #include <QDebug>
 #include <QDirIterator>
@@ -123,7 +127,6 @@ public:
     }
 
     void run() {
-        qDebug() << source->logicalFullFilename();
         result.take(extract_conversations_generic(format, *source));
     }
 };
@@ -147,6 +150,42 @@ void make_tasks_using_folder(
         unique_ptr<AtomicConversationSource> source = make_unique<FileConversationSource>(filename);
         mut_tasks.push_back(make_unique<ExtractConversationsTask>(format, move(source)));
     }
+}
+
+void make_tasks_using_archive(
+    vector<unique_ptr<ExtractConversationsTask>>& mut_tasks,
+    ArchiveFormat format,
+    IMM(QString) archive_filename,
+    IMM(QString) glob
+) {
+    QRegExp pattern(glob, Qt::CaseSensitive, QRegExp::WildcardUnix);
+
+    struct archive *arch;
+    struct archive_entry *entry;
+
+    arch = archive_read_new();
+    archive_read_support_filter_all(arch);
+    archive_read_support_format_all(arch);
+
+    int status = archive_read_open_filename(arch, QP(archive_filename), 10240);
+    invariant(status == ARCHIVE_OK, "Error opening archive: %s", QP(archive_filename));
+
+    while (archive_read_next_header(arch, &entry) == ARCHIVE_OK) {
+        if (archive_entry_filetype(entry) != AE_IFREG) {
+            continue;
+        }
+
+        QString filename = QString::fromUtf8(archive_entry_pathname_utf8(entry));
+        if (!pattern.exactMatch(filename)) {
+            continue;
+        }
+
+        unique_ptr<AtomicConversationSource> source =
+            make_unique<LibArchiveEntryConversationSource>(archive_filename, arch, entry);
+        mut_tasks.push_back(make_unique<ExtractConversationsTask>(format, move(source)));
+    }
+
+    archive_read_free(arch);
 }
 
 RawConversationCollection extract_conversations(
@@ -191,8 +230,13 @@ RawConversationCollection extract_conversations(
         vector<unique_ptr<ExtractConversationsTask>> tasks;
 
         QString subpath = get<1>(format_path_glob);
+        QString glob = get<2>(format_path_glob);
 
-        make_tasks_using_folder(tasks, format, base_input_path, subpath, get<2>(format_path_glob));
+        if (QFile(base_input_path + "/" + subpath + ".tar").exists()) {
+            make_tasks_using_archive(tasks, format, base_input_path + "/" + subpath + ".tar", glob);
+        } else {
+            make_tasks_using_folder(tasks, format, base_input_path, subpath, glob);
+        }
 
         for (IMM(auto) task : tasks) {
             tp->start(task.get());
