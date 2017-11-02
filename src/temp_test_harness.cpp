@@ -10,6 +10,7 @@
 
 #include "temp_test_harness.h"
 #include "extraction/extract_conversations_generic.h"
+#include "sources/atomic/AtomicConversationSource.h"
 #include "sources/atomic/FileConversationSource.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
@@ -112,18 +113,41 @@ set<ArchiveFormat> parse_formats_set(QJsonValue json_value) {
 class ExtractConversationsTask : public QRunnable {
 public:
     ArchiveFormat format;
-    QString filename;
+    unique_ptr<AtomicConversationSource> source;
 
     RawConversationCollection result;
 
-    ExtractConversationsTask(ArchiveFormat format, IMM(QString) filename) : format(format), filename(filename) {
+    ExtractConversationsTask(ArchiveFormat format, TAKE(AtomicConversationSource) source)
+      : format(format), source(move(source)) {
         setAutoDelete(false);
     }
 
     void run() {
-        result.take(extract_conversations_generic(format, FileConversationSource(filename)));
+        qDebug() << source->logicalFullFilename();
+        result.take(extract_conversations_generic(format, *source));
     }
 };
+
+void make_tasks_using_folder(
+    vector<unique_ptr<ExtractConversationsTask>>& mut_tasks,
+    ArchiveFormat format,
+    IMM(QString) base_input_path,
+    IMM(QString) subpath,
+    IMM(QString) glob
+) {
+    QDirIterator files(
+        base_input_path + "/" + subpath,
+        QStringList() << glob,
+        QDir::Files,
+        QDirIterator::Subdirectories
+    );
+
+    while (files.hasNext()) {
+        QString filename = files.next();
+        unique_ptr<AtomicConversationSource> source = make_unique<FileConversationSource>(filename);
+        mut_tasks.push_back(make_unique<ExtractConversationsTask>(format, move(source)));
+    }
+}
 
 RawConversationCollection extract_conversations(
     IMM(QString) base_input_path,
@@ -163,18 +187,12 @@ RawConversationCollection extract_conversations(
         }
 
         qDebug() << "    - Extracting:" << format;
-        QDirIterator files(
-            base_input_path + "/" + get<1>(format_path_glob),
-            QStringList() << get<2>(format_path_glob),
-            QDir::Files,
-            QDirIterator::Subdirectories
-        );
 
         vector<unique_ptr<ExtractConversationsTask>> tasks;
 
-        while (files.hasNext()) {
-            tasks.push_back(make_unique<ExtractConversationsTask>(format, files.next()));
-        }
+        QString subpath = get<1>(format_path_glob);
+
+        make_tasks_using_folder(tasks, format, base_input_path, subpath, get<2>(format_path_glob));
 
         for (IMM(auto) task : tasks) {
             tp->start(task.get());
