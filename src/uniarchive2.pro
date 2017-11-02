@@ -151,6 +151,7 @@ SOURCES += \
     protocols/parse_account_generic.cpp \
     sources/atomic/AtomicConversationSource.cpp \
     sources/atomic/FileConversationSource.cpp \
+    sources/atomic/LibArchiveEntryConversationSource.cpp \
     utils/external_libs/sqlite/sqlite3.c \
     utils/html/entities.cpp \
     utils/html/parse_html_lenient.cpp \
@@ -306,6 +307,7 @@ HEADERS += \
     protocols/parse_account_generic.h \
     sources/atomic/AtomicConversationSource.h \
     sources/atomic/FileConversationSource.h \
+    sources/atomic/LibArchiveEntryConversationSource.h \
     utils/external_libs/sqlite/sqlite3.h \
     utils/external_libs/optional.hpp \
     utils/html/entities.h \
