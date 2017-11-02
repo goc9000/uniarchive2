@@ -33,7 +33,6 @@
 #include "utils/time/parse_date_parts.h"
 
 #include <QtDebug>
-#include <QFileInfo>
 #include <QIODevice>
 #include <QTextCodec>
 #include <QTimeZone>
@@ -67,16 +66,12 @@ static CEDE(RawMessageContentItem) parse_markup_tag(IMM(ParsedHTMLTagInfo) tag_i
 static CEDE(TextSection) parse_text_section(IMM(QString) text);
 
 
-RawConversation extract_pidgin_html_conversation(IMM(QString) filename) {
-    RawConversation conversation = init_conversation(filename, "html", ArchiveFormat::PIDGIN_HTML);
-
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qFatal("Can't open file: %s", QP(filename));
-    }
+RawConversation extract_pidgin_html_conversation(IMM(AtomicConversationSource) source) {
+    RawConversation conversation = init_conversation(source, "html", ArchiveFormat::PIDGIN_HTML);
 
     // Use regular expressions because newlines are very significant in parsing here
-    QTextStream stream(&file);
+    unique_ptr<QIODevice> device = source.openDevice();
+    QTextStream stream(device.get());
     verify_is_utf8_html(stream);
     seek_to_start_of_events(stream);
 

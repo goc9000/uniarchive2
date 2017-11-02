@@ -13,17 +13,21 @@
 
 #include "intermediate_format/ApparentTime.h"
 #include "intermediate_format/RawConversation.h"
+#include "sources/atomic/AtomicConversationSource.h"
 #include "protocols/ArchiveFormat.h"
 #include "utils/language/shortcuts.h"
-
-#include <QString>
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::sources;
 using namespace uniarchive2::protocols;
 
-RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension, ArchiveFormat format);
+RawConversation init_conversation(
+    IMM(AtomicConversationSource) source,
+    IMM(QString) expected_extension,
+    ArchiveFormat format
+);
 ApparentTime parse_timestamp(IMM(QString) timestamp_text, IMM(RawConversation) conversation);
 
 }}}

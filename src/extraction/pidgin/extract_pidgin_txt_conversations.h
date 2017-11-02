@@ -12,15 +12,15 @@
 #define UNIARCHIVE2_EXTRACTION_PIDGIN_EXTRACT_PIDGIN_TXT_CONVERSATIONS_H
 
 #include "intermediate_format/RawConversation.h"
+#include "sources/atomic/AtomicConversationSource.h"
 #include "utils/language/shortcuts.h"
-
-#include <QString>
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
 
 using namespace uniarchive2::intermediate_format;
+using namespace uniarchive2::sources;
 
-RawConversation extract_pidgin_txt_conversation(IMM(QString) filename);
+RawConversation extract_pidgin_txt_conversation(IMM(AtomicConversationSource) source);
 
 }}}
 

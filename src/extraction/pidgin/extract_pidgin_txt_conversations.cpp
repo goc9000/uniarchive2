@@ -47,10 +47,10 @@ vector<PreParsedEvent> pre_parse_events(IMM(QString) text_data);
 CEDE(RawEvent) parse_event(IMM(PreParsedEvent) raw_event, IMM(RawConversation) conversation);
 
 
-RawConversation extract_pidgin_txt_conversation(IMM(QString) filename) {
-    RawConversation conversation = init_conversation(filename, "txt", ArchiveFormat::PIDGIN_TXT);
+RawConversation extract_pidgin_txt_conversation(IMM(AtomicConversationSource) source) {
+    RawConversation conversation = init_conversation(source, "txt", ArchiveFormat::PIDGIN_TXT);
 
-    for (IMM(auto) raw_event : pre_parse_events(load_utf8_text_file(filename))) {
+    for (IMM(auto) raw_event : pre_parse_events(source.fullUTF8Text())) {
         conversation.events.push_back(parse_event(raw_event, conversation));
     }
 

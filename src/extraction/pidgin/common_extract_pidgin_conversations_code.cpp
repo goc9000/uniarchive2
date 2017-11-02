@@ -20,7 +20,6 @@
 
 #include <QtDebug>
 #include <QDir>
-#include <QFileInfo>
 #include <QMap>
 
 namespace uniarchive2 { namespace extraction { namespace pidgin {
@@ -39,19 +38,22 @@ struct InfoFromFilename {
     bool is_conference;
 };
 
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename, IMM(QString) expected_extension);
+static InfoFromFilename analyze_conversation_filename(
+   IMM(AtomicConversationSource) source,
+   IMM(QString) expected_extension
+);
 static IMProtocol parse_protocol(IMM(QString) protocol_name);
 
 
-RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_extension, ArchiveFormat format) {
-    QFileInfo file_info(filename);
-    invariant(file_info.exists(), "File does not exist: %s", QP(filename));
-
-    QString full_filename = file_info.absoluteFilePath();
-    auto info = analyze_conversation_filename(full_filename, expected_extension);
+RawConversation init_conversation(
+    IMM(AtomicConversationSource) source,
+    IMM(QString) expected_extension,
+    ArchiveFormat format
+) {
+    auto info = analyze_conversation_filename(source, expected_extension);
 
     RawConversation conversation(info.identity.protocol);
-    conversation.provenance = make_unique<ArchiveFileProvenance>(FileProvenance::fromQFileInfo(file_info), format);
+    conversation.provenance = make_unique<ArchiveFileProvenance>(source.asProvenance(), format);
 
     conversation.declaredStartDate = info.conversation_date;
     conversation.isConference = info.is_conference;
@@ -63,15 +65,18 @@ RawConversation init_conversation(IMM(QString)filename, IMM(QString) expected_ex
     return conversation;
 }
 
-static InfoFromFilename analyze_conversation_filename(IMM(QString) full_filename, IMM(QString) expected_extension) {
+static InfoFromFilename analyze_conversation_filename(
+    IMM(AtomicConversationSource) source,
+    IMM(QString) expected_extension
+) {
     InfoFromFilename info;
 
-    QFileInfo file_info(full_filename);
+    QString full_filename = source.logicalFilename();
     QString protocol_folder = full_filename.section(QDir::separator(), -4, -4);
     QString identity_folder = full_filename.section(QDir::separator(), -3, -3);
     QString peer_folder = full_filename.section(QDir::separator(), -2, -2);
-    QString base_name = file_info.completeBaseName();
-    QString extension = file_info.suffix().toLower();
+    QString base_name = source.baseName();
+    QString extension = source.extension().toLower();
 
     invariant(
         extension == expected_extension,
