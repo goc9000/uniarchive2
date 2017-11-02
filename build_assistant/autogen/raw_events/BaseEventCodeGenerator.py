@@ -24,6 +24,9 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
     def parent_class(self, no_template=None):
         return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
 
+    def interfaces(self):
+        return ['ApparentSubjectVisitable']
+
     def gen_subtype_method(self, _cpp_code, _public_block):
         pass  # Do not generate this method as this is a base class
 
@@ -32,6 +35,24 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             self.class_name(), 'eventName', 'QString', const=True, virtual=True, declare_in=block
         ) as method:
             method.ret('name_for_raw_event_sub_type(subType())')
+
+    def gen_visit_subjects_methods(self, cpp_code, public_block, protected_block):
+        self._gen_visit_subjects_method(cpp_code, public_block)
+        self.gen_visit_subjects_impl_method(cpp_code, protected_block)
+
+    def _gen_visit_subjects_method(self, cpp_code, public_block):
+        with cpp_code.method(
+            self.class_name(), 'visitSubjects', 'void', ('ApparentSubjectVisitor&', 'visitor'), declare_in=public_block
+        ) as method:
+            self.gen_visit_subjects_field_code(method, 'visitor', self.fields)
+
+            method.nl().code_line('visitSubjectsImpl(visitor)')
+
+    def gen_visit_subjects_impl_method(self, _cpp_code, protected_block):
+        protected_block.declare_method(
+            'visitSubjectsImpl', 'void', ('ApparentSubjectVisitor&', 'visitor'),
+            virtual=True, abstract=True
+        )
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         from build_assistant.autogen.raw_events.gen_main import autogen_raw_events_index

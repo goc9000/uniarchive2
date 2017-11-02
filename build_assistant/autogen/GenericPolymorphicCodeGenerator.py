@@ -41,6 +41,9 @@ class GenericPolymorphicCodeGenerator(Augment):
     def parent_class(self, no_template=None):
         raise NotImplementedError
 
+    def interfaces(self):
+        return []
+
     def has_mandatory_fields(self):
         return any(f.is_mandatory() for f in self.fields)
 
@@ -100,7 +103,7 @@ class GenericPolymorphicCodeGenerator(Augment):
             extra_enabled_fields.add(field_config.name)
 
     def class_inherits(self):
-        return [self.parent_class()] if self.parent_class() is not None else None
+        return ([self.parent_class()] if self.parent_class() is not None else []) + self.interfaces()
 
     def gen_code(self, cpp_source, h_source):
         with h_source.code.struct_block(self.class_name(), inherits=self.class_inherits()) as struct_block:
@@ -109,7 +112,7 @@ class GenericPolymorphicCodeGenerator(Augment):
             private_block = struct_block.private_block()
 
         self.gen_base_public_declarations(cpp_source.code, public_block, private_block)
-        self.gen_key_informational_methods(cpp_source.code, public_block)
+        self.gen_key_informational_methods(cpp_source.code, public_block, protected_block)
         public_block.nl()
 
         self.gen_deserialize_methods(cpp_source.code, public_block, protected_block)
@@ -173,7 +176,7 @@ class GenericPolymorphicCodeGenerator(Augment):
         ) as method:
             method.ret('{0}::{1}', self.subtype_enum(), self.subtype_value())
 
-    def gen_key_informational_methods(self, cpp_code, public_block):
+    def gen_key_informational_methods(self, cpp_code, public_block, protected_block):
         pass  # Nothing by default
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
@@ -235,3 +238,6 @@ class GenericPolymorphicCodeGenerator(Augment):
                 regular_fields_section = None
 
                 field_config.gen_irregular_debug_write_code(method, stream_name)
+
+    def gen_visit_subjects_field_code(self, method, visitor_name, fields):
+        pass

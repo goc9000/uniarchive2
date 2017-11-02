@@ -46,6 +46,20 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
             ) as method:
                 method.custom_section('Name method')
 
+    def gen_visit_subjects_methods(self, cpp_code, _public_block, protected_block):
+        self.gen_visit_subjects_impl_method(cpp_code, protected_block)
+
+    def gen_visit_subjects_impl_method(self, cpp_code, protected_block):
+        with cpp_code.method(
+            self.class_name(), 'visitSubjectsImpl',
+            'void',
+            ParamInfo(type='ApparentSubjectVisitor&', name='visitor', unused=True),  # Assume always unused for now
+            declare_in=protected_block
+        ) as method:
+            method.content_if_empty.line_comment('No fields to visit')
+
+            self.gen_visit_subjects_field_code(method, 'visitor', self.fields)
+
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         add_deserialization_headers(cpp_code.source)
 

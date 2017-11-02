@@ -72,7 +72,7 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             'QString',  # Through AbstractTag
         ]
 
-    def gen_key_informational_methods(self, cpp_code, public_block):
+    def gen_key_informational_methods(self, cpp_code, public_block, _protected_block):
         with cpp_code.method(
             self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare_in=public_block
         ) as method:
