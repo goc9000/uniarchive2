@@ -15,6 +15,9 @@ QMAKE_CXXFLAGS_RELEASE += -O3
 
 QMAKE_LFLAGS_RELEASE -= -O1
 
+INCLUDEPATH += /usr/local/opt/libarchive/include
+LIBS += -L/usr/local/opt/libarchive/lib -larchive
+
 SOURCES += \
     extraction/adium/extract_adium_conversations.cpp \
     extraction/digsby/extract_digsby_conversations.cpp \
