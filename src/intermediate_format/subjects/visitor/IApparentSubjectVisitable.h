@@ -18,7 +18,7 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class IApparentSubjectVisitable {
 public:
-    virtual void visitSubjects(IApparentSubjectVisitor& visitor) = 0;
+    virtual bool visitSubjects(IApparentSubjectVisitor& visitor) = 0;
 };
 
 }}}

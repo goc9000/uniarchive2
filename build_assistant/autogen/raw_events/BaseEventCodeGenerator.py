@@ -42,15 +42,13 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
 
     def _gen_visit_subjects_method(self, cpp_code, public_block):
         with cpp_code.method(
-            self.class_name(), 'visitSubjects', 'void', ('IApparentSubjectVisitor&', 'visitor'), declare_in=public_block
+            self.class_name(), 'visitSubjects', 'bool', ('IApparentSubjectVisitor&', 'visitor'), declare_in=public_block
         ) as method:
-            self.gen_visit_subjects_field_code(method, 'visitor', self.fields)
-
-            method.nl().code_line('visitSubjectsImpl(visitor)')
+            self.gen_visit_subjects_field_code(method, 'visitor', self.fields, 'visitSubjectsImpl(visitor)')
 
     def gen_visit_subjects_impl_method(self, _cpp_code, protected_block):
         protected_block.declare_method(
-            'visitSubjectsImpl', 'void', ('IApparentSubjectVisitor&', 'visitor'),
+            'visitSubjectsImpl', 'bool', ('IApparentSubjectVisitor&', 'visitor'),
             virtual=True, abstract=True
         )
 

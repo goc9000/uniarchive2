@@ -239,5 +239,7 @@ class GenericPolymorphicCodeGenerator(Augment):
 
                 field_config.gen_irregular_debug_write_code(method, stream_name)
 
-    def gen_visit_subjects_field_code(self, method, visitor_name, fields):
-        pass
+    def gen_visit_subjects_field_code(self, method, visitor_name, fields, tail=None):
+        # TODO: For now, we don't actually process the fields
+        
+        method.ret(tail if tail is not None else 'true')
