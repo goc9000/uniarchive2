@@ -18,8 +18,19 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
+using namespace std::experimental;
+
 bool visit_subjects(IApparentSubjectVisitable& visitable, IApparentSubjectVisitor& visitor);
 bool visit_subjects(unique_ptr<ApparentSubject>& subject, IApparentSubjectVisitor& visitor);
+
+template<typename T>
+bool visit_subjects(optional<T>& item, IApparentSubjectVisitor& visitor) {
+    if (!item) {
+        return true;
+    }
+
+    return visit_subjects(*item, visitor);
+}
 
 template<typename T>
 bool visit_subjects(unique_ptr<T>& item, IApparentSubjectVisitor& visitor) {
