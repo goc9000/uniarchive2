@@ -134,7 +134,7 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         return self.name + ('->' if use_arrow else '.') + subfield
 
     def is_subject_visitable(self):
-        return self._base_type == 'ApparentSubject'
+        return self._base_type in ['ApparentSubject', 'RawMessageContent']
 
     def as_visit_subjects_code(self, destination_code, visitor_name):
         assert self.is_subject_visitable(), 'Attempted to generate visit_subjects code for non-visitable field {0}'.format(self.name)
