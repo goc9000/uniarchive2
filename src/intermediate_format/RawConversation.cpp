@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/RawConversation.h"
+#include "subjects/visitor/visit_subject_utils.h"
 #include "utils/serialization/serialization_helpers.h"
 #include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/debug_extras.h"
@@ -47,6 +48,11 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     }
 
     return convo;
+}
+
+bool RawConversation::visitSubjects(IApparentSubjectVisitor& visitor) {
+    return visit_subjects(identity, visitor) && visit_subjects(declaredPeers, visitor) &&
+      visit_subjects(declaredInitiator, visitor) && visit_subjects(events, visitor);
 }
 
 RawConversation RawConversation::deserializeFromStream(QDataStream& mut_stream) {

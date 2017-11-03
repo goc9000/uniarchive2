@@ -14,6 +14,7 @@
 #include "intermediate_format/events/RawEvent.h"
 #include "intermediate_format/provenance/Provenance.h"
 #include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/subjects/visitor/IApparentSubjectVisitable.h"
 #include "intermediate_format/ApparentTime.h"
 #include "protocols/IMProtocol.h"
 #include "utils/external_libs/optional.hpp"
@@ -36,7 +37,7 @@ using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::serialization;
 
-class RawConversation : public ISerializable, IDeserializableStatic {
+class RawConversation : public ISerializable, public IDeserializableStatic, public IApparentSubjectVisitable {
 public:
     // Mandatory metadata
     IMProtocol protocol;
@@ -56,6 +57,8 @@ public:
 
     RawConversation();
     RawConversation(IMProtocol protocol);
+
+    bool visitSubjects(IApparentSubjectVisitor& visitor);
 
     static RawConversation deserializeFromStream(QDataStream& mut_stream);
     virtual void serializeToStream(QDataStream& mut_stream) const;

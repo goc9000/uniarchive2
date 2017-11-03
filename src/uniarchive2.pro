@@ -121,6 +121,7 @@ SOURCES += \
     intermediate_format/provenance/Provenance.cpp \
     intermediate_format/provenance/ProvenanceSubType.cpp \
     intermediate_format/provenance/SkypeConversationProvenance.cpp \
+    intermediate_format/subjects/visitor/visit_subject_utils.cpp \
     intermediate_format/subjects/AccountSubject.cpp \
     intermediate_format/subjects/ApparentSubject.cpp \
     intermediate_format/subjects/ApparentSubjectSubType.cpp \
@@ -279,6 +280,7 @@ HEADERS += \
     intermediate_format/provenance/SkypeConversationProvenance.h \
     intermediate_format/subjects/visitor/IApparentSubjectVisitable.h \
     intermediate_format/subjects/visitor/IApparentSubjectVisitor.h \
+    intermediate_format/subjects/visitor/visit_subject_utils.h \
     intermediate_format/subjects/AccountSubject.h \
     intermediate_format/subjects/ApparentSubject.h \
     intermediate_format/subjects/ApparentSubjectSubType.h \

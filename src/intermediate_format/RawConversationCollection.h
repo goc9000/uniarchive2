@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_RAWCONVERSATIONCOLLECTION_H
 
 #include "intermediate_format/RawConversation.h"
+#include "intermediate_format/subjects/visitor/IApparentSubjectVisitable.h"
 #include "utils/language/shortcuts.h"
 #include "utils/serialization/IDeserializableStatic.h"
 #include "utils/serialization/ISerializable.h"
@@ -23,9 +24,10 @@
 namespace uniarchive2 { namespace intermediate_format {
 
 using namespace std;
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::utils::serialization;
 
-class RawConversationCollection : public ISerializable, public IDeserializableStatic {
+class RawConversationCollection : public ISerializable, public IDeserializableStatic, public IApparentSubjectVisitable {
 public:
     vector<RawConversation> conversations;
 
@@ -37,6 +39,8 @@ public:
 
     vector<RawConversation>::const_iterator begin() const;
     vector<RawConversation>::const_iterator end() const;
+
+    bool visitSubjects(IApparentSubjectVisitor &visitor);
 
     void writeToBinaryFile(IMM(QString) filename) const;
 

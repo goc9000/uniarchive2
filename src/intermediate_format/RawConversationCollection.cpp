@@ -9,6 +9,7 @@
  */
 
 #include "intermediate_format/RawConversationCollection.h"
+#include "intermediate_format/subjects/visitor/visit_subject_utils.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/serialization/deserialization_helpers.h"
 #include "utils/serialization/serialization_helpers.h"
@@ -19,6 +20,7 @@
 
 namespace uniarchive2 { namespace intermediate_format {
 
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::utils::serialization;
 
 RawConversationCollection::RawConversationCollection() {
@@ -60,6 +62,10 @@ vector<RawConversation>::const_iterator RawConversationCollection::begin() const
 
 vector<RawConversation>::const_iterator RawConversationCollection::end() const {
     return conversations.cend();
+}
+
+bool RawConversationCollection::visitSubjects(IApparentSubjectVisitor &visitor) {
+    return visit_subjects(conversations, visitor);
 }
 
 void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {
