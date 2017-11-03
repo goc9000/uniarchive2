@@ -133,6 +133,16 @@ class GenericPolymorphicFieldCodeGenerator(Augment):
         use_arrow = self.uses_optional() or (self.uses_unique_ptr() and not self.is_list)
         return self.name + ('->' if use_arrow else '.') + subfield
 
+    def is_subject_visitable(self):
+        return self._base_type == 'ApparentSubject'
+
+    def as_visit_subjects_code(self, destination_code, visitor_name):
+        assert self.is_subject_visitable(), 'Attempted to generate visit_subjects code for non-visitable field {0}'.format(self.name)
+
+        destination_code.source.include("intermediate_format/subjects/visitor/visit_subject_utils.h")
+
+        return "visit_subjects({0}, {1})".format(self.name, visitor_name)
+
     def debug_write_header(self):
         """
         Renders an expression describing the header printed right before the value of the field, in the debug write

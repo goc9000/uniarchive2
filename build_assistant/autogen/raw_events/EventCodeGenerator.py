@@ -50,10 +50,12 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
         self.gen_visit_subjects_impl_method(cpp_code, protected_block)
 
     def gen_visit_subjects_impl_method(self, cpp_code, protected_block):
+        has_fields = any(field.is_subject_visitable() for field in self.fields)
+
         with cpp_code.method(
             self.class_name(), 'visitSubjectsImpl',
             'bool',
-            ParamInfo(type='IApparentSubjectVisitor&', name='visitor', unused=True),  # Assume always unused for now
+            ParamInfo(type='IApparentSubjectVisitor&', name='visitor', unused=(not has_fields)),
             declare_in=protected_block
         ) as method:
             self.gen_visit_subjects_field_code(method, 'visitor', self.fields)

@@ -10,6 +10,7 @@ from build_assistant.autogen.AutoGenConfig import GenericPolymorphicConfig
 from build_assistant.autogen.ConstructorInfo import ConstructorInfo
 from build_assistant.autogen.common_code import add_deserialization_headers
 from build_assistant.codegen.special.WriteToStreamSection import WriteToStreamSection
+from build_assistant.codegen.special.ComplexReturnSection import ComplexReturnSection
 from build_assistant.util.Augment import Augment
 
 
@@ -240,6 +241,13 @@ class GenericPolymorphicCodeGenerator(Augment):
                 field_config.gen_irregular_debug_write_code(method, stream_name)
 
     def gen_visit_subjects_field_code(self, method, visitor_name, fields, tail=None):
-        # TODO: For now, we don't actually process the fields
-        
-        method.ret(tail if tail is not None else 'true')
+        items = [field.as_visit_subjects_code(method, visitor_name) for field in fields if field.is_subject_visitable()]
+
+        if tail is not None:
+            items.append(tail)
+
+        if len(items) == 0:
+            method.line_comment('No fields to visit').ret('true')
+            return
+
+        method.subsection(ComplexReturnSection(method.source, '&&', items))
