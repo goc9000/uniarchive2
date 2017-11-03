@@ -10,6 +10,7 @@
 
 #include "intermediate_format/content/RawMessageContent.h"
 #include "intermediate_format/content/TextSection.h"
+#include "intermediate_format/subjects/visitor/visit_subject_utils.h"
 #include "utils/serialization/deserialization_helpers.h"
 #include "utils/serialization/serialization_helpers.h"
 
@@ -32,6 +33,10 @@ void RawMessageContent::addItem(TAKE(RawMessageContentItem) item) {
     if (item) {
         items.push_back(move(item));
     }
+}
+
+bool RawMessageContent::visitSubjects(IApparentSubjectVisitor& visitor) {
+    return visit_subjects(items, visitor);
 }
 
 RawMessageContent RawMessageContent::deserializeFromStream(QDataStream& mut_stream) {

@@ -12,6 +12,7 @@
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_CONTENT_RAWMESSAGECONTENT_H
 
 #include "intermediate_format/content/RawMessageContentItem.h"
+#include "intermediate_format/subjects/visitor/IApparentSubjectVisitable.h"
 #include "utils/language/shortcuts.h"
 #include "utils/serialization/IDeserializableStatic.h"
 #include "utils/serialization/ISerializable.h"
@@ -24,9 +25,10 @@
 namespace uniarchive2 { namespace intermediate_format { namespace content {
 
 using namespace std;
+using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::utils::serialization;
 
-class RawMessageContent : public ISerializable, public IDeserializableStatic {
+class RawMessageContent : public ISerializable, public IDeserializableStatic, public IApparentSubjectVisitable {
 public:
     vector<unique_ptr<RawMessageContentItem>> items;
 
@@ -34,6 +36,8 @@ public:
     static RawMessageContent fromPlainText(IMM(QString) text);
 
     void addItem(TAKE(RawMessageContentItem) item);
+
+    bool visitSubjects(IApparentSubjectVisitor& visitor);
 
     static RawMessageContent deserializeFromStream(QDataStream& mut_stream);
     virtual void serializeToStream(QDataStream& mut_stream) const;
