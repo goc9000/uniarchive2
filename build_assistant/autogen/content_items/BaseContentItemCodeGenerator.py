@@ -37,8 +37,27 @@ class BaseContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
     def parent_class(self, no_template=None):
         return 'StandardPolymorphic' if no_template else 'StandardPolymorphic<{0}>'.format(self.subtype_enum())
 
+    def interfaces(self):
+        return ['IApparentSubjectVisitable']
+
     def gen_subtype_method(self, _cpp_code, _public_block):
         pass  # Do not generate this method as this is a base class
+
+    def gen_key_informational_methods(self, cpp_code, public_block, protected_block):
+        self.gen_visit_subjects_methods(cpp_code, public_block, protected_block)
+        public_block.nl()
+        protected_block.nl()
+
+    def gen_visit_subjects_methods(self, cpp_code, public_block, protected_block):
+        with cpp_code.method(
+            self.class_name(), 'visitSubjects', 'bool', ('IApparentSubjectVisitor&', 'visitor'), declare_in=public_block
+        ) as method:
+            self.gen_visit_subjects_field_code(method, 'visitor', self.fields, 'visitSubjectsImpl(visitor)')
+
+        protected_block.declare_method(
+            'visitSubjectsImpl', 'bool', ('IApparentSubjectVisitor&', 'visitor'),
+            virtual=True, abstract=True
+        )
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         from build_assistant.autogen.content_items.gen_main import autogen_content_items_index

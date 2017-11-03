@@ -44,8 +44,23 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
 
     def implicitly_covered_symbols(self):
         return [
-            'QDebug', 'vector', self.subtype_enum()  # Through RawMessageContentItem
+            'QDebug', 'vector', self.subtype_enum(), 'IApparentSubjectVisitor'  # Through RawMessageContentItem
         ]
+
+    def gen_key_informational_methods(self, cpp_code, _public_block, protected_block):
+        self.gen_visit_subjects_methods(cpp_code, protected_block)
+        protected_block.nl()
+
+    def gen_visit_subjects_methods(self, cpp_code, protected_block):
+        has_fields = any(field.is_subject_visitable() for field in self.fields)
+
+        with cpp_code.method(
+            self.class_name(), 'visitSubjectsImpl',
+            'bool',
+            ParamInfo(type='IApparentSubjectVisitor&', name='visitor', unused=(not has_fields)),
+            declare_in=protected_block
+        ) as method:
+            self.gen_visit_subjects_field_code(method, 'visitor', self.fields)
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         add_deserialization_headers(cpp_code.source)

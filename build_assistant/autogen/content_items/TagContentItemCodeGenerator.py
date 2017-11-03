@@ -72,11 +72,15 @@ class TagContentItemCodeGenerator(ContentItemCodeGenerator):
             'QString',  # Through AbstractTag
         ]
 
-    def gen_key_informational_methods(self, cpp_code, public_block, _protected_block):
+    def gen_key_informational_methods(self, cpp_code, public_block, protected_block):
         with cpp_code.method(
             self.class_name(), 'tagName', 'QString', const=True, virtual=True, declare_in=public_block
         ) as method:
             method.ret('{0}', cpp_string_literal(self._tag_name_for_display()))
+
+        public_block.nl()
+
+        super().gen_key_informational_methods(cpp_code, public_block, protected_block)
 
     def _pre_deserialize_fields_hook(self, method):
         if self.tag_type == TagContentItemType.STANDARD:
