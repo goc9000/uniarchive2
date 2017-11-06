@@ -17,7 +17,10 @@
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "intermediate_format/RawConversationCollection.h"
+#include "fixers/resolve_subjects/resolve_subjects.h"
+#include "fixers/resolve_subjects/ResolveSubjectsConfig.h"
 #include "utils/qt/shortcuts.h"
+#include "utils/qt/debug_extras.h"
 #include "utils/language/invariant.h"
 #include "utils/language/shortcuts.h"
 
@@ -44,6 +47,7 @@ using namespace std;
 using namespace uniarchive2::extraction;
 using namespace uniarchive2::sources;
 using namespace uniarchive2::intermediate_format::subjects;
+using namespace uniarchive2::fixers::resolve_subjects;
 
 
 typedef map<QString, QString> variables_t;
@@ -394,6 +398,14 @@ void run_dump_conversations_command(IMM(QJsonObject) command_obj, IMM(RawConvers
     dump_conversations(convos, output_dir);
 }
 
+void run_resolve_subjects_command(IMM(QJsonObject) command_obj, RawConversationCollection& mut_convos) {
+    QString config_filename = parse_existing_filename(command_obj["config_filename"]);
+
+    qDebug() << "Applying fix: Resolve subjects";
+
+    resolve_subjects(mut_convos, ResolveSubjectsConfig::loadFromFile(config_filename));
+}
+
 void run_clear_dumped_conversations_command(IMM(QJsonObject) command_obj) {
     QString output_dir = parse_maybe_new_directory(command_obj["output_dir"]);
 
@@ -452,6 +464,8 @@ void run_commands(QJsonValue commands_json) {
             run_load_conversations_binary_command(command_obj, convos);
         } else if (command == "save_conversations_binary") {
             run_save_conversations_binary_command(command_obj, convos);
+        } else if (command == "resolve_subjects") {
+            run_resolve_subjects_command(command_obj, convos);
         } else {
             invariant_violation("Unsupported command: '%s'", QP(command));
         }
