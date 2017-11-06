@@ -18,7 +18,7 @@
 namespace uniarchive2 { namespace protocols { namespace facebook {
 
 bool is_valid_facebook_account_name(IMM(QString) account_name) {
-    QREGEX_MATCH_CI(match, "^([a-z][a-z0-9_.]*|\\d+)@facebook.com$", account_name);
+    QREGEX_MATCH_CI(match, "^([a-z][a-z0-9_.]*|\\d+)(@facebook.com)?$", account_name);
     return match.hasMatch();
 }
 
@@ -32,7 +32,11 @@ void assert_valid_facebook_account_name(IMM(QString) account_name) {
 
 FullAccountName parse_facebook_account(IMM(QString) account_name) {
     assert_valid_facebook_account_name(account_name);
-    return FullAccountName(IMProtocol::FACEBOOK, account_name);
+
+    return FullAccountName(
+        IMProtocol::FACEBOOK,
+        account_name.contains('@') ? account_name.section('@', 0, -2) : account_name
+    );
 }
 
 }}}
