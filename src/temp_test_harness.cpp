@@ -20,6 +20,7 @@
 #include "fixers/resolve_subjects/resolve_subjects.h"
 #include "fixers/resolve_subjects/ResolveSubjectsConfig.h"
 #include "utils/json/load_json.h"
+#include "utils/json/json_utils.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/qt/debug_extras.h"
 #include "utils/language/invariant.h"
@@ -437,14 +438,10 @@ void run_save_conversations_binary_command(IMM(QJsonObject) command_obj, IMM(Raw
 }
 
 void run_commands(QJsonValue commands_json) {
-    invariant(!commands_json.isUndefined(), "Missing 'commands' key in config");
-    invariant(commands_json.isArray(), "Commands should be an array");
-
     RawConversationCollection convos;
 
-    for (IMM(auto) command_json : commands_json.toArray()) {
-        invariant(command_json.isObject(), "Command JSON should be object");
-        QJsonObject command_obj = command_json.toObject();
+    for (IMM(auto) command_json : expect_json_array(commands_json, "'commands' key in config")) {
+        QJsonObject command_obj = expect_json_object(command_json, "Command JSON");
 
         if (command_obj.contains("skip")) {
             invariant(command_obj["skip"].isBool(), "'skip' key should be boolean");
@@ -453,8 +450,7 @@ void run_commands(QJsonValue commands_json) {
             }
         }
 
-        invariant(command_obj["command"].isString(), "Missing valid 'command' key");
-        QString command = command_obj["command"].toString();
+        QString command = expect_json_string(command_obj["command"], "'command' key");
 
         if (command == "extract_conversations") {
             run_extract_conversations_command(command_obj, convos);
@@ -533,16 +529,11 @@ variables_t read_variables(QJsonValue vars_json) {
         return variables;
     }
 
-    invariant(vars_json.isObject(), "Variables should be a dictionary");
-
     map<QString, QString> definitions;
-    auto as_obj = vars_json.toObject();
+    auto as_obj = expect_json_object(vars_json, "'variables' key in config");
 
     for (IMM(QString) name : as_obj.keys()) {
-        IMM(auto) value = as_obj[name];
-        invariant(value.isString(), "Non-string value for variable '%s'", QP(name));
-
-        definitions[name] = value.toString();
+        definitions[name] = expect_json_string(as_obj[name], "Value for variable '" + name + "'");
         variables[name] = "";
     }
 
@@ -570,13 +561,11 @@ variables_t read_variables(QJsonValue vars_json) {
 
 void run_test_harness(IMM(QString) config_file) {
     QJsonDocument doc = load_json_file(config_file);
+    QJsonObject config_object = expect_json_object(doc, "Root value in config JSON");
 
-    invariant(doc.isObject(), "Config should be JSON object");
-    QJsonObject doc_object = doc.object();
+    variables_t variables = read_variables(config_object["variables"]);
 
-    variables_t variables = read_variables(doc_object["variables"]);
-
-    run_commands(apply_variables(doc_object["commands"], variables));
+    run_commands(apply_variables(config_object["commands"], variables));
 }
 
 }
