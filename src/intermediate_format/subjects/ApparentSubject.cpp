@@ -13,6 +13,7 @@
 #include "intermediate_format/subjects/ScreenNameSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
+#include "intermediate_format/subjects/ResolvedSubject.h"
 #include "utils/serialization/deserialization_helpers.h"
 #include "utils/qt/shortcuts.h"
 
@@ -36,6 +37,8 @@ CEDE(ApparentSubject) ApparentSubject::deserializeFromStream(QDataStream& mut_st
             return AccountSubject::deserializeFromStream(mut_stream, true);
         case ApparentSubjectSubType::FULLY_SPECIFIED:
             return FullySpecifiedSubject::deserializeFromStream(mut_stream, true);
+        case ApparentSubjectSubType::RESOLVED:
+            return ResolvedSubject::deserializeFromStream(mut_stream, true);
     }
 
     invariant_violation("Invalid deserialized ApparentSubject subtype (code: %d)", (int)subtype);

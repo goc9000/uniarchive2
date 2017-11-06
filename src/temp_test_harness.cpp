@@ -16,6 +16,7 @@
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/ScreenNameSubject.h"
+#include "intermediate_format/subjects/ResolvedSubject.h"
 #include "intermediate_format/RawConversationCollection.h"
 #include "fixers/resolve_subjects/resolve_subjects.h"
 #include "fixers/resolve_subjects/ResolveSubjectsConfig.h"
@@ -306,6 +307,8 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
                 convo_path << subject->as<AccountSubject>()->account.accountName;
             } else if (subject->is<ScreenNameSubject>()) {
                 convo_path << subject->as<ScreenNameSubject>()->screenName;
+            } else if (subject->is<ResolvedSubject>()) {
+                convo_path << subject->as<ResolvedSubject>()->canonicalSubjectID;
             } else {
                 convo_path << "(Unknown)";
             }

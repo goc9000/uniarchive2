@@ -130,6 +130,7 @@ SOURCES += \
     intermediate_format/subjects/FullySpecifiedSubject.cpp \
     intermediate_format/subjects/ImplicitSubject.cpp \
     intermediate_format/subjects/ImplicitSubjectKind.cpp \
+    intermediate_format/subjects/ResolvedSubject.cpp \
     intermediate_format/subjects/ScreenNameSubject.cpp \
     intermediate_format/ApparentTime.cpp \
     intermediate_format/ApparentTimeReference.cpp \
@@ -294,6 +295,7 @@ HEADERS += \
     intermediate_format/subjects/FullySpecifiedSubject.h \
     intermediate_format/subjects/ImplicitSubject.h \
     intermediate_format/subjects/ImplicitSubjectKind.h \
+    intermediate_format/subjects/ResolvedSubject.h \
     intermediate_format/subjects/ScreenNameSubject.h \
     intermediate_format/ApparentTime.h \
     intermediate_format/ApparentTimeReference.h \
