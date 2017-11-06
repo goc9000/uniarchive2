@@ -158,6 +158,7 @@ SOURCES += \
     utils/external_libs/sqlite/sqlite3.c \
     utils/html/entities.cpp \
     utils/html/parse_html_lenient.cpp \
+    utils/json/load_json.cpp \
     utils/serialization/ISerializable.cpp \
     utils/sqlite/SQLiteDB.cpp \
     utils/sqlite/SQLiteRow.cpp \
@@ -320,6 +321,7 @@ HEADERS += \
     utils/external_libs/optional.hpp \
     utils/html/entities.h \
     utils/html/parse_html_lenient.h \
+    utils/json/load_json.h \
     utils/language/JavaStyleIterator.h \
     utils/language/callback_adapter.hpp \
     utils/language/invariant.h \

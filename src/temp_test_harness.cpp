@@ -19,6 +19,7 @@
 #include "intermediate_format/RawConversationCollection.h"
 #include "fixers/resolve_subjects/resolve_subjects.h"
 #include "fixers/resolve_subjects/ResolveSubjectsConfig.h"
+#include "utils/json/load_json.h"
 #include "utils/qt/shortcuts.h"
 #include "utils/qt/debug_extras.h"
 #include "utils/language/invariant.h"
@@ -48,6 +49,7 @@ using namespace uniarchive2::extraction;
 using namespace uniarchive2::sources;
 using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::fixers::resolve_subjects;
+using namespace uniarchive2::utils::json;
 
 
 typedef map<QString, QString> variables_t;
@@ -567,14 +569,9 @@ variables_t read_variables(QJsonValue vars_json) {
 }
 
 void run_test_harness(IMM(QString) config_file) {
-    QFile file(config_file);
-    if (!file.open(QIODevice::ReadOnly)) {
-        invariant_violation("Config file not found: %s", QP(config_file));
-    }
+    QJsonDocument doc = load_json_file(config_file);
 
-    QByteArray data = file.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    invariant(!doc.isNull() && doc.isObject(), "Malformed config file");
+    invariant(doc.isObject(), "Config should be JSON object");
     QJsonObject doc_object = doc.object();
 
     variables_t variables = read_variables(doc_object["variables"]);
