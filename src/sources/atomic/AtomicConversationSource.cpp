@@ -11,7 +11,7 @@
 #include "sources/atomic/AtomicConversationSource.h"
 
 #include "utils/text/decoding.h"
-#include "utils/xml/qdom_utils.h"
+#include "utils/xml/load_xml.h"
 
 #include <QDir>
 

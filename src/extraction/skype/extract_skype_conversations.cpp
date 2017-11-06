@@ -52,6 +52,7 @@
 #include "utils/qt/shortcuts.h"
 #include "utils/qt/debug_extras.h"
 #include "utils/sqlite/SQLiteDB.h"
+#include "utils/xml/load_xml.h"
 #include "utils/xml/qdom_utils.h"
 
 #include <set>
