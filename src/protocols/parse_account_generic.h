@@ -16,10 +16,12 @@
 #include "protocols/FullAccountName.h"
 
 #include <QString>
+#include <QJsonValue>
 
 namespace uniarchive2 { namespace protocols {
 
 FullAccountName parse_account_generic(IMProtocol protocol, IMM(QString) account_name);
+FullAccountName parse_account_from_json(IMM(QJsonValue) json);
 
 }}
 
