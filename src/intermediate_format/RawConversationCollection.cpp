@@ -64,6 +64,14 @@ vector<RawConversation>::const_iterator RawConversationCollection::end() const {
     return conversations.cend();
 }
 
+vector<RawConversation>::iterator RawConversationCollection::begin() {
+    return conversations.begin();
+}
+
+vector<RawConversation>::iterator RawConversationCollection::end() {
+    return conversations.end();
+}
+
 bool RawConversationCollection::visitSubjects(IApparentSubjectVisitor &visitor) {
     return visit_subjects(conversations, visitor);
 }

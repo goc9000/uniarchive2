@@ -40,6 +40,9 @@ public:
     vector<RawConversation>::const_iterator begin() const;
     vector<RawConversation>::const_iterator end() const;
 
+    vector<RawConversation>::iterator begin();
+    vector<RawConversation>::iterator end();
+
     bool visitSubjects(IApparentSubjectVisitor &visitor);
 
     void writeToBinaryFile(IMM(QString) filename) const;
