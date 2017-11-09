@@ -30,6 +30,7 @@ using namespace std;
 class ResolveSubjectsProcess : IApparentSubjectVisitor {
 public:
     ResolveSubjectsProcess(IMM(ResolveSubjectsConfig) config) : config(config) {
+        init();
     }
 
     void run(RawConversationCollection& mut_conversations) {
@@ -45,7 +46,25 @@ public:
 protected:
     IMM(ResolveSubjectsConfig) config;
 
+    map<IMProtocol, map<QString, QString>> accountsIndex;
     map<QString, int> debugUnresolvedSubjects;
+
+    void init() {
+        indexAccounts();
+    }
+
+    void indexAccounts() {
+        for (IMM(auto) kv : config.canonicalSubjects) {
+            for (IMM(auto) account : kv.second.accounts) {
+                invariant(
+                    !accountsIndex[account.protocol].count(account.accountName),
+                    "Duplicate account: %s@%s", QP(account.accountName), QP(symbol_for_im_protocol(account.protocol))
+                );
+
+                accountsIndex[account.protocol][account.accountName] = kv.first;
+            }
+        }
+    }
 
     bool visit(unique_ptr<ApparentSubject>& mut_subject) {
         invariant(!!mut_subject, "Did not expect unset subject!");
@@ -75,12 +94,8 @@ protected:
     }
 
     bool tryExactAccountMatchImpl(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
-        for (IMM(auto) kv : config.canonicalSubjects) {
-            for (IMM(auto) candidate_account : kv.second.accounts) {
-                if (account == candidate_account) {
-                    return resolve(mut_subject, kv.first);
-                }
-            }
+        if (accountsIndex.count(account.protocol) && accountsIndex.at(account.protocol).count(account.accountName)) {
+            return resolve(mut_subject, accountsIndex.at(account.protocol).at(account.accountName));
         }
 
         return false;
