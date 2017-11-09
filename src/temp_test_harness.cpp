@@ -302,11 +302,11 @@ void dump_conversations(IMM(RawConversationCollection) conversations, IMM(QStrin
         } else {
             ApparentSubject* subject = convo.declaredPeers.front().get();
             if (subject->is<FullySpecifiedSubject>()) {
-                convo_path << subject->as<FullySpecifiedSubject>()->accountName.accountName;
+                convo_path << ("_" + subject->as<FullySpecifiedSubject>()->accountName.accountName);
             } else if (subject->is<AccountSubject>()) {
-                convo_path << subject->as<AccountSubject>()->account.accountName;
+                convo_path << ("_" + subject->as<AccountSubject>()->account.accountName);
             } else if (subject->is<ScreenNameSubject>()) {
-                convo_path << subject->as<ScreenNameSubject>()->screenName;
+                convo_path << ("_" + subject->as<ScreenNameSubject>()->screenName);
             } else if (subject->is<ResolvedSubject>()) {
                 convo_path << subject->as<ResolvedSubject>()->canonicalSubjectID;
             } else {
