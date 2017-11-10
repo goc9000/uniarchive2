@@ -98,6 +98,46 @@ protected:
             return resolve(mut_subject, accountsIndex.at(account.protocol).at(account.accountName));
         }
 
+        return trySkypeOnMSNMatch(account, mut_subject);
+    }
+
+    bool trySkypeOnMSNMatch(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
+        const QString SKYPE_ON_MSN_DOMAIN = "@fakeskypedomain.fakedomain";
+
+        if (!((account.protocol == IMProtocol::MSN) && account.accountName.endsWith(SKYPE_ON_MSN_DOMAIN))) {
+            return false;
+        }
+        if (!accountsIndex.count(IMProtocol::SKYPE)) {
+            return false;  // Unlikely, but...
+        }
+        IMM(auto) skype_accounts = accountsIndex.at(IMProtocol::SKYPE);
+
+        QString try_account_name =
+            account.accountName.left(account.accountName.length() - SKYPE_ON_MSN_DOMAIN.length());
+
+        if (skype_accounts.count(try_account_name)) {
+            return resolve(mut_subject, skype_accounts.at(try_account_name));
+        }
+
+        // Seems periods in the Skype name are replaced with underscores in the MSN equivalent
+        QString found_value;
+        int found_times = 0;
+
+        for (IMM(auto) kv : skype_accounts) {
+            QString msn_name = QString(kv.first).replace('.', '_');
+
+            if (msn_name == try_account_name) {
+                found_value = kv.second;
+                found_times++;
+            }
+        }
+
+        invariant(found_times <= 1, "Ambiguous match for MSN account: %s", QP(account.accountName));
+
+        if (found_times) {
+            return resolve(mut_subject, found_value);
+        }
+
         return false;
     }
 
