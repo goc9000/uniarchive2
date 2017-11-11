@@ -10,6 +10,7 @@
 
 #include "utils/json/load_json.h"
 
+#include "utils/text/find_line_col.h"
 #include "utils/language/invariant.h"
 #include "utils/qt/shortcuts.h"
 
@@ -18,6 +19,8 @@
 
 namespace uniarchive2 { namespace utils { namespace json {
 
+using namespace uniarchive2::utils::text;
+
 QJsonDocument load_json_file(IMM(QString) filename) {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -25,8 +28,16 @@ QJsonDocument load_json_file(IMM(QString) filename) {
     }
 
     QByteArray data = file.readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    invariant(!doc.isNull(), "Malformed JSON file");
+
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+    if (doc.isNull()) {
+        auto line_col = find_line_col(data, error.offset);
+        invariant_violation(
+            "Malformed JSON file: %s (at line %d, col %d)",
+            QP(error.errorString()), line_col.first, line_col.second
+        );
+    }
 
     return doc;
 }

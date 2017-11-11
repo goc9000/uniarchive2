@@ -166,6 +166,7 @@ SOURCES += \
     utils/sqlite/SQLiteRow.cpp \
     utils/sqlite/SQLiteStmt.cpp \
     utils/text/decoding.cpp \
+    utils/text/find_line_col.cpp \
     utils/text/load_text_file.cpp \
     utils/text/split_into_lines.cpp \
     utils/time/parse_date_parts.cpp \
@@ -347,6 +348,7 @@ HEADERS += \
     utils/sqlite/SQLiteRow.h \
     utils/sqlite/SQLiteStmt.h \
     utils/text/decoding.h \
+    utils/text/find_line_col.h \
     utils/text/load_text_file.h \
     utils/text/split_into_lines.h \
     utils/time/parse_date_parts.h \
