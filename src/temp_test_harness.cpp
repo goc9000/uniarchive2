@@ -212,15 +212,15 @@ RawConversationCollection extract_conversations(
     tp->setMaxThreadCount(n_threads);
 
     vector<tuple<ArchiveFormat, QString, QString>> inputs {
-        { ArchiveFormat::SKYPE,               "skype",    "main.db" },
-        { ArchiveFormat::WHATSAPP_EMAIL,      "whatsapp", "*.txt" },
-        { ArchiveFormat::PIDGIN_TXT,          "pidgin",   "*.txt" },
-        { ArchiveFormat::PIDGIN_HTML,         "pidgin",   "*.html" },
-        { ArchiveFormat::ADIUM,               "adium",    "*).xml" },
-        { ArchiveFormat::DIGSBY,              "digsby",   "*.html" },
-        { ArchiveFormat::FACEBOOK_DYI,        "facebook", "messages.htm" },
-        { ArchiveFormat::YAHOO_MESSENGER_DAT, "yahoo",    "*.dat" },
-        { ArchiveFormat::MSN_MESSENGER_XML,   "msn",      "*xml" },
+        { ArchiveFormat::SKYPE,               "Skype",    "main.db" },
+        { ArchiveFormat::WHATSAPP_EMAIL,      "Whatsapp", "*.txt" },
+        { ArchiveFormat::PIDGIN_TXT,          "Pidgin",   "*.txt" },
+        { ArchiveFormat::PIDGIN_HTML,         "Pidgin",   "*.html" },
+        { ArchiveFormat::ADIUM,               "Adium",    "*).xml" },
+        { ArchiveFormat::DIGSBY,              "Digsby",   "*.html" },
+        { ArchiveFormat::FACEBOOK_DYI,        "Facebook", "messages.htm" },
+        { ArchiveFormat::YAHOO_MESSENGER_DAT, "Yahoo",    "*.dat" },
+        { ArchiveFormat::MSN_MESSENGER_XML,   "MSN",      "*xml" },
     };
 
     for (IMM(auto) format_path_glob : inputs) {
