@@ -37,6 +37,7 @@ SOURCES += \
     fixers/resolve_subjects/ResolveSubjectsConfig.cpp \
     fixers/resolve_subjects/debug.cpp \
     fixers/resolve_subjects/resolve_subjects.cpp \
+    fixers/resolve_subjects/utils.cpp \
     graphics/ANSIColor.cpp \
     graphics/Color.cpp \
     intermediate_format/content/formatting/ANSIColorTag.cpp \
@@ -201,6 +202,7 @@ HEADERS += \
     fixers/resolve_subjects/ResolveSubjectsConfig.h \
     fixers/resolve_subjects/debug.h \
     fixers/resolve_subjects/resolve_subjects.h \
+    fixers/resolve_subjects/utils.h \
     graphics/ANSIColor.h \
     graphics/Color.h \
     intermediate_format/content/formatting/ANSIColorTag.h \

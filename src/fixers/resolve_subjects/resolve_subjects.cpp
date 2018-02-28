@@ -9,6 +9,7 @@
  */
 
 #include "fixers/resolve_subjects/resolve_subjects.h"
+#include "fixers/resolve_subjects/utils.h"
 #include "fixers/resolve_subjects/debug.h"
 
 #include "intermediate_format/subjects/visitor/IApparentSubjectVisitor.h"
@@ -96,7 +97,8 @@ protected:
 
     bool tryExactAccountMatchImpl(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
         if (accountsIndex.count(account.protocol) && accountsIndex.at(account.protocol).count(account.accountName)) {
-            return resolve(mut_subject, accountsIndex.at(account.protocol).at(account.accountName));
+            resolve_subject_in_place(mut_subject, accountsIndex.at(account.protocol).at(account.accountName));
+            return true;
         }
 
         return trySkypeOnMSNMatch(account, mut_subject);
@@ -117,7 +119,8 @@ protected:
             account.accountName.left(account.accountName.length() - SKYPE_ON_MSN_DOMAIN.length());
 
         if (skype_accounts.count(try_account_name)) {
-            return resolve(mut_subject, skype_accounts.at(try_account_name));
+            resolve_subject_in_place(mut_subject, skype_accounts.at(try_account_name));
+            return true;
         }
 
         // Seems periods in the Skype name are replaced with underscores in the MSN equivalent
@@ -136,18 +139,11 @@ protected:
         invariant(found_times <= 1, "Ambiguous match for MSN account: %s", QP(account.accountName));
 
         if (found_times) {
-            return resolve(mut_subject, found_value);
+            resolve_subject_in_place(mut_subject, found_value);
+            return true;
         }
 
         return false;
-    }
-
-    bool resolve(unique_ptr<ApparentSubject>& mut_subject, IMM(QString) resolved_subject_id) {
-        ApparentSubject::Hints hints = mut_subject->hints;
-
-        mut_subject = make_unique<ResolvedSubject>(resolved_subject_id, move(mut_subject), hints);
-
-        return true;
     }
 
     bool unresolvedSubject(IMM(unique_ptr<ApparentSubject>) subject) {
