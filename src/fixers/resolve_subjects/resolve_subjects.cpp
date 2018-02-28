@@ -9,6 +9,7 @@
  */
 
 #include "fixers/resolve_subjects/resolve_subjects.h"
+#include "fixers/resolve_subjects/debug.h"
 
 #include "intermediate_format/subjects/visitor/IApparentSubjectVisitor.h"
 #include "intermediate_format/subjects/AccountSubject.h"
@@ -47,7 +48,7 @@ protected:
     IMM(ResolveSubjectsConfig) config;
 
     map<IMProtocol, map<QString, QString>> accountsIndex;
-    map<QString, int> debugUnresolvedSubjects;
+    UnresolvedSubjectsDB debugUnresolvedSubjects;
 
     void init() {
         indexAccounts();
@@ -150,53 +151,14 @@ protected:
     }
 
     bool unresolvedSubject(IMM(unique_ptr<ApparentSubject>) subject) {
-        QString repr;
-        QDebug(&repr) << subject;
-
-        repr = repr.replace(" [peer]", "").replace(" [ident]", "").trimmed();
-
-        debugUnresolvedSubjects[repr]++;
+        debugUnresolvedSubjects.feed(subject);
 
         return true;
     }
 
     void finish() {
         // TODO: remove temporary debug printout
-        dumpUnresolvedSubjects();
-    }
-
-    void dumpUnresolvedSubjects() {
-        if (debugUnresolvedSubjects.empty()) {
-            return;
-        }
-
-        vector<pair<QString, int>> results;
-        int total_occurrences = 0;
-
-        for (IMM(auto) kv : debugUnresolvedSubjects) {
-            results.push_back(kv);
-            total_occurrences += kv.second;
-        }
-
-        sort(results.begin(), results.end(), [](auto &a, auto &b) { return a.second > b.second; });
-
-        QString summary =
-            QString("%1 unresolved subjects, %2 total occcurences").arg(results.size()).arg(total_occurrences);
-        qDebug() << QP(summary);
-        qDebug() << "=================================================================";
-
-        int lines_printed = 0;
-        int MAX_LINES = 200;
-
-        for (IMM(auto) kv : results) {
-            qDebug() << QP(QString("%1 x %2").arg(kv.second, 5).arg(kv.first));
-
-            lines_printed++;
-            if (lines_printed >= MAX_LINES) {
-                qDebug() << QP(QString("...(%1 more lines)...").arg(results.size() - lines_printed));
-                break;
-            }
-        }
+        debugUnresolvedSubjects.dump();
     }
 };
 

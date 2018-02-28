@@ -35,6 +35,7 @@ SOURCES += \
     extraction/extract_conversations_generic.cpp \
     extraction/parse_libpurple_system_message.cpp \
     fixers/resolve_subjects/ResolveSubjectsConfig.cpp \
+    fixers/resolve_subjects/debug.cpp \
     fixers/resolve_subjects/resolve_subjects.cpp \
     graphics/ANSIColor.cpp \
     graphics/Color.cpp \
@@ -198,6 +199,7 @@ HEADERS += \
     extraction/extract_conversations_generic.h \
     extraction/parse_libpurple_system_message.h \
     fixers/resolve_subjects/ResolveSubjectsConfig.h \
+    fixers/resolve_subjects/debug.h \
     fixers/resolve_subjects/resolve_subjects.h \
     graphics/ANSIColor.h \
     graphics/Color.h \
