@@ -21,7 +21,14 @@ namespace uniarchive2 { namespace fixers { namespace resolve_subjects {
 
 using namespace uniarchive2::intermediate_format;
 
+/**
+ * This is a shortcut for running all the known subject resolution methods in the proper order.
+ */
 void resolve_subjects(RawConversationCollection& mut_conversations, IMM(ResolveSubjectsConfig) config);
+
+/**
+ * This is a shortcut for running all the known subject resolution methods in the proper order.
+ */
 void resolve_subjects(RawConversation& mut_conversation, IMM(ResolveSubjectsConfig) config);
 
 }}}

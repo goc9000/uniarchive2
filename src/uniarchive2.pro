@@ -34,6 +34,7 @@ SOURCES += \
     extraction/yahoo/extract_yahoo_messenger_dat_conversations.cpp \
     extraction/extract_conversations_generic.cpp \
     extraction/parse_libpurple_system_message.cpp \
+    fixers/resolve_subjects/methods/by_accounts.cpp \
     fixers/resolve_subjects/ResolveSubjectsConfig.cpp \
     fixers/resolve_subjects/debug.cpp \
     fixers/resolve_subjects/resolve_subjects.cpp \
@@ -199,6 +200,7 @@ HEADERS += \
     extraction/yahoo/extract_yahoo_messenger_dat_conversations.h \
     extraction/extract_conversations_generic.h \
     extraction/parse_libpurple_system_message.h \
+    fixers/resolve_subjects/methods/by_accounts.h \
     fixers/resolve_subjects/ResolveSubjectsConfig.h \
     fixers/resolve_subjects/debug.h \
     fixers/resolve_subjects/resolve_subjects.h \
