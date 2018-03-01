@@ -56,7 +56,6 @@ protected:
     IMM(ResolveSubjectsConfig) config;
 
     map<IMProtocol, map<QString, QString>> accountsIndex;
-    UnresolvedSubjectsDB debugUnresolvedSubjects;
 
     void init() {
         indexAccounts();
@@ -78,47 +77,36 @@ protected:
     bool visit(unique_ptr<ApparentSubject>& mut_subject) {
         invariant(!!mut_subject, "Did not expect unset subject!");
 
-        ApparentSubjectSubType subtype = mut_subject->subType();
-
-        if ((subtype == ApparentSubjectSubType::IMPLICIT) || (subtype == ApparentSubjectSubType::RESOLVED)) {
-            return true; // Leave implicit and already resolved subjects alone
+        switch (mut_subject->subType()) {
+            case ApparentSubjectSubType::ACCOUNT:
+                tryExactAccountMatchImpl(mut_subject->as<AccountSubject>()->account, mut_subject);
+                break;
+            case ApparentSubjectSubType::FULLY_SPECIFIED:
+                tryExactAccountMatchImpl(mut_subject->as<FullySpecifiedSubject>()->accountName, mut_subject);
+                break;
+            default:
+                break;
         }
-
-        tryExactAccountMatch(mut_subject) ||
-            unresolvedSubject(mut_subject);
 
         return true;
     }
 
-    bool tryExactAccountMatch(unique_ptr<ApparentSubject>& mut_subject) {
-        ApparentSubjectSubType subtype = mut_subject->subType();
-
-        if (subtype == ApparentSubjectSubType::ACCOUNT) {
-            return tryExactAccountMatchImpl(mut_subject->as<AccountSubject>()->account, mut_subject);
-        } else if (subtype == ApparentSubjectSubType::FULLY_SPECIFIED) {
-            return tryExactAccountMatchImpl(mut_subject->as<FullySpecifiedSubject>()->accountName, mut_subject);
-        } else {
-            return false;
-        }
-    }
-
-    bool tryExactAccountMatchImpl(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
+    void tryExactAccountMatchImpl(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
         if (accountsIndex.count(account.protocol) && accountsIndex.at(account.protocol).count(account.accountName)) {
             resolve_subject_in_place(mut_subject, accountsIndex.at(account.protocol).at(account.accountName));
-            return true;
+        } else {
+            trySkypeOnMSNMatch(account, mut_subject);
         }
-
-        return trySkypeOnMSNMatch(account, mut_subject);
     }
 
-    bool trySkypeOnMSNMatch(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
+    void trySkypeOnMSNMatch(IMM(FullAccountName) account, unique_ptr<ApparentSubject>& mut_subject) {
         const QString SKYPE_ON_MSN_DOMAIN = "@fakeskypedomain.fakedomain";
 
         if (!((account.protocol == IMProtocol::MSN) && account.accountName.endsWith(SKYPE_ON_MSN_DOMAIN))) {
-            return false;
+            return;
         }
         if (!accountsIndex.count(IMProtocol::SKYPE)) {
-            return false;  // Unlikely, but...
+            return;  // Unlikely, but...
         }
         IMM(auto) skype_accounts = accountsIndex.at(IMProtocol::SKYPE);
 
@@ -127,7 +115,7 @@ protected:
 
         if (skype_accounts.count(try_account_name)) {
             resolve_subject_in_place(mut_subject, skype_accounts.at(try_account_name));
-            return true;
+            return;
         }
 
         // Seems periods in the Skype name are replaced with underscores in the MSN equivalent
@@ -147,21 +135,11 @@ protected:
 
         if (found_times) {
             resolve_subject_in_place(mut_subject, found_value);
-            return true;
         }
-
-        return false;
-    }
-
-    bool unresolvedSubject(IMM(unique_ptr<ApparentSubject>) subject) {
-        debugUnresolvedSubjects.feed(subject);
-
-        return true;
     }
 
     void finish() {
-        // TODO: remove temporary debug printout
-        debugUnresolvedSubjects.dump();
+        // Nothing to do
     }
 };
 
