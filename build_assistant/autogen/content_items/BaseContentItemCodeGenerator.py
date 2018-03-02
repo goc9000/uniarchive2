@@ -50,12 +50,13 @@ class BaseContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
 
     def gen_visit_subjects_methods(self, cpp_code, public_block, protected_block):
         with cpp_code.method(
-            self.class_name(), 'visitSubjects', 'bool', ('IApparentSubjectVisitor&', 'visitor'), declare_in=public_block
+            self.class_name(), 'visitSubjects', 'bool', ('IMM(visit_subjects_callback_t)', 'callback'),
+                declare_in=public_block
         ) as method:
-            self.gen_visit_subjects_field_code(method, 'visitor', self.fields, 'visitSubjectsImpl(visitor)')
+            self.gen_visit_subjects_field_code(method, 'callback', self.fields, 'visitSubjectsImpl(callback)')
 
         protected_block.declare_method(
-            'visitSubjectsImpl', 'bool', ('IApparentSubjectVisitor&', 'visitor'),
+            'visitSubjectsImpl', 'bool', ('IMM(visit_subjects_callback_t)', 'callback'),
             virtual=True, abstract=True
         )
 
