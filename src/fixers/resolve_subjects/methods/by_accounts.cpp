@@ -43,12 +43,12 @@ public:
     }
 
     void run(RawConversationCollection& mut_conversations) {
-        mut_conversations.visitSubjects([this](unique_ptr<ApparentSubject>& subject){ return visit(subject); });
+        mut_conversations.alterSubjects([this](unique_ptr<ApparentSubject>& subject){ return visit(subject); });
         finish();
     }
 
     void run(RawConversation& mut_conversation) {
-        mut_conversation.visitSubjects([this](unique_ptr<ApparentSubject>& subject){ return visit(subject); });
+        mut_conversation.alterSubjects([this](unique_ptr<ApparentSubject>& subject){ return visit(subject); });
         finish();
     }
 

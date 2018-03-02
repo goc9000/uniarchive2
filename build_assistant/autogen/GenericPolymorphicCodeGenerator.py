@@ -240,8 +240,11 @@ class GenericPolymorphicCodeGenerator(Augment):
 
                 field_config.gen_irregular_debug_write_code(method, stream_name)
 
-    def gen_visit_subjects_field_code(self, method, visitor_name, fields, tail=None):
-        items = [field.as_visit_subjects_code(method, visitor_name) for field in fields if field.is_subject_visitable()]
+    def gen_visit_subjects_field_code(self, method, visitor_name, fields, tail=None, alter=False):
+        items = [
+            field.as_visit_subjects_code(method, visitor_name, alter)
+            for field in fields if field.is_subject_visitable()
+        ]
 
         if tail is not None:
             items.append(tail)

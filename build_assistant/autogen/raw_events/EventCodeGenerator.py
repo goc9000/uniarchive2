@@ -47,18 +47,21 @@ class EventCodeGenerator(AbstractEventCodeGenerator):
                 method.custom_section('Name method')
 
     def gen_visit_subjects_methods(self, cpp_code, _public_block, protected_block):
-        self.gen_visit_subjects_impl_method(cpp_code, protected_block)
+        for alter in (False, True):
+            self.gen_visit_subjects_impl_method(cpp_code, protected_block, alter)
 
-    def gen_visit_subjects_impl_method(self, cpp_code, protected_block):
+    def gen_visit_subjects_impl_method(self, cpp_code, protected_block, alter):
         has_fields = any(field.is_subject_visitable() for field in self.fields)
 
+        base_word = 'alter' if alter else 'visit'
+
         with cpp_code.method(
-            self.class_name(), 'visitSubjectsImpl',
+            self.class_name(), base_word + 'SubjectsImpl',
             'bool',
-            ParamInfo(type='IMM(visit_subjects_callback_t)', name='callback', unused=(not has_fields)),
-            declare_in=protected_block
+            ParamInfo(type='IMM({0}_subjects_callback_t)'.format(base_word), name='callback', unused=(not has_fields)),
+            const=not alter, declare_in=protected_block
         ) as method:
-            self.gen_visit_subjects_field_code(method, 'callback', self.fields)
+            self.gen_visit_subjects_field_code(method, 'callback', self.fields, alter=alter)
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         add_deserialization_headers(cpp_code.source)

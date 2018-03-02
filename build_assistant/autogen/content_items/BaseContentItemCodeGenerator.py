@@ -49,16 +49,22 @@ class BaseContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
         protected_block.nl()
 
     def gen_visit_subjects_methods(self, cpp_code, public_block, protected_block):
-        with cpp_code.method(
-            self.class_name(), 'visitSubjects', 'bool', ('IMM(visit_subjects_callback_t)', 'callback'),
-                declare_in=public_block
-        ) as method:
-            self.gen_visit_subjects_field_code(method, 'callback', self.fields, 'visitSubjectsImpl(callback)')
+        for alter in (False, True):
+            base_fn_name = 'alterSubjects' if alter else 'visitSubjects'
+            callback_param = ('IMM({0}_subjects_callback_t)'.format('alter' if alter else 'visit'), 'callback')
 
-        protected_block.declare_method(
-            'visitSubjectsImpl', 'bool', ('IMM(visit_subjects_callback_t)', 'callback'),
-            virtual=True, abstract=True
-        )
+            with cpp_code.method(
+                self.class_name(), base_fn_name, 'bool', callback_param,
+                const=not alter, declare_in=public_block
+            ) as method:
+                self.gen_visit_subjects_field_code(
+                    method, 'callback', self.fields, base_fn_name + 'Impl(callback)', alter=alter
+                )
+
+            protected_block.declare_method(
+                base_fn_name + 'Impl', 'bool', callback_param,
+                const=not alter, virtual=True, abstract=True
+            )
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         from build_assistant.autogen.content_items.gen_main import autogen_content_items_index

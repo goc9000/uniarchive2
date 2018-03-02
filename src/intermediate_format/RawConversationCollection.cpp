@@ -72,8 +72,12 @@ vector<RawConversation>::iterator RawConversationCollection::end() {
     return conversations.end();
 }
 
-bool RawConversationCollection::visitSubjects(IMM(visit_subjects_callback_t) callback) {
+bool RawConversationCollection::visitSubjects(IMM(visit_subjects_callback_t) callback) const {
     return visit_subjects(conversations, callback);
+}
+
+bool RawConversationCollection::alterSubjects(IMM(alter_subjects_callback_t) callback) {
+    return alter_subjects(conversations, callback);
 }
 
 void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {

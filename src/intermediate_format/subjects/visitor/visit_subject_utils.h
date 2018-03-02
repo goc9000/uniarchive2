@@ -20,11 +20,14 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 using namespace std::experimental;
 
-bool visit_subjects(IApparentSubjectVisitable& visitable, IMM(visit_subjects_callback_t) callback);
-bool visit_subjects(unique_ptr<ApparentSubject>& subject, IMM(visit_subjects_callback_t) callback);
+bool visit_subjects(IMM(IApparentSubjectConstVisitable) visitable, IMM(visit_subjects_callback_t) callback);
+bool alter_subjects(IApparentSubjectVisitable& mut_visitable, IMM(alter_subjects_callback_t) callback);
+
+bool visit_subjects(IMM(unique_ptr<ApparentSubject>) subject, IMM(visit_subjects_callback_t) callback);
+bool alter_subjects(unique_ptr<ApparentSubject>& mut_subject, IMM(alter_subjects_callback_t) callback);
 
 template<typename T>
-bool visit_subjects(optional<T>& item, IMM(visit_subjects_callback_t) callback) {
+bool visit_subjects(IMM(optional<T>) item, IMM(visit_subjects_callback_t) callback) {
     if (!item) {
         return true;
     }
@@ -33,7 +36,16 @@ bool visit_subjects(optional<T>& item, IMM(visit_subjects_callback_t) callback) 
 }
 
 template<typename T>
-bool visit_subjects(unique_ptr<T>& item, IMM(visit_subjects_callback_t) callback) {
+bool alter_subjects(optional<T>& item, IMM(alter_subjects_callback_t) callback) {
+    if (!item) {
+        return true;
+    }
+
+    return alter_subjects(*item, callback);
+}
+
+template<typename T>
+bool visit_subjects(IMM(unique_ptr<T>) item, IMM(visit_subjects_callback_t) callback) {
     if (!item) {
         return true;
     }
@@ -42,9 +54,29 @@ bool visit_subjects(unique_ptr<T>& item, IMM(visit_subjects_callback_t) callback
 }
 
 template<typename T>
-bool visit_subjects(vector<T>& items, IMM(visit_subjects_callback_t) callback) {
+bool alter_subjects(unique_ptr<T>& item, IMM(alter_subjects_callback_t) callback) {
+    if (!item) {
+        return true;
+    }
+
+    return alter_subjects(*item, callback);
+}
+
+template<typename T>
+bool visit_subjects(IMM(vector<T>) items, IMM(visit_subjects_callback_t) callback) {
     for (size_t i = 0; i < items.size(); i++) {
         if (!visit_subjects(items.at(i), callback)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+template<typename T>
+bool alter_subjects(vector<T>& items, IMM(alter_subjects_callback_t) callback) {
+    for (size_t i = 0; i < items.size(); i++) {
+        if (!alter_subjects(items.at(i), callback)) {
             return false;
         }
     }

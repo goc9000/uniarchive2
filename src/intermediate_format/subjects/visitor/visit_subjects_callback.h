@@ -18,7 +18,8 @@ namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 using namespace std;
 
-typedef function<bool(unique_ptr<ApparentSubject>&)> visit_subjects_callback_t;
+typedef function<bool(IMM(unique_ptr<ApparentSubject>))> visit_subjects_callback_t;
+typedef function<bool(unique_ptr<ApparentSubject>&)> alter_subjects_callback_t;
 
 }}}
 

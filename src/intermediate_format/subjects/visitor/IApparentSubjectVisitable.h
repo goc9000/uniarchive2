@@ -16,9 +16,14 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-class IApparentSubjectVisitable {
+class IApparentSubjectConstVisitable {
 public:
-    virtual bool visitSubjects(IMM(visit_subjects_callback_t) callback) = 0;
+    virtual bool visitSubjects(IMM(visit_subjects_callback_t) callback) const = 0;
+};
+
+class IApparentSubjectVisitable : public IApparentSubjectConstVisitable {
+public:
+    virtual bool alterSubjects(IMM(alter_subjects_callback_t) callback) = 0;
 };
 
 }}}

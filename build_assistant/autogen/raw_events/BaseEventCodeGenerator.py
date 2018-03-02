@@ -37,20 +37,28 @@ class BaseEventCodeGenerator(AbstractEventCodeGenerator):
             method.ret('name_for_raw_event_sub_type(subType())')
 
     def gen_visit_subjects_methods(self, cpp_code, public_block, protected_block):
-        self._gen_visit_subjects_method(cpp_code, public_block)
-        self.gen_visit_subjects_impl_method(cpp_code, protected_block)
+        for alter in (False, True):
+            self._gen_visit_subjects_method(cpp_code, public_block, alter)
+            self.gen_visit_subjects_impl_method(cpp_code, protected_block, alter)
 
-    def _gen_visit_subjects_method(self, cpp_code, public_block):
+    def _gen_visit_subjects_method(self, cpp_code, public_block, alter):
+        base_word = 'alter' if alter else 'visit'
+
         with cpp_code.method(
-            self.class_name(), 'visitSubjects', 'bool', ('IMM(visit_subjects_callback_t)', 'callback'),
-            declare_in=public_block
+            self.class_name(), base_word + 'Subjects',
+            'bool', ('IMM({0}_subjects_callback_t)'.format(base_word), 'callback'),
+            const=not alter, declare_in=public_block
         ) as method:
-            self.gen_visit_subjects_field_code(method, 'callback', self.fields, 'visitSubjectsImpl(callback)')
+            self.gen_visit_subjects_field_code(
+                method, 'callback', self.fields, base_word + 'SubjectsImpl(callback)', alter=alter
+            )
 
-    def gen_visit_subjects_impl_method(self, _cpp_code, protected_block):
+    def gen_visit_subjects_impl_method(self, _cpp_code, protected_block, alter):
+        base_word = 'alter' if alter else 'visit'
+
         protected_block.declare_method(
-            'visitSubjectsImpl', 'bool', ('IMM(visit_subjects_callback_t)', 'callback'),
-            virtual=True, abstract=True
+            base_word + 'SubjectsImpl', 'bool', ('IMM({0}_subjects_callback_t)'.format(base_word), 'callback'),
+            const=not alter, virtual=True, abstract=True
         )
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):

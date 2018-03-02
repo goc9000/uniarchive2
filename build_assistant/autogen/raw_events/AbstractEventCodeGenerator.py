@@ -36,7 +36,7 @@ class AbstractEventCodeGenerator(GenericPolymorphicCodeGenerator):
     def gen_visit_subjects_methods(self, cpp_code, public_block, protected_block):
         raise NotImplementedError
 
-    def gen_visit_subjects_impl_method(self, cpp_code, protected_block):
+    def gen_visit_subjects_impl_method(self, cpp_code, protected_block, alter):
         raise NotImplementedError
 
     def gen_serialize_details_method(self, cpp_code, protected_block):

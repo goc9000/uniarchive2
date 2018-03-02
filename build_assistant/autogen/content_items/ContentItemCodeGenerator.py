@@ -54,13 +54,17 @@ class ContentItemCodeGenerator(GenericPolymorphicCodeGenerator):
     def gen_visit_subjects_methods(self, cpp_code, protected_block):
         has_fields = any(field.is_subject_visitable() for field in self.fields)
 
-        with cpp_code.method(
-            self.class_name(), 'visitSubjectsImpl',
-            'bool',
-            ParamInfo(type='IMM(visit_subjects_callback_t)', name='callback', unused=(not has_fields)),
-            declare_in=protected_block
-        ) as method:
-            self.gen_visit_subjects_field_code(method, 'callback', self.fields)
+        for alter in (False, True):
+            with cpp_code.method(
+                self.class_name(), ('alter' if alter else 'visit') + 'SubjectsImpl',
+                'bool',
+                ParamInfo(
+                    type='IMM({0}_subjects_callback_t)'.format('alter' if alter else 'visit'),
+                    name='callback', unused=(not has_fields)
+                ),
+                const=not alter, declare_in=protected_block
+            ) as method:
+                self.gen_visit_subjects_field_code(method, 'callback', self.fields, alter=alter)
 
     def gen_deserialize_methods(self, cpp_code, public_block, protected_block):
         add_deserialization_headers(cpp_code.source)
