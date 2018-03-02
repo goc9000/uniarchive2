@@ -58,7 +58,7 @@ public:
     RawConversation();
     RawConversation(IMProtocol protocol);
 
-    bool visitSubjects(IApparentSubjectVisitor& visitor);
+    bool visitSubjects(IMM(visit_subjects_callback_t) callback);
 
     static RawConversation deserializeFromStream(QDataStream& mut_stream);
     virtual void serializeToStream(QDataStream& mut_stream) const;

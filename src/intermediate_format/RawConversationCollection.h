@@ -43,7 +43,7 @@ public:
     vector<RawConversation>::iterator begin();
     vector<RawConversation>::iterator end();
 
-    bool visitSubjects(IApparentSubjectVisitor &visitor);
+    bool visitSubjects(IMM(visit_subjects_callback_t) callback);
 
     void writeToBinaryFile(IMM(QString) filename) const;
 

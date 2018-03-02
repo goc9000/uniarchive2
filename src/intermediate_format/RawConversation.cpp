@@ -50,9 +50,9 @@ RawConversation RawConversation::fromPrototype(IMM(RawConversation) prototype) {
     return convo;
 }
 
-bool RawConversation::visitSubjects(IApparentSubjectVisitor& visitor) {
-    return visit_subjects(identity, visitor) && visit_subjects(declaredPeers, visitor) &&
-      visit_subjects(declaredInitiator, visitor) && visit_subjects(events, visitor);
+bool RawConversation::visitSubjects(IMM(visit_subjects_callback_t) callback) {
+    return visit_subjects(identity, callback) && visit_subjects(declaredPeers, callback) &&
+      visit_subjects(declaredInitiator, callback) && visit_subjects(events, callback);
 }
 
 RawConversation RawConversation::deserializeFromStream(QDataStream& mut_stream) {

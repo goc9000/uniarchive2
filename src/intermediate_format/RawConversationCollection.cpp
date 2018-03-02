@@ -72,8 +72,8 @@ vector<RawConversation>::iterator RawConversationCollection::end() {
     return conversations.end();
 }
 
-bool RawConversationCollection::visitSubjects(IApparentSubjectVisitor &visitor) {
-    return visit_subjects(conversations, visitor);
+bool RawConversationCollection::visitSubjects(IMM(visit_subjects_callback_t) callback) {
+    return visit_subjects(conversations, callback);
 }
 
 void RawConversationCollection::writeToBinaryFile(IMM(QString) filename) const {

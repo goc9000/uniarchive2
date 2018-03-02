@@ -37,7 +37,7 @@ public:
 
     void addItem(TAKE(RawMessageContentItem) item);
 
-    bool visitSubjects(IApparentSubjectVisitor& visitor);
+    bool visitSubjects(IMM(visit_subjects_callback_t) callback);
 
     static RawMessageContent deserializeFromStream(QDataStream& mut_stream);
     virtual void serializeToStream(QDataStream& mut_stream) const;

@@ -35,8 +35,8 @@ void RawMessageContent::addItem(TAKE(RawMessageContentItem) item) {
     }
 }
 
-bool RawMessageContent::visitSubjects(IApparentSubjectVisitor& visitor) {
-    return visit_subjects(items, visitor);
+bool RawMessageContent::visitSubjects(IMM(visit_subjects_callback_t) callback) {
+    return visit_subjects(items, callback);
 }
 
 RawMessageContent RawMessageContent::deserializeFromStream(QDataStream& mut_stream) {
