@@ -11,14 +11,14 @@
 #ifndef UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_IAPPARENTSUBJECTVISITABLE_H
 #define UNIARCHIVE2_INTERMEDIATE_FORMAT_SUBJECTS_IAPPARENTSUBJECTVISITABLE_H
 
-#include "intermediate_format/subjects/visitor/IApparentSubjectVisitor.h"
+#include "intermediate_format/subjects/visitor/visit_subjects_callback.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
 class IApparentSubjectVisitable {
 public:
-    virtual bool visitSubjects(IApparentSubjectVisitor& visitor) = 0;
+    virtual bool visitSubjects(IMM(visit_subjects_callback_t) callback) = 0;
 };
 
 }}}

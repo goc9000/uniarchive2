@@ -12,7 +12,7 @@
 #include "fixers/resolve_subjects/utils.h"
 #include "fixers/resolve_subjects/debug.h"
 
-#include "intermediate_format/subjects/visitor/IApparentSubjectVisitor.h"
+#include "intermediate_format/subjects/visitor/visit_subjects_callback.h"
 #include "intermediate_format/subjects/AccountSubject.h"
 #include "intermediate_format/subjects/FullySpecifiedSubject.h"
 #include "intermediate_format/subjects/ResolvedSubject.h"
@@ -36,19 +36,19 @@ using namespace std;
  *
  * This step has no prerequisites and should be run before any other subject resolution methods.
  */
-class ResolveSubjectsUsingAccountsProcess : IApparentSubjectVisitor {
+class ResolveSubjectsUsingAccountsProcess {
 public:
     ResolveSubjectsUsingAccountsProcess(IMM(ResolveSubjectsConfig) config) : config(config) {
         init();
     }
 
     void run(RawConversationCollection& mut_conversations) {
-        mut_conversations.visitSubjects(*this);
+        mut_conversations.visitSubjects([this](unique_ptr<ApparentSubject>& subject){ return visit(subject); });
         finish();
     }
 
     void run(RawConversation& mut_conversation) {
-        mut_conversation.visitSubjects(*this);
+        mut_conversation.visitSubjects([this](unique_ptr<ApparentSubject>& subject){ return visit(subject); });
         finish();
     }
 

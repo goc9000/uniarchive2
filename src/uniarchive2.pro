@@ -294,8 +294,8 @@ HEADERS += \
     intermediate_format/provenance/ProvenanceSubType.h \
     intermediate_format/provenance/SkypeConversationProvenance.h \
     intermediate_format/subjects/visitor/IApparentSubjectVisitable.h \
-    intermediate_format/subjects/visitor/IApparentSubjectVisitor.h \
     intermediate_format/subjects/visitor/visit_subject_utils.h \
+    intermediate_format/subjects/visitor/visit_subjects_callback.h \
     intermediate_format/subjects/AccountSubject.h \
     intermediate_format/subjects/ApparentSubject.h \
     intermediate_format/subjects/ApparentSubjectSubType.h \

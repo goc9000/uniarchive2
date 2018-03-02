@@ -12,16 +12,16 @@
 
 namespace uniarchive2 { namespace intermediate_format { namespace subjects {
 
-bool visit_subjects(IApparentSubjectVisitable& visitable, IApparentSubjectVisitor& visitor) {
-    return visitable.visitSubjects(visitor);
+bool visit_subjects(IApparentSubjectVisitable& visitable, IMM(visit_subjects_callback_t) callback) {
+    return visitable.visitSubjects(callback);
 }
 
-bool visit_subjects(unique_ptr<ApparentSubject>& subject, IApparentSubjectVisitor& visitor) {
+bool visit_subjects(unique_ptr<ApparentSubject>& subject, IMM(visit_subjects_callback_t) callback) {
     if (!subject) {
         return true;
     }
 
-    return visitor.visit(subject);
+    return callback(subject);
 }
 
 }}}
