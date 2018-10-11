@@ -26,6 +26,10 @@ using namespace uniarchive2::intermediate_format::provenance;
 
 class AtomicConversationSource {
 public:
+    virtual ~AtomicConversationSource() {
+        // Do nothing by default
+    }
+
     /**
      * A name to display for the source in debug/error messages.
      */

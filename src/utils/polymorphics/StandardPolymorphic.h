@@ -28,6 +28,10 @@ using namespace uniarchive2::utils::serialization;
 template<typename SubTypeEnumT>
 class StandardPolymorphic : public IPolymorphic<SubTypeEnumT>, public ISerializable, public IDeserializableDynamic {
 public:
+    virtual ~StandardPolymorphic() {
+        // Do nothing by default
+    }
+
     virtual void serializeToStream(QDataStream& mut_stream) const {
         mut_stream << this->subType();
         serializeToStreamImpl(mut_stream);
