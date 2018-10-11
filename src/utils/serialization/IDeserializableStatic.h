@@ -20,6 +20,10 @@ class IDeserializableStatic {
     // should have this method:
 
     // static TypeName deserializeFromStream(QDataStream& mut_stream)
+protected:
+    ~IDeserializableStatic() {
+        // Blank protected destructor for class used as a contract-forcing interface
+    }
 };
 
 }}}

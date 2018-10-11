@@ -22,6 +22,10 @@ class IDeserializableDynamic {
     // should have this method:
 
     // static CEDE(TypeName) deserializeFromStream(QDataStream& mut_stream)
+protected:
+    ~IDeserializableDynamic() {
+        // Blank protected destructor for class used as a contract-forcing interface
+    }
 };
 
 }}}

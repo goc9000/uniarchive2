@@ -31,6 +31,11 @@ public:
         invariant(converted, "Not an object of the specified type");
         return converted;
     }
+
+protected:
+    ~IPolymorphic() {
+        // Blank protected destructor for class used as a contract-forcing interface
+    }
 };
 
 }}}
