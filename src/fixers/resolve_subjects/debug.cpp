@@ -10,6 +10,8 @@
 
 #include "fixers/resolve_subjects/debug.h"
 
+#include "intermediate_format/subjects/visitor/visit_subject_utils.h"
+
 #include "utils/qt/shortcuts.h"
 #include "utils/qt/debug_extras.h"
 
@@ -21,16 +23,14 @@ namespace uniarchive2 { namespace fixers { namespace resolve_subjects {
 
 using namespace std;
 
-void UnresolvedSubjectsDB::feed(IMM(unique_ptr<ApparentSubject>) subject) {
+static QString summarize_subject(IMM(unique_ptr<ApparentSubject>) subject) {
     QString repr;
     QDebug(&repr) << subject;
 
-    repr = repr.replace(" [peer]", "").replace(" [ident]", "").trimmed();
-
-    subjects[repr]++;
+    return repr.replace(" [peer]", "").replace(" [ident]", "").trimmed();
 }
 
-void UnresolvedSubjectsDB::dump() const {
+static void dump_unresolved_subjects(const map<QString, int>& subjects) {
     if (subjects.empty()) {
         return;
     }
@@ -62,6 +62,24 @@ void UnresolvedSubjectsDB::dump() const {
             break;
         }
     }
+}
+
+void analyze_unresolved_subjects(IMM(RawConversationCollection) conversations) {
+    map<QString, int> subjects;
+
+    for (IMM(auto) convo : conversations) {
+        QString base;
+        QDebug(&base) << convo.protocol;
+
+        convo.visitSubjects([&](IMM(unique_ptr<ApparentSubject>) subject) {
+            if (subject->subType() != ApparentSubjectSubType::RESOLVED) {
+                subjects[base + summarize_subject(subject)]++;
+            }
+            return true;
+        });
+    }
+
+    dump_unresolved_subjects(subjects);
 }
 
 }}}

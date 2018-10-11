@@ -15,21 +15,14 @@
 
 #include <QString>
 
-#include "intermediate_format/subjects/ApparentSubject.h"
+#include "intermediate_format/RawConversationCollection.h"
 #include "utils/language/shortcuts.h"
 
 namespace uniarchive2 { namespace fixers { namespace resolve_subjects {
 
-using namespace intermediate_format::subjects;
-using namespace std;
+using namespace intermediate_format;
 
-struct UnresolvedSubjectsDB {
-    void feed(IMM(unique_ptr<ApparentSubject>) subject);
-    void dump() const;
-
-protected:
-    map<QString, int> subjects;
-};
+void analyze_unresolved_subjects(IMM(RawConversationCollection) conversations);
 
 }}}
 
