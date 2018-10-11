@@ -23,7 +23,7 @@ namespace uniarchive2 { namespace protocols {
 
 using namespace uniarchive2::utils::serialization;
 
-struct FullAccountName : ISerializable, IDeserializableStatic {
+struct FullAccountName final : ISerializable, IDeserializableStatic {
 public:
     IMProtocol protocol;
     QString accountName;

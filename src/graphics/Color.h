@@ -22,7 +22,7 @@ namespace uniarchive2 { namespace graphics {
 
 using namespace uniarchive2::utils::serialization;
 
-struct Color : public ISerializable, public IDeserializableStatic {
+struct Color final : public ISerializable, public IDeserializableStatic {
 public:
     uint8_t r;
     uint8_t g;

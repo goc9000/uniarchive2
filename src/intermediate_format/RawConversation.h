@@ -37,7 +37,7 @@ using namespace uniarchive2::intermediate_format::subjects;
 using namespace uniarchive2::protocols;
 using namespace uniarchive2::utils::serialization;
 
-class RawConversation : public ISerializable, public IDeserializableStatic, public IApparentSubjectVisitable {
+class RawConversation final : public ISerializable, public IDeserializableStatic, public IApparentSubjectVisitable {
 public:
     // Mandatory metadata
     IMProtocol protocol;

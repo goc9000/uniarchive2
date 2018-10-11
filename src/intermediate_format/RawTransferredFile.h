@@ -27,7 +27,7 @@ namespace uniarchive2 { namespace intermediate_format {
 using namespace std::experimental;
 using namespace uniarchive2::utils::serialization;
 
-struct RawTransferredFile : public ISerializable, public IDeserializableStatic {
+struct RawTransferredFile final : public ISerializable, public IDeserializableStatic {
 public:
     QString filename;
     optional<uint64_t> size;
